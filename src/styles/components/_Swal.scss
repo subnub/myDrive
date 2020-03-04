@@ -1,0 +1,10 @@
+
+.swal2-popup {
+    
+    font-size: 10px !important;
+
+     @media (max-width: $desktop-breakpoint) {
+        
+        font-size: 13px !important;
+    }
+}

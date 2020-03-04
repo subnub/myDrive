@@ -1,0 +1,16 @@
+.dataform {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: start;
+}
+
+.dataform__item {
+    flex-basis: 100px;
+    flex-grow: 1;
+}
+
+.dataform__no-files {
+    text-align: center;
+    font-weight: 300;
+}

@@ -1,0 +1,70 @@
+.context-menu {
+    background: white;
+    position: absolute;
+    width: 230px;
+
+    z-index: 1;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    overflow: hidden;
+    height: fit-content;
+
+    @media (max-width: $desktop-breakpoint) {
+        
+        position: fixed;
+        width: 99%;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+}
+
+.context__item {
+    display: flex;
+    height: 41px;
+
+    @media (max-width: $desktop-breakpoint) {
+        
+        height: 55px;
+    }
+}
+
+.context__item:hover {
+    background: lightgrey;
+
+
+    @media (max-width: $desktop-breakpoint) {
+        
+        background: white;
+    }
+   
+}
+
+.context__item:active {
+
+    background: lightgrey;
+}
+
+.context__item__image {
+    width: 30px;
+    /* height: 43px; */
+    opacity: 0.7;
+    margin-left: 7px;
+
+    @media (max-width: $desktop-breakpoint) {
+        
+        width: 40px;
+    }
+}
+
+.context__item__title {
+    color: black;
+    margin-left: 7px;
+    font-weight: 300;
+    font-size: 13px;
+
+    @media (max-width: $desktop-breakpoint) {
+        
+        font-size: 15px;
+    }
+}

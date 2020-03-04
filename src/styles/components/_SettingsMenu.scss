@@ -1,0 +1,255 @@
+.settingsmenu {
+    width: 918px;
+    height: 487px;
+    background: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    -webkit-box-shadow: 0 11px 8px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 11px 8px 0 rgba(0,0,0,0.2);
+    border: 2px solid #dadce0;
+    z-index: 1;
+    border-radius: 6px;
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.settingsmenu--gone {
+
+    display: none;
+}
+
+.settingsmenu__header {
+    height: 45px;
+    background: #fff;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    
+}
+
+
+.settingsmenu__header__image {
+    height: 27px;
+    opacity: 0.8;
+    margin-top: 17px;
+}
+
+.settingsmenu__header__title {
+    color: black;
+    font-weight: 300;
+    margin-left: 6px;
+    font-size: 13px;
+    margin-top: 21px
+}
+
+.settingsmenu__header__button {
+
+    margin-right: 10px;
+    height: 28px;
+    margin-top: -6px;
+    cursor: pointer;
+}
+
+.settingsmenu__header__box {
+
+    height: inherit;
+    width: 30%;
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    margin-top: -18px;
+}
+
+.settingsmenu_body {
+
+    max-height: 441px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+    @media (max-width: $desktop-breakpoint) {
+        max-height: 93vh;
+    }
+}
+
+.settingsmenu__option {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    border-bottom: 1px solid #eee;
+    height: 77px;
+    max-height: 77px;
+    /* align-items: center; */
+    position: relative;
+    /* align-content: center; */
+    align-items: center;
+
+    @media (max-width: $desktop-breakpoint) {
+        justify-content: space-between;
+    }
+}
+
+.settingsmenu__option--no-border {
+
+    border: unset
+}
+
+.settingsmenu__option__title {
+
+    width: 250px;
+    margin-left: 8%;
+    font-weight: 500;
+    /* position: absolute; */
+   
+    @media (max-width: $desktop-breakpoint) {
+        margin-left: 10px;
+    }
+}
+
+.settingsmenu__option__title--offset {
+    margin-left: 59.5px;
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-left: 10px;
+    }
+}
+
+.settingsmenu__suboption {
+    width: 230px;
+    height: 76px;
+    display: flex;
+    align-items: center;
+
+    @media (max-width: $desktop-breakpoint) {
+       
+        justify-content: center;
+        flex-direction: column;
+        margin-right: 10px;
+        width: 135px;
+        align-items: flex-end;
+    }
+}
+
+.settingsmenu__suboption--offset {
+    margin-left: -42px;
+
+    @media (max-width: $desktop-breakpoint) {
+       
+        margin-left: unset;
+    }
+}
+
+.settingsmenu__select {
+
+    background: none;
+    border: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    color: #5f6368;
+    font-size: 15px;
+    outline: none;
+    font-weight: 500;
+    padding-left: 3px;
+    padding-right: 4px;
+}
+
+.settingsmenu__select:hover {
+    background: lightgrey
+}
+
+.settingsmenu__button {
+
+    color: white;
+    background: #3c85ed;
+    font-size: 12px;
+    /* padding: 1.2rem; */
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+    padding: 9px;
+
+    &:hover {
+        background: darken(#3c85ed, 10);
+        color: darken(white, 10)
+    }
+}
+
+.settingsmenu__button--red {
+    background: red;
+    margin-left: 3.5px;
+
+    &:hover {
+        background: darken(red, 10);
+        color: darken(white, 10)
+    }
+  
+}
+
+.settingsmenu__button--offset-logout {
+    margin-left: -3px;
+}
+
+.settingsmenu__button--offset-logout-all {
+    margin-left: 4px;
+}
+
+.settingsmenu__option__title__wrapper {
+    display: flex;
+    justify-content: center;
+    /* width: 100%; */
+    margin-left: 47px;
+
+    @media (max-width: $desktop-breakpoint) {
+       
+        margin-left: unset;
+    }
+}
+
+.settingsmenu__option__info {
+    width: 18px;
+    position: absolute;
+    margin-left: -21px;
+    opacity: 0.7;
+    top: 12px;
+    cursor: pointer;
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-left: -41px;
+    }
+}
+
+.settingsmenu__option__info__style {
+    width: 18px;
+    position: absolute;
+    margin-left: 28px;
+    opacity: 0.7;
+    top: 12px;
+    cursor: pointer;
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-left: 10px;
+    }
+}
+
+.settingsmenu__option__info__size {
+    width: 18px;
+    position: absolute;
+    margin-left: 25px;
+    opacity: 0.7;
+    top: 12px;
+    cursor: pointer;
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-left: 2px;
+    }
+}

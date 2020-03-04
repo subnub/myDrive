@@ -1,0 +1,206 @@
+.header {
+    text-align: center;
+    // height: 11vh;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #dadce0;
+    justify-content: space-between;
+    /* display: none; */
+    position: absolute;
+    /* top: 0; */
+    width: 100%;
+}
+
+.header__title {
+    color: white;
+    text-decoration: none;
+    h1 {
+        margin: 0;
+    }
+}
+
+.header__image {
+    width: 100px;
+    height: 30px;
+    margin: 20px 0 15px 20px;
+    cursor: pointer;
+    user-select: none;
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 73px;
+        height: 24px;
+        margin: 25px 0 15px 14px;
+        display: none;
+    }
+    
+}
+
+.header__form {
+    width: 55%;
+    margin-left: -179px;
+    position: relative;
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 67%;
+        margin-top: 5px;
+        margin-left: 8px;
+        position: unset;
+    }
+}
+
+
+.header__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $s-size 0;
+}
+
+.header__setting {
+    width: 30px;
+    height: 30px;
+    /* position: fixed; */
+    /* right: 15px; */
+    /* top: 0px; */
+    margin: 20px 20px 20px 0;
+    cursor: pointer;
+
+    @media (max-width: $desktop-breakpoint) {
+        margin: 25px 20px 20px 10px;
+    }
+
+    
+}
+
+.header__input {
+    border: 1px solid #f1f3f4;
+    height: 50px;
+    font-size: 1.8rem;
+    font-weight: 300;
+    padding: 1.2rem;
+    margin: 10px 0 10px 0;
+    /* margin-left: 130px; */
+    width: 100%;
+    border-radius: 3px;
+    background: #f1f3f4;
+
+    @media (max-width: $desktop-breakpoint) {
+       
+        width: 121%;
+    }
+}
+.header__input:focus {
+   
+    background: white;
+    outline: none;
+    border-style: groove;
+}  
+
+.header__input__suggested {
+    width: 100%;
+    max-height: 43vh;
+    overflow: scroll;
+    background: white;
+    /* color: black; */
+    margin-top: -10px;
+    position: absolute;
+    z-index: 3;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.2);
+    border-radius: 0 0 6px 6px;
+    border: groove 1px #f1f3f4;
+    
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+    &::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari/Webkit */
+    }
+
+    @media (max-width: $desktop-breakpoint) {
+        
+        width: 100vw;
+        // margin-left: -23vw;
+        left: 0;
+        max-height: 50vh;
+        overflow: scroll;
+        background: white;
+        margin-top: 1px;
+        position: absolute;
+        z-index: 3;
+        box-shadow: 0 2px 8px 0 rgba(0,0,0,0.2);
+        border-radius: 0 0 6px 6px;
+        border: groove 1px #f1f3f4;
+    }
+
+}
+
+
+.header__input__suggested--gone {
+    display: none;
+}
+
+.header__input__suggested__item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.header__input__suggested__item:hover {
+    
+    background: lightgrey;
+    border-radius: 6px;
+}
+
+.header__input__suggested__item__title__wrapper {
+
+    height: inherit;
+    color: red;
+    /* width: 400px; */
+    display: flex;
+    flex-direction: row;
+}
+
+.header__input__suggested__item__title {
+    color: #373737;;
+    font-weight: 300;
+    font-size: 18px;
+    padding-left: 9px;
+    font-size: small;
+    text-overflow: ellipsis;
+    max-width: 41vw;
+    overflow: hidden;
+    white-space: nowrap;
+
+    @media (max-width: $desktop-breakpoint) {
+        color: #373737;
+        font-weight: 300;
+        font-size: 18px;
+        padding-left: 9px;
+        font-size: medium;
+        text-overflow: ellipsis;
+        max-width: 41vw;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    
+}
+
+.header__input__suggested__item__subtitle {
+    color: #373737;;
+    font-weight: 100;
+    font-size: small;
+    margin-right: 10px;
+}
+
+.header__input__suggested__item__image {
+    width: 25px;
+    margin-left: 10px;
+    opacity: 0.7;  
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 42px;
+        margin-left: 10px;
+        opacity: 0.7;
+    }
+
+}

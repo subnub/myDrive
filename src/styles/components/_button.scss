@@ -1,0 +1,50 @@
+.button {
+    color: white;
+    background: #3c85ed;
+    font-size: $font-size-large;
+    padding: $s-size;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: $small-border;
+
+    &:hover {
+        background: darken(#3c85ed, 10);
+        color: darken(white, 10)
+    }
+}
+
+.button--small {
+    color: white;
+    background: #3c85ed;
+    font-size: 11px;
+    padding: 12px;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+    width: 35%;
+    white-space: nowrap;
+    height: 100%;
+    margin-left: 10%;
+
+    &:hover {
+        background: darken(#3c85ed, 10);
+        color: darken(white, 10)
+    }
+}
+
+.button--small--disabled {
+
+    opacity: 0.5;
+}
+
+.button--link {
+    background: none;
+}
+
+.button--secondary {
+    background: #888888
+}

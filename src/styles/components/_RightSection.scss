@@ -1,0 +1,141 @@
+.section--right {
+    margin: 0 0 0 3px;
+    width: 37vw;
+    transition: width 0.5s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    // height: 83vh;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+    &::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari/Webkit */
+    }
+
+    @media (max-width: $desktop-breakpoint) {
+        display: none
+    }
+}
+
+.section--minimized {
+    width: 0%;
+    margin: 0;
+}
+
+.section--no-animation {
+    
+    transition: none;
+}   
+
+.section__title-wrapper {
+    width: 25vw;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.section__title-text {
+
+    color: black;
+    word-wrap: break-word;
+    overflow: scroll;
+    line-height: 24px;
+    font-weight: 300;
+    margin-left: 10px;
+    text-overflow: ellipsis;
+    max-height: 100%;
+    padding: 6px;
+    width: 77%;
+   
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+    &::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari/Webkit */
+    }
+
+}
+
+.section__image {
+
+    width: 17vw;
+    margin-left: 36px;
+    opacity: 0.3;
+}
+
+.section__title {
+    color: black;
+    font-weight: 300;
+    line-height: 24px;
+    min-width: 25vw;
+    max-width: 25vw;
+}
+
+.section-detail-wrapper {
+    width: inherit;
+    height: inherit;
+}
+
+.section__none--wrapper {
+    width: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.section__title-text--gone {
+    visibility: hidden;
+}
+
+.section__title-image {
+
+    width: 30px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.section__title-image--gone {
+    visibility: hidden;
+}
+
+.section-detail__block {
+    width: 34vw;
+    height: 70%;
+    /* background: green; */
+    overflow: scroll;
+    margin-top: 10px;
+}
+
+.section-detail__wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.section-detail__title {
+    color: black;
+    margin-left: 15px;
+    font-weight: 300;
+}
+
+.section-detail__title--margin {
+    margin-top: -15px;
+}
+
+.section-detail__body {
+    color: black;
+    font-weight: 500;
+    margin-right: 35%;
+    word-wrap: break-word;
+    overflow: hidden;
+    width: 43%;
+    line-height: 22px;
+    margin-left: 10px;
+}
+
+.section-detail__body--margin {
+    margin-top: -15px;
+}
+

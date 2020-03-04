@@ -1,0 +1,234 @@
+.file__item {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #dadce0;
+    align-items: center;
+    justify-content: initial;
+    border-radius: 10px;
+    flex-basis: 23%;
+    max-width: 23%;
+    margin: 5px;
+    cursor: pointer;
+    height: 171px;
+
+    // overflow: hidden;
+    position: relative;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (max-width: $desktop-breakpoint) {
+        flex-basis: 28%;
+        max-width: 30.2%;
+        position: unset
+    }
+}
+
+.file__item--selected {
+    background:#e8f0fe;
+}
+
+.file__title {
+    color: #373737;
+    margin-top: 25px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 90%;
+    max-width: 23vw;
+    text-align: center;
+    font-weight: 300;
+    // text-transform: capitalize;
+}
+
+.file__title--gone {
+
+    display: none;
+}
+
+.file__title--selected {
+    color: #1967d2;
+}
+
+.file__image__wrapper {
+ 
+    width: 100px;
+    height: 100px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.file__image {
+    width: 100px;
+    opacity: 0.7;
+}
+
+.file__item__wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: initial;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    width: 100%;
+    height: 100%;
+}
+
+.file__item__listview {
+
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px;
+    flex-basis: 98%;
+    min-width: 98%;
+    max-width: 98%;
+    max-width: 99%;
+    width: 100%;
+    margin: 5px;
+    cursor: pointer;
+    height: 50px;
+    position: relative;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    @media (max-width: $desktop-breakpoint) {
+        position: unset
+    }
+
+}
+
+.file__item__listview--smaller-max-width {
+    max-width: 98%;
+}
+
+.file__image__listview {
+    width: 31px;
+    opacity: 0.7;  
+    min-width: 31px;
+}
+
+.file__image__listview--mover {
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 38px;
+        min-width: 38px;
+    }
+}
+
+.file__image__listview--no-opacity {
+    width: 31px;
+    opacity: 1;
+    /* min-width: 30px; */
+    /* max-width: 30px; */
+    height: 33px;
+    /* max-height: 30px; */
+    border-radius: 5px;
+}
+
+.file__image--no-opacity {
+    width: 87%;
+    max-height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    max-width: 100%;
+    margin-top: 8px;
+    padding: -1px;
+    border-radius: 11px;
+    margin-left: 6.5%;
+}
+
+.file__title__listview {
+    color: #373737;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 18%;
+    width: 18%;
+    min-width: 18%;
+    text-align: center;
+    font-weight: 300;
+    margin-right: 15px;
+    text-align: left;
+}
+
+.file__title__listview--no-margin {
+    margin-right: none
+}
+
+.file__title__listview--no-max {
+    max-width: none;
+    width: unset;
+    padding-left: 7px;
+}
+
+.file__title__listview--mover {
+    
+    @media (max-width: $desktop-breakpoint) {
+        font-size: 18px;
+    }
+}
+
+.file__item__listview__title__wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-left: 15px;
+    max-width: 30%;
+    min-width: 30%;
+    width: 30%;
+    align-items: center;
+}
+
+.file__item__listview__title__wrapper--folder {
+    display: flex;
+    flex-direction: row;
+    margin-left: 15px;
+    max-width: 50%;
+    min-width: 30%;
+    width: 50%;
+    align-items: center;
+}
+
+.file__item__listview__title__wrapper--mover {
+
+    max-width: 63%;
+    width: 63%;
+}
+
+.file__item__tag {
+
+    width: 49px;
+    height: 25px;
+    background: lightblue;
+    position: absolute;
+    top: 60px;
+    left: 9px;
+    border-radius: 5px;
+}
+
+.file__item__tag__title {
+    font-size: 10px;
+}

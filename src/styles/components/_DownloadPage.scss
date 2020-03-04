@@ -1,0 +1,49 @@
+.downloadpage {
+    width: 100vw;
+    height: 100vh;
+}
+
+.downloadpage__box {
+
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    justify-content: center;
+    width: 345px;
+    align-items: center;
+    height: 289px;
+    padding: 3.2rem 1.6rem 1.2rem 1.6rem;
+    border: 0.5px;
+    border-style: groove;
+    /* position: relative; */
+    border-radius: 7px;
+}
+
+.downloadpage__box__button {
+    color: red;
+}
+
+.downloadpage__box__title {
+    color: black;
+    font-size: 19px;
+    margin-top: -18px;
+    font-weight: 300;
+    max-width: 94%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.downloadpage__box__subtitle {
+    color: black;
+    font-weight: 200;
+    font-size: 12px;
+    max-width: 94%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

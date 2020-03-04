@@ -1,0 +1,203 @@
+.section--left {
+    margin: 0 3px 0 0;
+    width: 20vw;
+    min-width: 20%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    // background: green;
+    @media (max-width: $desktop-breakpoint) {
+        display: none
+    }
+}
+
+.add-button {
+    display: inline-flex;
+    flex-direction: row;
+    margin-top: 13px;
+    margin-left: 12px;
+    height: 50px;
+    width: 132px;
+    align-items: center;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
+    border: 1px solid transparent;
+    border-radius: 24px;
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+
+    @media (max-width: $desktop-breakpoint) {
+        height: 40px;
+        width: 104px;
+        margin-left: 6px;
+        margin-top: 6px;
+        min-height: 40px;
+    }
+}
+
+.add-button__img {
+    width: 30px;
+    height: 30px;
+    margin-left: 13px;
+    margin-bottom: 3px;
+
+    @media (max-width: $desktop-breakpoint) {
+        height: unset;
+        width: 21%;
+        margin-bottom: 1px;
+    }
+}
+
+.add-button__title {
+    font-weight: 500;
+    color: #373737;
+    padding-left: 2px;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: none;
+    font-size: 20px;
+    margin-left: 10px;
+    width: 50%;
+
+    @media (max-width: $desktop-breakpoint) {
+        padding-left: 0px;
+        font-size: 17px;
+        margin-left: 8px;
+    }
+}
+
+.add-button__title:focus {
+    outline: none;
+}
+
+.add-button__option-wrapper {
+    position: absolute;
+    background: white;
+    border: none;
+    height: 200px;
+    width: 300px;
+    max-height: 0px;
+    overflow: hidden;
+    margin-left: -3px;
+    z-index: 1;
+    transition: margin 0.3s, max-height 0.3s;
+    cursor: pointer;
+}
+
+.add-button__option-wrapper2 {
+    position: absolute;
+    background: white;
+    border: none;
+    height: 200px;
+    width: 300px;
+    max-height: 0px;
+    overflow: hidden;
+    margin-left: 6px;
+    z-index: 1;
+    transition: margin 0.3s, max-height 0.3s;
+    cursor: pointer;
+}
+
+
+.add-button__option-wrapper--show {
+
+    max-height: 185px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    // padding: 0 140px 132px 36px;
+    margin-top: 52px;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302),0 1px 3px 1px rgba(60,64,67,0.149);
+}
+
+.add_button__option__add-folder-wrapper {
+    border-bottom: 1px solid #dadce0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+.add_button__option__add-folder-wrapper:hover {
+    background: lightgrey
+}
+
+.add_button__option__add-folder-wrapper--no-border {
+    border: none;
+}
+
+.add_button__option__add-folder-image {
+    width: 14%;
+    height: 10%;
+    margin-left: 14px;
+}
+
+.add_button__option__add-folder-title {
+    color: #373737;
+    padding-top: 4px;
+    padding-left: 10px;
+}
+.add_button__option__add-file-input {
+    opacity: 0.0;
+
+   /* IE 8 */
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+
+   /* IE 5-7 */
+   filter: alpha(opacity=0);
+ 
+   /* Netscape or and older firefox browsers */
+   -moz-opacity: 0.0;
+
+   /* older Safari browsers */
+   -khtml-opacity: 0.0;
+
+   cursor: pointer;
+
+    position: absolute;
+    top: 63px;
+    left: 0;
+    bottom: 0;
+    background: red;
+    height: 32%;
+}
+
+.storage__wrapper {
+    width: inherit;
+    height: 86px;
+}
+
+.storage__title {
+    color: black;
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: 3px;
+    margin-left: 16px;
+}
+
+.storage__subtitle {
+    font-size: 11px;
+    margin-left: 16px;
+    color: black;
+    font-weight: 300;
+    white-space: nowrap;
+    width: 85%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 4px;
+}
+
+.storage__progress__wrapper {
+
+    width: 75%;
+    height: 6px;
+    margin-left: 16px;
+    background: #e0e0e0;
+}
+
+.storage__progress {
+
+    // width: 50%;
+    // height: inherit;
+    // /* color: red; */
+    // background: #3f85f0;
+}

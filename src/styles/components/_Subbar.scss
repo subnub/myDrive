@@ -1,0 +1,98 @@
+.info-button {
+    width: 30px;
+    position: absolute;
+    right: 15px;
+    cursor: pointer;
+
+    @media (max-width: $desktop-breakpoint) {
+        display: none;
+     }
+}
+
+.info-button:hover {
+    -webkit-filter: drop-shadow(1px 1px 3px #222222);
+}
+
+.drive-dropdown {
+
+    width: 100px;
+    padding-left: 15px;
+}
+
+.grid-button {
+    width: 30px;
+    position: absolute;
+    right: 60px;
+    cursor: pointer;
+
+    @media (max-width: $desktop-breakpoint) {
+        right: 9px;
+     }
+}
+
+.subbar {
+    // background: purple;
+    width: 80vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 7vh;
+    min-height: 50px;
+    user-select: none;
+    // overflow-x: scroll;
+
+}
+
+.path__block {
+    height: inherit;
+    /* min-height: 7vh; */
+    /* width: 50px; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+.path__wrapper {
+    // background: blue;
+    width: 50vw;
+    margin-left: 12px;
+    display: flex;
+    flex-direction: row;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    height: 52px;
+    /* max-height: inherit; */
+    min-height: inherit;
+    /* min-height: 7vh; */
+    // margin-top: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+        width: 0px;
+        //background: transparent; /* Chrome/Safari/Webkit */
+    }
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-top: 4px;
+     }
+
+}
+
+.path__title {
+    color: black;
+    font-size: 17px;
+    line-height: 0;
+    font-weight: 300;
+    white-space: nowrap;
+    /* height: fit-content; */
+    padding: 0px 0 2px 0;
+    margin-top: 19px;
+}
+
+.path__image {
+    height: fit-content;
+    /* width: 30px; */
+    // margin-top: 7px;
+}

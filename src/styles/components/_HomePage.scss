@@ -1,0 +1,47 @@
+.section {
+    float: left;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+    &::-webkit-scrollbar {
+        width: 0px;
+        background: transparent; /* Chrome/Safari/Webkit */
+    }
+
+}
+.main-container {
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    width: fill-available;
+    // overflow-y: scroll;
+    overflow-x: hidden;
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 100vw;
+    }
+
+}
+
+.sub-container {
+    width: inherit;
+    // height: 83vh;
+    height: -webkit-fill-available;
+    display: inherit;
+    overflow: hidden;
+}
+
+.main-page {
+    background: white;
+    height: 100vh;
+    width: 100vw;
+    display: inline-flex;
+    padding-top: 71px;
+}
+
+
