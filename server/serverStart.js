@@ -16,6 +16,14 @@ const serverStart = async() => {
             console.log( 'Https Server Running On Port:', process.env.HTTPS_PORT);
         } );
         
+    } else if (process.env.NODE_ENV === 'production-no-ssl') {
+
+        const server = require("./server");
+    
+        server.listen(process.env.HTTP_PORT,process.env.URL, () => {
+            console.log("Http Server (No-SSL) Running On Port:", process.env.HTTP_PORT);
+        })
+
     } else {
     
         const server = require("./server");

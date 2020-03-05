@@ -12,23 +12,31 @@ const fs = require("fs");
 const helmet = require("helmet");
 const busboy = require("connect-busboy")
 const compression = require("compression");
+const http = require("http");
 
 
-const cert = fs.readFileSync("certificate.crt")
-const ca = fs.readFileSync("certificate.ca-bundle");
-const key = fs.readFileSync("certificate.key");
+let server;
+let serverHttps;
+
+if (process.env.NODE_ENV === 'production') {
+
+    const cert = fs.readFileSync("certificate.crt")
+    const ca = fs.readFileSync("certificate.ca-bundle");
+    const key = fs.readFileSync("certificate.key");
 
 
-const options = {
-    cert,
-    ca,
-    key
+    const options = {
+        cert,
+        ca,
+        key
+    }
+
+    serverHttps = https.createServer( options, app );
 }
 
-const http = require("http")
 
-const server = http.createServer(app);
-const serverHttps = https.createServer( options, app );
+server = http.createServer(app);
+
 
 
 require("../src/db/mongoose")
