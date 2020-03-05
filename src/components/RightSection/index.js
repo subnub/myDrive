@@ -116,7 +116,7 @@ class RightSectionContainer extends React.Component {
 
     getTranscodeButton = (props) => {
 
-        if (!props.selectedItem.isVideo) {
+        if (!props.selectedItem.isVideo || !env.enableVideoTranscoding) {
             return undefined;
         }
 

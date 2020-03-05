@@ -27,6 +27,7 @@
     "change-password-database:dev": "env-cmd -f ./config/dev.env node serverUtils/changeEncryptionPassword.js",
     "create-indexes-database": "env-cmd -f ./config/prod.env node serverUtils/createIndexes.js",
     "create-indexes-database:dev": "env-cmd -f ./config/dev.env node serverUtils/createIndexes.js",
+    "init": "node serverUtils/initServer.js",
     "heroku-postbuild": "yarn run build:prod"
   },
   "dependencies": {
