@@ -1,6 +1,8 @@
 node_modules/
 public/dist/
-config/
+config/dev.env
+config/prod.env
+config/test.env
 .env.development
 .env.test
 .env.production
