@@ -52,7 +52,7 @@ MyDrive comes with some build in NPM scripts for server management, this include
 
 - Clean Database: Command “npm run clean-database”, Cleans database, removing any orphaned chunks that do not have a file associated with them, this command will automatically run backup database, incase anything fails. 
 
-- Change Encryption Password: Command “change-password-database”, Changed the encryption password, that the server first asks for on start up, this requires the old encryption password. 
+- Change Encryption Password: Command “change-password-database”, Changed the encryption password, that the server first asks for on start up, this requires the old encryption password. This will also create a new backup, incase anything fails.
 
 - Delete Database: Command “npm run delete-database”, Deletes the main database, does not delete the temporary backup.
 
