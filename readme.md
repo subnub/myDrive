@@ -29,6 +29,7 @@ Optional:
 - FFMPEG (For Video Transcoding, Does not work very well because of encryption ATM, But non-transcoded videos stream without any issue, I do not recommend using this yet.)
 
 Setup:
+- “npm install”, Installs all dependencies. 
 - "npm run init", Asks user for some environment variable details, pressing enter on these fields will instead use the default values. 
 
 - "npm run build", This will look for the HTTPS Certificate, Place this HTTPS certificate at the root of the project, with the naming convention (certificate.ca-bundle, certificate.crt, and certificate.key). 
