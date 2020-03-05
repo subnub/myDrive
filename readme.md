@@ -61,3 +61,8 @@ MyDrive comes with some build in NPM scripts for server management, this include
 - Create Indexes: Command “npm run create-indexes-database", Creates Indexes for mongoDB, without this mongoDB will need to search through every single file on request, run this before using the server. 
 
 
+## Video
+I created a short YouTube video, showing off myDrives design and features: https://www.youtube.com/watch?v=YiK7_jfzx9M
+
+## Questions? Feature Requests? Contact Me!
+Contact Email: kyle.hoell@gmail.com
