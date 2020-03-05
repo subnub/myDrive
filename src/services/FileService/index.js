@@ -11,6 +11,7 @@ const NotFoundError = require("../../utils/NotFoundError");
 const env = require("../../enviroment/env");
 const jwt = require("jsonwebtoken");
 const removeChunks = require("./utils/removeChunks");
+const User = require("../../models/user");
 
 
 const Folder = require("../../models/folder");
@@ -220,7 +221,7 @@ const FileService = function() {
 
         return new Promise((resolve, reject) => {
 
-            dbUtilsFile.getPublicFile(ID).then((file) => {
+            dbUtilsFile.getPublicFile(ID).then(async(file) => {
 
                 if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
                     reject({
@@ -230,11 +231,13 @@ const FileService = function() {
                     })
                 } else {
 
+                    const user = await User.findById(file.metadata.owner);
+
                     const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
                         chunkSizeBytes: 1024 * 255,
                     })
         
-                    const password = env.key;
+                    const password = user.getEncryptionKey();
                     const IV = file.metadata.IV.buffer
                    
                     const readStream = bucket.openDownloadStream(ObjectID(ID))
