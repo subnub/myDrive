@@ -71,6 +71,10 @@ I created a short YouTube video, showing off myDrives design and features: Comin
 ## Security 
 MyDrive encrypts all file chunks, tokens, and temp tokens. These items are first encrypted with a randomly generated 32 byte private key, and random 16 byte public key (A different random public key is used for different items).The private key is encrypted with the users salted password, and the hashed server key (Acquired on server startup). Note: Running the command to change the servers key, will generate new private and public keys for each user, and will have to re-encrypt all chunks. 
 
+### Using myDrive for personal use?
+After you create your account, disable the ability to create a new account by adding the following value to the prod.env file (Located inside on the config folder).
+BLOCK_CREATE_ACCOUNT=true
+
 ## Questions? Feature Requests? Contact Me!
 Contact Email: Coming Soon
 
