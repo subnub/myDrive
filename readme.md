@@ -1,6 +1,6 @@
 # MyDrive
 
-MyDrive is a Google Drive like clone, built with Node.JS, Express, and MongoDB.
+MyDrive is an Open Source Cloud Server (Similar To Google Drive), built with Node.JS, Express, React, and MongoDB.
 
 MyDrive Features:
 
@@ -15,7 +15,7 @@ MyDrive Features:
 - Create One-Time Download links for files
 - Move Files/Folders
 - AES256 Encryption (For file chunks, tokens, and more!)
-- Search For Files
+- Search For Files/Folders
 - Mobile Friendly (Including Uploading!)
 - Advanced Filter Options
 
@@ -61,6 +61,7 @@ MyDrive comes with some build in NPM scripts for server management, this include
 
 - Create Indexes: Command “npm run create-indexes-database", Creates Indexes for mongoDB, without this mongoDB will need to search through every single file on request, run this before using the server. 
 
+- Run Tests: Command "npm run test", Starts unit testing.
 
 ## Video
 I created a short YouTube video, showing off myDrives design and features: Coming Soon
