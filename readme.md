@@ -63,8 +63,15 @@ MyDrive comes with some build in NPM scripts for server management, this include
 
 - Run Tests: Command "npm run test", Starts unit testing.
 
+
+
 ## Video
 I created a short YouTube video, showing off myDrives design and features: Coming Soon
 
+## Security 
+MyDrive encrypts all file chunks, tokens, and temp tokens. These items are first encrypted with a randomly generated 32 byte private key, and random 16 byte public key (A different random public key is used for different items).The private key is encrypted with the users salted password, and the hashed server key (Acquired on server startup). Note: Running the command to change the servers key, will generate new private and public keys for each user, and will have to re-encrypt all chunks. 
+
 ## Questions? Feature Requests? Contact Me!
 Contact Email: Coming Soon
+
+
