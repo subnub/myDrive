@@ -30,14 +30,15 @@ Optional:
 
 Setup:
 - “npm install”, Installs all dependencies. 
+
 - "npm run init", Asks user for some environment variable details, pressing enter on these fields will instead use the default values. 
 
-- "npm run build", This will look for the HTTPS Certificate, Place this HTTPS certificate at the root of the project, with the naming convention (certificate.ca-bundle, certificate.crt, and certificate.key). 
-Note: If you do not have or want to use a HTTPS certificate, run "npm run build:no--ssl". This will run the server in production mode, without SSL encryption, this is vulnerable to man in the middle attacks!
+- "npm run build" or "npm run build:no-ssl", This will look for the HTTPS Certificate, Place this HTTPS certificate at the root of the project, with the naming convention (certificate.ca-bundle, certificate.crt, and certificate.key). 
+Note: If you do not have or want to use a HTTPS certificate, run "npm run build:no-ssl". This will run the server in production mode, without SSL encryption, this is vulnerable to man in the middle attacks!
 
 - “npm run create-indexes-database”, This will create indexes for mongoDB, this is greatly recommended, it will improve mongoDBs speed in retrieving files. 
 
-- "npm start" or "npm run start:no-ssl" If you do not want SSL Encryption.
+- "npm start" or "npm run start:no-ssl". If you do not want SSL Encryption use "npm run start:no-ssl".
 
 - It will then ask for an encryption key, this can be whatever you would like, this key is later hashed. Do not lose this key, there is NO way to recover data from a lost key!
 
@@ -62,7 +63,7 @@ MyDrive comes with some build in NPM scripts for server management, this include
 
 
 ## Video
-I created a short YouTube video, showing off myDrives design and features: https://www.youtube.com/watch?v=YiK7_jfzx9M
+I created a short YouTube video, showing off myDrives design and features: Coming Soon
 
 ## Questions? Feature Requests? Contact Me!
-Contact Email: kyle.hoell@gmail.com
+Contact Email: Coming Soon

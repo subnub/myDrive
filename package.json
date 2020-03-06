@@ -2,7 +2,7 @@
   "name": "my-drive",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "",
+  "license": "GNU General Public License v3.0",
   "scripts": {
     "server": "live-server public/",
     "build": "cross-env NODE_ENV=production webpack -p --env production",
