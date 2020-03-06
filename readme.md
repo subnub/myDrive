@@ -26,7 +26,7 @@ Required:
 - MongoDB
 
 Optional:
-- FFMPEG (For Video Transcoding, Does not work very well because of encryption ATM, But non-transcoded videos stream work without any issue, I do not recommend using this yet.)
+- FFMPEG (For Video Transcoding, Does not work very well because of encryption ATM, But non-transcoded video streams work much better, I do not recommend using transcoding yet.)
 
 Setup:
 - “npm install”, Installs all dependencies. 
