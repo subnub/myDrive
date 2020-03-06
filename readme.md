@@ -46,7 +46,7 @@ Note: If you do not have or want to use a HTTPS certificate, run "npm run build:
 
 ## Built In Server Tools
 
-MyDrive comes with some build in NPM scripts for server management, this includes:
+MyDrive comes with some built in NPM scripts for server management, this includes:
 - Backup Database: Command “npm run backup-database", creates a temporary backup of the database inside of mongoDB, please note you can only have one backup at a time, for better backups use mongoExport. 
 
 - Restore Database: Command “npm run restore-database”, Restores Database from backup. 
@@ -66,7 +66,7 @@ MyDrive comes with some build in NPM scripts for server management, this include
 
 
 ## Video
-I created a short YouTube video, showing off myDrives design and features: Coming Soon
+I created a short YouTube video, showing off myDrives design and features: https://youtu.be/0YKU5CZHG4I
 
 ## Security 
 MyDrive encrypts all file chunks, tokens, and temp tokens. These items are first encrypted with a randomly generated 32 byte private key, and random 16 byte public key (A different random public key is used for different items).The private key is encrypted with the users salted password, and then the hashed server key (Acquired on server startup). Note: Running the command to change the servers key, will generate new private and public keys for each user, and will have to re-encrypt all chunks. 
@@ -75,7 +75,7 @@ MyDrive encrypts all file chunks, tokens, and temp tokens. These items are first
 After you create your account, disable the ability to create a new account by adding the following value to the prod.env file (Located inside on the config folder).
 BLOCK_CREATE_ACCOUNT=true
 
-## Questions? Feature Requests? Contact Me!
-Contact Email: Coming Soon
+## Questions? Feature Requests? Hiring? Contact Me!
+Contact Email: kyle.hoell@gmail.com
 
 
