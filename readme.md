@@ -44,6 +44,30 @@ Note: If you do not have or want to use a HTTPS certificate, run "npm run build:
 
 - That's It! Now just Create a new account.
 
+## Enviroment Variables
+
+The npm run init command will create the needed env variables, but if you would like to create them manually, structure the files like so.
+
+Backend variables: Stored in /config/prod.env
+
+MONGODB_URL=
+PASSWORD=
+HTTP_PORT=
+HTTPS_PORT=
+URL=
+FULL_URL=
+ROOT=
+
+Optional:
+KEY=
+
+The KEY variable is optional, without it the server will prompt you for a password on startup, with a KEY the server will skip prompting for the password, use a KEY if you want to use myDrive with docker, or similar tools.
+
+Frontend variables: Stored on the root of the project .env.production 
+
+PORT=
+REMOTE_URL=
+
 ## Built In Server Tools
 
 MyDrive comes with some built in NPM scripts for server management, this includes:
@@ -62,8 +86,6 @@ MyDrive comes with some built in NPM scripts for server management, this include
 - Create Indexes: Command “npm run create-indexes-database", Creates Indexes for mongoDB, without this mongoDB will need to search through every single file on request, run this before using the server. 
 
 - Run Tests: Command "npm run test", Starts unit testing.
-
-
 
 ## Video
 I created a short YouTube video, showing off myDrives design and features: https://youtu.be/0YKU5CZHG4I
