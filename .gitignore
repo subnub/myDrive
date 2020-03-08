@@ -14,3 +14,5 @@ certificate.ca-bundle
 certificate.crt
 certificate.key
 package-lock.json
+._*
+.DS_Store
