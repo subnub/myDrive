@@ -4,7 +4,12 @@ const crypto = require("crypto");
 
 const getKey = async() => {
 
-    if (process.env.NODE_ENV) {
+    if (process.env.KEY) {
+        // For Docker 
+
+        env.key = process.env.KEY
+
+    } else if (process.env.NODE_ENV) {
 
         let password = await prompt("Enter Server Encryption Password: ", {method: "hide"});
 
