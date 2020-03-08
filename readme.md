@@ -50,23 +50,23 @@ The npm run init command will create the needed env variables, but if you would 
 
 Backend variables: Stored in /config/prod.env
 
-MONGODB_URL=
-PASSWORD=
-HTTP_PORT=
-HTTPS_PORT=
-URL=
-FULL_URL=
-ROOT=
+- MONGODB_URL=
+- PASSWORD=
+- HTTP_PORT=
+- HTTPS_PORT=
+- URL=
+- FULL_URL=
+- ROOT=
 
 Optional:
-KEY=
+- KEY=
 
 The KEY variable is optional, without it the server will prompt you for a password on startup, with a KEY the server will skip prompting for the password, use a KEY if you want to use myDrive with docker, or similar tools.
 
 Frontend variables: Stored on the root of the project .env.production 
 
-PORT=
-REMOTE_URL=
+- PORT=
+- REMOTE_URL=
 
 ## Built In Server Tools
 
