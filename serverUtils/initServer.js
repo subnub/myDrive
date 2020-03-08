@@ -31,7 +31,7 @@ const initServer = async() => {
         const clientTranscode = getClientTranscode.value || "false";
     
         let fullInfoClient = "PORT=" + clientPortNumber + "\n" 
-        + "URL=" + clientURL
+        + "REMOTE_URL=" + clientURL
     
         console.log("client transcode", clientTranscode);
     

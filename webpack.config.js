@@ -66,7 +66,7 @@ module.exports = (env) => {
             CSSExtract,
             new webpack.DefinePlugin({
                 "process.env.PORT": JSON.stringify(process.env.PORT),
-                "process.env.URL": JSON.stringify(process.env.URL),
+                "process.env.REMOTE_URL": JSON.stringify(process.env.REMOTE_URL),
                 "process.env.ENABLE_VIDEO_TRANSCODING": JSON.stringify(process.env.ENABLE_VIDEO_TRANSCODING)
             }),
             new CompressionPlugin()
