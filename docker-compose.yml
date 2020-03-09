@@ -12,6 +12,6 @@ services:
     restart: unless-stopped
     environment:
       MONGODB_URL: mongodb://root:example@mongodb:27017/admin
-      PASSWORD: changeme
+      KEY: changeme
     ports:
       - "3000:3000"
