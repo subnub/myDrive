@@ -29,10 +29,9 @@ Required:
 - Node.js (13.9+ Is Recommended)
 - MongoDB
 
-Windows Users:
 Windows users will usually need both the microsoft visual build tools, and python 2. These are required to build the sharp module.
-Visual Tools: http://go.microsoft.com/fwlink/?LinkId=691126
-Python 2: https://www.python.org/downloads/release/python-2717/
+- Visual Tools: http://go.microsoft.com/fwlink/?LinkId=691126
+- Python 2: https://www.python.org/downloads/release/python-2717/
 
 Optional:
 - FFMPEG (For Video Transcoding, Does not work very well because of encryption ATM, But non-transcoded video streams work much better, I do not recommend using transcoding yet.)
