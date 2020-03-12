@@ -108,4 +108,7 @@ BLOCK_CREATE_ACCOUNT=true
 ## Questions? Feature Requests? Hiring? Contact Me!
 Contact Email: kyle.hoell@gmail.com
 
+## Follow my twitter account 
+Twitter: https://twitter.com/subnub2
+
 
