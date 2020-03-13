@@ -7,10 +7,10 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+    network_mode: "host"
   mydrive:
     build: .
     restart: unless-stopped
     environment:
-      MONGODB_URL: mongodb://root:example@mongodb:27017/admin
-    ports:
-      - "3000:3000"
+      MONGODB_URL: mongodb://root:example@127.0.0.1:27017/admin
+    network_mode: "host"

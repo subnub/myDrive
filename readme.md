@@ -25,6 +25,21 @@ MyDrive Features:
 
 ## Installation
 
+### Using Docker
+You need to build the image with :
+```docker-compose build```
+You can change the REMOTE_URL and PORT variable when you build.
+
+Then boot-up mongodb using : 
+```docker-compose up -d mongodb```\
+You need to have mongodb running and run this command :
+```docker-compose run mydrive create-indexes-database```
+(It will create the require indexes)
+
+Then you can boot-up mydrive with :
+```docker-compose up -d```
+
+### On your system
 Required:
 - Node.js (13.9+ Is Recommended)
 - MongoDB

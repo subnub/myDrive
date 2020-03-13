@@ -16,3 +16,4 @@ certificate.key
 package-lock.json
 ._*
 .DS_Store
+.idea
