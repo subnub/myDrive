@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
-const mongoose = require("../../src/db/mongoose");
-const User = require("../../src/models/user");
-const env = require("../../src/enviroment/env");
+const mongoose = require("../../backend/db/mongoose");
+const User = require("../../backend/models/user");
+const env = require("../../backend/enviroment/env");
 
 const createUser2 = async() => {
 

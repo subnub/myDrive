@@ -1,4 +1,4 @@
-const mongoose = require("../src/db/mongooseServerUtils");
+const mongoose = require("../backend/db/mongooseServerUtils");
 const conn = mongoose.connection;
 const ObjectID = require('mongodb').ObjectID
 const imageChecker = require("../src/utils/imageChecker");
@@ -7,7 +7,7 @@ const prompts = require("prompts");
 const getKey = require("../key/getKey");
 const getNewKey = require("../key/getNewKey");
 const crypto = require("crypto");
-const env = require("../src/enviroment/env");
+const env = require("../backend/enviroment/env");
 const cliProgress = require('cli-progress');
 const createTempDirectory = require("./createTempDirectory");
 

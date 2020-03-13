@@ -1,10 +1,10 @@
-const User = require("../../../../src/models/user");
-const mongoose = require("../../../../src/db/mongoose");
+const User = require("../../../../backend/models/user");
+const mongoose = require("../../../../backend/db/mongoose");
 const conn = mongoose.connection;
 const createUser = require("../../../fixtures/createUser");
-const UtilsFolder = require("../../../../src/db/utils/folderUtils");
+const UtilsFolder = require("../../../../backend/db/utils/folderUtils");
 const utilsFolder = new UtilsFolder();
-const Folder = require("../../../../src/models/folder");
+const Folder = require("../../../../backend/models/folder");
 
 let user; 
 let folder;

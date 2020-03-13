@@ -1,9 +1,9 @@
-const User = require("../../../src/models/user");
-const mongoose = require("../../../src/db/mongoose");
+const User = require("../../../backend/models/user");
+const mongoose = require("../../../backend/db/mongoose");
 const conn = mongoose.connection;
 const createUser = require("../../fixtures/createUser");
 
-const UserService = require("../../../src/services/UserService");
+const UserService = require("../../../backend/services/UserService");
 const userService = new UserService();
 
 let user;
