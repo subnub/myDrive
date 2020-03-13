@@ -1,5 +1,5 @@
 const prompt = require('password-prompt')
-const env = require("../src/enviroment/env")
+const env = require("../backend/enviroment/env")
 const crypto = require("crypto");
 
 const getKey = async() => {

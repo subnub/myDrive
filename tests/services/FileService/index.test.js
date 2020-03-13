@@ -1,16 +1,16 @@
-const User = require("../../../src/models/user");
-const mongoose = require("../../../src/db/mongoose");
+const User = require("../../../backend/models/user");
+const mongoose = require("../../../backend/db/mongoose");
 const conn = mongoose.connection;
 const createUser = require("../../fixtures/createUser");
 const path = require("path");
 const createFile = require("../../fixtures/createFile");
 const crypto = require("crypto");
-const createThumbnail = require("../../../src/services/FileService/utils/createThumbnail");
-const env = require("../../../src/enviroment/env");
+const createThumbnail = require("../../../backend/services/FileService/utils/createThumbnail");
+const env = require("../../../backend/enviroment/env");
 const jwt = require("jsonwebtoken");
 const ObjectID = require('mongodb').ObjectID
-const Folder = require("../../../src/models/folder");
-const FileService = require("../../../src/services/FileService");
+const Folder = require("../../../backend/models/folder");
+const FileService = require("../../../backend/services/FileService");
 const fileService = new FileService();
 
 let user; 

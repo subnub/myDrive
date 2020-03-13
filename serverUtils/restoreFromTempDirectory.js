@@ -1,4 +1,4 @@
-const mongoose = require("../src/db/mongooseServerUtils");
+const mongoose = require("../backend/db/mongooseServerUtils");
 const cliProgress = require('cli-progress');
 const conn = mongoose.connection;
 

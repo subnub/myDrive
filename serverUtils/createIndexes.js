@@ -1,4 +1,4 @@
-const mongoose = require("../src/db/mongoose");
+const mongoose = require("../backend/db/mongoose");
 const conn = mongoose.connection;
 
 const waitForDatabase = () => {

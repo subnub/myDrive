@@ -1,10 +1,10 @@
-const User = require("../../../../src/models/user");
-const mongoose = require("../../../../src/db/mongoose");
+const User = require("../../../../backend/models/user");
+const mongoose = require("../../../../backend/db/mongoose");
 const conn = mongoose.connection;
 const createUser = require("../../../fixtures/createUser");
 const path = require("path");
 const createFile = require("../../../fixtures/createFile");
-const UtilsFile = require("../../../../src/db/utils/fileUtils");
+const UtilsFile = require("../../../../backend/db/utils/fileUtils");
 const ObjectID = require('mongodb').ObjectID
 const jwt = require("jsonwebtoken");
 const utilsFile = new UtilsFile();

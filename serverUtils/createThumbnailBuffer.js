@@ -1,8 +1,8 @@
-const mongoose = require("../src/db/mongooseServerUtils")
+const mongoose = require("../backend/db/mongooseServerUtils")
 const conn = mongoose.connection;
 const crypto= require("crypto");
-const env = require("../src/enviroment/env");
-const Thumbnail = require("../src/models/thumbnail");
+const env = require("../backend/enviroment/env");
+const Thumbnail = require("../backend/models/thumbnail");
 const ObjectID = require('mongodb').ObjectID
 const sharp = require("sharp");
 const concat = require("concat-stream")
