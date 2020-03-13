@@ -13,7 +13,7 @@ ENV MONGODB_URL=mongodb://127.0.0.1:27017/personal-drive \
     FULL_URL=http://localhost:3000 \
     ROOT=/ \
     ENABLE_VIDEO_TRANSCODING=true \
-    DEBUG=app
+    DEBUG=*
 RUN npm run build:no-ssl
 ENTRYPOINT [ "npm", "run" ]
 CMD ["start:no-ssl"]
