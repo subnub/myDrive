@@ -1,0 +1,16 @@
+node_modules/
+public/dist/
+config/dev.env
+config/prod.env
+config/test.env
+.env.development
+.env.test
+.env.production
+.well-known/
+.eslintrc.js
+.eslintrc.json
+changeEncrytionPassword/
+certificate.ca-bundle
+certificate.crt
+certificate.key
+package-lock.json
