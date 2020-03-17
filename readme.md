@@ -2,6 +2,9 @@
 
 MyDrive is an Open Source Cloud Server (Similar To Google Drive), built with Node.JS, Express, React, and MongoDB.
 
+Demo: https://mydrive-demo.herokuapp.com/
+- Note: The Upload and Download Features, and other core features, are disabled in the demo. 
+
 ### Wiki
 
 For a more detailed list of myDrive features, including examples with images, visit the wiki here: https://github.com/subnub/myDrive/wiki
