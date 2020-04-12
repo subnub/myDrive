@@ -1,9 +1,9 @@
 const User = require("../../models/user");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const NotFoundError = require("../../../src/utils/NotFoundError");
-const InternalServerError = require("../../../src/utils/InternalServerError");
-const NotAuthorizedError = require("../../../src/utils/NotAuthorizedError");
+const NotFoundError = require("../../utils/NotFoundError");
+const InternalServerError = require("../../utils/InternalServerError");
+const NotAuthorizedError = require("../../utils/NotAuthorizedError");
 
 const UserService = function() {
 

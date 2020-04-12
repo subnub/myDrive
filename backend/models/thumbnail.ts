@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose, {Document} from "mongoose";
 
 const thumbnailSchema = new mongoose.Schema({
     
@@ -20,6 +20,13 @@ const thumbnailSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Thumbnail = mongoose.model("Thumbnail", thumbnailSchema);
+export interface ThumbnailInterface extends Document {
+    _id: string,
+    name: string,
+    owner: string,
+    data: any
+}
 
-module.exports = Thumbnail;
+const Thumbnail = mongoose.model<ThumbnailInterface>("Thumbnail", thumbnailSchema);
+
+export default Thumbnail;

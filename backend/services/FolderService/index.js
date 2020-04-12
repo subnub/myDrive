@@ -1,13 +1,13 @@
 const Folder = require("../../models/folder");
-const InternalServerError = require("../../../src/utils/InternalServerError");
-const NotFoundError = require("../../../src/utils/NotFoundError");
+const InternalServerError = require("../../utils/InternalServerError");
+const NotFoundError = require("../../utils/NotFoundError");
 const UtilsFile = require("../../db/utils/fileUtils");
 const ObjectID = require('mongodb').ObjectID
 const UtilsFolder = require("../../db/utils/folderUtils");
 const mongoose = require("../../db/mongoose")
 const conn = mongoose.connection;
 const Thumbnail = require("../../models/thumbnail");
-const sortBySwitch = require("../../../src/utils/sortBySwitchFolder")
+const sortBySwitch = require("../../utils/sortBySwitchFolder");
 
 const utilsFile = new UtilsFile();
 const utilsFolder = new UtilsFolder();

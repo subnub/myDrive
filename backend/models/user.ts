@@ -1,11 +1,11 @@
-const mongoose = require("mongoose");
+import mongoose, {Document} from "mongoose";
 const validator = require("validator");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const env = require("../enviroment/env");
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
 
     name: 
         {
@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema({
         trim: true,
         unique: true, 
         lowercase: true,
-        validate(value) {
+        validate(value: any): any {
             if (!validator.isEmail(value)) {
                 throw new Error("Email is invalid");
             }
@@ -28,7 +28,7 @@ const userSchema = mongoose.Schema({
         type: String, 
         trim: true, 
         required: true, 
-        validate(value) {
+        validate(value: any): any {
             if (value.length < 6) {
                 throw new Error("Password Length Not Sufficent");
             }
@@ -57,12 +57,30 @@ const userSchema = mongoose.Schema({
     timestamps: true
 })
 
+export interface UserInterface extends Document {
+    _id: string,
+    name: string,
+    email: string,
+    password: string,
+    tokens: any[],
+    tempTokens: any[],
+    privateKey?: string,
+    publicKey?: string,
+    token?:string,
+
+    getEncryptionKey: () => Buffer;
+    generateTempAuthToken: () => any;
+    generateTempAuthTokenVideo: (cookie: string) => any;
+    encryptToken: (tempToken: any, key: any, publicKey: any) => any;
+}
+
 // userSchema.virtual("files", {
 //     ref: "fs.files",
 //     localField: "_id"
 // })
 
-userSchema.pre("save", async function(next) {
+
+userSchema.pre("save", async function(this: any, next: any) {
     
     const user = this; 
 
@@ -73,7 +91,7 @@ userSchema.pre("save", async function(next) {
     next();
 })
 
-userSchema.statics.findByCreds = async(email, password) => {
+userSchema.statics.findByCreds = async(email: string, password: string) => {
 
     const user = await User.findOne({email});
 
@@ -123,7 +141,7 @@ userSchema.methods.generateAuthToken = async function() {
     return token;
 }
 
-userSchema.methods.encryptToken = function(token, key, iv) {
+userSchema.methods.encryptToken = function(token: string, key: string, iv: any) {
 
     iv = Buffer.from(iv, "hex")
 
@@ -135,7 +153,7 @@ userSchema.methods.encryptToken = function(token, key, iv) {
     return encryptedText;
 }
 
-userSchema.methods.decryptToken = function(encryptedToken, key, iv) {
+userSchema.methods.decryptToken = function(encryptedToken: any, key: string, iv: any) {
 
     encryptedToken = Buffer.from(encryptedToken, "hex");
     iv = Buffer.from(iv, "hex")
@@ -197,7 +215,7 @@ userSchema.methods.getEncryptionKey = function() {
     return decrypted;
 }
 
-userSchema.methods.changeEncryptionKey = async function(randomKey) {
+userSchema.methods.changeEncryptionKey = async function(randomKey: string) {
 
     const user = this;
     const userPassword = user.password;
@@ -251,7 +269,7 @@ userSchema.methods.generateTempAuthToken = async function() {
     return token;
 }
 
-userSchema.methods.generateTempAuthTokenVideo = async function(cookie) {
+userSchema.methods.generateTempAuthTokenVideo = async function(cookie: string) {
 
     const iv = crypto.randomBytes(16);
 
@@ -270,6 +288,6 @@ userSchema.methods.generateTempAuthTokenVideo = async function(cookie) {
 }
 
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model<UserInterface>("User", userSchema);
 
 module.exports = User;

@@ -1,15 +1,32 @@
-const FileService = require("../services/FileService")
+import { Request, Response } from "express";
+
+//const FileService = require("../services/FileService")
+import FileService from "../services/FileService/indexnew";
 
 const fileService = new FileService()
 
+
+import MongoService from "../services/ChunkService/MongoService";
+const mongoService = new MongoService();
+
+import {UserInterface} from "../models/user";
+
+interface RequestType extends Request {
+    user?: UserInterface,
+    auth?: any,
+    busboy?: any,
+}
+
 class FileController {
+
+    // fileService: ;
 
     constructor() {
 
     }
 
+    getThumbnail = async(req: RequestType, res: Response) => {
 
-    async getThumbnail(req, res) {
 
         if (!req.user) {
 
@@ -17,6 +34,7 @@ class FileController {
         }
     
         try {
+            
     
             const user = req.user;
             const id = req.params.id;
@@ -35,73 +53,73 @@ class FileController {
 
     }
 
-    async getFullThumbnail(req, res) {
+    // async getFullThumbnail(req: RequestType, res: Response) {
 
-        if (!req.user) {
-            return;
-        }
+    //     if (!req.user) {
+    //         return;
+    //     }
 
-        try {
+    //     try {
 
-            const user = req.user;
-            const fileID = req.params.id;
+    //         const user = req.user;
+    //         const fileID = req.params.id;
 
-            await fileService.getFullThumbnail(user, fileID, res);
+    //         await fileService.getFullThumbnail(user, fileID, res);
 
-        } catch (e) {
-            const code = e.code || 500;
-            console.log(e.message, e.exception)
-            return res.status(code).send();
-        }
-    }
+    //     } catch (e) {
+    //         const code = e.code || 500;
+    //         console.log(e.message, e.exception)
+    //         return res.status(code).send();
+    //     }
+    // }
 
-    async uploadFile(req, res) {
+    // async uploadFile(req: RequestType, res: Response) {
 
-        if (!req.user) {
+    //     if (!req.user) {
         
-            return 
-        }
+    //         return 
+    //     }
     
-        try {
+    //     try {
 
-            const user = req.user;
-            const busboy = req.busboy;
+    //         const user = req.user;
+    //         const busboy = req.busboy;
             
-            req.pipe(busboy);
+    //         req.pipe(busboy);
     
-            const file = await fileService.upload(user, busboy, req);
+    //         const file = await fileService.upload(user, busboy, req);
          
-            res.send(file);
+    //         res.send(file);
             
-            console.log("file uploaded");
+    //         console.log("file uploaded");
     
-        } catch (e) {
-            const code = e.code || 500;
-            console.log(e.message, e.exception)
-            return res.status(code).send();
-        }
-    }
+    //     } catch (e) {
+    //         const code = e.code || 500;
+    //         console.log(e.message, e.exception)
+    //         return res.status(code).send();
+    //     }
+    // }
 
-    async getPublicDownload(req, res) {
+    // async getPublicDownload(req: RequestType, res: Response) {
 
-        try {
+    //     try {
 
-            const ID = req.params.id;
-            const tempToken = req.params.tempToken;
+    //         const ID = req.params.id;
+    //         const tempToken = req.params.tempToken;
     
-            await fileService.publicDownload(ID, tempToken, res);
+    //         await fileService.publicDownload(ID, tempToken, res);
     
-        } catch (e) {
+    //     } catch (e) {
     
-            const code = e.code || 500;
-            const message = e.message || e;
+    //         const code = e.code || 500;
+    //         const message = e.message || e;
 
-            console.log(message, e);
-            res.status(code).send();
-        } 
-    }
+    //         console.log(message, e);
+    //         res.status(code).send();
+    //     } 
+    // }
 
-    async removeLink(req, res) {
+    async removeLink(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -126,7 +144,7 @@ class FileController {
 
     }
 
-    async makePublic(req, res) {
+    async makePublic(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -150,7 +168,7 @@ class FileController {
         }
     }
 
-    async getPublicInfo(req, res) {
+    async getPublicInfo(req: RequestType, res: Response) {
 
         try {
 
@@ -170,7 +188,7 @@ class FileController {
         }
     }
 
-    async makeOneTimePublic(req, res) {
+    async makeOneTimePublic(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -195,7 +213,7 @@ class FileController {
 
     }
 
-    async getFileInfo(req, res) {
+    async getFileInfo(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -219,7 +237,7 @@ class FileController {
         }
     }
 
-    async getQuickList(req, res) { 
+    async getQuickList(req: RequestType, res: Response) { 
 
         if (!req.user) {
             return;
@@ -242,7 +260,7 @@ class FileController {
         }
     }
 
-    async getList(req, res) {
+    async getList(req: RequestType, res: Response) {
 
         if (!req.user) {
             return
@@ -266,7 +284,7 @@ class FileController {
         }
     }
 
-    async getDownloadToken(req, res) {
+    async getDownloadToken(req: RequestType, res: Response) {
 
         if (!req.user) {
             return 
@@ -289,7 +307,7 @@ class FileController {
         }
     }
 
-    async getDownloadTokenVideo(req, res) {
+    async getDownloadTokenVideo(req: RequestType, res: Response) {
 
         if (!req.user) {
             return 
@@ -298,7 +316,7 @@ class FileController {
         try {
     
             const user = req.user;
-            const cookie = req.headers.uuid
+            const cookie = req.headers.uuid as string;
     
             const tempToken = await fileService.getDownloadTokenVideo(user, cookie);
     
@@ -313,7 +331,7 @@ class FileController {
         }
     }
 
-    async removeTempToken(req, res) {
+    async removeTempToken(req: RequestType, res: Response) {
 
         if (!req.user) {
             return 
@@ -337,111 +355,111 @@ class FileController {
         }
     }
 
-    async transcodeVideo(req, res) {
+    // async transcodeVideo(req: RequestType, res: Response) {
 
-        if (!req.user) {
+    //     if (!req.user) {
 
-            return;
-        }
+    //         return;
+    //     }
     
-        try {
+    //     try {
     
-            console.log("transcode request", req.body.file._id)
+    //         console.log("transcode request", req.body.file._id)
 
-            const user = req.user;
-            const body = req.body;
+    //         const user = req.user;
+    //         const body = req.body;
     
-            await fileService.transcodeVideo(user, body);
+    //         await fileService.transcodeVideo(user, body);
 
-            res.send("Finished");
+    //         res.send("Finished");
     
-        } catch (e) {
+    //     } catch (e) {
             
-            const code = e.code || 500;
-            console.log(e.message, e.exception)
-            return res.status(code).send();
-        }
-    }
+    //         const code = e.code || 500;
+    //         console.log(e.message, e.exception)
+    //         return res.status(code).send();
+    //     }
+    // }
 
-    async removeTranscodeVideo(req, res) {
+    // async removeTranscodeVideo(req: RequestType, res: Response) {
 
-        if (!req.user) {
+    //     if (!req.user) {
 
-            return;
-        }
+    //         return;
+    //     }
     
-        try {
+    //     try {
     
-            const fileID = req.body.id;
-            const userID = req.user._id;
+    //         const fileID = req.body.id;
+    //         const userID = req.user._id;
                 
-            await fileService.removeTranscodeVideo(userID, fileID);
+    //         await fileService.removeTranscodeVideo(userID, fileID);
 
-            res.send();
+    //         res.send();
     
-        } catch (e) {
+    //     } catch (e) {
     
-            const code = e.code || 500;
+    //         const code = e.code || 500;
 
-            console.log(e);
-            res.status(code).send()
-        }
-    }
+    //         console.log(e);
+    //         res.status(code).send()
+    //     }
+    // }
 
-    async streamTranscodedVideo(req, res) {
+    // async streamTranscodedVideo(req: RequestType, res: Response) {
         
-        if (!req.auth || !req.user) {
-            return;
-        }
+    //     if (!req.auth || !req.user) {
+    //         return;
+    //     }
 
-        try {
+    //     try {
 
-            console.log("stream request transcoded", req.params.id)
+    //         console.log("stream request transcoded", req.params.id)
 
-            const fileID = req.params.id;
-            const userID = req.user._id;
-            const headers = req.headers;
+    //         const fileID = req.params.id;
+    //         const userID = req.user._id;
+    //         const headers = req.headers;
 
-            await fileService.streamTranscodedVideo(userID, fileID, headers, res);
+    //         await fileService.streamTranscodedVideo(userID, fileID, headers, res);
 
-        } catch (e) {
+    //     } catch (e) {
             
-            const code = e.code || 500;
-            const message = e.message || e;
+    //         const code = e.code || 500;
+    //         const message = e.message || e;
 
-            console.log(message, e);
-            res.status(code).send();
-        }
-    }
+    //         console.log(message, e);
+    //         res.status(code).send();
+    //     }
+    // }
 
-    async streamVideo(req, res) {
+    // async streamVideo(req: RequestType, res: Response) {
 
-        if (!req.auth || !req.user) {
-            return;
-        }
+    //     if (!req.auth || !req.user) {
+    //         return;
+    //     }
     
-        try {
+    //     try {
     
-            const user = req.user;
-            const fileID = req.params.id;
-            const headers = req.headers;
+    //         const user = req.user;
+    //         const fileID = req.params.id;
+    //         const headers = req.headers;
             
-            console.log("stream request", req.params.id)
+    //         console.log("stream request", req.params.id)
     
-            await fileService.streamVideo(user, fileID, headers, res);
+    //         await fileService.streamVideo(user, fileID, headers, res);
     
-        } catch (e) {
+    //     } catch (e) {
 
-            const code = e.code || 500;
-            const message = e.message || e;
+    //         const code = e.code || 500;
+    //         const message = e.message || e;
 
-            console.log(message, e);
-            res.status(code).send();
-        }
+    //         console.log(message, e);
+    //         res.status(code).send();
+    //     }
 
-    }
+    // }
 
-    async downloadFile(req, res) {
+    async downloadFile(req: RequestType, res: Response) {
 
         if (!req.auth || !req.user) {
             return;
@@ -454,7 +472,8 @@ class FileController {
             const user = req.user;
             const fileID = req.params.id;
 
-            await fileService.downloadFile(user, fileID, res);
+            //await fileService.downloadFile(user, fileID, res);
+            await mongoService.downloadFile(user, fileID, res);
     
         } catch (e) {
             
@@ -466,7 +485,7 @@ class FileController {
         } 
     }
 
-    async getSuggestedList(req, res) {
+    async getSuggestedList(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -491,7 +510,7 @@ class FileController {
         }
     }
 
-    async renameFile(req, res) {
+    async renameFile(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -517,7 +536,7 @@ class FileController {
     
     }
 
-    async moveFile(req, res) {
+    async moveFile(req: RequestType, res: Response) {
 
         console.log("move request");
 
@@ -547,7 +566,7 @@ class FileController {
 
     }
 
-    async deleteFile(req, res) {
+    async deleteFile(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -572,4 +591,4 @@ class FileController {
     }
 }
 
-module.exports = FileController;
+export default FileController;

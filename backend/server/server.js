@@ -1,11 +1,11 @@
 const express = require("express");
 const app = express();
 const path = require("path")
-const publicPath = path.join(__dirname, "..", "public");
-const userRouter = require("../backend/express-routers/user")
-const fileRouter = require("../backend/express-routers/file")
-const folderRouter = require("../backend/express-routers/folder");
-const storageRouter = require("../backend/express-routers/storage");
+const publicPath = path.join(__dirname, "..", "..", "public");
+const userRouter = require("../express-routers/user")
+const fileRouter = require("../express-routers/file")
+const folderRouter = require("../express-routers/folder");
+const storageRouter = require("../express-routers/storage");
 const bodyParser  = require('body-parser');
 const https = require("https");
 const fs = require("fs");
@@ -39,7 +39,7 @@ server = http.createServer(app);
 
 
 
-require("../backend/db/mongoose");
+require("../db/mongoose");
 
 
 app.use(helmet())

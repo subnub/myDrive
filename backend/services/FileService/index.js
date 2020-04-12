@@ -1,13 +1,13 @@
-const imageChecker = require("../../../src/utils/imageChecker");
-const crypto= require("crypto");
-const videoChecker = require("../../../src/utils/videoChecker");
+const imageChecker = require("../../utils/imageChecker");
+import crypto from "crypto";
+const videoChecker = require("../../utils/videoChecker");
 const mongoose = require("../../db/mongoose")
 const conn = mongoose.connection;
-const createThumbnail = require("../../services/FileService/utils/createThumbnail");
+const createThumbnail = require("./utils/createThumbnail");
 const Thumbnail = require("../../models/thumbnail");
 const ObjectID = require('mongodb').ObjectID
-const NotAuthorizedError = require("../../../src/utils/NotAuthorizedError");
-const NotFoundError = require("../../../src/utils/NotFoundError");
+const NotAuthorizedError = require("../../utils/NotAuthorizedError");
+const NotFoundError = require("../../utils/NotFoundError");
 const env = require("../../enviroment/env");
 const jwt = require("jsonwebtoken");
 const removeChunks = require("./utils/removeChunks");
@@ -15,8 +15,8 @@ const User = require("../../models/user");
 
 
 const Folder = require("../../models/folder");
-const sortBySwitch = require("../../../src/utils/sortBySwitch")
-const createQuery = require("../../../src/utils/createQuery");
+const sortBySwitch = require("../../utils/sortBySwitch")
+const createQuery = require("../../utils/createQuery");
 const ffmpeg = require("fluent-ffmpeg");
 const temp = require("temp").track();
 const progress = require("progress-stream");
