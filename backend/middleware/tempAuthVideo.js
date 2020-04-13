@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+import User from "../models/user";
 const env = require("../enviroment/env");
 
 const tempAuthVideo = async(req, res, next) => {

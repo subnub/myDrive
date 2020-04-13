@@ -36,30 +36,6 @@ class MongoFileService {
 
     }
 
-    getThumbnail = async(user: UserInterface, id: string) => {
-
-        const password: Buffer = user.getEncryptionKey();
-
-        const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
-    
-        if (thumbnail.owner !== user._id.toString()) {
-
-            throw new NotAuthorizedError('Thumbnail Unauthorized Error');
-        }
-
-        const iv =  thumbnail.data.slice(0, 16);
-        
-        const chunk = thumbnail.data.slice(16);
-        
-        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
-        
-        const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, iv);
-        
-        const decryptedThumbnail = Buffer.concat([decipher.update(chunk), decipher.final()]);    
-
-        return decryptedThumbnail; 
-    }
-
     removePublicOneTimeLink = async(currentFile: FileInterface) => {
 
         const fileID = currentFile._id;

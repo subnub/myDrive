@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const imageChecker = require("../../utils/imageChecker");
-const crypto_1 = __importDefault(require("crypto"));
 const videoChecker = require("../../utils/videoChecker");
 const mongoose = require("../../db/mongoose");
 const conn = mongoose.connection;
@@ -39,19 +38,6 @@ const dbUtilsFile = new index_1.default();
 const dbUtilsFolder = new DbUtilFolder();
 class MongoFileService {
     constructor() {
-        this.getThumbnail = (user, id) => __awaiter(this, void 0, void 0, function* () {
-            const password = user.getEncryptionKey();
-            const thumbnail = yield thumbnail_1.default.findById(id);
-            if (thumbnail.owner !== user._id.toString()) {
-                throw new NotAuthorizedError_1.default('Thumbnail Unauthorized Error');
-            }
-            const iv = thumbnail.data.slice(0, 16);
-            const chunk = thumbnail.data.slice(16);
-            const CIPHER_KEY = crypto_1.default.createHash('sha256').update(password).digest();
-            const decipher = crypto_1.default.createDecipheriv("aes256", CIPHER_KEY, iv);
-            const decryptedThumbnail = Buffer.concat([decipher.update(chunk), decipher.final()]);
-            return decryptedThumbnail;
-        });
         this.removePublicOneTimeLink = (currentFile) => __awaiter(this, void 0, void 0, function* () {
             const fileID = currentFile._id;
             if (currentFile.metadata.linkType === "one") {

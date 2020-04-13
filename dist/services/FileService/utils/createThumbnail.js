@@ -8,15 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("../../../db/mongoose");
 const conn = mongoose.connection;
 const crypto = require("crypto");
 const env = require("../../../enviroment/env");
-const Thumbnail = require("../../../models/thumbnail");
+const thumbnail_1 = __importDefault(require("../../../models/thumbnail"));
 const ObjectID = require('mongodb').ObjectID;
 const sharp = require("sharp");
 const concat = require("concat-stream");
-const createThumbnail = (file, filename, user) => __awaiter(void 0, void 0, void 0, function* () {
+const createThumbnail = (file, filename, user) => {
     return new Promise((resolve) => {
         const password = user.getEncryptionKey();
         let CIPHER_KEY = crypto.createHash('sha256').update(password).digest();
@@ -36,10 +40,9 @@ const createThumbnail = (file, filename, user) => __awaiter(void 0, void 0, void
         try {
             const concatStream = concat((bufferData) => __awaiter(void 0, void 0, void 0, function* () {
                 const thumbnailIV = crypto.randomBytes(16);
-                //CIPHER_KEY = crypto.createHash('sha256').update(process.env.newPassword).digest()  
                 const thumbnailCipher = crypto.createCipheriv("aes256", CIPHER_KEY, thumbnailIV);
-                bufferData = Buffer.concat([thumbnailIV, thumbnailCipher.update(bufferData), thumbnailCipher.final()]); //thumbnailCipher.update(bufferData)
-                const thumbnailModel = new Thumbnail({ name: filename, owner: user._id, data: bufferData });
+                bufferData = Buffer.concat([thumbnailIV, thumbnailCipher.update(bufferData), thumbnailCipher.final()]);
+                const thumbnailModel = new thumbnail_1.default({ name: filename, owner: user._id, data: bufferData });
                 yield thumbnailModel.save();
                 let updatedFile = yield conn.db.collection("fs.files")
                     .findOneAndUpdate({ "_id": file._id }, { "$set": { "metadata.hasThumbnail": true, "metadata.thumbnailID": thumbnailModel._id } });
@@ -61,5 +64,5 @@ const createThumbnail = (file, filename, user) => __awaiter(void 0, void 0, void
             resolve(file);
         }
     });
-});
-module.exports = createThumbnail;
+};
+exports.default = createThumbnail;

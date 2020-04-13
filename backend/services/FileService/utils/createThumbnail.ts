@@ -2,14 +2,16 @@ const mongoose = require("../../../db/mongoose")
 const conn = mongoose.connection;
 const crypto= require("crypto");
 const env = require("../../../enviroment/env");
-const Thumbnail = require("../../../models/thumbnail");
+import Thumbnail from "../../../models/thumbnail"; 
 const ObjectID = require('mongodb').ObjectID
 const sharp = require("sharp");
 const concat = require("concat-stream")
+import {FileInterface} from "../../../models/file";
+import {UserInterface} from "../../../models/user";
 
-const createThumbnail = async(file, filename, user) => {
+const createThumbnail = (file: FileInterface, filename: string, user: UserInterface) => {
 
-    return new Promise((resolve) => {
+    return new Promise<FileInterface>((resolve) => {
 
         const password = user.getEncryptionKey();
 
@@ -21,29 +23,27 @@ const createThumbnail = async(file, filename, user) => {
     
         const readStream = bucket.openDownloadStream(ObjectID(file._id))
     
-        readStream.on("error", (e) => {
+        readStream.on("error", (e: Error) => {
             console.log("File service upload thumbnail error", e);
             resolve(file);
         })
     
         const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, file.metadata.IV);
     
-        decipher.on("error", (e) => {
+        decipher.on("error", (e: Error) => {
             console.log("File service upload thumbnail decipher error", e);
             resolve(file)
          })
     
         try {
     
-            const concatStream = concat(async(bufferData) => {
+            const concatStream = concat(async(bufferData: Buffer) => {
     
-                    const thumbnailIV = crypto.randomBytes(16);
-
-                    //CIPHER_KEY = crypto.createHash('sha256').update(process.env.newPassword).digest()  
+                    const thumbnailIV = crypto.randomBytes(16); 
     
                     const thumbnailCipher = crypto.createCipheriv("aes256", CIPHER_KEY, thumbnailIV);
     
-                    bufferData = Buffer.concat([thumbnailIV, thumbnailCipher.update(bufferData), thumbnailCipher.final()]); //thumbnailCipher.update(bufferData)
+                    bufferData = Buffer.concat([thumbnailIV, thumbnailCipher.update(bufferData), thumbnailCipher.final()]);
     
                     const thumbnailModel = new Thumbnail({name: filename, owner: user._id, data: bufferData});
             
@@ -58,12 +58,12 @@ const createThumbnail = async(file, filename, user) => {
     
                     resolve(updatedFile);
         
-                    }).on("error", (e) => {
+                    }).on("error", (e: Error) => {
                         console.log("File service upload concat stream error", e);
                         resolve(file);
                     })
     
-                    const imageResize = sharp().resize(300).on("error", (e) => {
+                    const imageResize = sharp().resize(300).on("error", (e: Error) => {
                 
                         console.log("resize error", e);
                         resolve(file);
@@ -81,4 +81,4 @@ const createThumbnail = async(file, filename, user) => {
     })
 }
 
-module.exports = createThumbnail;
+export default createThumbnail;

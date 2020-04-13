@@ -27,7 +27,7 @@ class FileController {
             try {
                 const user = req.user;
                 const id = req.params.id;
-                const decryptedThumbnail = yield fileService.getThumbnail(user, id);
+                const decryptedThumbnail = yield mongoService.getThumbnail(user, id);
                 res.send(decryptedThumbnail);
             }
             catch (e) {
@@ -37,49 +37,58 @@ class FileController {
             }
         });
     }
-    // async getFullThumbnail(req: RequestType, res: Response) {
-    //     if (!req.user) {
-    //         return;
-    //     }
-    //     try {
-    //         const user = req.user;
-    //         const fileID = req.params.id;
-    //         await fileService.getFullThumbnail(user, fileID, res);
-    //     } catch (e) {
-    //         const code = e.code || 500;
-    //         console.log(e.message, e.exception)
-    //         return res.status(code).send();
-    //     }
-    // }
-    // async uploadFile(req: RequestType, res: Response) {
-    //     if (!req.user) {
-    //         return 
-    //     }
-    //     try {
-    //         const user = req.user;
-    //         const busboy = req.busboy;
-    //         req.pipe(busboy);
-    //         const file = await fileService.upload(user, busboy, req);
-    //         res.send(file);
-    //         console.log("file uploaded");
-    //     } catch (e) {
-    //         const code = e.code || 500;
-    //         console.log(e.message, e.exception)
-    //         return res.status(code).send();
-    //     }
-    // }
-    // async getPublicDownload(req: RequestType, res: Response) {
-    //     try {
-    //         const ID = req.params.id;
-    //         const tempToken = req.params.tempToken;
-    //         await fileService.publicDownload(ID, tempToken, res);
-    //     } catch (e) {
-    //         const code = e.code || 500;
-    //         const message = e.message || e;
-    //         console.log(message, e);
-    //         res.status(code).send();
-    //     } 
-    // }
+    getFullThumbnail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.user) {
+                return;
+            }
+            try {
+                const user = req.user;
+                const fileID = req.params.id;
+                yield mongoService.getFullThumbnail(user, fileID, res);
+            }
+            catch (e) {
+                const code = e.code || 500;
+                console.log(e.message, e.exception);
+                return res.status(code).send();
+            }
+        });
+    }
+    uploadFile(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.user) {
+                return;
+            }
+            try {
+                const user = req.user;
+                const busboy = req.busboy;
+                req.pipe(busboy);
+                const file = yield mongoService.uploadFile(user, busboy, req);
+                res.send(file);
+                console.log("file uploaded");
+            }
+            catch (e) {
+                const code = e.code || 500;
+                console.log(e.message, e.exception);
+                return res.status(code).send();
+            }
+        });
+    }
+    getPublicDownload(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const ID = req.params.id;
+                const tempToken = req.params.tempToken;
+                yield mongoService.getPublicDownload(ID, tempToken, res);
+            }
+            catch (e) {
+                const code = e.code || 500;
+                const message = e.message || e;
+                console.log(message, e);
+                res.status(code).send();
+            }
+        });
+    }
     removeLink(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!req.user) {

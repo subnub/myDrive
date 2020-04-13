@@ -8,7 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const User = require("../../models/user");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const user_1 = __importDefault(require("../../models/user"));
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const NotFoundError = require("../../utils/NotFoundError");
@@ -18,7 +22,7 @@ const UserService = function () {
     this.login = (userData) => __awaiter(this, void 0, void 0, function* () {
         const email = userData.email;
         const password = userData.password;
-        const user = yield User.findByCreds(email, password);
+        const user = yield user_1.default.findByCreds(email, password);
         const token = yield user.generateAuthToken();
         if (!user || !token)
             throw new NotFoundError("Login User Not Found Error");
@@ -37,7 +41,7 @@ const UserService = function () {
     });
     this.create = (userData) => __awaiter(this, void 0, void 0, function* () {
         console.log("Create");
-        const user = new User(userData);
+        const user = new user_1.default(userData);
         yield user.save();
         yield user.generateEncryptionKeys();
         const token = yield user.generateAuthToken();

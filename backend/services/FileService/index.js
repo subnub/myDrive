@@ -3,7 +3,7 @@ import crypto from "crypto";
 const videoChecker = require("../../utils/videoChecker");
 const mongoose = require("../../db/mongoose")
 const conn = mongoose.connection;
-const createThumbnail = require("./utils/createThumbnail");
+const createThumbnail = require("./utils/createThumbnail.ss");
 const Thumbnail = require("../../models/thumbnail");
 const ObjectID = require('mongodb').ObjectID
 const NotAuthorizedError = require("../../utils/NotAuthorizedError");

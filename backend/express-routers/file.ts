@@ -10,15 +10,15 @@ import FileController from "../controllers/file";
 
 const fileController = new FileController()
 
-//router.post("/file-service/upload", auth, fileController.uploadFile);
+router.post("/file-service/upload", auth, fileController.uploadFile);
 
 //router.post("/file-service/transcode-video", auth, fileController.transcodeVideo);
 
 router.get("/file-service/thumbnail/:id", auth, fileController.getThumbnail);
 
-//router.get("/file-service/full-thumbnail/:id", auth, fileController.getFullThumbnail);
+router.get("/file-service/full-thumbnail/:id", auth, fileController.getFullThumbnail);
 
-//router.get("/file-service/public/download/:id/:tempToken", fileController.getPublicDownload);
+router.get("/file-service/public/download/:id/:tempToken", fileController.getPublicDownload);
 
 router.get("/file-service/public/info/:id/:tempToken", fileController.getPublicInfo);
 

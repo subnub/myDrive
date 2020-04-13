@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+import User from "../models/user";
 const env = require("../enviroment/env");
 
 const auth = async(req, res, next) => {
@@ -11,7 +11,7 @@ const auth = async(req, res, next) => {
         const decoded = await jwt.verify(token, env.password);
 
         const iv = decoded.iv;
-
+        
         const user = await User.findOne({_id: decoded._id});
         const encrpytionKey = user.getEncryptionKey();
     

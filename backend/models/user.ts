@@ -290,4 +290,4 @@ userSchema.methods.generateTempAuthTokenVideo = async function(cookie: string) {
 
 const User = mongoose.model<UserInterface>("User", userSchema);
 
-module.exports = User;
+export default User;

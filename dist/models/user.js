@@ -221,4 +221,4 @@ userSchema.methods.generateTempAuthTokenVideo = function (cookie) {
     });
 };
 const User = mongoose_1.default.model("User", userSchema);
-module.exports = User;
+exports.default = User;

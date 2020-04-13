@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const user_1 = __importDefault(require("../models/user"));
 const env = require("../enviroment/env");
 const tempAuthVideo = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -19,7 +23,7 @@ const tempAuthVideo = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         if (req.params.uuid !== decoded.cookie) {
             throw new Error("Cookie mismatch");
         }
-        const user = yield User.findOne({ _id: decoded._id });
+        const user = yield user_1.default.findOne({ _id: decoded._id });
         const encrpytionKey = user.getEncryptionKey();
         const encryptedToken = user.encryptToken(token, encrpytionKey, iv);
         let tokenFound = false;

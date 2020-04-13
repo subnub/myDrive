@@ -39,7 +39,7 @@ class FileController {
             const user = req.user;
             const id = req.params.id;
     
-            const decryptedThumbnail = await fileService.getThumbnail(user, id);
+            const decryptedThumbnail = await mongoService.getThumbnail(user, id);
                 
             res.send(decryptedThumbnail);
     
@@ -53,71 +53,71 @@ class FileController {
 
     }
 
-    // async getFullThumbnail(req: RequestType, res: Response) {
+    async getFullThumbnail(req: RequestType, res: Response) {
 
-    //     if (!req.user) {
-    //         return;
-    //     }
+        if (!req.user) {
+            return;
+        }
 
-    //     try {
+        try {
 
-    //         const user = req.user;
-    //         const fileID = req.params.id;
+            const user = req.user;
+            const fileID = req.params.id;
 
-    //         await fileService.getFullThumbnail(user, fileID, res);
+            await mongoService.getFullThumbnail(user, fileID, res);
 
-    //     } catch (e) {
-    //         const code = e.code || 500;
-    //         console.log(e.message, e.exception)
-    //         return res.status(code).send();
-    //     }
-    // }
+        } catch (e) {
+            const code = e.code || 500;
+            console.log(e.message, e.exception)
+            return res.status(code).send();
+        }
+    }
 
-    // async uploadFile(req: RequestType, res: Response) {
+    async uploadFile(req: RequestType, res: Response) {
 
-    //     if (!req.user) {
+        if (!req.user) {
         
-    //         return 
-    //     }
+            return 
+        }
     
-    //     try {
+        try {
 
-    //         const user = req.user;
-    //         const busboy = req.busboy;
+            const user = req.user;
+            const busboy = req.busboy;
             
-    //         req.pipe(busboy);
+            req.pipe(busboy);
     
-    //         const file = await fileService.upload(user, busboy, req);
+            const file = await mongoService.uploadFile(user, busboy, req);
          
-    //         res.send(file);
+            res.send(file);
             
-    //         console.log("file uploaded");
+            console.log("file uploaded");
     
-    //     } catch (e) {
-    //         const code = e.code || 500;
-    //         console.log(e.message, e.exception)
-    //         return res.status(code).send();
-    //     }
-    // }
+        } catch (e) {
+            const code = e.code || 500;
+            console.log(e.message, e.exception)
+            return res.status(code).send();
+        }
+    }
 
-    // async getPublicDownload(req: RequestType, res: Response) {
+    async getPublicDownload(req: RequestType, res: Response) {
 
-    //     try {
+        try {
 
-    //         const ID = req.params.id;
-    //         const tempToken = req.params.tempToken;
+            const ID = req.params.id;
+            const tempToken = req.params.tempToken;
     
-    //         await fileService.publicDownload(ID, tempToken, res);
+            await mongoService.getPublicDownload(ID, tempToken, res);
     
-    //     } catch (e) {
+        } catch (e) {
     
-    //         const code = e.code || 500;
-    //         const message = e.message || e;
+            const code = e.code || 500;
+            const message = e.message || e;
 
-    //         console.log(message, e);
-    //         res.status(code).send();
-    //     } 
-    // }
+            console.log(message, e);
+            res.status(code).send();
+        } 
+    }
 
     async removeLink(req: RequestType, res: Response) {
 
