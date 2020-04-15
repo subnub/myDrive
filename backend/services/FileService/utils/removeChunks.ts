@@ -1,11 +1,13 @@
+import { GridFSBucketWriteStream } from "mongodb";
+
 const DbUtilsFile = require("../../../db/utils/fileUtils");
 const dbUtilsFile = new DbUtilsFile();
 
-const removeChunks = async(bucketStream) => {
+const removeChunks = async(bucketStream: GridFSBucketWriteStream) => {
+
+    const uploadID = bucketStream.id as string;
 
     try {
-
-        const uploadID = bucketStream.id;
         
         if (!uploadID || uploadID.length === 0) {
 
@@ -23,4 +25,4 @@ const removeChunks = async(bucketStream) => {
     }
 }
 
-module.exports = removeChunks;
+export default removeChunks;

@@ -9,20 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const DbUtilsFile = require("../../../db/utils/fileUtils");
-const dbUtilsFile = new DbUtilsFile();
-const removeChunks = (bucketStream) => __awaiter(void 0, void 0, void 0, function* () {
-    const uploadID = bucketStream.id;
-    try {
-        if (!uploadID || uploadID.length === 0) {
-            console.log("Invalid uploadID for remove chunks");
-            return;
-        }
-        yield dbUtilsFile.removeChunksByID(uploadID);
-        console.log("Upload Request Cancelled, Chunks Removed");
-    }
-    catch (e) {
-        console.log("Could not remove chunks for canceled upload", uploadID, e);
-    }
-});
-exports.default = removeChunks;
+const getBusboyData = (busboy) => {
+    return new Promise((resolve, reject) => {
+        const formData = new Map();
+        busboy.on("field", (field, val) => {
+            formData.set(field, val);
+        });
+        busboy.on("file", (_, file, filename) => __awaiter(void 0, void 0, void 0, function* () {
+            resolve({
+                file,
+                filename,
+                formData
+            });
+        }));
+    });
+};
+exports.default = getBusboyData;

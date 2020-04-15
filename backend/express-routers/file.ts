@@ -34,7 +34,7 @@ router.get("/file-service/download/get-token-video", auth, fileController.getDow
 
 //router.get("/file-service/stream-video-transcoded/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamTranscodedVideo);
 
-//router.get("/file-service/stream-video/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamVideo);
+router.get("/file-service/stream-video/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamVideo);
 
 router.get("/file-service/download/:id/:tempToken", tempAuth, fileController.downloadFile);
 

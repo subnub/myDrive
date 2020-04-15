@@ -1,5 +1,6 @@
 "use strict";
-const videoExtList = [
+Object.defineProperty(exports, "__esModule", { value: true });
+const imageExtList = [
     "jpeg",
     "jpg",
     "png",
@@ -8,15 +9,15 @@ const videoExtList = [
     "tiff",
     "bmp"
 ];
-const videoChecker = (filename) => {
+const imageChecker = (filename) => {
     if (filename.length < 1 || !filename.includes(".")) {
         return false;
     }
     const extSplit = filename.split(".");
-    if (extSplit < 1) {
+    if (extSplit.length <= 1) {
         return false;
     }
     const ext = extSplit[extSplit.length - 1];
-    return videoExtList.includes(ext.toLowerCase());
+    return imageExtList.includes(ext.toLowerCase());
 };
-module.exports = videoChecker;
+exports.default = imageChecker;

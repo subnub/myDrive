@@ -68,7 +68,7 @@ export interface UserInterface extends Document {
     publicKey?: string,
     token?:string,
 
-    getEncryptionKey: () => Buffer;
+    getEncryptionKey: () => Buffer | undefined;
     generateTempAuthToken: () => any;
     generateTempAuthTokenVideo: (cookie: string) => any;
     encryptToken: (tempToken: any, key: any, publicKey: any) => any;
@@ -194,25 +194,32 @@ userSchema.methods.generateEncryptionKeys = async function() {
 
 userSchema.methods.getEncryptionKey = function() {
 
-    const user = this;
-    const userPassword = user.password;
-    const masterEncryptedText = user.privateKey;
-    const masterPassword = env.key;
-    const iv = Buffer.from(user.publicKey, "hex");
+    try {
+        const user = this;
+        const userPassword = user.password;
+        const masterEncryptedText = user.privateKey;
+        const masterPassword = env.key;
+        const iv = Buffer.from(user.publicKey, "hex");
 
-    const USER_CIPHER_KEY = crypto.createHash('sha256').update(userPassword).digest();
-    const MASTER_CIPHER_KEY = crypto.createHash('sha256').update(masterPassword).digest();
+        const USER_CIPHER_KEY = crypto.createHash('sha256').update(userPassword).digest();
+        const MASTER_CIPHER_KEY = crypto.createHash('sha256').update(masterPassword).digest();
 
-    const unhexMasterText = Buffer.from(masterEncryptedText, "hex");
-    const masterDecipher = crypto.createDecipheriv('aes-256-cbc', MASTER_CIPHER_KEY, iv)
-    let masterDecrypted = masterDecipher.update(unhexMasterText);
-    masterDecrypted = Buffer.concat([masterDecrypted, masterDecipher.final()])
+        const unhexMasterText = Buffer.from(masterEncryptedText, "hex");
+        const masterDecipher = crypto.createDecipheriv('aes-256-cbc', MASTER_CIPHER_KEY, iv)
+        let masterDecrypted = masterDecipher.update(unhexMasterText);
+        masterDecrypted = Buffer.concat([masterDecrypted, masterDecipher.final()])
 
-    let decipher = crypto.createDecipheriv('aes-256-cbc', USER_CIPHER_KEY, iv);
-    let decrypted = decipher.update(masterDecrypted);
-    decrypted = Buffer.concat([decrypted, decipher.final()]);
+        let decipher = crypto.createDecipheriv('aes-256-cbc', USER_CIPHER_KEY, iv);
+        let decrypted = decipher.update(masterDecrypted);
+        decrypted = Buffer.concat([decrypted, decipher.final()]);
 
-    return decrypted;
+        return decrypted;
+
+    } catch (e) {
+
+        console.log("Get Encryption Key Error");
+        return undefined;
+    }
 }
 
 userSchema.methods.changeEncryptionKey = async function(randomKey: string) {

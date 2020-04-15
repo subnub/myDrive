@@ -432,32 +432,32 @@ class FileController {
     //     }
     // }
 
-    // async streamVideo(req: RequestType, res: Response) {
+    async streamVideo(req: RequestType, res: Response) {
 
-    //     if (!req.auth || !req.user) {
-    //         return;
-    //     }
+        if (!req.auth || !req.user) {
+            return;
+        }
     
-    //     try {
+        try {
     
-    //         const user = req.user;
-    //         const fileID = req.params.id;
-    //         const headers = req.headers;
+            const user = req.user;
+            const fileID = req.params.id;
+            const headers = req.headers;
             
-    //         console.log("stream request", req.params.id)
+            console.log("stream request", req.params.id)
     
-    //         await fileService.streamVideo(user, fileID, headers, res);
+            await mongoService.streamVideo(user, fileID, headers, res);
     
-    //     } catch (e) {
+        } catch (e) {
 
-    //         const code = e.code || 500;
-    //         const message = e.message || e;
+            const code = e.code || 500;
+            const message = e.message || e;
 
-    //         console.log(message, e);
-    //         res.status(code).send();
-    //     }
+            console.log(message, e);
+            res.status(code).send();
+        }
 
-    // }
+    }
 
     async downloadFile(req: RequestType, res: Response) {
 

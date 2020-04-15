@@ -1,20 +1,26 @@
 import mongoose from "../../db/mongoose";
-import {Response, Request} from "express";
+import { Response, Request } from "express";
 const conn = mongoose.connection;
-const env = require("../../enviroment/env");
 const DbUtilFolder = require("../../db/utils/folderUtils");
 import DbUtilFile from "../../db/utils/fileUtils/index";
 import crypto from "crypto";
-const videoChecker = require("../../utils/videoChecker");
-const imageChecker = require("../../utils/imageChecker");
-const ObjectID = require('mongodb').ObjectID
+import videoChecker from "../../utils/videoChecker"
+import imageChecker from "../../utils/imageChecker"
+import { ObjectID } from "mongodb";
 import createThumbnail from "../FileService/utils/createThumbnail";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
+import InternalServerError from "../../utils/InternalServerError";
+import NotFoundError from "../../utils/NotFoundError";
+import {GridFSBucketWriteStream} from "mongodb";
+import awaitStream from "./utils/awaitStream";
+import awaitUploadStream from "./utils/awaitUploadStream";
 
 import User, { UserInterface } from "../../models/user";
 import { FileInterface } from "../../models/file";
-const removeChunks = require("../FileService/utils/removeChunks");
+import { Stream } from "stream";
+import removeChunks from "../FileService/utils/removeChunks";
+import getBusboyData from "./utils/getBusboyData";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
@@ -25,171 +31,93 @@ class MongoService {
 
     }
 
-    uploadFile = (user: UserInterface, busboy: any, req: Request) => {
+    uploadFile = async(user: UserInterface, busboy: any, req: Request) => {
 
-        return new Promise((resolve, reject) => {
+        const password = user.getEncryptionKey(); 
 
-            const password = user.getEncryptionKey(); 
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
 
-            let bucketStream: any;
+        let bucketStream: GridFSBucketWriteStream;
 
-            const initVect = crypto.randomBytes(16);
+        const initVect = crypto.randomBytes(16);
 
-            const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
-            const cipher = crypto.createCipheriv('aes256', CIPHER_KEY, initVect);
+        const cipher = crypto.createCipheriv('aes256', CIPHER_KEY, initVect);
 
-            cipher.on("error", async(e) => {
-                await removeChunks(bucketStream);
-                reject({
-                    message: "File service upload cipher error",
-                    exception: e,
-                    code: 500
-                })
-            })
+        const {file, filename, formData} = await getBusboyData(busboy);
 
-            const formData = new Map();
-
-            busboy.on("error", async(e: Error) => {
-                await removeChunks(bucketStream);
-                reject({
-                    message: "File service upload busboy error",
-                    exception: e,
-                    code: 500
-                })
-            })
-
-            busboy.on("file", async(_: string, file: any, filename: string) => {
-
-                const parent = formData.get("parent") || "/"
-                const parentList = formData.get("parentList") || "/";
-                const size = formData.get("size") || ""
-                let hasThumbnail = false;
-                let thumbnailID = ""
-                const isVideo = videoChecker(filename)
+        const parent = formData.get("parent") || "/"
+        const parentList = formData.get("parentList") || "/";
+        const size = formData.get("size") || ""
+        let hasThumbnail = false;
+        let thumbnailID = ""
+        const isVideo = videoChecker(filename)
             
-                const metadata = {
-                                    owner: user._id,
-                                    parent,
-                                    parentList,
-                                    hasThumbnail,
-                                    thumbnailID,
-                                    isVideo,
-                                    size,
-                                    IV: initVect
-                                }
+        const metadata = {
+                owner: user._id,
+                parent,
+                parentList,
+                hasThumbnail,
+                thumbnailID,
+                isVideo,
+                size,
+                IV: initVect
+        }
 
 
-                let bucket = new mongoose.mongo.GridFSBucket(conn.db, {
-                                    chunkSizeBytes: 1024 * 255
-                                });
+        let bucket = new mongoose.mongo.GridFSBucket(conn.db);
                 
+        bucketStream = bucket.openUploadStream(filename, {metadata});
 
-                bucketStream = bucket.openUploadStream(filename, {metadata})
+        const finishedFile = await awaitUploadStream(file.pipe(cipher), bucketStream, req) as FileInterface;
 
-                bucketStream.on("error", async(e: Error) => {
-                    await removeChunks(bucketStream);
-                    reject({
-                        message: "Cannot upload file to database",
-                        exception: e,
-                        code: 500
-                    })
-                })
+        const imageCheck = imageChecker(filename);
+ 
+        if (finishedFile.length < 15728640 && imageCheck) {
 
-                req.on("aborted", async() => {
+            const updatedFile = await createThumbnail(finishedFile, filename, user);
 
-                    console.log("Upload Request Cancelling...");
+            return updatedFile;
+           
 
-                    await removeChunks(bucketStream);
-                })
+        } else {
 
-                file.pipe(cipher).pipe(bucketStream);
-
-                bucketStream.on("finish", (file: FileInterface) => {
-                
-                    const imageCheck = imageChecker(filename);
-
-                    if (file.length < 15728640 && imageCheck) {
-
-                        createThumbnail(file, filename, user).then((updatedFile: FileInterface) => {
-                            resolve(updatedFile);
-                        })
-
-                    } else {
-
-                        resolve(file);
-                    }
-
-                })
-
-            }).on("field", (field: any, val: any) => {
-
-                formData.set(field, val)
-
-            })
-
-        })
+            return finishedFile;
+        }
     }
 
-    downloadFile = (user: UserInterface, fileID: string, res: Response) => {
+    downloadFile = async(user: UserInterface, fileID: string, res: Response) => {
 
-        return new Promise((resolve, reject) => {
+        const currentFile = await dbUtilsFile.getFileInfo(fileID, user._id);
 
-            dbUtilsFile.getFileInfo(fileID, user._id).then((currentFile: FileInterface) => {
+        if (!currentFile) throw new NotFoundError("Download File Not Found");
 
-                if (!currentFile) {
+        const password = user.getEncryptionKey();
 
-                    reject({
-                        code: 401, 
-                        message: "Download File Not Found Error",
-                        exception: undefined
-                    })
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
 
-                } else {
+        const bucket = new mongoose.mongo.GridFSBucket(conn.db);
 
-                    const password: Buffer = user.getEncryptionKey();
+        const IV = currentFile.metadata.IV.buffer
+        const readStream = bucket.openDownloadStream(new ObjectID(fileID));
 
-                    const bucket = new mongoose.mongo.GridFSBucket(conn.db);
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
-                    const IV = currentFile.metadata.IV.buffer
-                    const readStream = bucket.openDownloadStream(ObjectID(fileID));
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
 
-                    readStream.on("error", (e: Error) => {
-                        reject({
-                            code: 500, 
-                            message: "File service download decipher error",
-                            exception: e
-                        })
-                    })
+        res.set('Content-Type', 'binary/octet-stream');
+        res.set('Content-Disposition', 'attachment; filename="' + currentFile.filename + '"');
+        res.set('Content-Length', currentFile.metadata.size.toString()); 
 
-                    const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
-
-                    const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
-
-                    decipher.on("error", (e) => {
-                        reject({
-                            code: 500, 
-                            message: "File service download decipher error",
-                            exception: e
-                        })
-                    })
-
-                    res.set('Content-Type', 'binary/octet-stream');
-                    res.set('Content-Disposition', 'attachment; filename="' + currentFile.filename + '"');
-                    res.set('Content-Length', currentFile.metadata.size.toString()); 
-
-                    readStream.pipe(decipher).pipe(res).on("finish", () => {
-                        resolve();
-                    });
-                }
-
-            })
-        })
+        await awaitStream(readStream.pipe(decipher), res);
     }
 
     getThumbnail = async(user: UserInterface, id: string) => {
 
-        const password: Buffer = user.getEncryptionKey();
+        const password = user.getEncryptionKey();
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
 
         const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
     
@@ -211,125 +139,115 @@ class MongoService {
         return decryptedThumbnail; 
     }
 
-    getFullThumbnail = (user: UserInterface, fileID: string, res: Response) => {
+    getFullThumbnail = async(user: UserInterface, fileID: string, res: Response) => {
 
-        return new Promise((resolve, reject) => {
+        const userID = user._id;
 
-            const userID = user._id;
+        const file: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
 
-            dbUtilsFile.getFileInfo(fileID, userID).then((file) => {
+        if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
-                if (!file) {
-                    reject({
-                        code: 401,
-                        message: "File For Full Thumbnail Not Found",
-                        exception: undefined
-                    })
-                }
+        const bucket = new mongoose.mongo.GridFSBucket(conn.db);
+        const password = user.getEncryptionKey();
+        const IV = file.metadata.IV.buffer
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+
+        const readStream = bucket.openDownloadStream(new ObjectID(fileID))
+
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
     
-                const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
-                    chunkSizeBytes: 1024 * 255,
-                })
-                const password = user.getEncryptionKey();
-                const IV = file.metadata.IV.buffer
-    
-                const readStream = bucket.openDownloadStream(ObjectID(fileID))
-                
-                readStream.on("error", (e) => {
-                    reject({
-                        code: 500,
-                        message: "File service Full Thumbnail stream error",
-                        exception: e
-                    })
-                })
-    
-                const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
-            
-                const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
-            
-                decipher.on("error", (e) => {
-                    reject({
-                        code: 500,
-                        message: "File service Full Thumbnail decipher error",
-                        exception: e
-                    })
-                })
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
 
-                res.set('Content-Type', 'binary/octet-stream');
-                res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
-                res.set('Content-Length', file.metadata.size);
-    
-                readStream.pipe(decipher).pipe(res).on("finish", async() => {
-                    console.log("Sent Full Thumbnail");
-                    resolve();
-                });
-            });
-        })
+        res.set('Content-Type', 'binary/octet-stream');
+        res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+        res.set('Content-Length', file.metadata.size.toString());
 
+        console.log("Sending Full Thumbnail...")
+        await awaitStream(readStream.pipe(decipher), res);
+        console.log("Full thumbnail sent");
     }
 
-    getPublicDownload = (fileID: string, tempToken: any, res: Response) => {
+    getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {
 
-        return new Promise((resolve, reject) => {
+        const file: FileInterface = await dbUtilsFile.getPublicFile(fileID);
 
-            dbUtilsFile.getPublicFile(fileID).then(async(file: FileInterface) => {
+        if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
+            throw new NotAuthorizedError("File Not Public");
+        }
 
-                if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
-                    reject({
-                        code: 401,
-                        message: "File not public/Not found",
-                        exception: undefined
-                    })
-                } else {
+        const user = await User.findById(file.metadata.owner) as UserInterface;
 
-                    const user = await User.findById(file.metadata.owner) as UserInterface;
+        const password = user.getEncryptionKey();
 
-                    const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
-                        chunkSizeBytes: 1024 * 255,
-                    })
-        
-                    const password = user.getEncryptionKey();
-                    const IV = file.metadata.IV.buffer
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+
+        const bucket = new mongoose.mongo.GridFSBucket(conn.db);
+
+        const IV = file.metadata.IV.buffer
                    
-                    const readStream = bucket.openDownloadStream(ObjectID(fileID))
+        const readStream = bucket.openDownloadStream(new ObjectID(fileID))
         
-                    readStream.on("error", (e) => {
-                        reject({
-                            code: 500,
-                            message: "File service public download decipher error",
-                            exception: e
-                        })
-                    })
-        
-                    const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
-        
-                    const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
-        
-                    decipher.on("error", (e) => {
-                        reject({
-                            code: 500,
-                            message: "File service public download decipher error",
-                            exception: e
-                        })
-                    })
-    
-                    res.set('Content-Type', 'binary/octet-stream');
-                    res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
-                    res.set('Content-Length', file.metadata.size.toString());
-        
-                    readStream.pipe(decipher).pipe(res).on("finish", async() => {
-                        
-                        if (file.metadata.linkType === "one") {
-                            console.log("removing public link");
-                            await dbUtilsFile.removeOneTimePublicLink(fileID);
-                        }
-                        resolve();
-                    });
-                    
-                }
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
-            })
-        })
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+    
+        res.set('Content-Type', 'binary/octet-stream');
+        res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+        res.set('Content-Length', file.metadata.size.toString());
+
+        await awaitStream(readStream.pipe(decipher), res);
+
+        if (file.metadata.linkType === "one") {
+            console.log("removing public link");
+            await dbUtilsFile.removeOneTimePublicLink(fileID);
+        }
+    }
+
+    streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response) => {
+        
+        const userID = user._id;
+        const currentFile = await dbUtilsFile.getFileInfo(fileID, userID);
+
+        if (!currentFile) throw new NotFoundError("Video File Not Found");
+
+        const password = user.getEncryptionKey();
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+
+        const fileSize = currentFile.metadata.size;
+                    
+        const range = headers.range
+        const parts = range.replace(/bytes=/, "").split("-")
+        let start = parseInt(parts[0], 10)
+        let end = parts[1] 
+            ? parseInt(parts[1], 10)
+            : fileSize-1
+        const chunksize = (end-start)+1
+        const IV = currentFile.metadata.IV.buffer
+                
+        let head = {
+            'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
+            'Accept-Ranges': 'bytes',
+            'Content-Length': chunksize,
+            'Content-Type': 'video/mp4'}
+
+        const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
+            chunkSizeBytes: 1024
+        });
+        
+        const readStream = bucket.openDownloadStream(new ObjectID(fileID), {
+            start: start,
+            end: end
+        });
+
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+
+        res.writeHead(206, head);
+
+        await awaitStream(readStream.pipe(decipher), res);
     }
 
 }

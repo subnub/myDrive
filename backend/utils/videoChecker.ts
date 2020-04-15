@@ -34,7 +34,7 @@ const videoExtList = [
 	"yuv"
 ]
 
-const videoChecker =  (filename) => {
+const videoChecker =  (filename: string) => {
 
     if (filename.length < 1 || !filename.includes(".")) {
 
@@ -43,7 +43,7 @@ const videoChecker =  (filename) => {
 
     const extSplit = filename.split(".");
 
-    if (extSplit < 1) {
+    if (extSplit.length <= 1) {
         
         return false; 
     }
@@ -54,4 +54,4 @@ const videoChecker =  (filename) => {
 
 }
 
-module.exports = videoChecker;
+export default videoChecker;

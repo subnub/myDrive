@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const videoExtList = [
     "3g2",
     "3gp",
@@ -39,10 +40,10 @@ const videoChecker = (filename) => {
         return false;
     }
     const extSplit = filename.split(".");
-    if (extSplit < 1) {
+    if (extSplit.length <= 1) {
         return false;
     }
     const ext = extSplit[extSplit.length - 1];
     return videoExtList.includes(ext.toLowerCase());
 };
-module.exports = videoChecker;
+exports.default = videoChecker;

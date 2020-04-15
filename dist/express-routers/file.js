@@ -22,7 +22,7 @@ router.get("/file-service/list", auth, fileController.getList);
 router.get("/file-service/download/get-token", auth, fileController.getDownloadToken);
 router.get("/file-service/download/get-token-video", auth, fileController.getDownloadTokenVideo);
 //router.get("/file-service/stream-video-transcoded/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamTranscodedVideo);
-//router.get("/file-service/stream-video/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamVideo);
+router.get("/file-service/stream-video/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamVideo);
 router.get("/file-service/download/:id/:tempToken", tempAuth, fileController.downloadFile);
 router.get("/file-service/suggested-list", auth, fileController.getSuggestedList);
 router.patch("/file-service/make-public/:id", auth, fileController.makePublic);
