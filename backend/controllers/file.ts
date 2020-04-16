@@ -9,6 +9,9 @@ const fileService = new FileService()
 import MongoService from "../services/ChunkService/MongoService";
 const mongoService = new MongoService();
 
+import FileSystemService from "../services/ChunkService/FileSystemService";
+const fileSystemService = new FileSystemService();
+
 import {UserInterface} from "../models/user";
 
 interface RequestType extends Request {
@@ -87,7 +90,7 @@ class FileController {
             
             req.pipe(busboy);
     
-            const file = await mongoService.uploadFile(user, busboy, req);
+            const file = await fileSystemService.uploadFile(user, busboy, req);
          
             res.send(file);
             
@@ -473,7 +476,7 @@ class FileController {
             const fileID = req.params.id;
 
             //await fileService.downloadFile(user, fileID, res);
-            await mongoService.downloadFile(user, fileID, res);
+            await fileSystemService.downloadFile(user, fileID, res);
     
         } catch (e) {
             

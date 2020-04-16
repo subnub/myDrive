@@ -22,10 +22,12 @@ import { Stream } from "stream";
 import removeChunks from "../FileService/utils/removeChunks";
 import getBusboyData from "./utils/getBusboyData";
 
+import ChunkInterface from "./utils/ChunkInterface";
+
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
 
-class MongoService {
+class MongoService implements ChunkInterface {
 
     constructor() {
 
@@ -80,7 +82,6 @@ class MongoService {
 
             return updatedFile;
            
-
         } else {
 
             return finishedFile;

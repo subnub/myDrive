@@ -17,6 +17,8 @@ const indexnew_1 = __importDefault(require("../services/FileService/indexnew"));
 const fileService = new indexnew_1.default();
 const MongoService_1 = __importDefault(require("../services/ChunkService/MongoService"));
 const mongoService = new MongoService_1.default();
+const FileSystemService_1 = __importDefault(require("../services/ChunkService/FileSystemService"));
+const fileSystemService = new FileSystemService_1.default();
 class FileController {
     // fileService: ;
     constructor() {
@@ -63,7 +65,7 @@ class FileController {
                 const user = req.user;
                 const busboy = req.busboy;
                 req.pipe(busboy);
-                const file = yield mongoService.uploadFile(user, busboy, req);
+                const file = yield fileSystemService.uploadFile(user, busboy, req);
                 res.send(file);
                 console.log("file uploaded");
             }
@@ -342,7 +344,7 @@ class FileController {
                 const user = req.user;
                 const fileID = req.params.id;
                 //await fileService.downloadFile(user, fileID, res);
-                yield mongoService.downloadFile(user, fileID, res);
+                yield fileSystemService.downloadFile(user, fileID, res);
             }
             catch (e) {
                 const code = e.code || 500;

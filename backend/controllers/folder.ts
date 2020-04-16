@@ -1,5 +1,12 @@
 const FolderService = require("../services/FolderService");
 const folderService = new FolderService();
+import { Request, Response } from "express";
+import {UserInterface} from "../models/user";
+
+interface RequestType extends Request {
+    user?: UserInterface,
+    auth?: any,
+}
 
 class FolderController {
 
@@ -7,7 +14,7 @@ class FolderController {
 
     }
 
-    async uploadFolder(req, res) {
+    async uploadFolder(req: RequestType, res: Response) {
 
         if (!req.user) {
 
@@ -31,7 +38,7 @@ class FolderController {
         }
     }
 
-    async deleteFolder(req, res) {
+    async deleteFolder(req: RequestType, res: Response) {
 
         if (!req.user) {
 
@@ -57,7 +64,7 @@ class FolderController {
         }
     }
 
-    async deleteAll(req, res) {
+    async deleteAll(req: RequestType, res: Response) {
 
         if (!req.user) {
 
@@ -81,7 +88,7 @@ class FolderController {
         }
     }
 
-    async getInfo(req, res) {
+    async getInfo(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -105,7 +112,7 @@ class FolderController {
         }
     }
 
-    async getSubfolderList(req, res) {
+    async getSubfolderList(req: RequestType, res: Response) {
 
         if (!req.user) {
 
@@ -130,7 +137,7 @@ class FolderController {
         }
     }
 
-    async getFolderList(req, res) {
+    async getFolderList(req: RequestType, res: Response) {
 
         if (!req.user) {
 
@@ -155,7 +162,7 @@ class FolderController {
         }
     }
 
-    async moveFolder(req, res) {
+    async moveFolder(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;
@@ -181,7 +188,7 @@ class FolderController {
         }
     }
 
-    async renameFolder(req, res) {
+    async renameFolder(req: RequestType, res: Response) {
 
         if (!req.user) {
             return;

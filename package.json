@@ -42,6 +42,7 @@
     "@types/mongodb": "^3.5.5",
     "@types/mongoose": "^5.7.10",
     "@types/node": "^13.11.1",
+    "@types/uuid": "^7.0.2",
     "axios": "^0.19.2",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^3.0.8",
