@@ -42,7 +42,7 @@ class FileController {
             const user = req.user;
             const id = req.params.id;
     
-            const decryptedThumbnail = await mongoService.getThumbnail(user, id);
+            const decryptedThumbnail = await fileSystemService.getThumbnail(user, id);
                 
             res.send(decryptedThumbnail);
     
@@ -67,7 +67,7 @@ class FileController {
             const user = req.user;
             const fileID = req.params.id;
 
-            await mongoService.getFullThumbnail(user, fileID, res);
+            await fileSystemService.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
             const code = e.code || 500;
@@ -110,7 +110,7 @@ class FileController {
             const ID = req.params.id;
             const tempToken = req.params.tempToken;
     
-            await mongoService.getPublicDownload(ID, tempToken, res);
+            await fileSystemService.getPublicDownload(ID, tempToken, res);
     
         } catch (e) {
     
@@ -449,7 +449,7 @@ class FileController {
             
             console.log("stream request", req.params.id)
     
-            await mongoService.streamVideo(user, fileID, headers, res);
+            await fileSystemService.streamVideo(user, fileID, headers, res);
     
         } catch (e) {
 

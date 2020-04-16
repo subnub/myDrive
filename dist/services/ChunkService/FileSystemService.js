@@ -24,6 +24,11 @@ const file_1 = __importDefault(require("../../models/file"));
 const getFileSize_1 = __importDefault(require("./utils/getFileSize"));
 const index_1 = __importDefault(require("../../db/utils/fileUtils/index"));
 const awaitStream_1 = __importDefault(require("./utils/awaitStream"));
+const createThumbnailFS_1 = __importDefault(require("../FileService/utils/createThumbnailFS"));
+const imageChecker_1 = __importDefault(require("../../utils/imageChecker"));
+const thumbnail_1 = __importDefault(require("../../models/thumbnail"));
+const streamToBuffer_1 = __importDefault(require("../../utils/streamToBuffer"));
+const user_1 = __importDefault(require("../../models/user"));
 const dbUtilsFile = new index_1.default();
 // implements ChunkInterface
 class FileSystemService {
@@ -66,7 +71,14 @@ class FileSystemService {
             });
             yield currentFile.save();
             console.log(currentFile);
-            return currentFile;
+            const imageCheck = imageChecker_1.default(currentFile.filename);
+            if (currentFile.length < 15728640 && imageCheck) {
+                const updatedFile = yield createThumbnailFS_1.default(currentFile, filename, user);
+                return updatedFile;
+            }
+            else {
+                return currentFile;
+            }
         });
         this.downloadFile = (user, fileID, res) => __awaiter(this, void 0, void 0, function* () {
             const currentFile = yield dbUtilsFile.getFileInfo(fileID, user._id);
@@ -84,6 +96,92 @@ class FileSystemService {
             res.set('Content-Disposition', 'attachment; filename="' + currentFile.filename + '"');
             res.set('Content-Length', currentFile.metadata.size.toString());
             yield awaitStream_1.default(readStream.pipe(decipher), res);
+        });
+        this.getThumbnail = (user, id) => __awaiter(this, void 0, void 0, function* () {
+            const password = user.getEncryptionKey();
+            if (!password)
+                throw new NotAuthorizedError_1.default("Invalid Encryption Key");
+            const thumbnail = yield thumbnail_1.default.findById(id);
+            if (thumbnail.owner !== user._id.toString()) {
+                throw new NotAuthorizedError_1.default('Thumbnail Unauthorized Error');
+            }
+            const iv = thumbnail.IV;
+            const CIPHER_KEY = crypto_1.default.createHash('sha256').update(password).digest();
+            const decipher = crypto_1.default.createDecipheriv("aes256", CIPHER_KEY, iv);
+            const readStream = fs_1.default.createReadStream(thumbnail.path);
+            const bufferData = yield streamToBuffer_1.default(readStream.pipe(decipher));
+            return bufferData;
+        });
+        this.getFullThumbnail = (user, fileID, res) => __awaiter(this, void 0, void 0, function* () {
+            const userID = user._id;
+            const file = yield dbUtilsFile.getFileInfo(fileID, userID);
+            if (!file)
+                throw new NotFoundError_1.default("File Thumbnail Not Found");
+            const password = user.getEncryptionKey();
+            const IV = file.metadata.IV.buffer;
+            if (!password)
+                throw new NotAuthorizedError_1.default("Invalid Encryption Key");
+            const readStream = fs_1.default.createReadStream(file.metadata.filePath);
+            const CIPHER_KEY = crypto_1.default.createHash('sha256').update(password).digest();
+            const decipher = crypto_1.default.createDecipheriv('aes256', CIPHER_KEY, IV);
+            res.set('Content-Type', 'binary/octet-stream');
+            res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+            res.set('Content-Length', file.metadata.size.toString());
+            console.log("Sending Full Thumbnail...");
+            yield awaitStream_1.default(readStream.pipe(decipher), res);
+            console.log("Full thumbnail sent");
+        });
+        this.streamVideo = (user, fileID, headers, res) => __awaiter(this, void 0, void 0, function* () {
+            const userID = user._id;
+            const currentFile = yield dbUtilsFile.getFileInfo(fileID, userID);
+            if (!currentFile)
+                throw new NotFoundError_1.default("Video File Not Found");
+            const password = user.getEncryptionKey();
+            if (!password)
+                throw new NotAuthorizedError_1.default("Invalid Encryption Key");
+            const fileSize = currentFile.metadata.size;
+            const range = headers.range;
+            const parts = range.replace(/bytes=/, "").split("-");
+            let start = parseInt(parts[0], 10);
+            let end = parts[1]
+                ? parseInt(parts[1], 10)
+                : fileSize - 1;
+            const chunksize = (end - start) + 1;
+            const IV = currentFile.metadata.IV.buffer;
+            let head = {
+                'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
+                'Accept-Ranges': 'bytes',
+                'Content-Length': chunksize,
+                'Content-Type': 'video/mp4'
+            };
+            const readStream = fs_1.default.createReadStream(currentFile.metadata.filePath, { start: start,
+                end: end });
+            const CIPHER_KEY = crypto_1.default.createHash('sha256').update(password).digest();
+            const decipher = crypto_1.default.createDecipheriv('aes256', CIPHER_KEY, IV);
+            res.writeHead(206, head);
+            yield awaitStream_1.default(readStream.pipe(decipher), res);
+        });
+        this.getPublicDownload = (fileID, tempToken, res) => __awaiter(this, void 0, void 0, function* () {
+            const file = yield dbUtilsFile.getPublicFile(fileID);
+            if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
+                throw new NotAuthorizedError_1.default("File Not Public");
+            }
+            const user = yield user_1.default.findById(file.metadata.owner);
+            const password = user.getEncryptionKey();
+            if (!password)
+                throw new NotAuthorizedError_1.default("Invalid Encryption Key");
+            const IV = file.metadata.IV.buffer;
+            const readStream = fs_1.default.createReadStream(file.metadata.filePath);
+            const CIPHER_KEY = crypto_1.default.createHash('sha256').update(password).digest();
+            const decipher = crypto_1.default.createDecipheriv('aes256', CIPHER_KEY, IV);
+            res.set('Content-Type', 'binary/octet-stream');
+            res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+            res.set('Content-Length', file.metadata.size.toString());
+            yield awaitStream_1.default(readStream.pipe(decipher), res);
+            if (file.metadata.linkType === "one") {
+                console.log("removing public link");
+                yield dbUtilsFile.removeOneTimePublicLink(fileID);
+            }
         });
     }
 }

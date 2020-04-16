@@ -29,7 +29,7 @@ class FileController {
             try {
                 const user = req.user;
                 const id = req.params.id;
-                const decryptedThumbnail = yield mongoService.getThumbnail(user, id);
+                const decryptedThumbnail = yield fileSystemService.getThumbnail(user, id);
                 res.send(decryptedThumbnail);
             }
             catch (e) {
@@ -47,7 +47,7 @@ class FileController {
             try {
                 const user = req.user;
                 const fileID = req.params.id;
-                yield mongoService.getFullThumbnail(user, fileID, res);
+                yield fileSystemService.getFullThumbnail(user, fileID, res);
             }
             catch (e) {
                 const code = e.code || 500;
@@ -81,7 +81,7 @@ class FileController {
             try {
                 const ID = req.params.id;
                 const tempToken = req.params.tempToken;
-                yield mongoService.getPublicDownload(ID, tempToken, res);
+                yield fileSystemService.getPublicDownload(ID, tempToken, res);
             }
             catch (e) {
                 const code = e.code || 500;
@@ -324,7 +324,7 @@ class FileController {
                 const fileID = req.params.id;
                 const headers = req.headers;
                 console.log("stream request", req.params.id);
-                yield mongoService.streamVideo(user, fileID, headers, res);
+                yield fileSystemService.streamVideo(user, fileID, headers, res);
             }
             catch (e) {
                 const code = e.code || 500;

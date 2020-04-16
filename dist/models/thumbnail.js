@@ -15,7 +15,12 @@ const thumbnailSchema = new mongoose_1.default.Schema({
     },
     data: {
         type: Buffer,
-        required: true
+    },
+    path: {
+        type: String
+    },
+    IV: {
+        type: Buffer,
     }
 }, {
     timestamps: true

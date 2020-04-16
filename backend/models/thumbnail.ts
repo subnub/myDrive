@@ -13,7 +13,12 @@ const thumbnailSchema = new mongoose.Schema({
     
     data: {
         type: Buffer,
-        required: true
+    },
+    path: {
+        type: String
+    },
+    IV: {
+        type: Buffer,
     }
     
 }, {
@@ -24,7 +29,9 @@ export interface ThumbnailInterface extends Document {
     _id: string,
     name: string,
     owner: string,
-    data: any
+    data?: any,
+    path?: string,
+    IV?: Buffer,
 }
 
 const Thumbnail = mongoose.model<ThumbnailInterface>("Thumbnail", thumbnailSchema);
