@@ -5,10 +5,8 @@ import FileService from "../services/FileService/indexnew";
 
 const fileService = new FileService()
 
-
-import MongoService from "../services/ChunkService/MongoService";
-const mongoService = new MongoService();
-
+import FileSystemService from "../services/ChunkService/FileSystemService";
+const fileSystemService = new FileSystemService();
 
 import {UserInterface} from "../models/user";
 
@@ -18,7 +16,7 @@ interface RequestType extends Request {
     busboy?: any,
 }
 
-class FileController {
+class FileSystemController {
 
     // fileService: ;
 
@@ -40,7 +38,7 @@ class FileController {
             const user = req.user;
             const id = req.params.id;
     
-            const decryptedThumbnail = await mongoService.getThumbnail(user, id);
+            const decryptedThumbnail = await fileSystemService.getThumbnail(user, id);
                 
             res.send(decryptedThumbnail);
     
@@ -65,7 +63,7 @@ class FileController {
             const user = req.user;
             const fileID = req.params.id;
 
-            await mongoService.getFullThumbnail(user, fileID, res);
+            await fileSystemService.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
             const code = e.code || 500;
@@ -88,7 +86,7 @@ class FileController {
             
             req.pipe(busboy);
     
-            const file = await mongoService.uploadFile(user, busboy, req);
+            const file = await fileSystemService.uploadFile(user, busboy, req);
          
             res.send(file);
             
@@ -108,7 +106,7 @@ class FileController {
             const ID = req.params.id;
             const tempToken = req.params.tempToken;
     
-            await mongoService.getPublicDownload(ID, tempToken, res);
+            await fileSystemService.getPublicDownload(ID, tempToken, res);
     
         } catch (e) {
     
@@ -447,7 +445,7 @@ class FileController {
             
             console.log("stream request", req.params.id)
     
-            await mongoService.streamVideo(user, fileID, headers, res);
+            await fileSystemService.streamVideo(user, fileID, headers, res);
     
         } catch (e) {
 
@@ -474,7 +472,7 @@ class FileController {
             const fileID = req.params.id;
 
             //await fileService.downloadFile(user, fileID, res);
-            await mongoService.downloadFile(user, fileID, res);
+            await fileSystemService.downloadFile(user, fileID, res);
     
         } catch (e) {
             
@@ -592,4 +590,4 @@ class FileController {
     }
 }
 
-export default FileController;
+export default FileSystemController;

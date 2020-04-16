@@ -7,8 +7,18 @@ const tempAuth = require("../middleware/tempAuth")
 const tempAuthVideo = require("../middleware/tempAuthVideo")
 
 import FileController from "../controllers/file";
+import FsFileController from "../controllers/fileSystem";
+import env from "../enviroment/env";
 
-const fileController = new FileController()
+let fileController: FileController | FsFileController;
+
+if (env.dbType === "mongo") {
+    fileController = new FileController();
+} else {
+    fileController = new FsFileController();
+}
+
+//const fileController = new FileController()
 
 router.post("/file-service/upload", auth, fileController.uploadFile);
 

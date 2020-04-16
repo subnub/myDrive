@@ -8,7 +8,7 @@ import getBusboyData from "./utils/getBusboyData";
 import videoChecker from "../../utils/videoChecker";
 import fs from "fs";
 import uuid from "uuid";
-import awaitUploadStream from "./utils/awaitUploadStream";
+import awaitUploadStreamFS from "./utils/awaitUploadStreamFS";
 import File, { FileInterface } from "../../models/file";
 import getFileSize from "./utils/getFileSize";
 import DbUtilFile from "../../db/utils/fileUtils/index";
@@ -67,7 +67,7 @@ class FileSystemService  {
 
         const fileWriteStream = fs.createWriteStream(metadata.filePath);
 
-        await awaitUploadStream(file.pipe(cipher), fileWriteStream, req);
+        await awaitUploadStreamFS(file.pipe(cipher), fileWriteStream, req, metadata.filePath);
 
         const date = new Date();
         const encryptedFileSize = await getFileSize(metadata.filePath);
