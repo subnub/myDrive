@@ -8,14 +8,17 @@ const tempAuthVideo = require("../middleware/tempAuthVideo")
 
 import FileController from "../controllers/file";
 import FsFileController from "../controllers/fileSystem";
+import S3FileController from "../controllers/fileS3";
 import env from "../enviroment/env";
 
-let fileController: FileController | FsFileController;
+let fileController: FileController | FsFileController | S3FileController;
 
 if (env.dbType === "mongo") {
     fileController = new FileController();
-} else {
+} else if (env.dbType === "fs") {
     fileController = new FsFileController();
+} else {
+    fileController = new S3FileController();
 }
 
 //const fileController = new FileController()

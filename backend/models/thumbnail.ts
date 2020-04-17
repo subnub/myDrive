@@ -17,10 +17,11 @@ const thumbnailSchema = new mongoose.Schema({
     path: {
         type: String
     },
+
     IV: {
         type: Buffer,
-    }
-    
+    },
+    s3ID: String
 }, {
     timestamps: true
 })
@@ -32,6 +33,7 @@ export interface ThumbnailInterface extends Document {
     data?: any,
     path?: string,
     IV?: Buffer,
+    s3ID? : string,
 }
 
 const Thumbnail = mongoose.model<ThumbnailInterface>("Thumbnail", thumbnailSchema);

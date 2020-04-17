@@ -15,17 +15,17 @@ import uuid from "uuid";
 import awaitUploadStreamS3 from "./utils/awaitUploadStreamS3";
 import getFileSize from "./utils/getFileSize";
 import awaitStream from "./utils/awaitStream";
-import createThumbnailFS from "../FileService/utils/createThumbnailFS";
+import createThumbnailS3 from "../FileService/utils/createThumbnailS3";
 import imageChecker from "../../utils/imageChecker";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import streamToBuffer from "../../utils/streamToBuffer";
-import { removeChunksFS } from "./utils/awaitUploadStreamFS";
+import removeChunksS3 from "../FileService/utils/removeChunksS3";
 
 import DbUtilFile from "../../db/utils/fileUtils/index";
 const dbUtilsFile = new DbUtilFile();
 
 
-class S3Service {
+class S3Service implements ChunkInterface {
 
     constructor() {
 
@@ -86,20 +86,19 @@ class S3Service {
 
         await currentFile.save();
 
-        console.log("Sending file...")
-
-        return currentFile;
+        const imageCheck = imageChecker(currentFile.filename);
  
-        // if (finishedFile.length < 15728640 && imageCheck) {
+        if (currentFile.length < 15728640 && imageCheck) {
 
-        //     // const updatedFile = await createThumbnail(finishedFile, filename, user);
+            console.log("Creating thumbnail...")
+            const updatedFile = await createThumbnailS3(currentFile, filename, user);
 
-        //     // return updatedFile;
+            return updatedFile;
            
-        // } else {
+        } else {
 
-        //     return finishedFile;
-        // }
+            return currentFile;
+        }
     } 
 
     downloadFile = async(user: UserInterface, fileID: string, res: Response) => { 
@@ -170,6 +169,119 @@ class S3Service {
 
         await awaitStream(s3ReadStream.pipe(decipher), res);
         
+    }
+
+    getThumbnail = async(user: UserInterface, id: string) => { 
+
+         const password = user.getEncryptionKey();
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+
+        const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
+    
+        if (thumbnail.owner !== user._id.toString()) {
+
+            throw new NotAuthorizedError('Thumbnail Unauthorized Error');
+        }
+
+        const iv = thumbnail.IV!;
+        
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+        
+        const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, iv);
+
+        const params: any = {Bucket: env.s3Bucket, Key: thumbnail.s3ID!};
+
+        const readStream = s3.getObject(params).createReadStream();
+
+        const bufferData = await streamToBuffer(readStream.pipe(decipher));
+
+        return bufferData;
+    } 
+
+    getFullThumbnail = async(user: UserInterface, fileID: string, res: Response) => {
+
+        const userID = user._id;
+
+        const file: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
+
+        if (!file) throw new NotFoundError("File Thumbnail Not Found");
+
+        const password = user.getEncryptionKey();
+        const IV = file.metadata.IV.buffer
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+
+        const params: any = {Bucket: env.s3Bucket, Key: file.metadata.s3ID!};
+
+        const readStream = s3.getObject(params).createReadStream();
+
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+    
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+
+        res.set('Content-Type', 'binary/octet-stream');
+        res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+        res.set('Content-Length', file.metadata.size.toString());
+
+        console.log("Sending Full Thumbnail...")
+        await awaitStream(readStream.pipe(decipher), res);
+        console.log("Full thumbnail sent");
+    }
+
+    getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {
+
+        const file: FileInterface = await dbUtilsFile.getPublicFile(fileID);
+
+        if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
+            throw new NotAuthorizedError("File Not Public");
+        }
+
+        const user = await User.findById(file.metadata.owner) as UserInterface;
+
+        const password = user.getEncryptionKey();
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+
+        const IV = file.metadata.IV.buffer
+                   
+        const params: any = {Bucket: env.s3Bucket, Key: file.metadata.s3ID!};
+
+        const readStream = s3.getObject(params).createReadStream();
+        
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+    
+        res.set('Content-Type', 'binary/octet-stream');
+        res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+        res.set('Content-Length', file.metadata.size.toString());
+
+        await awaitStream(readStream.pipe(decipher), res);
+
+        if (file.metadata.linkType === "one") {
+            console.log("removing public link");
+            await dbUtilsFile.removeOneTimePublicLink(fileID);
+        }
+    }
+
+    deleteFile = async(userID: string, fileID: string) => {
+
+        const file: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
+    
+        if (!file) throw new NotFoundError("Delete File Not Found Error");
+    
+        if (file.metadata.thumbnailID) {
+
+            const thumbnail = await Thumbnail.findById(file.metadata.thumbnailID) as ThumbnailInterface;
+            const paramsThumbnail: any = {Bucket: env.s3Bucket, Key: thumbnail.s3ID!};
+            await removeChunksS3(paramsThumbnail);
+            await Thumbnail.deleteOne({_id: file.metadata.thumbnailID});
+        }
+
+        const params: any = {Bucket: env.s3Bucket, Key: file.metadata.s3ID!};
+        await removeChunksS3(params);
+        await File.deleteOne({_id: file._id});
     }
 }
 

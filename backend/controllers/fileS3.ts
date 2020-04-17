@@ -5,8 +5,8 @@ import FileService from "../services/FileService/indexnew";
 
 const fileService = new FileService()
 
-import FileSystemService from "../services/ChunkService/FileSystemService";
-const fileSystemService = new FileSystemService();
+import S3FileService from "../services/ChunkService/S3Service";
+const s3FileService = new S3FileService();
 
 import {UserInterface} from "../models/user";
 
@@ -38,7 +38,7 @@ class FileSystemController {
             const user = req.user;
             const id = req.params.id;
     
-            const decryptedThumbnail = await fileSystemService.getThumbnail(user, id);
+            const decryptedThumbnail = await s3FileService.getThumbnail(user, id);
                 
             res.send(decryptedThumbnail);
     
@@ -63,7 +63,7 @@ class FileSystemController {
             const user = req.user;
             const fileID = req.params.id;
 
-            await fileSystemService.getFullThumbnail(user, fileID, res);
+            await s3FileService.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
             const code = e.code || 500;
@@ -86,7 +86,7 @@ class FileSystemController {
             
             req.pipe(busboy);
     
-            const file = await fileSystemService.uploadFile(user, busboy, req);
+            const file = await s3FileService.uploadFile(user, busboy, req);
          
             res.send(file);
             
@@ -106,7 +106,7 @@ class FileSystemController {
             const ID = req.params.id;
             const tempToken = req.params.tempToken;
     
-            await fileSystemService.getPublicDownload(ID, tempToken, res);
+            await s3FileService.getPublicDownload(ID, tempToken, res);
     
         } catch (e) {
     
@@ -445,7 +445,7 @@ class FileSystemController {
             
             console.log("stream request", req.params.id)
     
-            await fileSystemService.streamVideo(user, fileID, headers, res);
+            await s3FileService.streamVideo(user, fileID, headers, res);
     
         } catch (e) {
 
@@ -472,7 +472,7 @@ class FileSystemController {
             const fileID = req.params.id;
 
             //await fileService.downloadFile(user, fileID, res);
-            await fileSystemService.downloadFile(user, fileID, res);
+            await s3FileService.downloadFile(user, fileID, res);
     
         } catch (e) {
             
@@ -576,7 +576,7 @@ class FileSystemController {
             const userID = req.user._id;
             const fileID = req.body.id;
     
-            await fileSystemService.deleteFile(userID, fileID);
+            await s3FileService.deleteFile(userID, fileID);
     
             res.send()
     
