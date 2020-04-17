@@ -7,5 +7,8 @@ module.exports = {
     url: process.env.URL,
     mongoURL: process.env.MONGODB_URL,
     dbType: process.env.DB_TYPE,
-    fsDirectory: process.env.FS_DIRECTORY
+    fsDirectory: process.env.FS_DIRECTORY,
+    s3ID: process.env.S3_ID,
+    s3Key: process.env.S3_KEY,
+    s3Bucket: process.env.S3_BUCKET
 }

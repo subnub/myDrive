@@ -24,7 +24,7 @@ import { removeChunksFS } from "./utils/awaitUploadStreamFS";
 const dbUtilsFile = new DbUtilFile();
 
 // implements ChunkInterface
-class FileSystemService  {
+class FileSystemService implements ChunkInterface {
 
     constructor() {
         

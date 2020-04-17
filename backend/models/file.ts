@@ -51,7 +51,8 @@ const fileSchema = new mongoose.Schema({
             },
             linkType: String,
             link: String,
-            filePath: String
+            filePath: String,
+            s3ID: String,
 
         },
         required: true
@@ -76,6 +77,7 @@ export interface FileInterface extends Document {
         linkType?: 'one' | 'public',
         link?: string,
         filePath?: string,
+        s3ID?: string,
     }
 }
 
