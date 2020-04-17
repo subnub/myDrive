@@ -250,6 +250,31 @@ class MongoService implements ChunkInterface {
         await awaitStream(readStream.pipe(decipher), res);
     }
 
+    deleteFile = async(userID: string, fileID: string) => {
+
+        let bucket = new mongoose.mongo.GridFSBucket(conn.db, {
+            chunkSizeBytes: 1024 * 255,
+        });
+           
+        const file = await dbUtilsFile.getFileInfo(fileID, userID);
+    
+        if (!file) throw new NotFoundError("Delete File Not Found Error");
+    
+        if (file.metadata.thumbnailID) {
+    
+            await Thumbnail.deleteOne({_id: file.metadata.thumbnailID});
+        }
+    
+        if (file.metadata.isVideo && file.metadata.transcoded) {
+            try {
+                await bucket.delete(new ObjectID(file.metadata.transcodedID));
+            } catch (e) {
+                console.log("Could Not Find Transcoded Video");
+            }
+        }
+    
+        await bucket.delete(new ObjectID(fileID));
+    }
 }
 
 export default MongoService;

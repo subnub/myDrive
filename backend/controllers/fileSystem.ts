@@ -576,7 +576,7 @@ class FileSystemController {
             const userID = req.user._id;
             const fileID = req.body.id;
     
-            await fileService.deleteFile(userID, fileID);
+            await fileSystemService.deleteFile(userID, fileID);
     
             res.send()
     

@@ -1,7 +1,7 @@
 import {Request} from "express"
 import fs from "fs";
 
-const removeChunks = (path: string) => {
+export const removeChunksFS = (path: string) => {
 
     return new Promise((resolve, reject) => {
 
@@ -12,6 +12,7 @@ const removeChunks = (path: string) => {
             }
 
             console.log("File Removed");
+            resolve();
         })
     })
 }
@@ -22,7 +23,7 @@ const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, 
 
         inputSteam.on("error", (e: Error) => {
 
-            removeChunks(path);
+            removeChunksFS(path);
             
             reject({
                 message: "Await Stream Input Error",
@@ -33,7 +34,7 @@ const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, 
 
         outputStream.on("error", (e: Error) => {
 
-            removeChunks(path);
+            removeChunksFS(path);
 
             reject({
                 message: "Await Stream Output Error",
@@ -46,7 +47,7 @@ const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, 
 
             console.log("Upload Request Cancelling...");
 
-            removeChunks(path);
+            removeChunksFS(path);
         })
 
         inputSteam.pipe(outputStream).on("finish", (data: T) => {

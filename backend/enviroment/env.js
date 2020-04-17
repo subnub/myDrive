@@ -6,5 +6,6 @@ module.exports = {
     root: process.env.ROOT,
     url: process.env.URL,
     mongoURL: process.env.MONGODB_URL,
-    dbType: process.env.DB_TYPE
+    dbType: process.env.DB_TYPE,
+    fsDirectory: process.env.FS_DIRECTORY
 }

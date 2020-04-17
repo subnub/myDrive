@@ -1,7 +1,6 @@
 const mongoose = require("../../../db/mongoose")
 const conn = mongoose.connection;
 const crypto= require("crypto");
-const env = require("../../../enviroment/env");
 import Thumbnail from "../../../models/thumbnail"; 
 const ObjectID = require('mongodb').ObjectID
 const sharp = require("sharp");
@@ -10,6 +9,7 @@ import {FileInterface} from "../../../models/file";
 import {UserInterface} from "../../../models/user";
 import fs from "fs";
 import uuid from "uuid";
+import env from "../../../enviroment/env";
 
 const createThumbnailFS = (file: FileInterface, filename: string, user: UserInterface) => {
 
@@ -22,7 +22,7 @@ const createThumbnailFS = (file: FileInterface, filename: string, user: UserInte
         const thumbnailFilename = uuid.v4();
     
         const readStream = fs.createReadStream(file.metadata.filePath!);
-        const writeStream = fs.createWriteStream(`/Users/kylehoell/Documents/fstestdata/${thumbnailFilename}`);
+        const writeStream = fs.createWriteStream(env.fsDirectory + thumbnailFilename);
         const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, file.metadata.IV);
 
         readStream.on("error", (e: Error) => {
@@ -58,7 +58,7 @@ const createThumbnailFS = (file: FileInterface, filename: string, user: UserInte
             writeStream.on("finish", async() => {
                 console.log("Thumbnail written");
 
-                const thumbnailModel = new Thumbnail({name: filename, owner: user._id, IV: thumbnailIV, path: `/Users/kylehoell/Documents/fstestdata/${thumbnailFilename}`});
+                const thumbnailModel = new Thumbnail({name: filename, owner: user._id, IV: thumbnailIV, path: env.fsDirectory + thumbnailFilename});
 
                 await thumbnailModel.save();
 

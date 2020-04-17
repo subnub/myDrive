@@ -578,7 +578,7 @@ class FileController {
             const userID = req.user._id;
             const fileID = req.body.id;
     
-            await fileService.deleteFile(userID, fileID);
+            await mongoService.deleteFile(userID, fileID);
     
             res.send()
     

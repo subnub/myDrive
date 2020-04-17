@@ -18,6 +18,8 @@ import imageChecker from "../../utils/imageChecker";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import streamToBuffer from "../../utils/streamToBuffer";
 import User from "../../models/user";
+import env from "../../enviroment/env";
+import { removeChunksFS } from "./utils/awaitUploadStreamFS";
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -62,7 +64,7 @@ class FileSystemService  {
             isVideo,
             size,
             IV: initVect,
-            filePath: `/Users/kylehoell/Documents/fstestdata/${systemFileName}`
+            filePath: env.fsDirectory + systemFileName
         }
 
         const fileWriteStream = fs.createWriteStream(metadata.filePath);
@@ -254,6 +256,25 @@ class FileSystemService  {
             console.log("removing public link");
             await dbUtilsFile.removeOneTimePublicLink(fileID);
         }
+    }
+
+    deleteFile = async(userID: string, fileID: string) => {
+
+        const file: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
+    
+        if (!file) throw new NotFoundError("Delete File Not Found Error");
+    
+        if (file.metadata.thumbnailID) {
+
+            const thumbnail = await Thumbnail.findById(file.metadata.thumbnailID) as ThumbnailInterface;
+            const thumbnailPath = thumbnail.path!;
+            await removeChunksFS(thumbnailPath);
+    
+            await Thumbnail.deleteOne({_id: file.metadata.thumbnailID});
+        }
+
+        await removeChunksFS(file.metadata.filePath!);
+        await File.deleteOne({_id: file._id});
     }
 }
 
