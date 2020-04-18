@@ -1,7 +1,7 @@
-const mongoose = require("../backend/db/mongooseServerUtils")
+import mongoose from "../backend/db/mongoose";
 const conn = mongoose.connection;
 const crypto= require("crypto");
-const env = require("../backend/enviroment/env");
+import env from "../backend/enviroment/env";
 const Thumbnail = require("../backend/models/thumbnail");
 const ObjectID = require('mongodb').ObjectID
 const sharp = require("sharp");

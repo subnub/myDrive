@@ -1,14 +1,14 @@
 const imageChecker = require("../../utils/imageChecker");
 import crypto from "crypto";
 const videoChecker = require("../../utils/videoChecker");
-const mongoose = require("../../db/mongoose")
+import mongoose from "../../db/mongoose";
 const conn = mongoose.connection;
 const createThumbnail = require("../../services/FileService/utils/createThumbnail");
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 const ObjectID = require('mongodb').ObjectID
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import NotFoundError from "../../utils/NotFoundError";
-const env = require("../../enviroment/env");
+import env from "../../enviroment/env";
 const jwt = require("jsonwebtoken");
 const removeChunks = require("./utils/removeChunks");
 const User = require("../../models/user");

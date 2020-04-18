@@ -59,3 +59,4 @@ const DbUtil = function() {
 }
 
 module.exports = DbUtil;
+export default DbUtil;

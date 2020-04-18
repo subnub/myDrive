@@ -11,5 +11,6 @@ export default {
     s3ID: process.env.S3_ID,
     s3Key: process.env.S3_KEY,
     s3Bucket: process.env.S3_BUCKET,
-    useDocumentDB: process.env.USE_DOCUMENT_DB
+    useDocumentDB: process.env.USE_DOCUMENT_DB,
+    documentDBBundle: process.env.DOCUMENT_DB_BUNDLE
 }

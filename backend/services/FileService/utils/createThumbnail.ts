@@ -1,7 +1,7 @@
-const mongoose = require("../../../db/mongoose")
+import mongoose from "../../../db/mongoose";
 const conn = mongoose.connection;
 const crypto= require("crypto");
-const env = require("../../../enviroment/env");
+import env from "../../../enviroment/env";
 import Thumbnail from "../../../models/thumbnail"; 
 const ObjectID = require('mongodb').ObjectID
 const sharp = require("sharp");
@@ -49,12 +49,12 @@ const createThumbnail = (file: FileInterface, filename: string, user: UserInterf
             
                     await thumbnailModel.save();
     
-                    let updatedFile = await conn.db.collection("fs.files")
+                    const getUpdatedFile = await conn.db.collection("fs.files")
                         .findOneAndUpdate({"_id": file._id}, {"$set": {"metadata.hasThumbnail": true, "metadata.thumbnailID": thumbnailModel._id}})
     
-                    updatedFile = updatedFile.value;
+                    let updatedFile: FileInterface = getUpdatedFile.value;
     
-                    updatedFile = {...updatedFile, metadata: {...updatedFile.metadata, hasThumbnail: true, thumbnailID: thumbnailModel._id}}
+                    updatedFile = {...updatedFile, metadata: {...updatedFile.metadata, hasThumbnail: true, thumbnailID: thumbnailModel._id}} as FileInterface;
     
                     resolve(updatedFile);
         

@@ -1,4 +1,4 @@
-const mongoose = require("../../mongoose")
+import mongoose from "../../mongoose";
 const conn = mongoose.connection;
 const ObjectID = require('mongodb').ObjectID
 
@@ -164,3 +164,4 @@ const DbUtil = function() {
 }
 
 module.exports = DbUtil;
+export default DbUtil;

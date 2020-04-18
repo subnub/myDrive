@@ -4,7 +4,7 @@ const NotFoundError = require("../../utils/NotFoundError");
 const UtilsFile = require("../../db/utils/fileUtils");
 const ObjectID = require('mongodb').ObjectID
 const UtilsFolder = require("../../db/utils/folderUtils");
-const mongoose = require("../../db/mongoose")
+import mongoose from "../../db/mongoose";
 const conn = mongoose.connection;
 const Thumbnail = require("../../models/thumbnail");
 const sortBySwitch = require("../../utils/sortBySwitchFolder");

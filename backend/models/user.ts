@@ -3,7 +3,7 @@ const validator = require("validator");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const env = require("../enviroment/env");
+import env from "../enviroment/env";
 
 const userSchema = new mongoose.Schema({
 
@@ -221,7 +221,7 @@ userSchema.methods.getEncryptionKey = function() {
 
     } catch (e) {
 
-        console.log("Get Encryption Key Error");
+        console.log("Get Encryption Key Error", e);
         return undefined;
     }
 }
