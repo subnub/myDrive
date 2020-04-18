@@ -72,6 +72,10 @@ export interface UserInterface extends Document {
     generateTempAuthToken: () => any;
     generateTempAuthTokenVideo: (cookie: string) => any;
     encryptToken: (tempToken: any, key: any, publicKey: any) => any;
+    findByCreds: (email: string, password: string) => UserInterface;
+    generateAuthToken: () => any;
+    generateEncryptionKeys: () => Promise<void>;
+    changeEncryptionKey: (randomKey: Buffer) => void; 
 }
 
 // userSchema.virtual("files", {
@@ -222,7 +226,7 @@ userSchema.methods.getEncryptionKey = function() {
     }
 }
 
-userSchema.methods.changeEncryptionKey = async function(randomKey: string) {
+userSchema.methods.changeEncryptionKey = async function(randomKey: Buffer) {
 
     const user = this;
     const userPassword = user.password;

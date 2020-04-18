@@ -1,7 +1,8 @@
-import {Router} from "express";
+import { Router } from "express";
 const router = Router();
 const auth = require("../middleware/auth");
-const UserController = require("../controllers/user");
+import UserController from "../controllers/user";
+
 const userController = new UserController();
 
 router.get("/user-service/user", auth, userController.getUser);

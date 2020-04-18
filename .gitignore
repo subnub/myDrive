@@ -17,3 +17,4 @@ package-lock.json
 ._*
 .DS_Store
 dist/
+rds-combined-ca-bundle.pem

@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     key: process.env.KEY,
     newKey: process.env.NEW_KEY,
     password: process.env.PASSWORD,
@@ -10,5 +10,6 @@ module.exports = {
     fsDirectory: process.env.FS_DIRECTORY,
     s3ID: process.env.S3_ID,
     s3Key: process.env.S3_KEY,
-    s3Bucket: process.env.S3_BUCKET
+    s3Bucket: process.env.S3_BUCKET,
+    useDocumentDB: process.env.USE_DOCUMENT_DB
 }

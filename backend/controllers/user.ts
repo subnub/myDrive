@@ -1,6 +1,16 @@
-const env = require("../enviroment/env");
-const UserService = require("../services/UserService")
+
+import env from "../enviroment/env";
+import UserService from "../services/UserService";
+import { Request, Response } from "express";
+import { UserInterface } from "../models/user";
 const UserProvider = new UserService();
+
+interface RequestType extends Request {
+    user?: UserInterface,
+    auth?: any,
+    busboy?: any,
+    encryptedToken?: any
+}
 
 class UserController {
 
@@ -8,14 +18,14 @@ class UserController {
 
     }
 
-    async getUser(req, res) {
+    getUser = async(req: RequestType, res: Response) => {
         
         try {
 
-            const user = req.user;
-            user.tokens = undefined;
-            user.tempTokens = undefined;
-            user.password = undefined;
+            const user = req.user!;
+            user.tokens = [];
+            user.tempTokens = [];
+            user.password = '';
             user.privateKey = undefined;
             user.publicKey = undefined;
 
@@ -27,7 +37,7 @@ class UserController {
         }
     }
 
-    async login(req, res) {
+    login = async(req: RequestType, res: Response) => {
 
         try {
 
@@ -35,9 +45,9 @@ class UserController {
 
             const {user, token} = await UserProvider.login(body);
 
-            user.tokens = undefined;
-            user.tempTokens = undefined;
-            user.password = undefined;
+            user.tokens = [];
+            user.tempTokens = [];
+            user.password = '';
             user.privateKey = undefined;
             user.publicKey = undefined;
     
@@ -52,7 +62,7 @@ class UserController {
         }
     }
 
-    async logout(req, res) {
+    logout = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
 
@@ -74,13 +84,13 @@ class UserController {
         }
     }
 
-    async logoutAll(req, res) {
+    logoutAll = async(req: RequestType, res: Response) => {
 
         try {
 
             const user = req.user;
 
-            await UserProvider.logoutAll(user);
+            await UserProvider.logoutAll(user!);
     
             res.send();
     
@@ -90,7 +100,7 @@ class UserController {
         }
     }
 
-    async createUser(req, res) {
+    createUser = async(req: RequestType, res: Response) => {
 
         if (env.createAcctBlocked) {
 
@@ -101,9 +111,9 @@ class UserController {
     
             const {user, token} = await UserProvider.create(req.body);
 
-            user.tokens = undefined;
-            user.tempTokens = undefined;
-            user.password = undefined;
+            user.tokens = [];
+            user.tempTokens = []
+            user.password = '';
             user.privateKey = undefined;
             user.publicKey = undefined;
     
@@ -118,7 +128,7 @@ class UserController {
         }
     }
 
-    async changePassword(req, res) {
+    changePassword = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
 
@@ -145,4 +155,4 @@ class UserController {
     }
 }
 
-module.exports = UserController;
+export default UserController;
