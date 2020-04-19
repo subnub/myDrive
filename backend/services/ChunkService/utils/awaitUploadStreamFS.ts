@@ -9,6 +9,7 @@ export const removeChunksFS = (path: string) => {
 
             if (err) {
                 console.log("Could not remove fs file", err);
+                resolve();
             }
 
             console.log("File Removed");
@@ -17,31 +18,45 @@ export const removeChunksFS = (path: string) => {
     })
 }
 
-const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, path: string) => {
+const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, path: string, allStreamsToCatchError: any[]) => {
 
     return new Promise<T>((resolve, reject) => {
+        
+        allStreamsToCatchError.forEach((currentStream: any) => {
 
-        inputSteam.on("error", (e: Error) => {
+            currentStream.on("error", (e: Error) => {
 
-            removeChunksFS(path);
+                removeChunksFS(path);
             
-            reject({
-                message: "Await Stream Input Error",
-                code: 500,
-                error: e
+                reject({
+                    message: "Await Stream Input Error",
+                    code: 500,
+                    error: e
+                })
             })
         })
 
-        outputStream.on("error", (e: Error) => {
+        // inputSteam.on("error", (e: Error) => {
 
-            removeChunksFS(path);
+        //     removeChunksFS(path);
+            
+        //     reject({
+        //         message: "Await Stream Input Error",
+        //         code: 500,
+        //         error: e
+        //     })
+        // })
 
-            reject({
-                message: "Await Stream Output Error",
-                code: 500,
-                error: e
-            })
-        })
+        // outputStream.on("error", (e: Error) => {
+
+        //     removeChunksFS(path);
+
+        //     reject({
+        //         message: "Await Stream Output Error",
+        //         code: 500,
+        //         error: e
+        //     })
+        // })
 
         req.on("aborted", () => {
 

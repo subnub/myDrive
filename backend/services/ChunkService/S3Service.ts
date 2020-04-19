@@ -125,7 +125,9 @@ class S3Service implements ChunkInterface {
 
         const s3ReadStream = s3.getObject(params).createReadStream();
 
-        await awaitStream(s3ReadStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [s3ReadStream, decipher];
+
+        await awaitStream(s3ReadStream.pipe(decipher), res, allStreamsToErrorCatch);
 
     }
 
@@ -167,7 +169,9 @@ class S3Service implements ChunkInterface {
 
         res.writeHead(206, head);
 
-        await awaitStream(s3ReadStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [s3ReadStream, decipher];
+
+        await awaitStream(s3ReadStream.pipe(decipher), res, allStreamsToErrorCatch);
         
     }
 
@@ -194,7 +198,9 @@ class S3Service implements ChunkInterface {
 
         const readStream = s3.getObject(params).createReadStream();
 
-        const bufferData = await streamToBuffer(readStream.pipe(decipher));
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        const bufferData = await streamToBuffer(readStream.pipe(decipher), allStreamsToErrorCatch);
 
         return bufferData;
     } 
@@ -224,8 +230,10 @@ class S3Service implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
         res.set('Content-Length', file.metadata.size.toString());
 
+        const allStreamsToErrorCatch = [readStream, decipher];
+
         console.log("Sending Full Thumbnail...")
-        await awaitStream(readStream.pipe(decipher), res);
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
         console.log("Full thumbnail sent");
     }
 
@@ -257,7 +265,9 @@ class S3Service implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
         res.set('Content-Length', file.metadata.size.toString());
 
-        await awaitStream(readStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
 
         if (file.metadata.linkType === "one") {
             console.log("removing public link");

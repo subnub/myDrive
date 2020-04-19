@@ -71,7 +71,9 @@ class MongoService implements ChunkInterface {
                 
         bucketStream = bucket.openUploadStream(filename, {metadata});
 
-        const finishedFile = await awaitUploadStream(file.pipe(cipher), bucketStream, req) as FileInterface;
+        const allStreamsToErrorCatch = [file, cipher, bucketStream];
+
+        const finishedFile = await awaitUploadStream(file.pipe(cipher), bucketStream, req, allStreamsToErrorCatch) as FileInterface;
 
         const imageCheck = imageChecker(filename);
  
@@ -110,7 +112,9 @@ class MongoService implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + currentFile.filename + '"');
         res.set('Content-Length', currentFile.metadata.size.toString()); 
 
-        await awaitStream(readStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
     }
 
     getThumbnail = async(user: UserInterface, id: string) => {
@@ -164,7 +168,10 @@ class MongoService implements ChunkInterface {
         res.set('Content-Length', file.metadata.size.toString());
 
         console.log("Sending Full Thumbnail...")
-        await awaitStream(readStream.pipe(decipher), res);
+
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
         console.log("Full thumbnail sent");
     }
 
@@ -196,7 +203,9 @@ class MongoService implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
         res.set('Content-Length', file.metadata.size.toString());
 
-        await awaitStream(readStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
 
         if (file.metadata.linkType === "one") {
             console.log("removing public link");
@@ -247,7 +256,9 @@ class MongoService implements ChunkInterface {
 
         res.writeHead(206, head);
 
-        await awaitStream(readStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
     }
 
     deleteFile = async(userID: string, fileID: string) => {

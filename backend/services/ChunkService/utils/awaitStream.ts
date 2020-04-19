@@ -1,21 +1,17 @@
-const awaitStream = <T>(inputSteam: any, outputStream: any) => {
+const awaitStream = <T>(inputSteam: any, outputStream: any, allStreamsToErrorCatch: any[]) => {
 
     return new Promise<T>((resolve, reject) => {
 
-        inputSteam.on("error", (e: Error) => {
-            reject({
-                message: "Await Stream Input Error",
-                code: 500,
-                error: e
-            })
-        })
+        allStreamsToErrorCatch.forEach((currentStream: any) => {
 
-        outputStream.on("error", (e: Error) => {
-            reject({
-                message: "Await Stream Output Error",
-                code: 500,
-                error: e
+            currentStream.on("error", (e: Error) => {
+                reject({
+                    message: "Await Stream Input Error",
+                    code: 500,
+                    error: e
+                })
             })
+            
         })
 
         inputSteam.pipe(outputStream).on("finish", (data: T) => {

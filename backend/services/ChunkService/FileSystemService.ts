@@ -69,7 +69,9 @@ class FileSystemService implements ChunkInterface {
 
         const fileWriteStream = fs.createWriteStream(metadata.filePath);
 
-        await awaitUploadStreamFS(file.pipe(cipher), fileWriteStream, req, metadata.filePath);
+        const totalStreamsToErrorCatch = [file, cipher, fileWriteStream];
+
+        await awaitUploadStreamFS(file.pipe(cipher), fileWriteStream, req, metadata.filePath, totalStreamsToErrorCatch);
 
         const date = new Date();
         const encryptedFileSize = await getFileSize(metadata.filePath);
@@ -124,7 +126,9 @@ class FileSystemService implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + currentFile.filename + '"');
         res.set('Content-Length', currentFile.metadata.size.toString()); 
 
-        await awaitStream(readStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
     }
 
     getThumbnail = async(user: UserInterface, id: string) => {
@@ -148,7 +152,9 @@ class FileSystemService implements ChunkInterface {
 
         const readStream = fs.createReadStream(thumbnail.path!);
 
-        const bufferData = await streamToBuffer(readStream.pipe(decipher));
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        const bufferData = await streamToBuffer(readStream.pipe(decipher), allStreamsToErrorCatch);
 
         return bufferData;
          
@@ -177,8 +183,10 @@ class FileSystemService implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
         res.set('Content-Length', file.metadata.size.toString());
 
+        const allStreamsToErrorCatch = [readStream, decipher];
+
         console.log("Sending Full Thumbnail...")
-        await awaitStream(readStream.pipe(decipher), res);
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
         console.log("Full thumbnail sent");
     }
 
@@ -221,7 +229,9 @@ class FileSystemService implements ChunkInterface {
 
         res.writeHead(206, head);
 
-        await awaitStream(readStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
     }
 
     getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {
@@ -250,7 +260,9 @@ class FileSystemService implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
         res.set('Content-Length', file.metadata.size.toString());
 
-        await awaitStream(readStream.pipe(decipher), res);
+        const allStreamsToErrorCatch = [readStream, decipher];
+
+        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
 
         if (file.metadata.linkType === "one") {
             console.log("removing public link");
