@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose, {Document} from "mongoose";
 
 const folderSchema = new mongoose.Schema({
     
@@ -27,6 +27,13 @@ const folderSchema = new mongoose.Schema({
     timestamps: true
 })
 
-const Folder = mongoose.model("Folder", folderSchema);
+export interface FolderInterface extends Document {
+    name: string,
+    parent: string,
+    owner: string,
+    parentList: string[]
+}
 
-module.exports = Folder;
+const Folder = mongoose.model<FolderInterface>("Folder", folderSchema);
+
+export default Folder;

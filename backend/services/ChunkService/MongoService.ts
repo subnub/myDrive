@@ -2,7 +2,7 @@ import mongoose from "../../db/mongoose";
 import { Response, Request } from "express";
 const conn = mongoose.connection;
 const DbUtilFolder = require("../../db/utils/folderUtils");
-import DbUtilFile from "../../db/utils/fileUtils/index";
+import DbUtilFile from "../../db/utils/fileUtils";
 import crypto from "crypto";
 import videoChecker from "../../utils/videoChecker"
 import imageChecker from "../../utils/imageChecker"
@@ -147,7 +147,7 @@ class MongoService implements ChunkInterface {
 
         const userID = user._id;
 
-        const file: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
+        const file = await dbUtilsFile.getFileInfo(fileID, userID);
 
         if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
@@ -177,7 +177,7 @@ class MongoService implements ChunkInterface {
 
     getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {
 
-        const file: FileInterface = await dbUtilsFile.getPublicFile(fileID);
+        const file = await dbUtilsFile.getPublicFile(fileID);
 
         if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
             throw new NotAuthorizedError("File Not Public");
@@ -276,13 +276,13 @@ class MongoService implements ChunkInterface {
             await Thumbnail.deleteOne({_id: file.metadata.thumbnailID});
         }
     
-        if (file.metadata.isVideo && file.metadata.transcoded) {
-            try {
-                await bucket.delete(new ObjectID(file.metadata.transcodedID));
-            } catch (e) {
-                console.log("Could Not Find Transcoded Video");
-            }
-        }
+        // if (file.metadata.isVideo && file.metadata.transcoded) {
+        //     try {
+        //         await bucket.delete(new ObjectID(file.metadata.transcodedID));
+        //     } catch (e) {
+        //         console.log("Could Not Find Transcoded Video");
+        //     }
+        // }
     
         await bucket.delete(new ObjectID(fileID));
     }
