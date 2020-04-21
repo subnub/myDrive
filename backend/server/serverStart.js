@@ -1,4 +1,4 @@
-const getKey = require("../key/getKey");
+import getKey from "../key/getKey";
 
 const serverStart = async() => {
 

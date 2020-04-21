@@ -1,4 +1,4 @@
-const FolderService = require("../services/FolderService");
+import FolderService from "../services/FolderService";
 const folderService = new FolderService();
 import { Request, Response } from "express";
 import {UserInterface} from "../models/user";
@@ -14,7 +14,7 @@ class FolderController {
 
     }
 
-    async uploadFolder(req: RequestType, res: Response) {
+    uploadFolder = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
 
@@ -38,7 +38,7 @@ class FolderController {
         }
     }
 
-    async deleteFolder(req: RequestType, res: Response) {
+    deleteFolder = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
 
@@ -64,7 +64,7 @@ class FolderController {
         }
     }
 
-    async deleteAll(req: RequestType, res: Response) {
+    deleteAll = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
 
@@ -88,7 +88,7 @@ class FolderController {
         }
     }
 
-    async getInfo(req: RequestType, res: Response) {
+    getInfo = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -112,7 +112,7 @@ class FolderController {
         }
     }
 
-    async getSubfolderList(req: RequestType, res: Response) {
+    getSubfolderList = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
 
@@ -122,7 +122,7 @@ class FolderController {
         try {
     
             const userID = req.user._id;
-            const folderID = req.query.id;
+            const folderID = req.query.id as string;
             
             const {folderIDList, folderNameList} = await folderService.getFolderSublist(userID, folderID);
             
@@ -137,7 +137,7 @@ class FolderController {
         }
     }
 
-    async getFolderList(req: RequestType, res: Response) {
+    getFolderList = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
 
@@ -162,7 +162,7 @@ class FolderController {
         }
     }
 
-    async moveFolder(req: RequestType, res: Response) {
+    moveFolder = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -188,7 +188,7 @@ class FolderController {
         }
     }
 
-    async renameFolder(req: RequestType, res: Response) {
+    renameFolder = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;

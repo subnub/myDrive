@@ -1,14 +1,30 @@
-const jwt = require("jsonwebtoken");
-import User from "../models/user";
+import jwt from "jsonwebtoken";
+import User, {UserInterface} from "../models/user";
 import env from "../enviroment/env";
+import {Request, Response, NextFunction} from "express";
 
-const tempAuthVideo = async(req, res, next) => {
+
+interface RequestType extends Request {
+    user?: UserInterface,
+    auth?: any,
+    busboy?: any,
+    token?: any,
+    encryptedTempToken?: any,
+}
+
+type jwtType = {
+    iv: Buffer,
+    _id: string,
+    cookie: string
+}
+
+const tempAuthVideo = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
         const token = req.params.tempToken;
 
-        const decoded = await jwt.verify(token, env.password);
+        const decoded = await jwt.verify(token, env.password!) as jwtType;
 
         const iv = decoded.iv;
 
@@ -17,7 +33,7 @@ const tempAuthVideo = async(req, res, next) => {
             throw new Error("Cookie mismatch")
         }
 
-        const user = await User.findOne({_id: decoded._id})
+        const user = await User.findOne({_id: decoded._id}) as UserInterface;
         const encrpytionKey = user.getEncryptionKey();
 
         const encryptedToken = user.encryptToken(token, encrpytionKey, iv);
@@ -53,4 +69,4 @@ const tempAuthVideo = async(req, res, next) => {
     }
 }
 
-module.exports = tempAuthVideo;
+export default tempAuthVideo;

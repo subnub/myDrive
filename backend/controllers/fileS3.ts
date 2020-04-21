@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 //const FileService = require("../services/FileService")
-import FileService from "../services/FileService/indexnew";
+import FileService from "../services/FileService";
 
 const fileService = new FileService()
 
@@ -52,7 +52,7 @@ class FileSystemController {
 
     }
 
-    async getFullThumbnail(req: RequestType, res: Response) {
+    getFullThumbnail = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -72,7 +72,7 @@ class FileSystemController {
         }
     }
 
-    async uploadFile(req: RequestType, res: Response) {
+    uploadFile = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
         
@@ -99,7 +99,7 @@ class FileSystemController {
         }
     }
 
-    async getPublicDownload(req: RequestType, res: Response) {
+    getPublicDownload = async(req: RequestType, res: Response) => {
 
         try {
 
@@ -118,7 +118,7 @@ class FileSystemController {
         } 
     }
 
-    async removeLink(req: RequestType, res: Response) {
+    removeLink = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -143,7 +143,7 @@ class FileSystemController {
 
     }
 
-    async makePublic(req: RequestType, res: Response) {
+    makePublic = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -167,7 +167,7 @@ class FileSystemController {
         }
     }
 
-    async getPublicInfo(req: RequestType, res: Response) {
+    getPublicInfo = async(req: RequestType, res: Response) => {
 
         try {
 
@@ -187,7 +187,7 @@ class FileSystemController {
         }
     }
 
-    async makeOneTimePublic(req: RequestType, res: Response) {
+    makeOneTimePublic = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -212,7 +212,7 @@ class FileSystemController {
 
     }
 
-    async getFileInfo(req: RequestType, res: Response) {
+    getFileInfo = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -236,7 +236,7 @@ class FileSystemController {
         }
     }
 
-    async getQuickList(req: RequestType, res: Response) { 
+    getQuickList = async(req: RequestType, res: Response) => { 
 
         if (!req.user) {
             return;
@@ -259,7 +259,7 @@ class FileSystemController {
         }
     }
 
-    async getList(req: RequestType, res: Response) {
+    getList = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return
@@ -283,7 +283,7 @@ class FileSystemController {
         }
     }
 
-    async getDownloadToken(req: RequestType, res: Response) {
+    getDownloadToken = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return 
@@ -306,7 +306,7 @@ class FileSystemController {
         }
     }
 
-    async getDownloadTokenVideo(req: RequestType, res: Response) {
+    getDownloadTokenVideo = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return 
@@ -330,7 +330,7 @@ class FileSystemController {
         }
     }
 
-    async removeTempToken(req: RequestType, res: Response) {
+    removeTempToken = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return 
@@ -431,7 +431,7 @@ class FileSystemController {
     //     }
     // }
 
-    async streamVideo(req: RequestType, res: Response) {
+    streamVideo = async(req: RequestType, res: Response) => {
 
         if (!req.auth || !req.user) {
             return;
@@ -458,7 +458,7 @@ class FileSystemController {
 
     }
 
-    async downloadFile(req: RequestType, res: Response) {
+    downloadFile = async(req: RequestType, res: Response) => {
 
         if (!req.auth || !req.user) {
             return;
@@ -484,7 +484,7 @@ class FileSystemController {
         } 
     }
 
-    async getSuggestedList(req: RequestType, res: Response) {
+    getSuggestedList = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -509,7 +509,7 @@ class FileSystemController {
         }
     }
 
-    async renameFile(req: RequestType, res: Response) {
+    renameFile = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -535,7 +535,7 @@ class FileSystemController {
     
     }
 
-    async moveFile(req: RequestType, res: Response) {
+    moveFile = async(req: RequestType, res: Response) => {
 
         console.log("move request");
 
@@ -565,7 +565,7 @@ class FileSystemController {
 
     }
 
-    async deleteFile(req: RequestType, res: Response) {
+    deleteFile = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;

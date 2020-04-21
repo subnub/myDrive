@@ -1,10 +1,12 @@
 class InternalServerError extends Error {
+
+    code: number;
     
-    constructor(args) {
+    constructor(args: any) {
         super(args);
 
         this.code = 500;
     }
 }
 
-module.exports = InternalServerError;
+export default InternalServerError;

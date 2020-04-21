@@ -1,10 +1,12 @@
 class NotAuthorizedError extends Error {
+
+    code: number;
     
-    constructor(args) {
+    constructor(args: any) {
         super(args);
 
         this.code = 401;
     }
 }
 
-module.exports = NotAuthorizedError;
+export default NotAuthorizedError;

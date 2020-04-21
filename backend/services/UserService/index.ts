@@ -2,8 +2,8 @@ import User, {UserInterface} from "../../models/user";
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const NotFoundError = require("../../utils/NotFoundError");
-const InternalServerError = require("../../utils/InternalServerError");
-const NotAuthorizedError = require("../../utils/NotAuthorizedError");
+import InternalServerError from "../../utils/InternalServerError";
+import NotAuthorizedError from "../../utils/NotAuthorizedError";
 
 type UserDataType = {
     email: string,

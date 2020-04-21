@@ -1,18 +1,33 @@
-const jwt = require("jsonwebtoken");
-import User from "../models/user";
+import jwt from "jsonwebtoken";
+import User, {UserInterface} from "../models/user";
 import env from "../enviroment/env";
+import {Request, Response, NextFunction} from "express";
 
-const tempAuth = async(req, res, next) => {
+
+interface RequestType extends Request {
+    user?: UserInterface,
+    auth?: any,
+    busboy?: any,
+    token?: any,
+    encryptedTempToken?: any,
+}
+
+type jwtType = {
+    iv: Buffer,
+    _id: string,
+}
+
+const tempAuth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
         const token = req.params.tempToken;
 
-        const decoded = await jwt.verify(token, env.password);
+        const decoded = await jwt.verify(token, env.password!) as jwtType;
 
         const iv = decoded.iv;
 
-        const user = await User.findOne({_id: decoded._id})
+        const user = await User.findOne({_id: decoded._id}) as UserInterface;
         const encrpytionKey = user.getEncryptionKey();
 
         const encryptedToken = user.encryptToken(token, encrpytionKey, iv);
@@ -54,4 +69,4 @@ const tempAuth = async(req, res, next) => {
     }
 }
 
-module.exports = tempAuth;
+export default tempAuth;

@@ -1,7 +1,6 @@
 import mongoose from "../../db/mongoose";
 import { Response, Request } from "express";
-const conn = mongoose.connection;
-const DbUtilFolder = require("../../db/utils/folderUtils");
+import DbUtilFolder from "../../db/utils/folderUtils";
 import DbUtilFile from "../../db/utils/fileUtils";
 import crypto from "crypto";
 import videoChecker from "../../utils/videoChecker"
@@ -23,6 +22,9 @@ import removeChunks from "../FileService/utils/removeChunks";
 import getBusboyData from "./utils/getBusboyData";
 
 import ChunkInterface from "./utils/ChunkInterface";
+
+const conn = mongoose.connection;
+
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
 

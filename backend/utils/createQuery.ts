@@ -1,6 +1,6 @@
-const createQuery = (owner, parent,sortBy, startAt, startAtDate,searchQuery, startAtName) => {
+const createQuery = (owner: string, parent: string, sortBy: string, startAt: number, startAtDate: number, searchQuery: string | RegExp, startAtName: string) => {
 
-    let query = {"metadata.owner": owner}
+    let query: any = {"metadata.owner": owner}
 
     if (searchQuery !== "") {
 
@@ -38,4 +38,4 @@ const createQuery = (owner, parent,sortBy, startAt, startAtDate,searchQuery, sta
 
 }
 
-module.exports = createQuery
+export default createQuery;

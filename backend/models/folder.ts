@@ -31,7 +31,8 @@ export interface FolderInterface extends Document {
     name: string,
     parent: string,
     owner: string,
-    parentList: string[]
+    parentList: string[],
+    _doc?: any
 }
 
 const Folder = mongoose.model<FolderInterface>("Folder", folderSchema);

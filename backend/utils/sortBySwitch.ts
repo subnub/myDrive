@@ -1,4 +1,4 @@
-const sortBySwitch = (sortBy) => {
+const sortBySwitch = (sortBy: string) => {
     switch(sortBy) {
 
         case "alp_asc":
@@ -12,4 +12,4 @@ const sortBySwitch = (sortBy) => {
     }
 }
 
-module.exports = sortBySwitch;
+export default sortBySwitch;

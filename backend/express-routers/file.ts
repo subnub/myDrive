@@ -2,9 +2,9 @@ import {Router} from "express";
 
 const router = Router();
 
-const auth = require("../middleware/auth");
-const tempAuth = require("../middleware/tempAuth")
-const tempAuthVideo = require("../middleware/tempAuthVideo")
+import auth from "../middleware/auth";
+import tempAuth from "../middleware/tempAuth";
+import tempAuthVideo from "../middleware/tempAuthVideo";
 
 import FileController from "../controllers/file";
 import FsFileController from "../controllers/fileSystem";

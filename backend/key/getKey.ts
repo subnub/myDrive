@@ -1,6 +1,6 @@
 const prompt = require('password-prompt')
 import env from "../enviroment/env";
-const crypto = require("crypto");
+import crypto from "crypto";
 
 const getKey = async() => {
 
@@ -11,7 +11,7 @@ const getKey = async() => {
 
     } else if (process.env.NODE_ENV) {
 
-        let password = await prompt("Enter Server Encryption Password: ", {method: "hide"});
+        let password: string = await prompt("Enter Server Encryption Password: ", {method: "hide"});
 
         password = crypto.createHash("md5").update(password).digest("hex");
 
@@ -27,4 +27,4 @@ const getKey = async() => {
     }
 }
 
-module.exports = getKey;
+export default getKey;

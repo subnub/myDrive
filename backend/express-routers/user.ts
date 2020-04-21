@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-const auth = require("../middleware/auth");
+import auth from "../middleware/auth";
 import UserController from "../controllers/user";
 
 const userController = new UserController();

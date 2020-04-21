@@ -15,14 +15,14 @@ const User = require("../../models/user");
 
 
 const Folder = require("../../models/folder");
-const sortBySwitch = require("../../utils/sortBySwitch")
-const createQuery = require("../../utils/createQuery");
+import sortBySwitch from "../../utils/sortBySwitch";
+import createQuery from "../../utils/createQuery";
 const ffmpeg = require("fluent-ffmpeg");
 const temp = require("temp").track();
 const progress = require("progress-stream");
 const fs = require("fs")
 import DbUtilFile from "../../db/utils/fileUtils/index";
-const DbUtilFolder = require("../../db/utils/folderUtils");
+import DbUtilFolder from "../../db/utils/folderUtils";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();

@@ -1,10 +1,12 @@
 class NotFoundError extends Error {
+
+    code: number;
     
-    constructor(args) {
+    constructor(args: any) {
         super(args);
 
         this.code = 404;
     }
 }
 
-module.exports = NotFoundError;
+export default NotFoundError;
