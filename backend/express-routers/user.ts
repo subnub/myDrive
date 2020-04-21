@@ -17,4 +17,4 @@ router.post("/user-service/create", userController.createUser);
 
 router.post("/user-service/change-password", auth, userController.changePassword);
 
-module.exports = router;
+export default router;

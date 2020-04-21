@@ -20,4 +20,4 @@ router.patch("/folder-service/rename", auth, folderController.renameFolder);
 
 router.patch("/folder-service/move", auth, folderController.moveFolder);
 
-module.exports = router;
+export default router;

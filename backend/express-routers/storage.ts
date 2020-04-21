@@ -6,4 +6,4 @@ const storageController = new StorageController();
 
 router.get("/storage-service/info", auth, storageController.getStorageInfo);
 
-module.exports = router;
+export default router;

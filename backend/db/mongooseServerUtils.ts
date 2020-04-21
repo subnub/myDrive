@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
-const env = require("../enviroment/env");
+import mongoose from "mongoose";
+import env from "../enviroment/env";
 
-mongoose.connect(env.mongoURL, {
+mongoose.connect(env.mongoURL!, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
@@ -9,4 +9,4 @@ mongoose.connect(env.mongoURL, {
     keepAlive: true,
 })
 
-module.exports = mongoose;
+export default mongoose;

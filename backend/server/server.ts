@@ -1,22 +1,22 @@
-const express = require("express");
+import express, {Request, Response} from "express";
+import path from "path";
+import userRouter from "../express-routers/user";
+import fileRouter from "../express-routers/file";
+import folderRouter from "../express-routers/folder";
+import storageRouter from "../express-routers/storage";
+import bodyParser from "body-parser";
+import https from "https";
+import fs from "fs";
+import helmet from "helmet";
+import busboy from "connect-busboy";
+import compression from "compression";
+import http from "http";
+
 const app = express();
-const path = require("path")
 const publicPath = path.join(__dirname, "..", "..", "public");
-const userRouter = require("../express-routers/user")
-const fileRouter = require("../express-routers/file")
-const folderRouter = require("../express-routers/folder");
-const storageRouter = require("../express-routers/storage");
-const bodyParser  = require('body-parser');
-const https = require("https");
-const fs = require("fs");
-const helmet = require("helmet");
-const busboy = require("connect-busboy")
-const compression = require("compression");
-const http = require("http");
 
-
-let server;
-let serverHttps;
+let server: any;
+let serverHttps: any;
 
 if (process.env.NODE_ENV === 'production') {
 
@@ -34,13 +34,9 @@ if (process.env.NODE_ENV === 'production') {
     serverHttps = https.createServer( options, app );
 }
 
-
 server = http.createServer(app);
 
-
-
 require("../db/mongoose");
-
 
 app.use(helmet())
 app.use(compression());
@@ -61,23 +57,9 @@ const nodeMode = process.env.NODE_ENV ? "Production" : "Development/Testing";
 console.log("Node Enviroment Mode:", nodeMode);
 
 
-app.get("*", (req, res) => {
+app.get("*", (_: Request, res: Response) => {
 
     res.sendFile(path.join(publicPath, "index.html"))
 })
 
-
-if (process.env.NODE_ENV === 'production') {
-
-    module.exports = {server, serverHttps}; 
-
-} else {
-
-    module.exports = server; 
-}
-
-
-
-
-
-
+export default {server, serverHttps};

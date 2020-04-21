@@ -69,4 +69,4 @@ router.delete("/file-service/remove/token-video/:tempToken", auth, fileControlle
 
 router.delete("/file-service/remove", auth, fileController.deleteFile);
 
-module.exports = router;
+export default router;
