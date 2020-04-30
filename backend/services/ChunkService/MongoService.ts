@@ -16,6 +16,7 @@ import awaitStream from "./utils/awaitStream";
 import awaitUploadStream from "./utils/awaitUploadStream";
 
 import User, { UserInterface } from "../../models/user";
+import Folder from "../../models/folder";
 import { FileInterface } from "../../models/file";
 import { Stream } from "stream";
 import removeChunks from "../FileService/utils/removeChunks";
@@ -311,6 +312,79 @@ class MongoService implements ChunkInterface {
         // }
     
         await bucket.delete(new ObjectID(fileID));
+    }
+
+    deleteFolder = async(userID: string, folderID: string, parentList: string[]) => {
+        
+        let bucket = new mongoose.mongo.GridFSBucket(conn.db, {
+            chunkSizeBytes: 1024 * 255
+        });
+
+        const parentListString = parentList.toString()
+    
+        await Folder.deleteMany({"owner": userID, "parentList": { $all: parentList}})
+        await Folder.deleteMany({"owner": userID, "_id": folderID});
+
+        const fileList = await dbUtilsFile.getFileListByParent(userID, parentListString);
+    
+        if (!fileList) throw new NotFoundError("Delete File List Not Found");
+        
+        for (let i = 0; i < fileList.length; i++) {
+
+            const currentFile = fileList[i];
+
+            try {
+                
+                if (currentFile.metadata.thumbnailID) {
+                    
+                    await Thumbnail.deleteOne({_id: currentFile.metadata.thumbnailID});
+                }
+                    
+                await bucket.delete(new ObjectID(currentFile._id));   
+
+            } catch (e) {
+
+                console.log("Could not delete file", currentFile.filename, currentFile._id);
+            }
+           
+        } 
+    }
+
+    deleteAll = async(userID: string) => {
+
+        console.log("remove all request")
+
+        let bucket = new mongoose.mongo.GridFSBucket(conn.db, {
+            chunkSizeBytes: 1024 * 255
+        });
+
+        const videoBucket = new mongoose.mongo.GridFSBucket(conn.db, {
+            bucketName: "videos"
+        });
+
+        await Folder.deleteMany({"owner": userID});
+
+        const fileList = await dbUtilsFile.getFileListByOwner(userID);
+
+        if (!fileList) throw new NotFoundError("Delete All File List Not Found Error");
+
+        for (let i = 0; i < fileList.length; i++) {
+            const currentFile = fileList[i];
+
+            try {
+
+                if (currentFile.metadata.thumbnailID) {
+
+                    await Thumbnail.deleteOne({_id: currentFile.metadata.thumbnailID})
+                }
+    
+                await bucket.delete(new ObjectID(currentFile._id));
+
+            } catch (e) {
+
+                console.log("Could Not Remove File", currentFile.filename, currentFile._id);
+            }
+        }
     }
 }
 

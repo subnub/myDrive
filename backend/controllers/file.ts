@@ -1,16 +1,11 @@
 import { Request, Response } from "express";
-
-//const FileService = require("../services/FileService")
 import FileService from "../services/FileService";
+import MongoService from "../services/ChunkService/MongoService";
+import FileSystemService from "../services/ChunkService/FileSystemService";
+import S3Service from "../services/ChunkService/S3Service";
+import {UserInterface} from "../models/user";
 
 const fileService = new FileService()
-
-
-import MongoService from "../services/ChunkService/MongoService";
-const mongoService = new MongoService();
-
-
-import {UserInterface} from "../models/user";
 
 interface RequestType extends Request {
     user?: UserInterface,
@@ -18,12 +13,15 @@ interface RequestType extends Request {
     busboy: any,
 }
 
+type ChunkServiceType = MongoService | FileSystemService | S3Service;
+
 class FileController {
 
-    // fileService: ;
+    chunkService: ChunkServiceType;
 
-    constructor() {
+    constructor(chunkService: ChunkServiceType) {
 
+        this.chunkService = chunkService;
     }
 
     getThumbnail = async(req: RequestType, res: Response) => {
@@ -40,8 +38,9 @@ class FileController {
             const user = req.user;
             const id = req.params.id;
     
-            const decryptedThumbnail = await mongoService.getThumbnail(user, id);
-                
+            const decryptedThumbnail = await this.chunkService.getThumbnail(user, id);
+        
+
             res.send(decryptedThumbnail);
     
         } catch (e) {
@@ -65,7 +64,7 @@ class FileController {
             const user = req.user;
             const fileID = req.params.id;
 
-            await mongoService.getFullThumbnail(user, fileID, res);
+            await this.chunkService.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
             const code = e.code || 500;
@@ -88,7 +87,7 @@ class FileController {
             
             req.pipe(busboy);
     
-            const file = await mongoService.uploadFile(user, busboy, req);
+            const file = await this.chunkService.uploadFile(user, busboy, req);
          
             res.send(file);
             
@@ -108,7 +107,7 @@ class FileController {
             const ID = req.params.id;
             const tempToken = req.params.tempToken;
     
-            await mongoService.getPublicDownload(ID, tempToken, res);
+            await this.chunkService.getPublicDownload(ID, tempToken, res);
     
         } catch (e) {
     
@@ -356,83 +355,6 @@ class FileController {
         }
     }
 
-    // async transcodeVideo(req: RequestType, res: Response) {
-
-    //     if (!req.user) {
-
-    //         return;
-    //     }
-    
-    //     try {
-    
-    //         console.log("transcode request", req.body.file._id)
-
-    //         const user = req.user;
-    //         const body = req.body;
-    
-    //         await fileService.transcodeVideo(user, body);
-
-    //         res.send("Finished");
-    
-    //     } catch (e) {
-            
-    //         const code = e.code || 500;
-    //         console.log(e.message, e.exception)
-    //         return res.status(code).send();
-    //     }
-    // }
-
-    // async removeTranscodeVideo(req: RequestType, res: Response) {
-
-    //     if (!req.user) {
-
-    //         return;
-    //     }
-    
-    //     try {
-    
-    //         const fileID = req.body.id;
-    //         const userID = req.user._id;
-                
-    //         await fileService.removeTranscodeVideo(userID, fileID);
-
-    //         res.send();
-    
-    //     } catch (e) {
-    
-    //         const code = e.code || 500;
-
-    //         console.log(e);
-    //         res.status(code).send()
-    //     }
-    // }
-
-    // async streamTranscodedVideo(req: RequestType, res: Response) {
-        
-    //     if (!req.auth || !req.user) {
-    //         return;
-    //     }
-
-    //     try {
-
-    //         console.log("stream request transcoded", req.params.id)
-
-    //         const fileID = req.params.id;
-    //         const userID = req.user._id;
-    //         const headers = req.headers;
-
-    //         await fileService.streamTranscodedVideo(userID, fileID, headers, res);
-
-    //     } catch (e) {
-            
-    //         const code = e.code || 500;
-    //         const message = e.message || e;
-
-    //         console.log(message, e);
-    //         res.status(code).send();
-    //     }
-    // }
-
     streamVideo = async(req: RequestType, res: Response) => {
 
         if (!req.auth || !req.user) {
@@ -447,7 +369,7 @@ class FileController {
             
             console.log("stream request", req.params.id)
     
-            await mongoService.streamVideo(user, fileID, headers, res);
+            await this.chunkService.streamVideo(user, fileID, headers, res);
     
         } catch (e) {
 
@@ -473,8 +395,7 @@ class FileController {
             const user = req.user;
             const fileID = req.params.id;
 
-            //await fileService.downloadFile(user, fileID, res);
-            await mongoService.downloadFile(user, fileID, res);
+            await this.chunkService.downloadFile(user, fileID, res);
     
         } catch (e) {
             
@@ -578,7 +499,7 @@ class FileController {
             const userID = req.user._id;
             const fileID = req.body.id;
     
-            await mongoService.deleteFile(userID, fileID);
+            await this.chunkService.deleteFile(userID, fileID);
     
             res.send()
     

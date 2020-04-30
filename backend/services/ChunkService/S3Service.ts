@@ -24,6 +24,7 @@ import fixStartChunkLength from "./utils/fixStartChunkLength";
 import fixEndChunkLength from "./utils/fixEndChunkLength";
 import getPrevIVS3 from "./utils/getPrevIVS3";
 import awaitStreamVideo from "./utils/awaitStreamVideo";
+import Folder from "../../models/folder";
 
 import DbUtilFile from "../../db/utils/fileUtils/index";
 const dbUtilsFile = new DbUtilFile();
@@ -315,6 +316,77 @@ class S3Service implements ChunkInterface {
         const params: any = {Bucket: env.s3Bucket, Key: file.metadata.s3ID!};
         await removeChunksS3(params);
         await File.deleteOne({_id: file._id});
+    }
+
+    deleteFolder = async(userID: string, folderID: string, parentList: string[]) => {
+
+        const parentListString = parentList.toString()
+    
+        await Folder.deleteMany({"owner": userID, "parentList": { $all: parentList}})
+        await Folder.deleteMany({"owner": userID, "_id": folderID});
+
+        const fileList = await dbUtilsFile.getFileListByParent(userID, parentListString);
+    
+        if (!fileList) throw new NotFoundError("Delete File List Not Found");
+        
+        for (let i = 0; i < fileList.length; i++) {
+
+            const currentFile = fileList[i];
+
+            try {
+                
+                if (currentFile.metadata.thumbnailID) {
+
+                    const thumbnail = await Thumbnail.findById(currentFile.metadata.thumbnailID) as ThumbnailInterface;
+                    const paramsThumbnail: any = {Bucket: env.s3Bucket, Key: thumbnail.s3ID!};
+                    await removeChunksS3(paramsThumbnail);
+                    await Thumbnail.deleteOne({_id: currentFile.metadata.thumbnailID});
+                }
+                    
+                const params: any = {Bucket: env.s3Bucket, Key: currentFile.metadata.s3ID!};
+                await removeChunksS3(params);
+                await File.deleteOne({_id: currentFile._id});
+
+            } catch (e) {
+
+                console.log("Could not delete file", currentFile.filename, currentFile._id);
+            }
+           
+        } 
+    }
+
+    deleteAll = async(userID: string) => {
+
+        console.log("remove all request")
+
+        await Folder.deleteMany({"owner": userID});
+
+        const fileList = await dbUtilsFile.getFileListByOwner(userID);
+
+        if (!fileList) throw new NotFoundError("Delete All File List Not Found Error");
+
+        for (let i = 0; i < fileList.length; i++) {
+            const currentFile = fileList[i];
+
+            try {
+
+                if (currentFile.metadata.thumbnailID) {
+
+                    const thumbnail = await Thumbnail.findById(currentFile.metadata.thumbnailID) as ThumbnailInterface;
+                    const paramsThumbnail: any = {Bucket: env.s3Bucket, Key: thumbnail.s3ID!};
+                    await removeChunksS3(paramsThumbnail);
+                    await Thumbnail.deleteOne({_id: currentFile.metadata.thumbnailID});
+                }
+    
+                const params: any = {Bucket: env.s3Bucket, Key: currentFile.metadata.s3ID!};
+                await removeChunksS3(params);
+                await File.deleteOne({_id: currentFile._id});
+
+            } catch (e) {
+
+                console.log("Could Not Remove File", currentFile.filename, currentFile._id);
+            }
+        }
     }
 }
 

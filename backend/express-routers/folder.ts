@@ -1,8 +1,32 @@
 import {Router} from "express";
 const router = Router();
 import auth from "../middleware/auth";
-const FolderController = require("../controllers/folder");
-const folderController = new FolderController();
+import env from "../enviroment/env";
+import MongoService from "../services/ChunkService/MongoService";
+import FileSystemService from "../services/ChunkService/FileSystemService";
+import S3Service from "../services/ChunkService/S3Service";
+import FolderController from "../controllers/folder";
+
+let folderController: FolderController;
+
+if (env.dbType === "mongo") {
+
+    const mongoService = new MongoService();
+    folderController = new FolderController(mongoService);
+
+} else if (env.dbType === "fs") {
+
+    const fileSystemService = new FileSystemService();
+    folderController = new FolderController(fileSystemService);
+
+} else {
+
+    const s3Service = new S3Service();
+    folderController = new FolderController(s3Service);
+}
+
+//import FolderController from "../controllers/folder";
+//const folderController = new FolderController();
 
 router.post("/folder-service/upload", auth, folderController.uploadFolder);
 

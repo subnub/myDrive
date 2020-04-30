@@ -7,18 +7,27 @@ import tempAuth from "../middleware/tempAuth";
 import tempAuthVideo from "../middleware/tempAuthVideo";
 
 import FileController from "../controllers/file";
-import FsFileController from "../controllers/fileSystem";
-import S3FileController from "../controllers/fileS3";
 import env from "../enviroment/env";
+import MongoService from "../services/ChunkService/MongoService";
+import FileSystemService from "../services/ChunkService/FileSystemService";
+import S3Service from "../services/ChunkService/S3Service";
 
-let fileController: FileController | FsFileController | S3FileController;
+let fileController: FileController;
 
 if (env.dbType === "mongo") {
-    fileController = new FileController();
+
+    const mongoService = new MongoService();
+    fileController = new FileController(mongoService);
+
 } else if (env.dbType === "fs") {
-    fileController = new FsFileController();
+
+    const fileSystemService = new FileSystemService();
+    fileController = new FileController(fileSystemService);
+
 } else {
-    fileController = new S3FileController();
+
+    const s3Service = new S3Service();
+    fileController = new FileController(s3Service);
 }
 
 //const fileController = new FileController()

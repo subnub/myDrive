@@ -24,6 +24,7 @@ import removeTempToken from "./utils/removeTempToken";
 import getPrevIVFS from "./utils/getPrevIVFS";
 import awaitStreamVideo from "./utils/awaitStreamVideo";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
+import Folder from "../../models/folder";
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -313,6 +314,77 @@ class FileSystemService implements ChunkInterface {
 
         await removeChunksFS(file.metadata.filePath!);
         await File.deleteOne({_id: file._id});
+    }
+
+    deleteFolder = async(userID: string, folderID: string, parentList: string[]) => {
+
+        const parentListString = parentList.toString()
+    
+        await Folder.deleteMany({"owner": userID, "parentList": { $all: parentList}})
+        await Folder.deleteMany({"owner": userID, "_id": folderID});
+
+        const fileList = await dbUtilsFile.getFileListByParent(userID, parentListString);
+    
+        if (!fileList) throw new NotFoundError("Delete File List Not Found");
+        
+        for (let i = 0; i < fileList.length; i++) {
+
+            const currentFile = fileList[i];
+
+            try {
+                
+                if (currentFile.metadata.thumbnailID) {
+
+                    const thumbnail = await Thumbnail.findById(currentFile.metadata.thumbnailID) as ThumbnailInterface;
+                    const thumbnailPath = thumbnail.path!;
+                    await removeChunksFS(thumbnailPath);
+                    
+                    await Thumbnail.deleteOne({_id: currentFile.metadata.thumbnailID});
+                }
+                    
+                await removeChunksFS(currentFile.metadata.filePath!);
+                await File.deleteOne({_id: currentFile._id});
+
+            } catch (e) {
+
+                console.log("Could not delete file", currentFile.filename, currentFile._id);
+            }
+           
+        } 
+    }
+
+    deleteAll = async(userID: string) => {
+
+        console.log("remove all request")
+
+        await Folder.deleteMany({"owner": userID});
+
+        const fileList = await dbUtilsFile.getFileListByOwner(userID);
+
+        if (!fileList) throw new NotFoundError("Delete All File List Not Found Error");
+
+        for (let i = 0; i < fileList.length; i++) {
+            const currentFile = fileList[i];
+
+            try {
+
+                if (currentFile.metadata.thumbnailID) {
+
+                    const thumbnail = await Thumbnail.findById(currentFile.metadata.thumbnailID) as ThumbnailInterface;
+                    const thumbnailPath = thumbnail.path!;
+                    await removeChunksFS(thumbnailPath);
+                    
+                    await Thumbnail.deleteOne({_id: currentFile.metadata.thumbnailID});
+                }
+    
+                await removeChunksFS(currentFile.metadata.filePath!);
+                await File.deleteOne({_id: currentFile._id});
+
+            } catch (e) {
+
+                console.log("Could Not Remove File", currentFile.filename, currentFile._id);
+            }
+        }
     }
 }
 

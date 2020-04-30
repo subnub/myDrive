@@ -2,16 +2,24 @@ import FolderService from "../services/FolderService";
 const folderService = new FolderService();
 import { Request, Response } from "express";
 import {UserInterface} from "../models/user";
+import MongoService from "../services/ChunkService/MongoService";
+import FileSystemService from "../services/ChunkService/FileSystemService";
+import S3Service from "../services/ChunkService/S3Service";
 
 interface RequestType extends Request {
     user?: UserInterface,
     auth?: any,
 }
 
+type ChunkServiceType = MongoService | FileSystemService | S3Service;
+
 class FolderController {
 
-    constructor() {
+    chunkService: ChunkServiceType;
 
+    constructor(chunkService: ChunkServiceType) {
+
+        this.chunkService = chunkService;
     }
 
     uploadFolder = async(req: RequestType, res: Response) => {
@@ -51,7 +59,7 @@ class FolderController {
             const folderID = req.body.id; 
             const parentList = req.body.parentList
 
-            await folderService.deleteFolder(userID, folderID, parentList);
+            await this.chunkService.deleteFolder(userID, folderID, parentList);
     
             res.send();
 
@@ -75,7 +83,7 @@ class FolderController {
     
             const userID = req.user._id;
 
-            await folderService.deleteAll(userID);
+            await this.chunkService.deleteAll(userID);
 
             res.send();
 
@@ -215,4 +223,4 @@ class FolderController {
     }
 }
 
-module.exports = FolderController;
+export default FolderController;
