@@ -20,6 +20,10 @@ import imageChecker from "../../utils/imageChecker";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import streamToBuffer from "../../utils/streamToBuffer";
 import removeChunksS3 from "../FileService/utils/removeChunksS3";
+import fixStartChunkLength from "./utils/fixStartChunkLength";
+import fixEndChunkLength from "./utils/fixEndChunkLength";
+import getPrevIVS3 from "./utils/getPrevIVS3";
+import awaitStreamVideo from "./utils/awaitStreamVideo";
 
 import DbUtilFile from "../../db/utils/fileUtils/index";
 const dbUtilsFile = new DbUtilFile();
@@ -159,20 +163,39 @@ class S3Service implements ChunkInterface {
             'Content-Length': chunksize,
             'Content-Type': 'video/mp4'}
 
-        const params: any = {Bucket: env.s3Bucket, Key: currentFile.metadata.s3ID!, Range: `bytes=${start}-${end}`};
+        let currentIV = IV;
+
+        let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+    
+        if (+start === 0) {
+        
+            fixedStart = 0;
+        }
+    
+        const fixedEnd = fileSize % 16 === 0 ? fileSize : fixEndChunkLength(fileSize); //end % 16 === 0 ? end + 15: (fixEndChunkLength(end) - 1) + 16;
+        
+        const differenceStart = start - fixedStart;
+    
+        if (fixedStart !== 0 && start !== 0) {
+        
+            currentIV = await getPrevIVS3(fixedStart - 16, currentFile.metadata.s3ID!);
+        }
+
+        const params: any = {Bucket: env.s3Bucket, Key: currentFile.metadata.s3ID!, Range: `bytes=${fixedStart}-${fixedEnd}`};
 
         const s3ReadStream = s3.getObject(params).createReadStream();
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
-        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, currentIV);
 
         res.writeHead(206, head);
 
         const allStreamsToErrorCatch = [s3ReadStream, decipher];
 
-        await awaitStream(s3ReadStream.pipe(decipher), res, allStreamsToErrorCatch);
-        
+        s3ReadStream.pipe(decipher);
+
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
     }
 
     getThumbnail = async(user: UserInterface, id: string) => { 

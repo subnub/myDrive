@@ -20,6 +20,10 @@ import streamToBuffer from "../../utils/streamToBuffer";
 import User from "../../models/user";
 import env from "../../enviroment/env";
 import { removeChunksFS } from "./utils/awaitUploadStreamFS";
+import removeTempToken from "./utils/removeTempToken";
+import getPrevIVFS from "./utils/getPrevIVFS";
+import awaitStreamVideo from "./utils/awaitStreamVideo";
+import fixStartChunkLength from "./utils/fixStartChunkLength";
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -209,29 +213,51 @@ class FileSystemService implements ChunkInterface {
         let end = parts[1] 
             ? parseInt(parts[1], 10)
             : fileSize-1
-        const chunksize = (end-start)+1
         const IV = currentFile.metadata.IV.buffer
-                
+        const chunksize = (end-start)+1
+
         let head = {
             'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
             'Accept-Ranges': 'bytes',
             'Content-Length': chunksize,
             'Content-Type': 'video/mp4'}
 
-        
-        const readStream = fs.createReadStream(currentFile.metadata.filePath!, 
-            {start: start,
-            end: end});
+        let currentIV = IV;
+
+        let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+
+        if (+start === 0) {
+    
+            fixedStart = 0;
+        }
+    
+        const fixedEnd = currentFile.length; //end % 16 === 0 ? end + 15: (fixEndChunkLength(end) - 1) + 16;
+    
+        const differenceStart = start - fixedStart;
+
+        if (fixedStart !== 0 && start !== 0) {
+    
+            currentIV = await getPrevIVFS(fixedStart - 16, currentFile.metadata.filePath!);
+        }
+            
+        const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
+            start: fixedStart,
+            end: fixedEnd,
+        });
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
-        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, currentIV);
+
+        decipher.setAutoPadding(false);
 
         res.writeHead(206, head);
 
         const allStreamsToErrorCatch = [readStream, decipher];
 
-        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
+        readStream.pipe(decipher);
+
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
     }
 
     getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {

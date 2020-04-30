@@ -22,6 +22,9 @@ import removeChunks from "../FileService/utils/removeChunks";
 import getBusboyData from "./utils/getBusboyData";
 
 import ChunkInterface from "./utils/ChunkInterface";
+import fixStartChunkLength from "./utils/fixStartChunkLength";
+import getPrevIVMongo from "./utils/getPrevIVMongo";
+import awaitStreamVideo from "./utils/awaitStreamVideo";
 
 const conn = mongoose.connection;
 
@@ -243,24 +246,45 @@ class MongoService implements ChunkInterface {
             'Content-Length': chunksize,
             'Content-Type': 'video/mp4'}
 
+        let currentIV = IV;
+
+        let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+
+        if (+start === 0) {
+    
+            fixedStart = 0;
+        }
+
+        const fixedEnd = currentFile.length; //end % 16 === 0 ? end + 15: (fixEndChunkLength(end) - 1) + 16;
+    
+        const differenceStart = start - fixedStart;
+
+        if (fixedStart !== 0 && start !== 0) {
+    
+            currentIV = await getPrevIVMongo(fixedStart - 16, fileID);
+        }
+        
         const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
             chunkSizeBytes: 1024
         });
         
         const readStream = bucket.openDownloadStream(new ObjectID(fileID), {
-            start: start,
-            end: end
+            start: fixedStart,
+            end: fixedEnd,
         });
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
-        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, currentIV);
+        decipher.setAutoPadding(false);
 
         res.writeHead(206, head);
 
         const allStreamsToErrorCatch = [readStream, decipher];
 
-        await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
+        readStream.pipe(decipher);
+
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
     }
 
     deleteFile = async(userID: string, fileID: string) => {

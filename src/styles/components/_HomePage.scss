@@ -23,7 +23,11 @@
     overflow-x: hidden;
 
     @media (max-width: $desktop-breakpoint) {
-        width: 100vw;
+        // margin-top: 77px;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        width: unset;
     }
 
 }
@@ -36,12 +40,26 @@
     overflow: hidden;
 }
 
+.outter-wrapper {
+    height: 100vh;
+    width: 100vw;
+}
+
 .main-page {
     background: white;
     height: 100vh;
     width: 100vw;
     display: inline-flex;
     padding-top: 71px;
+
+    @media (max-width: $desktop-breakpoint) {
+        background: #fff;
+        /* height: 100vh; */
+        height: calc(100% - 80px);
+        width: 100vw;
+        display: inline-flex;
+        padding: 0;
+    }
 }
 
 

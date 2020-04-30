@@ -22,7 +22,7 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
         const token = req.header("Authorization")!.replace("Bearer ", "");
 
-        const decoded = await jwt.verify(token, env.password!) as jwtType;
+        const decoded = jwt.verify(token, env.password!) as jwtType;
 
         const iv = decoded.iv;
         

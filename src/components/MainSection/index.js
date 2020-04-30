@@ -74,7 +74,17 @@ class MainSectionContainer extends React.Component {
             document.body.appendChild(link);
             link.href = finalUrl;
             link.setAttribute('type', 'hidden');
+            link.setAttribute("download", true);
             link.click();
+
+            // const form = document.createElement("form");
+            // form.action = finalUrl;
+            // form.method = "GET";
+            // form.setAttribute("type", "hidden");
+
+            // document.body.append(form);
+
+            // form.submit();
 
         }).catch((err) => {
             console.log(err)

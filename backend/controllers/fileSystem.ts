@@ -14,6 +14,7 @@ interface RequestType extends Request {
     user?: UserInterface,
     auth?: any,
     busboy: any,
+    encryptedTempToken?: any,
 }
 
 class FileSystemController {
@@ -314,6 +315,7 @@ class FileSystemController {
     
         try {
     
+            console.log("Incoming Video Stream Request");
             const user = req.user;
             const cookie = req.headers.uuid as string;
     
@@ -442,8 +444,6 @@ class FileSystemController {
             const user = req.user;
             const fileID = req.params.id;
             const headers = req.headers;
-            
-            console.log("stream request", req.params.id)
     
             await fileSystemService.streamVideo(user, fileID, headers, res);
     
@@ -465,13 +465,9 @@ class FileSystemController {
         }
     
         try {
-    
-            console.log("download request")
-
             const user = req.user;
             const fileID = req.params.id;
 
-            //await fileService.downloadFile(user, fileID, res);
             await fileSystemService.downloadFile(user, fileID, res);
     
         } catch (e) {

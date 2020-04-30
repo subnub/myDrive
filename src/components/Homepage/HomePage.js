@@ -8,7 +8,7 @@ import PhotoViewer from "../PhotoViewer"
 
 const HomePage = (props) => (
 
-    <div>
+    <div className="outter-wrapper">
         <Header goHome={props.goHome}/>
         <div className="main-page" >
 

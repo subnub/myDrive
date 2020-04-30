@@ -6,9 +6,21 @@
     border-bottom: 1px solid #dadce0;
     justify-content: space-between;
     /* display: none; */
-    position: absolute;
+    position: fixed;
     /* top: 0; */
     width: 100%;
+
+    @media (max-width: $desktop-breakpoint) {
+        text-align: center;
+        display: flex;
+        flex-direction: row;
+        border-bottom: 1px solid #dadce0;
+        justify-content: space-between;
+        position: initial;
+        width: 100%;
+        height: 80px;
+        padding: 0;
+    }
 }
 
 .header__title {

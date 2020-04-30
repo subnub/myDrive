@@ -24,7 +24,7 @@ const tempAuthVideo = async(req: RequestType, res: Response, next: NextFunction)
 
         const token = req.params.tempToken;
 
-        const decoded = await jwt.verify(token, env.password!) as jwtType;
+        const decoded = jwt.verify(token, env.password!) as jwtType;
 
         const iv = decoded.iv;
 
