@@ -74,14 +74,13 @@ export interface FileInterface extends Document {
         isVideo: boolean,
         thumbnailID?: string,
         size: number,
-        IV: any,
+        IV: Buffer,
         linkType?: 'one' | 'public',
         link?: string,
         filePath?: string,
         s3ID?: string,
     }
 }
-
 
 const File = mongoose.model<FileInterface>("fs.files", fileSchema);
 

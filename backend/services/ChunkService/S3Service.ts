@@ -116,7 +116,7 @@ class S3Service implements ChunkInterface {
 
         if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
 
-        const IV = currentFile.metadata.IV.buffer
+        const IV = currentFile.metadata.IV.buffer as Buffer;
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
@@ -156,7 +156,7 @@ class S3Service implements ChunkInterface {
             ? parseInt(parts[1], 10)
             : fileSize-1
         const chunksize = (end-start)+1
-        const IV = currentFile.metadata.IV.buffer
+        const IV = currentFile.metadata.IV.buffer as Buffer;
                 
         let head = {
             'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
@@ -179,7 +179,7 @@ class S3Service implements ChunkInterface {
     
         if (fixedStart !== 0 && start !== 0) {
         
-            currentIV = await getPrevIVS3(fixedStart - 16, currentFile.metadata.s3ID!);
+            currentIV = await getPrevIVS3(fixedStart - 16, currentFile.metadata.s3ID!) as Buffer;
         }
 
         const params: any = {Bucket: env.s3Bucket, Key: currentFile.metadata.s3ID!, Range: `bytes=${fixedStart}-${fixedEnd}`};
@@ -238,7 +238,7 @@ class S3Service implements ChunkInterface {
         if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
         const password = user.getEncryptionKey();
-        const IV = file.metadata.IV.buffer
+        const IV = file.metadata.IV.buffer as Buffer;
 
         if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
 
@@ -275,7 +275,7 @@ class S3Service implements ChunkInterface {
 
         if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
 
-        const IV = file.metadata.IV.buffer
+        const IV = file.metadata.IV.buffer as Buffer;
                    
         const params: any = {Bucket: env.s3Bucket, Key: file.metadata.s3ID!};
 

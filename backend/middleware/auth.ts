@@ -5,10 +5,8 @@ import {Request, Response, NextFunction} from "express";
 
 interface RequestType extends Request {
     user?: UserInterface,
-    auth?: any,
-    busboy: any,
-    token?: any,
-    encryptedToken?: any,
+    token?: string,
+    encryptedToken?: string,
 }
 
 type jwtType = {

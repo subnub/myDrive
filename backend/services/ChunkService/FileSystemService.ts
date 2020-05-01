@@ -119,7 +119,7 @@ class FileSystemService implements ChunkInterface {
 
         const filePath = currentFile.metadata.filePath!;
 
-        const IV = currentFile.metadata.IV.buffer
+        const IV = currentFile.metadata.IV.buffer as Buffer;
       
         const readStream = fs.createReadStream(filePath);
 
@@ -174,7 +174,7 @@ class FileSystemService implements ChunkInterface {
         if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
         const password = user.getEncryptionKey();
-        const IV = file.metadata.IV.buffer
+        const IV = file.metadata.IV.buffer as Buffer;
 
         if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
 
@@ -214,7 +214,7 @@ class FileSystemService implements ChunkInterface {
         let end = parts[1] 
             ? parseInt(parts[1], 10)
             : fileSize-1
-        const IV = currentFile.metadata.IV.buffer
+        const IV = currentFile.metadata.IV.buffer as Buffer;
         const chunksize = (end-start)+1
 
         let head = {
@@ -238,7 +238,7 @@ class FileSystemService implements ChunkInterface {
 
         if (fixedStart !== 0 && start !== 0) {
     
-            currentIV = await getPrevIVFS(fixedStart - 16, currentFile.metadata.filePath!);
+            currentIV = await getPrevIVFS(fixedStart - 16, currentFile.metadata.filePath!) as Buffer;
         }
             
         const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
@@ -275,7 +275,7 @@ class FileSystemService implements ChunkInterface {
 
         if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
 
-        const IV = file.metadata.IV.buffer
+        const IV = file.metadata.IV.buffer as Buffer;
                    
         const readStream = fs.createReadStream(file.metadata.filePath!);
         

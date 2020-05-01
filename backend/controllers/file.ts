@@ -9,7 +9,7 @@ const fileService = new FileService()
 
 interface RequestType extends Request {
     user?: UserInterface,
-    auth?: any,
+    auth?: boolean,
     busboy: any,
 }
 

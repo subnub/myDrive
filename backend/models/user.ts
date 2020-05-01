@@ -1,8 +1,8 @@
 import mongoose, {Document} from "mongoose";
-const validator = require("validator");
-const crypto = require("crypto");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+import validator from "validator";
+import crypto from "crypto";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import env from "../enviroment/env";
 
 const userSchema = new mongoose.Schema({
@@ -66,7 +66,7 @@ export interface UserInterface extends Document {
     tempTokens: any[],
     privateKey?: string,
     publicKey?: string,
-    token?:string,
+    token?: string,
 
     getEncryptionKey: () => Buffer | undefined;
     generateTempAuthToken: () => any;
@@ -77,12 +77,6 @@ export interface UserInterface extends Document {
     generateEncryptionKeys: () => Promise<void>;
     changeEncryptionKey: (randomKey: Buffer) => void; 
 }
-
-// userSchema.virtual("files", {
-//     ref: "fs.files",
-//     localField: "_id"
-// })
-
 
 userSchema.pre("save", async function(this: any, next: any) {
     
@@ -132,8 +126,7 @@ userSchema.methods.generateAuthToken = async function() {
     const iv = crypto.randomBytes(16);
 
     const user = this; 
-    let token = jwt.sign({_id:user._id.toString(), iv}, env.password);
-    const publicKey = user.publicKey;
+    let token = jwt.sign({_id:user._id.toString(), iv}, env.password!);
 
     const encryptionKey = user.getEncryptionKey();
 
@@ -151,10 +144,9 @@ userSchema.methods.encryptToken = function(token: string, key: string, iv: any) 
 
     const TOKEN_CIPHER_KEY = crypto.createHash('sha256').update(key).digest();
     const cipher = crypto.createCipheriv('aes-256-cbc', TOKEN_CIPHER_KEY, iv);
-    let encryptedText = cipher.update(token);
-    encryptedText = Buffer.concat([encryptedText, cipher.final()]).toString("hex");
+    const encryptedText = cipher.update(token);
 
-    return encryptedText;
+    return Buffer.concat([encryptedText, cipher.final()]).toString("hex");;
 }
 
 userSchema.methods.decryptToken = function(encryptedToken: any, key: string, iv: any) {
@@ -165,17 +157,16 @@ userSchema.methods.decryptToken = function(encryptedToken: any, key: string, iv:
     const TOKEN_CIPHER_KEY = crypto.createHash('sha256').update(key).digest();  
     const decipher = crypto.createDecipheriv('aes-256-cbc', TOKEN_CIPHER_KEY, iv)
     
-    let tokenDecrypted = decipher.update(encryptedToken);
-    tokenDecrypted = Buffer.concat([tokenDecrypted, decipher.final()]).toString();
+    const tokenDecrypted = decipher.update(encryptedToken);
 
-    return tokenDecrypted;
+    return Buffer.concat([tokenDecrypted, decipher.final()]).toString();
 }
 
 userSchema.methods.generateEncryptionKeys = async function() {
 
     const user = this;
     const userPassword = user.password;
-    const masterPassword = env.key;
+    const masterPassword = env.key!;
 
     const randomKey = crypto.randomBytes(32);
 
@@ -187,10 +178,9 @@ userSchema.methods.generateEncryptionKeys = async function() {
 
     const MASTER_CIPHER_KEY = crypto.createHash('sha256').update(masterPassword).digest();
     const masterCipher = crypto.createCipheriv('aes-256-cbc', MASTER_CIPHER_KEY, iv);
-    let masterEncryptedText = masterCipher.update(encryptedText);
-    masterEncryptedText = Buffer.concat([masterEncryptedText, masterCipher.final()]).toString("hex");
+    const masterEncryptedText = masterCipher.update(encryptedText);
 
-    user.privateKey = masterEncryptedText;
+    user.privateKey = Buffer.concat([masterEncryptedText, masterCipher.final()]).toString("hex");
     user.publicKey = iv.toString("hex");
 
     await user.save();
@@ -202,7 +192,7 @@ userSchema.methods.getEncryptionKey = function() {
         const user = this;
         const userPassword = user.password;
         const masterEncryptedText = user.privateKey;
-        const masterPassword = env.key;
+        const masterPassword = env.key!;
         const iv = Buffer.from(user.publicKey, "hex");
 
         const USER_CIPHER_KEY = crypto.createHash('sha256').update(userPassword).digest();
@@ -230,7 +220,7 @@ userSchema.methods.changeEncryptionKey = async function(randomKey: Buffer) {
 
     const user = this;
     const userPassword = user.password;
-    const masterPassword = env.key;
+    const masterPassword = env.key!;
 
     const iv = crypto.randomBytes(16);
     const USER_CIPHER_KEY = crypto.createHash('sha256').update(userPassword).digest();
@@ -240,10 +230,9 @@ userSchema.methods.changeEncryptionKey = async function(randomKey: Buffer) {
 
     const MASTER_CIPHER_KEY = crypto.createHash('sha256').update(masterPassword).digest();
     const masterCipher = crypto.createCipheriv('aes-256-cbc', MASTER_CIPHER_KEY, iv);
-    let masterEncryptedText = masterCipher.update(encryptedText);
-    masterEncryptedText = Buffer.concat([masterEncryptedText, masterCipher.final()]).toString("hex");
+    const masterEncryptedText = masterCipher.update(encryptedText);
 
-    user.privateKey = masterEncryptedText;
+    user.privateKey = Buffer.concat([masterEncryptedText, masterCipher.final()]).toString("hex");
     user.publicKey = iv.toString("hex");
 
     await user.save();
@@ -251,32 +240,15 @@ userSchema.methods.changeEncryptionKey = async function(randomKey: Buffer) {
 
 userSchema.methods.generateTempAuthToken = async function() {
 
-
-    // const user = this; 
-    // let token = jwt.sign({_id:user._id.toString()}, env.password);
-    // const publicKey = user.publicKey;
-
-    // const encryptionKey = user.getEncryptionKey();
-
-    // const encryptedToken = user.encryptToken(token, encryptionKey, publicKey);
-
-    // user.tokens = user.tokens.concat({token: encryptedToken});
-
-    // await user.save();
-    // return token;
-
     const iv = crypto.randomBytes(16);
 
     const user = this as UserInterface; 
-    const token = jwt.sign({_id:user._id.toString(), iv}, env.password, {expiresIn: "3000ms"});
-    const publicKey = user.publicKey;
+    const token = jwt.sign({_id:user._id.toString(), iv}, env.password!, {expiresIn: "3000ms"});
 
     const encryptionKey = user.getEncryptionKey();
     const encryptedToken = user.encryptToken(token, encryptionKey, iv);
 
     user.tempTokens = user.tempTokens.concat({token: encryptedToken});
-
-    //console.log("generate temp auth token", user);
 
     await user.save();
     return token;
@@ -287,19 +259,16 @@ userSchema.methods.generateTempAuthTokenVideo = async function(cookie: string) {
     const iv = crypto.randomBytes(16);
 
     const user = this; 
-    const token = jwt.sign({_id:user._id.toString(), cookie, iv}, env.password, {expiresIn:"5h"});
-    //const publicKey = user.publicKey;
+    const token = jwt.sign({_id:user._id.toString(), cookie, iv}, env.password!, {expiresIn:"5h"});
 
     const encryptionKey = user.getEncryptionKey();
     const encryptedToken = user.encryptToken(token, encryptionKey, iv);
     
-    //user.tempTokens = user.tempTokens.concat({token});
     user.tempTokens = user.tempTokens.concat({token: encryptedToken});
     
     await user.save();
     return token;
 }
-
 
 const User = mongoose.model<UserInterface>("User", userSchema);
 

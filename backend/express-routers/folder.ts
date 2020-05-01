@@ -1,5 +1,4 @@
 import {Router} from "express";
-const router = Router();
 import auth from "../middleware/auth";
 import env from "../enviroment/env";
 import MongoService from "../services/ChunkService/MongoService";
@@ -25,8 +24,7 @@ if (env.dbType === "mongo") {
     folderController = new FolderController(s3Service);
 }
 
-//import FolderController from "../controllers/folder";
-//const folderController = new FolderController();
+const router = Router();
 
 router.post("/folder-service/upload", auth, folderController.uploadFolder);
 

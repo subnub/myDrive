@@ -1,9 +1,10 @@
 import { Router } from "express";
-const router = Router();
 import auth from "../middleware/auth";
 import UserController from "../controllers/user";
 
 const userController = new UserController();
+
+const router = Router();
 
 router.get("/user-service/user", auth, userController.getUser);
 

@@ -1,8 +1,10 @@
 import {Router} from "express";
-const router = Router();
 import auth from "../middleware/auth";
 import StorageController from "../controllers/storage";
+
 const storageController = new StorageController();
+
+const router = Router();
 
 router.get("/storage-service/info", auth, storageController.getStorageInfo);
 

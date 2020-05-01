@@ -1,6 +1,19 @@
+export interface QueryInterface {
+    "metadata.owner": string,
+    "metadata.parent"?: string,
+    filename?: string | RegExp | {
+        $lt?: string,
+        $gt?: string,
+    },
+    uploadDate?: {
+        $lt?: Date,
+        $gt?: Date,
+    },
+}
+
 const createQuery = (owner: string, parent: string, sortBy: string, startAt: number, startAtDate: number, searchQuery: string | RegExp, startAtName: string) => {
 
-    let query: any = {"metadata.owner": owner}
+    let query: QueryInterface = {"metadata.owner": owner}
 
     if (searchQuery !== "") {
 

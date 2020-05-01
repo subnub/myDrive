@@ -7,9 +7,7 @@ const UserProvider = new UserService();
 
 interface RequestType extends Request {
     user?: UserInterface,
-    auth?: any,
-    busboy: any,
-    encryptedToken?: any
+    encryptedToken?: string
 }
 
 class UserController {

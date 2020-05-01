@@ -1,11 +1,7 @@
 import {Router} from "express";
-
-const router = Router();
-
 import auth from "../middleware/auth";
 import tempAuth from "../middleware/tempAuth";
 import tempAuthVideo from "../middleware/tempAuthVideo";
-
 import FileController from "../controllers/file";
 import env from "../enviroment/env";
 import MongoService from "../services/ChunkService/MongoService";
@@ -30,11 +26,9 @@ if (env.dbType === "mongo") {
     fileController = new FileController(s3Service);
 }
 
-//const fileController = new FileController()
+const router = Router();
 
 router.post("/file-service/upload", auth, fileController.uploadFile);
-
-//router.post("/file-service/transcode-video", auth, fileController.transcodeVideo);
 
 router.get("/file-service/thumbnail/:id", auth, fileController.getThumbnail);
 
@@ -54,8 +48,6 @@ router.get("/file-service/download/get-token", auth, fileController.getDownloadT
 
 router.get("/file-service/download/get-token-video", auth, fileController.getDownloadTokenVideo);
 
-//router.get("/file-service/stream-video-transcoded/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamTranscodedVideo);
-
 router.get("/file-service/stream-video/:id/:tempToken/:uuid", tempAuthVideo, fileController.streamVideo);
 
 router.get("/file-service/download/:id/:tempToken", tempAuth, fileController.downloadFile);
@@ -73,8 +65,6 @@ router.patch("/file-service/move", auth, fileController.moveFile);
 router.delete("/file-service/remove-link/:id", auth, fileController.removeLink);
 
 router.delete("/file-service/remove/token-video/:tempToken", auth, fileController.removeTempToken);
-
-//router.delete("/file-service/transcode-video/remove", auth, fileController.removeTranscodeVideo);
 
 router.delete("/file-service/remove", auth, fileController.deleteFile);
 

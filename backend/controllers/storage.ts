@@ -5,7 +5,6 @@ import { UserInterface } from "../models/user";
 
 interface RequestType extends Request {
     user?: UserInterface,
-    auth?: any,
 }
 
 class StorageController {

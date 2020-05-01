@@ -107,7 +107,7 @@ class MongoService implements ChunkInterface {
 
         const bucket = new mongoose.mongo.GridFSBucket(conn.db);
 
-        const IV = currentFile.metadata.IV.buffer
+        const IV = currentFile.metadata.IV.buffer as Buffer;
         const readStream = bucket.openDownloadStream(new ObjectID(fileID));
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
@@ -159,7 +159,7 @@ class MongoService implements ChunkInterface {
 
         const bucket = new mongoose.mongo.GridFSBucket(conn.db);
         const password = user.getEncryptionKey();
-        const IV = file.metadata.IV.buffer
+        const IV = file.metadata.IV.buffer as Buffer;
 
         if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
 
@@ -197,7 +197,7 @@ class MongoService implements ChunkInterface {
 
         const bucket = new mongoose.mongo.GridFSBucket(conn.db);
 
-        const IV = file.metadata.IV.buffer
+        const IV = file.metadata.IV.buffer as Buffer;
                    
         const readStream = bucket.openDownloadStream(new ObjectID(fileID))
         
@@ -239,7 +239,7 @@ class MongoService implements ChunkInterface {
             ? parseInt(parts[1], 10)
             : fileSize-1
         const chunksize = (end-start)+1
-        const IV = currentFile.metadata.IV.buffer
+        const IV = currentFile.metadata.IV.buffer as Buffer;
                 
         let head = {
             'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
@@ -262,7 +262,7 @@ class MongoService implements ChunkInterface {
 
         if (fixedStart !== 0 && start !== 0) {
     
-            currentIV = await getPrevIVMongo(fixedStart - 16, fileID);
+            currentIV = await getPrevIVMongo(fixedStart - 16, fileID) as Buffer;
         }
         
         const bucket = new mongoose.mongo.GridFSBucket(conn.db, {

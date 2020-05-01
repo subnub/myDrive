@@ -1,14 +1,14 @@
 import FolderService from "../services/FolderService";
-const folderService = new FolderService();
 import { Request, Response } from "express";
 import {UserInterface} from "../models/user";
 import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 
+const folderService = new FolderService();
+
 interface RequestType extends Request {
     user?: UserInterface,
-    auth?: any,
 }
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
