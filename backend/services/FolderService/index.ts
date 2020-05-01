@@ -2,11 +2,7 @@ import Folder from "../../models/folder";
 import InternalServerError from "../../utils/InternalServerError";
 import NotFoundError from "../../utils/NotFoundError";
 import UtilsFile from "../../db/utils/fileUtils";
-import {ObjectID} from "mongodb";
 import UtilsFolder from "../../db/utils/folderUtils";
-import mongoose from "../../db/mongoose";
-const conn = mongoose.connection;
-import Thumbnail from "../../models/thumbnail";
 import sortBySwitch from "../../utils/sortBySwitchFolder";
 
 const utilsFile = new UtilsFile();

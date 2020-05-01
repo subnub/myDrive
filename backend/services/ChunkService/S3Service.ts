@@ -2,7 +2,6 @@ import File, { FileInterface } from "../../models/file";
 import User, {UserInterface} from "../../models/user";
 import s3 from "../../db/s3";
 import env from "../../enviroment/env";
-
 import { Response, Request } from "express";
 import ChunkInterface from "./utils/ChunkInterface";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
@@ -10,16 +9,14 @@ import NotFoundError from "../../utils/NotFoundError";
 import crypto from "crypto";
 import getBusboyData from "./utils/getBusboyData";
 import videoChecker from "../../utils/videoChecker";
-import fs from "fs";
 import uuid from "uuid";
 import awaitUploadStreamS3 from "./utils/awaitUploadStreamS3";
-import getFileSize from "./utils/getFileSize";
 import awaitStream from "./utils/awaitStream";
-import createThumbnailS3 from "../FileService/utils/createThumbnailS3";
+import createThumbnailS3 from "./utils/createThumbnailS3";
 import imageChecker from "../../utils/imageChecker";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import streamToBuffer from "../../utils/streamToBuffer";
-import removeChunksS3 from "../FileService/utils/removeChunksS3";
+import removeChunksS3 from "./utils/removeChunksS3";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
 import fixEndChunkLength from "./utils/fixEndChunkLength";
 import getPrevIVS3 from "./utils/getPrevIVS3";
@@ -28,7 +25,6 @@ import Folder from "../../models/folder";
 
 import DbUtilFile from "../../db/utils/fileUtils/index";
 const dbUtilsFile = new DbUtilFile();
-
 
 class S3Service implements ChunkInterface {
 
@@ -80,7 +76,7 @@ class S3Service implements ChunkInterface {
         await awaitUploadStreamS3(params);
 
         const date = new Date();
-        const encryptedFileSize = size; //await getFileSize(metadata.filePath);
+        const encryptedFileSize = size;
         
         const currentFile = new File({
             filename,

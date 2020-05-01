@@ -6,22 +6,17 @@ import crypto from "crypto";
 import videoChecker from "../../utils/videoChecker"
 import imageChecker from "../../utils/imageChecker"
 import { ObjectID } from "mongodb";
-import createThumbnail from "../FileService/utils/createThumbnail";
+import createThumbnail from "./utils/createThumbnail";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
-import InternalServerError from "../../utils/InternalServerError";
 import NotFoundError from "../../utils/NotFoundError";
 import {GridFSBucketWriteStream} from "mongodb";
 import awaitStream from "./utils/awaitStream";
 import awaitUploadStream from "./utils/awaitUploadStream";
-
 import User, { UserInterface } from "../../models/user";
 import Folder from "../../models/folder";
 import { FileInterface } from "../../models/file";
-import { Stream } from "stream";
-import removeChunks from "../FileService/utils/removeChunks";
 import getBusboyData from "./utils/getBusboyData";
-
 import ChunkInterface from "./utils/ChunkInterface";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
 import getPrevIVMongo from "./utils/getPrevIVMongo";
@@ -30,7 +25,6 @@ import awaitStreamVideo from "./utils/awaitStreamVideo";
 const conn = mongoose.connection;
 
 const dbUtilsFile = new DbUtilFile();
-const dbUtilsFolder = new DbUtilFolder();
 
 class MongoService implements ChunkInterface {
 
@@ -256,7 +250,7 @@ class MongoService implements ChunkInterface {
             fixedStart = 0;
         }
 
-        const fixedEnd = currentFile.length; //end % 16 === 0 ? end + 15: (fixEndChunkLength(end) - 1) + 16;
+        const fixedEnd = currentFile.length;
     
         const differenceStart = start - fixedStart;
 
@@ -303,14 +297,6 @@ class MongoService implements ChunkInterface {
             await Thumbnail.deleteOne({_id: file.metadata.thumbnailID});
         }
     
-        // if (file.metadata.isVideo && file.metadata.transcoded) {
-        //     try {
-        //         await bucket.delete(new ObjectID(file.metadata.transcodedID));
-        //     } catch (e) {
-        //         console.log("Could Not Find Transcoded Video");
-        //     }
-        // }
-    
         await bucket.delete(new ObjectID(fileID));
     }
 
@@ -356,10 +342,6 @@ class MongoService implements ChunkInterface {
 
         let bucket = new mongoose.mongo.GridFSBucket(conn.db, {
             chunkSizeBytes: 1024 * 255
-        });
-
-        const videoBucket = new mongoose.mongo.GridFSBucket(conn.db, {
-            bucketName: "videos"
         });
 
         await Folder.deleteMany({"owner": userID});

@@ -13,14 +13,13 @@ import File, { FileInterface } from "../../models/file";
 import getFileSize from "./utils/getFileSize";
 import DbUtilFile from "../../db/utils/fileUtils/index";
 import awaitStream from "./utils/awaitStream";
-import createThumbnailFS from "../FileService/utils/createThumbnailFS";
+import createThumbnailFS from "./utils/createThumbnailFS";
 import imageChecker from "../../utils/imageChecker";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import streamToBuffer from "../../utils/streamToBuffer";
 import User from "../../models/user";
 import env from "../../enviroment/env";
-import { removeChunksFS } from "./utils/awaitUploadStreamFS";
-import removeTempToken from "./utils/removeTempToken";
+import removeChunksFS from "./utils/removeChunksFS";
 import getPrevIVFS from "./utils/getPrevIVFS";
 import awaitStreamVideo from "./utils/awaitStreamVideo";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
@@ -28,7 +27,6 @@ import Folder from "../../models/folder";
 
 const dbUtilsFile = new DbUtilFile();
 
-// implements ChunkInterface
 class FileSystemService implements ChunkInterface {
 
     constructor() {
@@ -232,7 +230,7 @@ class FileSystemService implements ChunkInterface {
             fixedStart = 0;
         }
     
-        const fixedEnd = currentFile.length; //end % 16 === 0 ? end + 15: (fixEndChunkLength(end) - 1) + 16;
+        const fixedEnd = currentFile.length;
     
         const differenceStart = start - fixedStart;
 

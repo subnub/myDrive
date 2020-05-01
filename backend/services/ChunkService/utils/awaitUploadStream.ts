@@ -1,4 +1,4 @@
-import removeChunks from "../../FileService/utils/removeChunks";
+import removeChunks from "./removeChunks";
 import {Request} from "express"
 
 const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, allStreamsToErrorCatch: any[]) => {
@@ -19,28 +19,6 @@ const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, 
             })
         })
 
-        // inputSteam.on("error", (e: Error) => {
-
-        //     removeChunks(outputStream);
-            
-        //     reject({
-        //         message: "Await Stream Input Error",
-        //         code: 500,
-        //         error: e
-        //     })
-        // })
-
-        // outputStream.on("error", (e: Error) => {
-
-        //     removeChunks(outputStream);
-
-        //     reject({
-        //         message: "Await Stream Output Error",
-        //         code: 500,
-        //         error: e
-        //     })
-        // })
-
         req.on("aborted", () => {
 
             console.log("Upload Request Cancelling...");
@@ -49,7 +27,6 @@ const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, 
         })
 
         inputSteam.pipe(outputStream).on("finish", (data: T) => {
-            console.log("await stream finished")
             resolve(data);
         })
     })

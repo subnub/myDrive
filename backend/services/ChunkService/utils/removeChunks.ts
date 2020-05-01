@@ -1,6 +1,6 @@
 import { GridFSBucketWriteStream } from "mongodb";
-
 import DbUtilsFile from "../../../db/utils/fileUtils";
+
 const dbUtilsFile = new DbUtilsFile();
 
 const removeChunks = async(bucketStream: GridFSBucketWriteStream) => {

@@ -1,34 +1,17 @@
-const imageChecker = require("../../utils/imageChecker");
-import crypto from "crypto";
-const videoChecker = require("../../utils/videoChecker");
-import mongoose from "../../db/mongoose";
-const conn = mongoose.connection;
-const createThumbnail = require("../../services/FileService/utils/createThumbnail");
-import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
-const ObjectID = require('mongodb').ObjectID
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import NotFoundError from "../../utils/NotFoundError";
 import env from "../../enviroment/env";
-const jwt = require("jsonwebtoken");
-const removeChunks = require("./utils/removeChunks");
-const User = require("../../models/user");
-
-
-const Folder = require("../../models/folder");
+import jwt from "jsonwebtoken";
+import Folder from "../../models/folder";
 import sortBySwitch from "../../utils/sortBySwitch";
 import createQuery from "../../utils/createQuery";
-const ffmpeg = require("fluent-ffmpeg");
-const temp = require("temp").track();
-const progress = require("progress-stream");
-const fs = require("fs")
 import DbUtilFile from "../../db/utils/fileUtils/index";
 import DbUtilFolder from "../../db/utils/folderUtils";
+import { UserInterface } from "../../models/user";
+import { FileInterface } from "../../models/file";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
-
-import { UserInterface } from "../../models/user";
-import { FileInterface } from "../../models/file";
  
 class MongoFileService {
 
@@ -56,7 +39,7 @@ class MongoFileService {
     makePublic = async(user: UserInterface, fileID: string) => {
 
         const userID = user._id;
-        const token = await jwt.sign({_id: userID.toString()}, env.password);
+        const token = await jwt.sign({_id: userID.toString()}, env.password!);
 
         const file = await dbUtilsFile.makePublic(fileID, userID, token);
 
@@ -81,7 +64,7 @@ class MongoFileService {
 
     makeOneTimePublic = async(userID: string, fileID: string) => {
 
-        const token = await jwt.sign({_id: userID.toString()}, env.password);
+        const token = await jwt.sign({_id: userID.toString()}, env.password!);
 
         const file = await dbUtilsFile.makeOneTimePublic(fileID, userID, token);
 
@@ -176,7 +159,7 @@ class MongoFileService {
 
         const key = user.getEncryptionKey();
 
-        const decoded = await jwt.verify(tempToken, env.password);
+        const decoded = await jwt.verify(tempToken, env.password!) as any;
 
         const publicKey = decoded.iv;
 

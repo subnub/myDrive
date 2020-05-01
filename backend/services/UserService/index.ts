@@ -1,7 +1,6 @@
 import User, {UserInterface} from "../../models/user";
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-const NotFoundError = require("../../utils/NotFoundError");
+import bcrypt from "bcrypt";
+import NotFoundError from "../../utils/NotFoundError";
 import InternalServerError from "../../utils/InternalServerError";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
 

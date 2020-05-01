@@ -1,13 +1,13 @@
 import mongoose from "../../../db/mongoose";
-const conn = mongoose.connection;
-const crypto= require("crypto");
-import env from "../../../enviroment/env";
+import crypto from "crypto";
 import Thumbnail from "../../../models/thumbnail"; 
-const ObjectID = require('mongodb').ObjectID
-const sharp = require("sharp");
-const concat = require("concat-stream")
-import {FileInterface} from "../../../models/file";
-import {UserInterface} from "../../../models/user";
+import { ObjectID } from "mongodb";
+import sharp from "sharp";
+import concat from "concat-stream";
+import { FileInterface } from "../../../models/file";
+import { UserInterface } from "../../../models/user";
+
+const conn = mongoose.connection;
 
 const createThumbnail = (file: FileInterface, filename: string, user: UserInterface) => {
 
@@ -15,13 +15,13 @@ const createThumbnail = (file: FileInterface, filename: string, user: UserInterf
 
         const password = user.getEncryptionKey();
 
-        let CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+        let CIPHER_KEY = crypto.createHash('sha256').update(password!).digest()        
 
         let bucket = new mongoose.mongo.GridFSBucket(conn.db, {
             chunkSizeBytes: 1024 * 255
         })
     
-        const readStream = bucket.openDownloadStream(ObjectID(file._id))
+        const readStream = bucket.openDownloadStream(new ObjectID(file._id))
     
         readStream.on("error", (e: Error) => {
             console.log("File service upload thumbnail error", e);
