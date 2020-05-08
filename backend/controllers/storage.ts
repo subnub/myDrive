@@ -21,6 +21,10 @@ class StorageController {
         }
     
         try {
+
+            if (!env.root || env.root.length === 0) {
+                return;
+            }
     
             const info = await disk.check(env.root!);
         
