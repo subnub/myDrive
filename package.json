@@ -1,12 +1,15 @@
 {
   "name": "my-drive",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "license": "GNU General Public License v3.0",
+  "engines": {
+    "node": "13.11.0"
+  },
   "scripts": {
     "server": "live-server public/",
-    "build": "webpack -p --env production",
-    "build:dev": "webpack --env development",
+    "build": "tsc && webpack -p --env production",
+    "build:dev": "tsc && webpack --env development",
     "dev-server": "webpack-dev-server",
     "test": "NODE_ENV=test env-cmd -f ./config/test.env jest --config=jest.config.json --watchAll --runInBand",
     "start:dev": "NODE_ENV=development node dist/server/serverStart.js",
@@ -14,7 +17,7 @@
     "create-indexes-database": "env-cmd -f ./config/prod.env node serverUtils/createIndexes.js",
     "create-indexes-database:dev": "env-cmd -f ./config/dev.env node serverUtils/createIndexes.js",
     "init": "node serverUtils/initServer.js",
-    "heroku-postbuild": "yarn run build:prod"
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "@babel/core": "^7.8.4",
@@ -33,7 +36,7 @@
     "@types/jsonwebtoken": "^8.3.9",
     "@types/mongodb": "^3.5.5",
     "@types/mongoose": "^5.7.10",
-    "@types/node": "^13.11.1",
+    "@types/node": "^13.13.5",
     "@types/sharp": "^0.25.0",
     "@types/uuid": "^7.0.2",
     "@types/validator": "^13.0.0",
@@ -51,6 +54,7 @@
     "core-js": "^3.6.4",
     "crypto": "^1.0.1",
     "diskusage": "^1.1.3",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
     "helmet": "^3.21.2",
@@ -91,7 +95,6 @@
     "cross-env": "^6.0.3",
     "css-loader": "^3.4.2",
     "dart-sass": "^1.25.0",
-    "dotenv": "^8.2.0",
     "env-cmd": "^10.1.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
