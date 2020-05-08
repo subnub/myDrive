@@ -1,3 +1,5 @@
+import getEnvVariables from "../enviroment/getEnvVariables";
+getEnvVariables();
 import getKey from "../key/getKey";
 import servers from "./server";
 
@@ -7,7 +9,9 @@ const serverStart = async() => {
 
     await getKey();
 
-    if (process.env.NODE_ENV === 'production') {
+    console.log("ENV", process.env.NODE_ENV);
+
+    if (process.env.NODE_ENV === 'production' && process.env.SSL === "true") {
     
         server.listen(process.env.HTTP_PORT,process.env.URL, () => {
             console.log("Http Server Running On Port:", process.env.HTTP_PORT);
@@ -17,7 +21,7 @@ const serverStart = async() => {
             console.log( 'Https Server Running On Port:', process.env.HTTPS_PORT);
         } );
         
-    } else if (process.env.NODE_ENV === 'production-no-ssl') {
+    } else if (process.env.NODE_ENV === 'production') {
     
         server.listen(process.env.HTTP_PORT,process.env.URL, () => {
             console.log("Http Server (No-SSL) Running On Port:", process.env.HTTP_PORT);

@@ -6,25 +6,33 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require("path");
 
-process.env.NODE_ENV = process.env.NODE_ENV || "development"
+//console.log("node env", process.env.NODE_ENV);
 
-console.log("node env", process.env.NODE_ENV);
+//process.env.NODE_ENV = process.env.NODE_ENV || "development"
 
-if (process.env.NODE_ENV === "test") {
-
-    require("dotenv").config({path: ".env.test"})
-
-} else if (process.env.NODE_ENV === "development") {
-
-    require("dotenv").config({path: ".env.development"})
-
-} else {
-    require("dotenv").config({path: ".env.production"});
-}
+//console.log("node env", process.env.NODE_ENV);
 
 module.exports = (env) => {
 
-    const isProduction = (env === "production" || env === "production-no-ssl")
+
+    if (env === "test") {
+
+        console.log("Loading test env variables")
+        require("dotenv").config({path: ".env.test"})
+
+    } else if (env === "development") {
+
+        console.log("Loading development env variables")
+        require("dotenv").config({path: ".env.development"})
+
+    } else {
+
+        console.log("Loading production env variables")
+        require("dotenv").config({path: ".env.production"});
+    }
+
+    console.log("env", env);
+    const isProduction = env === "production"
     console.log("is prod", isProduction);
     
     const CSSExtract = new MiniCssExtractPlugin({ filename: 'styles.css' });

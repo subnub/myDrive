@@ -12,13 +12,15 @@ import busboy from "connect-busboy";
 import compression from "compression";
 import http from "http";
 
+
+
 const app = express();
 const publicPath = path.join(__dirname, "..", "..", "public");
 
 let server: any;
 let serverHttps: any;
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.SSL === 'true') {
 
     const cert = fs.readFileSync("certificate.crt")
     const ca = fs.readFileSync("certificate.ca-bundle");

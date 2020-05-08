@@ -9,7 +9,7 @@ const getKey = async() => {
 
         env.key = process.env.KEY
 
-    } else if (process.env.NODE_ENV) {
+    } else if (process.env.NODE_ENV === "production") {
 
         let password: string = await prompt("Enter Server Encryption Password: ", {method: "hide"});
 
