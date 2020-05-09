@@ -9,6 +9,7 @@
     position: fixed;
     /* top: 0; */
     width: 100%;
+    z-index: 1;
 
     @media (max-width: $desktop-breakpoint) {
         text-align: center;
@@ -16,10 +17,16 @@
         flex-direction: row;
         border-bottom: 1px solid #dadce0;
         justify-content: space-between;
-        position: initial;
+        position: fixed;
+        background: white;
+        top: 0;
+        left: 0;
+        right: 0;
         width: 100%;
         height: 80px;
         padding: 0;
+        z-index: 2;
+        // background: blue;
     }
 }
 
@@ -155,6 +162,12 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;  
+    height: 50px;
+
+    // @media (max-width: $desktop-breakpoint) {
+    //     height: 60px;
+    // }
 }
 
 .header__input__suggested__item:hover {

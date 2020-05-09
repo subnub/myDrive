@@ -9,6 +9,9 @@
     /* overflow-y: hidden; */
     overflow: hidden;
 
+    @media (max-width: $desktop-breakpoint) {
+        // margin-top: calc(80px + 3vh);
+    }
 }
 
 .quickaccess__item {

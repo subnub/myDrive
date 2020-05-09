@@ -3,6 +3,10 @@
     justify-content: space-between;
     align-items: center;
     height: 52px;
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 100vw;
+    }
 }
 
 .filter__folder-wrapper {

@@ -26,13 +26,14 @@ const MainSection = React.forwardRef((props, ref) => {
                 <div className="section" ref={ref}>
 
                     {(props.quickFiles.length !== 0 && props.parent === "/") ? 
-                        <div>
+                        <div className="spacer__mobile">
                             <Spacer title="Quick Access"/>
                             <QuickAccess 
                                 fileClick={props.fileClick}
                                 downloadFile={props.downloadFile}/>
                         </div> :
-                        undefined} 
+                        <div className="spacer__mobile">
+                        </div>} 
                     
 
                     <ShareMenu />

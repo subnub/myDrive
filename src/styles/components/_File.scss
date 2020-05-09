@@ -26,7 +26,7 @@
     @media (max-width: $desktop-breakpoint) {
         flex-basis: 28%;
         max-width: 30.2%;
-        position: unset
+        position: unset;
     }
 }
 
@@ -116,7 +116,8 @@
     -webkit-tap-highlight-color: transparent;
 
     @media (max-width: $desktop-breakpoint) {
-        position: unset
+        position: unset;
+        overflow: hidden;
     }
 
 }
