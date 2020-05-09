@@ -15,18 +15,19 @@
     // overflow: hidden;
     position: relative;
 
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    // -webkit-touch-callout: none;
+    // -webkit-user-select: none;
+    // -khtml-user-select: none;
+    // -moz-user-select: none;
+    // -ms-user-select: none;
+    // user-select: none;
     -webkit-tap-highlight-color: transparent;
 
     @media (max-width: $desktop-breakpoint) {
         flex-basis: 28%;
         max-width: 30.2%;
         position: unset;
+        //-webkit-touch-callout: default;
     }
 }
 
@@ -44,6 +45,12 @@
     max-width: 23vw;
     text-align: center;
     font-weight: 300;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     // text-transform: capitalize;
 }
 
@@ -65,11 +72,26 @@
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+   -webkit-tap-highlight-color: transparent;
+    pointer-events: none;
 }
 
 .file__image {
     width: 100px;
     opacity: 0.7;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: none;
 }
 
 .file__item__wrapper {
@@ -78,15 +100,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: initial;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
+    // -webkit-touch-callout: none;
+    // -webkit-user-select: none;
+    // -khtml-user-select: none;
+    // -moz-user-select: none;
+    // -ms-user-select: none;
+    // user-select: none;
+   // -webkit-tap-highlight-color: transparent;
     width: 100%;
     height: 100%;
+    cursor: pointer;
 }
 
 .file__item__listview {

@@ -74,6 +74,9 @@
     border-bottom: 1px solid #dadce0;
     position: relative;
 
+    @media (max-width: $desktop-breakpoint) {
+        min-height: 50px;
+     }
 }
 
 .CircularProgressbar {

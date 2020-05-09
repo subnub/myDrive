@@ -37,13 +37,18 @@ const FileItem = (props) => {
         
                     <div className="file__item__wrapper"
                         onClick={() => {props.fileClick(props._id, props)}}
-                        onContextMenu={(e) => props.getContextMenu(e)}>
+                        onContextMenu={(e) => props.getContextMenu(e)}
+                        onTouchStart={props.onTouchStart}
+                        onTouchEnd={props.onTouchEnd}
+                        onTouchMove={props.onTouchMove}>
         
                         <div className="file__image__wrapper">
-                            <img className={props.state.imageClassname} src={props.state.imageSrc} onError={() => {props.image.src = "/images/file-svg.svg"; props.image.className="file__image"; props.failedToLoad = true;}}/>
+                            <img className={props.state.imageClassname} src={props.state.imageSrc} onError={() => {props.image.src = "/images/file-svg.svg"; props.image.className="file__image"; props.failedToLoad = true;}} 
+                            />
                         </div>
                             
-                        <h5 className={props._id !== props.selected ? "file__title" : "file__title file__title--selected"}>{capitalize(props.filename)}</h5>
+                        <h5 className={props._id !== props.selected ? "file__title" : "file__title file__title--selected"}
+                        >{capitalize(props.filename)}</h5>
         
                         {(props.rightSelected === props._id && props._id === props.selected) ? 
                             

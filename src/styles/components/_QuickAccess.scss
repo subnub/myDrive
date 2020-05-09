@@ -11,6 +11,12 @@
 
     @media (max-width: $desktop-breakpoint) {
         // margin-top: calc(80px + 3vh);
+        width: inherit;
+        height: 153px;
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        overflow: hidden;
     }
 }
 
@@ -37,7 +43,10 @@
     position: relative;
 
     @media (max-width: $desktop-breakpoint) {
-        
+        min-height: 144px;
+        height: 148px;
+        min-width: 46%;
+        width: 46%;
         position: unset;
     }
     
