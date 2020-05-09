@@ -12,6 +12,10 @@
         width: 0px;
         height: unset;
         background: transparent; /* Chrome/Safari/Webkit */
+    }
+
+    @media (max-width: $desktop-breakpoint) {
+     
         overflow-y: unset;
     }
 
@@ -44,6 +48,20 @@
 
     @media (max-width: $desktop-breakpoint) { 
         height: unset;
+    }
+}
+
+.outter-wrapper {
+
+    @media (max-width: $desktop-breakpoint) {
+     
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* IE 10+ */
+        &::-webkit-scrollbar {
+            width: 0px;
+            height: unset;
+            background: transparent; /* Chrome/Safari/Webkit */
+        }
     }
 }
 

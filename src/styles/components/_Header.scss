@@ -163,11 +163,11 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;  
-    height: 50px;
+    
 
-    // @media (max-width: $desktop-breakpoint) {
-    //     height: 60px;
-    // }
+    @media (max-width: $desktop-breakpoint) {
+        height: 55px;
+    }
 }
 
 .header__input__suggested__item:hover {
