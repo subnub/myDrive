@@ -214,15 +214,15 @@ class S3Service implements ChunkInterface {
         // })
 
         req.on("close", () => {
-            console.log("req closed");
+            // console.log("req closed");
             s3ReadStream.destroy();
         })
 
         //req.on("")
 
-        req.on("end", () => {
-            console.log("req end");
-        })
+        // req.on("end", () => {
+        //     console.log("req end");
+        // })
 
         await awaitStreamVideo(start, end, differenceStart, decipher, res, tempUUID, allStreamsToErrorCatch);
     }

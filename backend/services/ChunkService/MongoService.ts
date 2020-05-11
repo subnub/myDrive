@@ -279,6 +279,12 @@ class MongoService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
+        req.on("close", () => {
+            // console.log("req closed");
+            readStream.destroy();
+        })
+
+
         const tempUUID = req.params.uuid;
 
         await awaitStreamVideo(start, end, differenceStart, decipher, res, tempUUID, allStreamsToErrorCatch);
