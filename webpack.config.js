@@ -75,7 +75,8 @@ module.exports = (env) => {
             new webpack.DefinePlugin({
                 "process.env.PORT": JSON.stringify(process.env.PORT),
                 "process.env.REMOTE_URL": JSON.stringify(process.env.REMOTE_URL),
-                "process.env.ENABLE_VIDEO_TRANSCODING": JSON.stringify(process.env.ENABLE_VIDEO_TRANSCODING)
+                "process.env.ENABLE_VIDEO_TRANSCODING": JSON.stringify(process.env.ENABLE_VIDEO_TRANSCODING),
+                "process.env.DISABLE_STORAGE": JSON.stringify(process.env.DISABLE_STORAGE)
             }),
             new CompressionPlugin()
         ],

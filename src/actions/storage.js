@@ -12,6 +12,10 @@ export const startSetStorage = () => {
 
     return (dispatch) => {
 
+        if (env.disableStorage === "true") {
+            return;
+        }
+
         const config = {
             headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
         };
