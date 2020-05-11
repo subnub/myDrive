@@ -4,6 +4,8 @@ import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 import {UserInterface} from "../models/user";
+import uuid from "uuid";
+import tempStorage from "../tempStorage/tempStorage";
 
 const fileService = new FileService()
 
@@ -366,8 +368,10 @@ class FileController {
             const user = req.user;
             const fileID = req.params.id;
             const headers = req.headers;
+
+            //tempStorage[req.params.uuid] = uuid.v4();
             
-            console.log("stream request", req.params.id)
+            console.log("stream request", tempStorage)
 
             // req.on("close", () => {
             //     console.log("req closed stream");

@@ -192,27 +192,28 @@ class S3Service implements ChunkInterface {
 
         s3ReadStream.pipe(decipher);
 
-        req.on("close", () => {
-            // console.log("Destoying read stream");
-            // s3ReadStream.destroy();
-            // console.log("Read Stream Destroyed");
-        })
+        const tempUUID = req.params.uuid;
+        // req.on("close", () => {
+        //     // console.log("Destoying read stream");
+        //     // s3ReadStream.destroy();
+        //     // console.log("Read Stream Destroyed");
+        // })
 
-        req.on("end", () => {
-            console.log("ending stream");
-            s3ReadStream.destroy();
-            console.log("ended stream")
-        })
+        // req.on("end", () => {
+        //     console.log("ending stream");
+        //     s3ReadStream.destroy();
+        //     console.log("ended stream")
+        // })
 
-        req.on("error", () => {
-            console.log("req error");
-        })
+        // req.on("error", () => {
+        //     console.log("req error");
+        // })
 
-        req.on("pause", () => {
-            console.log("req pause")
-        })
+        // req.on("pause", () => {
+        //     console.log("req pause")
+        // })
 
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, tempUUID, allStreamsToErrorCatch);
     }
 
     getThumbnail = async(user: UserInterface, id: string) => { 

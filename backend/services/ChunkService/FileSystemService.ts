@@ -256,21 +256,23 @@ class FileSystemService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
-        req.on("close", () => {
-            // console.log("Destroying read stream");
-            // readStream.destroy();
-            // console.log("Read Stream Destoryed");
-        })
-        
-        req.on("error", () => {
-            console.log("req error");
-        })
+        const tempUUID = req.params.uuid;
 
-        req.on("pause", () => {
-            console.log("req pause")
-        })
+        // req.on("close", () => {
+        //     // console.log("Destroying read stream");
+        //     // readStream.destroy();
+        //     // console.log("Read Stream Destoryed");
+        // })
         
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
+        // req.on("error", () => {
+        //     console.log("req error");
+        // })
+
+        // req.on("pause", () => {
+        //     console.log("req pause")
+        // })
+        
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, tempUUID, allStreamsToErrorCatch);
     }
 
     getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {

@@ -213,7 +213,7 @@ class MongoService implements ChunkInterface {
         }
     }
 
-    streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response) => {
+    streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => {
         
         const userID = user._id;
         const currentFile = await dbUtilsFile.getFileInfo(fileID, userID);
@@ -279,7 +279,9 @@ class MongoService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
+        const tempUUID = req.params.uuid;
+
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, tempUUID, allStreamsToErrorCatch);
     }
 
     deleteFile = async(userID: string, fileID: string) => {
