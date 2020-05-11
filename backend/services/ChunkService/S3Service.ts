@@ -192,12 +192,16 @@ class S3Service implements ChunkInterface {
 
         s3ReadStream.pipe(decipher);
 
-        s3ReadStream.destroy();
-
         req.on("close", () => {
             // console.log("Destoying read stream");
             // s3ReadStream.destroy();
             // console.log("Read Stream Destroyed");
+        })
+
+        req.on("end", () => {
+            console.log("ending stream");
+            s3ReadStream.destroy();
+            console.log("ended stream")
         })
 
         req.on("error", () => {
