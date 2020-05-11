@@ -368,6 +368,14 @@ class FileController {
             const headers = req.headers;
             
             console.log("stream request", req.params.id)
+
+            req.on("close", () => {
+                console.log("req closed stream");
+            })
+
+            req.on("abort", () => {
+                console.log("Aborted");
+            })
     
             await this.chunkService.streamVideo(user, fileID, headers, res);
     
