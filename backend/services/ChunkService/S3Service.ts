@@ -225,6 +225,7 @@ class S3Service implements ChunkInterface {
         // })
 
         await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
+        console.log("Video stream finished");
     }
 
     getThumbnail = async(user: UserInterface, id: string) => { 

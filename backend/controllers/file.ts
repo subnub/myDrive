@@ -372,7 +372,7 @@ class FileController {
 
             //tempStorage[req.params.uuid] = uuid.v4();
             
-            console.log("stream request", tempStorage);
+            console.log("stream request 2", tempStorage);
 
             // req.on("close", () => {
             //     console.log("req closed stream");
