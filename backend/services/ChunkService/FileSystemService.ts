@@ -257,11 +257,19 @@ class FileSystemService implements ChunkInterface {
         readStream.pipe(decipher);
 
         req.on("close", () => {
-            console.log("Destroying read stream");
-            readStream.destroy();
-            console.log("Read Stream Destoryed");
+            // console.log("Destroying read stream");
+            // readStream.destroy();
+            // console.log("Read Stream Destoryed");
+        })
+        
+        req.on("error", () => {
+            console.log("req error");
         })
 
+        req.on("pause", () => {
+            console.log("req pause")
+        })
+        
         await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
     }
 
