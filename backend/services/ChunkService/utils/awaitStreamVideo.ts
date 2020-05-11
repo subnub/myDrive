@@ -3,7 +3,7 @@ import tempStorage from "../../../tempStorage/tempStorage";
 import uuid from "uuid";
 
 const awaitStreamVideo = (start: number, end:number, differenceStart: number, 
-    decipher: any, res: Response, tempUUID: string, streamsToErrorCatch: any[]) => {
+    decipher: any, res: Response, req: Request, tempUUID: string, streamsToErrorCatch: any[]) => {
 
     const currentUUID = uuid.v4();
     tempStorage[tempUUID] = currentUUID;
@@ -11,7 +11,18 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
     return new Promise((resolve, reject) => {
 
         let firstBytesRemoved = false;
-        let sizeCounter = 0;
+        //let sizeCounter = 0;
+
+        req.on("close", () => {
+            streamsToErrorCatch.forEach((stream) => {
+                stream.destroy();
+            })
+            resolve();
+        })
+
+        req.on("end", () => {
+            resolve();
+        })
 
         decipher.on("data", (data: Buffer | string) => {
 
@@ -31,6 +42,8 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
                 resolve();
                 //delete tempStorage[tempUUID];
             }
+
+            //console.log("data", currentUUID);
 
             //console.log("stream passed", currentUUID);
 
@@ -70,7 +83,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
 
                 firstBytesRemoved = true;
 
-                sizeCounter += dataBack.length;
+                //sizeCounter += dataBack.length;
 
                 res.write(dataBack);
                 res.flush();
@@ -80,7 +93,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
 
             res.write(data);
             res.flush();
-            sizeCounter += data.length;
+            //sizeCounter += data.length;
         })
 
         decipher.on("end", () => {

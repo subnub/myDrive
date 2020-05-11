@@ -213,10 +213,10 @@ class S3Service implements ChunkInterface {
         //     console.log("req pause")
         // })
 
-        req.on("close", () => {
-            // console.log("req closed");
-            s3ReadStream.destroy();
-        })
+        // req.on("close", () => {
+        //     // console.log("req closed");
+        //     s3ReadStream.destroy();
+        // })
 
         //req.on("")
 
@@ -224,7 +224,7 @@ class S3Service implements ChunkInterface {
         //     console.log("req end");
         // })
 
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, tempUUID, allStreamsToErrorCatch);
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
     }
 
     getThumbnail = async(user: UserInterface, id: string) => { 

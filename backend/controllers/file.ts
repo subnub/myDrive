@@ -384,7 +384,7 @@ class FileController {
     
             await this.chunkService.streamVideo(user, fileID, headers, res, req);
     
-            console.log("stream finished");
+            //console.log("stream finished");
 
         } catch (e) {
 

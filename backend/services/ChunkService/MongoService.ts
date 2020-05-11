@@ -279,15 +279,15 @@ class MongoService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
-        req.on("close", () => {
-            // console.log("req closed");
-            readStream.destroy();
-        })
+        // req.on("close", () => {
+        //     // console.log("req closed");
+        //     readStream.destroy();
+        // })
 
 
         const tempUUID = req.params.uuid;
 
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, tempUUID, allStreamsToErrorCatch);
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
     }
 
     deleteFile = async(userID: string, fileID: string) => {
