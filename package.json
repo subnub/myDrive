@@ -17,6 +17,7 @@
     "create-indexes-database": "env-cmd -f ./config/prod.env node serverUtils/createIndexes.js",
     "create-indexes-database:dev": "env-cmd -f ./config/dev.env node serverUtils/createIndexes.js",
     "init": "node serverUtils/initServer.js",
+    "debug": "env-cmd -f ./config/prod.env node --expose-gc --inspect=9222 dist/server/serverStart.js --env production",
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
