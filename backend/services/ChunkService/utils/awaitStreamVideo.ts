@@ -24,6 +24,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
                 console.log("New Stream Requested, Desroying old stream");
                 streamsToErrorCatch[0].destroy();
                 console.log("Old Stream Desroyed");
+                resolve();
                 //delete tempStorage[tempUUID];
             }
 
