@@ -9,6 +9,8 @@ import DbUtilFile from "../../db/utils/fileUtils/index";
 import DbUtilFolder from "../../db/utils/folderUtils";
 import { UserInterface } from "../../models/user";
 import { FileInterface } from "../../models/file";
+import tempStorage from "../../tempStorage/tempStorage";
+import uuid from "uuid";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
@@ -155,7 +157,7 @@ class MongoFileService {
         return tempToken;
     }
 
-    removeTempToken = async(user: UserInterface, tempToken: any) => {
+    removeTempToken = async(user: UserInterface, tempToken: any, currentUUID: string) => {
 
         const key = user.getEncryptionKey();
 
@@ -168,6 +170,8 @@ class MongoFileService {
         const removedTokenUser = await dbUtilsFile.removeTempToken(user, encryptedToken);
 
         if (!removedTokenUser) throw new NotFoundError("Remove Temp Token User Not Found Errors");
+
+        delete tempStorage[currentUUID];
 
         await removedTokenUser.save();
     }

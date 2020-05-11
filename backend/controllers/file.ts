@@ -343,8 +343,9 @@ class FileController {
 
             const user = req.user
             const tempToken = req.params.tempToken;
-    
-            await fileService.removeTempToken(user, tempToken);
+            const currentUUID = req.params.uuid;
+
+            await fileService.removeTempToken(user, tempToken, currentUUID);
 
             res.send();
             

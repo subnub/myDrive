@@ -64,7 +64,7 @@ router.patch("/file-service/move", auth, fileController.moveFile);
 
 router.delete("/file-service/remove-link/:id", auth, fileController.removeLink);
 
-router.delete("/file-service/remove/token-video/:tempToken", auth, fileController.removeTempToken);
+router.delete("/file-service/remove/token-video/:tempToken/:uuid", auth, fileController.removeTempToken);
 
 router.delete("/file-service/remove", auth, fileController.deleteFile);
 

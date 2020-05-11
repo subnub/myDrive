@@ -91,13 +91,15 @@ class PopupWindowContainer extends React.Component {
 
     componentWillUnmount = () => {
 
+        const uuidID = window.sessionStorage.getItem("uuid");
+
         document.removeEventListener('mousedown', this.handleClickOutside);   
 
         const headers = {'Authorization': "Bearer " + window.localStorage.getItem("token")}
       
         if (this.props.popupFile.metadata.isVideo) {
 
-            axios.delete(currentURL +`/file-service/remove/token-video/${this.tempToken}`, {
+            axios.delete(currentURL +`/file-service/remove/token-video/${this.tempToken}/${uuidID}`, {
                 headers,
             }).catch((err) => {
                 console.log(err);
