@@ -8,7 +8,7 @@ interface ChunkInterface {
     getThumbnail: (user: UserInterface, id: string) => Promise<Buffer>;
     getFullThumbnail: (user: UserInterface, fileID: string, res: Response) => void;
     getPublicDownload: (fileID: string, tempToken: any, res: Response) => void;
-    streamVideo: (user: UserInterface, fileID: string, headers: any, res: Response) => void;
+    streamVideo: (user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => void;
 }
 
 export default ChunkInterface;

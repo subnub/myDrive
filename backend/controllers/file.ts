@@ -369,15 +369,15 @@ class FileController {
             
             console.log("stream request", req.params.id)
 
-            req.on("close", () => {
-                console.log("req closed stream");
-            })
+            // req.on("close", () => {
+            //     console.log("req closed stream");
+            // })
 
-            req.on("abort", () => {
-                console.log("Aborted");
-            })
+            // req.on("abort", () => {
+            //     console.log("Aborted");
+            // })
     
-            await this.chunkService.streamVideo(user, fileID, headers, res);
+            await this.chunkService.streamVideo(user, fileID, headers, res, req);
     
         } catch (e) {
 

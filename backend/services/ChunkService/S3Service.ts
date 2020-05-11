@@ -132,7 +132,7 @@ class S3Service implements ChunkInterface {
 
     }
 
-    streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response) => { 
+    streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => { 
 
         const userID = user._id;
         const currentFile: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
@@ -191,6 +191,12 @@ class S3Service implements ChunkInterface {
         const allStreamsToErrorCatch = [s3ReadStream, decipher];
 
         s3ReadStream.pipe(decipher);
+
+        req.on("close", () => {
+            console.log("Destoying read stream");
+            s3ReadStream.destroy();
+            console.log("Read Stream Destroyed");
+        })
 
         await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
     }

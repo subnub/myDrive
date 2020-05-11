@@ -1,4 +1,4 @@
-import {Response} from "express"
+import {Response, Request} from "express"
 
 const awaitStreamVideo = (start: number, end:number, differenceStart: number, 
     decipher: any, res: Response, streamsToErrorCatch: any[]) => {

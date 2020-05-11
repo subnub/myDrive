@@ -193,7 +193,7 @@ class FileSystemService implements ChunkInterface {
         console.log("Full thumbnail sent");
     }
 
-    streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response) => {
+    streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => {
 
         const userID = user._id;
         const currentFile: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
@@ -255,6 +255,12 @@ class FileSystemService implements ChunkInterface {
         const allStreamsToErrorCatch = [readStream, decipher];
 
         readStream.pipe(decipher);
+
+        req.on("close", () => {
+            console.log("Destroying read stream");
+            readStream.destroy();
+            console.log("Read Stream Destoryed");
+        })
 
         await awaitStreamVideo(start, end, differenceStart, decipher, res, allStreamsToErrorCatch);
     }
