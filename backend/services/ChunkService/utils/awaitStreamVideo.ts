@@ -6,7 +6,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
     decipher: any, res: Response, req: Request, tempUUID: string, streamsToErrorCatch: any[]) => {
 
     const currentUUID = uuid.v4();
-    //tempStorage[tempUUID] = currentUUID;
+    tempStorage[tempUUID] = currentUUID;
 
     return new Promise((resolve, reject) => {
 
@@ -14,6 +14,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
         //let sizeCounter = 0;
 
         req.on("close", () => {
+            //console.log("close resolved");
             streamsToErrorCatch.forEach((stream) => {
                 stream.destroy();
             })
@@ -21,6 +22,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
         })
 
         req.on("end", () => {
+            //console.log("End resolved");
             resolve();
         })
 
@@ -35,11 +37,12 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
                 //console.log("New Stream Requested, Desroying old stream");
                 
                 streamsToErrorCatch.forEach((stream) => {
-                    //stream.destroy();
+                    stream.destroy();
                 })
 
                 //console.log("Old Stream Desroyed");
-                //resolve();
+                //console.log("Old Stream Resolved");
+                resolve();
                 //delete tempStorage[tempUUID];
             }
 
@@ -97,6 +100,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
         })
 
         decipher.on("end", () => {
+            //console.log("decipher resolved");
             res.end();
             resolve();
         })

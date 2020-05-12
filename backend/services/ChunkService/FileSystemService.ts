@@ -265,6 +265,7 @@ class FileSystemService implements ChunkInterface {
 
         await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
         console.log("Video Stream Finished");
+        readStream.destroy();
     }
 
     getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {
