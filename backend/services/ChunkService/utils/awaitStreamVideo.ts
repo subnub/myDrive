@@ -6,7 +6,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
     decipher: any, res: Response, req: Request, tempUUID: string, streamsToErrorCatch: any[]) => {
 
     const currentUUID = uuid.v4();
-    tempStorage[tempUUID] = currentUUID;
+    //tempStorage[tempUUID] = currentUUID;
 
     return new Promise((resolve, reject) => {
 
