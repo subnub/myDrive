@@ -69,7 +69,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
                 const dataBack = Buffer.from(neededData, "hex");
 
                 res.write(dataBack);
-                res.flush();
+                //res.flush();
                 return;
             }
 
@@ -86,13 +86,13 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
                 //sizeCounter += dataBack.length;
 
                 res.write(dataBack);
-                res.flush();
+                //res.flush();
                 return;
             }
 
 
             res.write(data);
-            res.flush();
+            //res.flush();
             //sizeCounter += data.length;
         })
 

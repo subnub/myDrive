@@ -193,6 +193,12 @@ class S3Service implements ChunkInterface {
         s3ReadStream.pipe(decipher);
 
         const tempUUID = req.params.uuid;
+
+        // s3ReadStream.on("data", () => {
+        //     console.log("data", tempUUID);
+        // })
+
+        
         // req.on("close", () => {
         //     // console.log("Destoying read stream");
         //     // s3ReadStream.destroy();
