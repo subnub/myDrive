@@ -59,6 +59,8 @@ class MainSectionContainer extends React.Component {
 
     scrollEvent = (e) => {
 
+        if (!mobileCheck()) return;
+
         const scrollY = window.pageYOffset;
         const windowY = document.documentElement.scrollHeight;
 
