@@ -9,7 +9,8 @@ formElement.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
-    const fullURL = process.env.SERVER_IP;
+    const port = process.env.PORT || "3000";
+    const fullURL = `http://localhost:${port}`;
 
     const value = inputElement.value;
 
