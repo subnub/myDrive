@@ -9,7 +9,7 @@ formElement.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
-    const fullURL = process.env.REMOTE_URL;
+    const fullURL = process.env.SERVER_IP;
 
     const value = inputElement.value;
 
