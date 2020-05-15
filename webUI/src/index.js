@@ -15,6 +15,8 @@ formElement.addEventListener("submit", async (e) => {
 
     const data = {password: value}
 
+    console.log("Full URL", fullURL + "/submit")
+
     axios.post(fullURL + "/submit", data).then(() => {
 
         inputElement.value = "";
