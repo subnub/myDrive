@@ -16,6 +16,7 @@ class MainSectionContainer extends React.Component {
 
     constructor(props) {
         super(props);
+
     }
 
     folderClick = (id) => {
@@ -56,6 +57,41 @@ class MainSectionContainer extends React.Component {
 
     }
 
+    scrollEvent = (e) => {
+
+        const scrollY = window.pageYOffset;
+        const windowY = document.documentElement.scrollHeight;
+
+        let limit = window.localStorage.getItem("list-size") || 50
+        limit = parseInt(limit)
+
+        if (this.props.loading) return;
+
+        if ((windowY / 2) < scrollY && this.props.allowLoadMoreItems) {
+            console.log("Scroll Bottom Mobile");
+
+            if (this.props.files.length >= limit) {
+                const parent = this.props.parent;
+                const search = this.props.filter.search;
+                const sortBy = this.props.filter.sortBy;
+                const lastFileDate = this.props.files[this.props.files.length - 1].uploadDate
+                const lastFileName = this.props.files[this.props.files.length - 1].filename
+
+                this.props.dispatch(startLoadMoreFiles(parent, sortBy, search, lastFileDate, lastFileName));
+
+            } 
+        }
+    }
+
+    componentDidMount = () => {
+        window.addEventListener("scroll", this.scrollEvent);
+    }
+
+    componentWillUnmount = () => {
+
+        window.removeEventListener("scroll", this.scrollEvent);
+    }
+
     downloadFile = (fileID) => {
 
         const config = {
@@ -92,6 +128,8 @@ class MainSectionContainer extends React.Component {
     }
 
     loadMoreItems = () => {
+
+        if (mobileCheck()) return;
 
         console.log("loading more items", this.props.loading);
 
