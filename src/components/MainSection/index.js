@@ -1,6 +1,7 @@
 
 import {startLoadMoreFiles} from "../../actions/files";
 import {startSetSelectedItem, setLastSelected} from "../../actions/selectedItem";
+import {setLoading} from "../../actions/main";
 import {setPopupFile} from "../../actions/popupFile";
 import mobileCheck from "../../utils/mobileCheck"
 import MainSection from "./MainSection";
@@ -79,6 +80,7 @@ class MainSectionContainer extends React.Component {
                 const lastFileDate = this.props.files[this.props.files.length - 1].uploadDate
                 const lastFileName = this.props.files[this.props.files.length - 1].filename
 
+                this.props.dispatch(setLoading(true));
                 this.props.dispatch(startLoadMoreFiles(parent, sortBy, search, lastFileDate, lastFileName));
 
             } 
