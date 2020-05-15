@@ -69,6 +69,8 @@
     "public",
     "node_modules",
     "webpack.config.js",
-    "dist"
+    "dist",
+    "webUI",
+    "webUI.config.js"
   ]
 }

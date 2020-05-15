@@ -8,7 +8,8 @@
   },
   "scripts": {
     "server": "live-server public/",
-    "build": "tsc && webpack -p --env production",
+    "build": "tsc && webpack -p --env production && webpack --config webUI.config.js",
+    "build:webUI": "webpack --config webUI.config.js",
     "build:dev": "tsc && webpack --env development",
     "dev-server": "webpack-dev-server",
     "test": "NODE_ENV=test env-cmd -f ./config/test.env jest --config=jest.config.json --watchAll --runInBand",

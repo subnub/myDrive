@@ -1,6 +1,7 @@
 const prompt = require('password-prompt')
 import env from "../enviroment/env";
 import crypto from "crypto";
+import getWebUIKey from "./getWebUIKey";
 
 const getKey = async() => {
 
@@ -13,7 +14,7 @@ const getKey = async() => {
 
     } else if (process.env.NODE_ENV === "production") {
 
-        let password: string = await prompt("Enter Server Encryption Password: ", {method: "hide"});
+        let password = await getWebUIKey();
 
         password = crypto.createHash("md5").update(password).digest("hex");
 
