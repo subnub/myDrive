@@ -14,6 +14,7 @@ class QuickAccessItemContainer extends React.Component {
         super(props);
 
         this.failedToLoad = false;
+        this.lastTouch = 0;
 
         this.state = {
             contextMenuPos: {},
@@ -62,9 +63,42 @@ class QuickAccessItemContainer extends React.Component {
             console.log(err)
         })
     }
+
+    onTouchStart = () => {
+        //alert("Touch start");
+        const date = new Date();
+        this.lastTouch = date.getTime();
+    }
+
+    onTouchMove = () => {
+
+        this.lastTouch = 0;
+    }
+
+    onTouchEnd = () => {
+
+        if (this.lastTouch === 0) {
+
+            //alert("last touch 0");
+            return;
+        }
+
+        const date = new Date();
+        const difference = date - this.lastTouch;
+        //alert("Touch end: " + difference)
+        //alert("touch end: " + difference);
+        this.lastTouch = 0;
+
+        if (difference > 500) {
+            //alert("Context menu");
+            this.getContextMenu();
+        }
+
+    }
+
     getContextMenu = (e) => {
 
-        e.preventDefault();
+        if (e) e.preventDefault();
 
         const isMobile = mobileCheck()
     
@@ -73,21 +107,24 @@ class QuickAccessItemContainer extends React.Component {
 
         let styleObj = {right:0, left:0, top: "-3px", bottom: 0}
 
-        const clientY =  e.nativeEvent.clientY;
-        const clientX = e.nativeEvent.clientX;
-
-        if (clientX > windowX / 2) {
-
-            styleObj = {...styleObj, left:"unset", right:0}
-
-        } else {
-         
-            styleObj = {...styleObj, left:0, right:"unset"}
-        }
-
         if (isMobile) {
 
-            styleObj = {bottom: 0, left: "2px"}
+            styleObj = {bottom: 0, left: "2px"};
+
+        } else {
+
+            const clientY =  e.nativeEvent.clientY;
+            const clientX = e.nativeEvent.clientX;
+    
+            if (clientX > windowX / 2) {
+    
+                styleObj = {...styleObj, left:"unset", right:0}
+    
+            } else {
+             
+                styleObj = {...styleObj, left:0, right:"unset"}
+            }
+
         }
 
         this.setState(() => ({
@@ -106,6 +143,9 @@ class QuickAccessItemContainer extends React.Component {
 
         return <QuickAccessItem 
                 getContextMenu={this.getContextMenu} 
+                onTouchStart={this.onTouchStart}
+                onTouchMove={this.onTouchMove}
+                onTouchEnd={this.onTouchEnd}
                 state={this.state} 
                 {...this.props}/>
     }

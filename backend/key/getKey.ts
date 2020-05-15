@@ -11,8 +11,6 @@ const getKey = async() => {
 
         env.key = crypto.createHash("md5").update(password).digest("hex");
 
-        console.log("Docker Key", env.key);
-
     } else if (process.env.NODE_ENV === "production") {
 
         let password: string = await prompt("Enter Server Encryption Password: ", {method: "hide"});
