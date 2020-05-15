@@ -1,8 +1,8 @@
 import Subbar from "./Subbar";
 import {showSideBar, hideSideBar}  from "../../actions/main";
 import {showAddOptions2} from "../../actions/addOptions";
-import {startAddFile} from "../../actions/files";
-import {startAddFolder} from "../../actions/folders"
+import {startAddFile, setFiles, startSetFiles} from "../../actions/files";
+import {startAddFolder, setFolders, startSetFolders} from "../../actions/folders"
 import {enableListView, disableListView} from "../../actions/filter";
 import {resetSelected} from "../../actions/selectedItem";
 import Swal from "sweetalert2";
@@ -103,13 +103,25 @@ class SubbarContainer extends React.Component {
     showListViewEvent = () => {
 
         let listView = this.props.listView;
+        const parent = this.props.parent;
+        const sortBy = this.props.sortBy;
+        const search = this.props.search;
 
         if (listView) {
             this.props.dispatch(resetSelected())
+            this.props.dispatch(setFiles([]));
+            this.props.dispatch(setFolders([]));
             this.props.dispatch(disableListView())
+            this.props.dispatch(startSetFiles(parent, sortBy, search));
+            this.props.dispatch(startSetFolders(parent, sortBy, search));
+
         } else {
             this.props.dispatch(resetSelected())
+            this.props.dispatch(setFiles([]));
+            this.props.dispatch(setFolders([]));
             this.props.dispatch(enableListView())
+            this.props.dispatch(startSetFiles(parent, sortBy, search));
+            this.props.dispatch(startSetFolders(parent, sortBy, search));
         }
     }
 
@@ -152,7 +164,8 @@ const connectPropToState = (state) => ({
     sortBy: state.filter.sortBy,
     showAddOptions2: state.addOptions.showAddOptions2,
     showSideBar: state.main.showSideBar,
-    currentlySearching: state.filter.currentlySearching
+    currentlySearching: state.filter.currentlySearching,
+    search: state.filter.search,
 })
 
 export default connect(connectPropToState)(SubbarContainer)
