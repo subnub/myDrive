@@ -7,7 +7,11 @@ const getKey = async() => {
     if (process.env.KEY) {
         // For Docker 
 
-        env.key = process.env.KEY
+        const password = process.env.KEY;
+
+        env.key = password;
+
+        console.log("Docker Key", env.key);
 
     } else if (process.env.NODE_ENV) {
 
