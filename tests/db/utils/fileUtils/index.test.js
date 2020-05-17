@@ -1,10 +1,10 @@
-const User = require("../../../../backend/models/user");
-const mongoose = require("../../../../backend/db/mongoose");
+import User from "../../../../dist/models/user";
+import mongoose from "../../../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../../../fixtures/createUser");
 const path = require("path");
 const createFile = require("../../../fixtures/createFile");
-const UtilsFile = require("../../../../backend/db/utils/fileUtils");
+import UtilsFile from "../../../../dist/db/utils/fileUtils/index";
 const ObjectID = require('mongodb').ObjectID
 const jwt = require("jsonwebtoken");
 const utilsFile = new UtilsFile();
@@ -792,55 +792,55 @@ test("When giving the wrong temp token, should not remove temp token", async() =
     expect(updatedUser.tempTokens[0].token._id).toBe(token._id)
 })
 
-test("When giving fileID and userID, should remove transcoded video", async() => {
+// test("When giving fileID and userID, should remove transcoded video", async() => {
 
-    const fileID = file._id;
-    const userID = user._id;
-    await await conn.db.collection("fs.files")
-    .findOneAndUpdate({"_id": ObjectID(fileID), "metadata.owner": userID}, 
-    {"$set": {"metadata.transcoded": true}})
+//     const fileID = file._id;
+//     const userID = user._id;
+//     await await conn.db.collection("fs.files")
+//     .findOneAndUpdate({"_id": ObjectID(fileID), "metadata.owner": userID}, 
+//     {"$set": {"metadata.transcoded": true}})
 
-    await utilsFile.removeTranscodeVideo(fileID, userID);
-    const updatedFile = await conn.db.collection("fs.files")
-            .findOne({_id: fileID});
-
-
-    expect(updatedFile.metadata.transcoded).toBe(undefined);
-})
-
-test("When giving wrong fileID, should not remove transcoded video", async() => {
-
-    const fileID = file._id;
-    const userID = user._id;
-    const wrongFileID = "123456789012";
-    await await conn.db.collection("fs.files")
-    .findOneAndUpdate({"_id": ObjectID(fileID), "metadata.owner": userID}, 
-    {"$set": {"metadata.transcoded": true}})
-
-    await utilsFile.removeTranscodeVideo(wrongFileID, userID);
-    const updatedFile = await conn.db.collection("fs.files")
-            .findOne({_id: fileID});
+//     await utilsFile.removeTranscodeVideo(fileID, userID);
+//     const updatedFile = await conn.db.collection("fs.files")
+//             .findOne({_id: fileID});
 
 
-    expect(updatedFile.metadata.transcoded).toBe(true);
-})
+//     expect(updatedFile.metadata.transcoded).toBe(undefined);
+// })
 
-test("When giving the wrong userID, should not remove transcoded video", async() => {
+// test("When giving wrong fileID, should not remove transcoded video", async() => {
 
-    const fileID = file._id;
-    const userID = user._id;
-    const wrongUserID = "123456789012";
-    await await conn.db.collection("fs.files")
-    .findOneAndUpdate({"_id": ObjectID(fileID), "metadata.owner": userID}, 
-    {"$set": {"metadata.transcoded": true}})
+//     const fileID = file._id;
+//     const userID = user._id;
+//     const wrongFileID = "123456789012";
+//     await await conn.db.collection("fs.files")
+//     .findOneAndUpdate({"_id": ObjectID(fileID), "metadata.owner": userID}, 
+//     {"$set": {"metadata.transcoded": true}})
 
-    await utilsFile.removeTranscodeVideo(fileID, wrongUserID);
-    const updatedFile = await conn.db.collection("fs.files")
-            .findOne({_id: fileID});
+//     await utilsFile.removeTranscodeVideo(wrongFileID, userID);
+//     const updatedFile = await conn.db.collection("fs.files")
+//             .findOne({_id: fileID});
 
 
-    expect(updatedFile.metadata.transcoded).toBe(true);
-})
+//     expect(updatedFile.metadata.transcoded).toBe(true);
+// })
+
+// test("When giving the wrong userID, should not remove transcoded video", async() => {
+
+//     const fileID = file._id;
+//     const userID = user._id;
+//     const wrongUserID = "123456789012";
+//     await await conn.db.collection("fs.files")
+//     .findOneAndUpdate({"_id": ObjectID(fileID), "metadata.owner": userID}, 
+//     {"$set": {"metadata.transcoded": true}})
+
+//     await utilsFile.removeTranscodeVideo(fileID, wrongUserID);
+//     const updatedFile = await conn.db.collection("fs.files")
+//             .findOne({_id: fileID});
+
+
+//     expect(updatedFile.metadata.transcoded).toBe(true);
+// })
 
 test("When giving userID and search query, should return file list", async() => {
 

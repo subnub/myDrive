@@ -1,19 +1,23 @@
-const User = require("../../backend/models/user");
-const mongoose = require("../../backend/db/mongoose");
+import User from "../../dist/models/user";
+import mongoose from "../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../fixtures/createUser");
 const createUser2 = require("../fixtures/createUser2");
 const createFile = require("../fixtures/createFile");
 const crypto = require("crypto");
 const path = require("path");
-const env = require("../../backend/enviroment/env");
+import env from "../../dist/enviroment/env";
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
 const ObjectID = require('mongodb').ObjectID
-const app = require("../../server/server");
-const Folder = require("../../backend/models/folder");
+import servers from "../../dist/server/server";
+import Folder from "../../dist/models/folder";
 const temp = require("temp").track();
 const binaryPhraser = require("superagent-binary-parser");
+
+const {server, serverHttps} = servers;
+
+const app = server;
 
 let user;
 let userToken;

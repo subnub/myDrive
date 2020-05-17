@@ -1,16 +1,16 @@
-const User = require("../../../backend/models/user");
-const mongoose = require("../../../backend/db/mongoose");
+import User from "../../../dist/models/user";
+import mongoose from "../../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../../fixtures/createUser");
 const path = require("path");
 const createFile = require("../../fixtures/createFile");
 const crypto = require("crypto");
-const createThumbnail = require("../../../backend/services/FileService/utils/createThumbnail");
-const env = require("../../../backend/enviroment/env");
+import createThumbnail from "../../../dist/services/ChunkService/utils/createThumbnail";
+import env from "../../../dist/enviroment/env";
 const jwt = require("jsonwebtoken");
 const ObjectID = require('mongodb').ObjectID
-const Folder = require("../../../backend/models/folder");
-const FileService = require("../../../backend/services/FileService");
+import Folder from "../../../dist/models/folder";
+import FileService from "../../../dist/services/FileService";
 const fileService = new FileService();
 
 let user; 
@@ -87,28 +87,28 @@ afterEach( async(done) => {
 
 })
 
-test("When giving user, and thumbnail id, should get thumbnail" , async() => {
+// test("When giving user, and thumbnail id, should get thumbnail" , async() => {
   
-    const thumbnailFile = await createThumbnail(file, file.filename, user);
-    const thumbnailID = thumbnailFile.metadata.thumbnailID;
+//     const thumbnailFile = await createThumbnail(file, file.filename, user);
+//     const thumbnailID = thumbnailFile.metadata.thumbnailID;
 
    
-    const recievedThumbnail = await fileService.getThumbnail(user, thumbnailID);
+//     const recievedThumbnail = await fileService.getThumbnail(user, thumbnailID);
 
 
-    expect(recievedThumbnail.buffer.length).not.toBe(0);
-})
+//     expect(recievedThumbnail.buffer.length).not.toBe(0);
+// })
 
-test("When giving the wrong user for thumbnail, should throw not authorized error", async() => {
+// test("When giving the wrong user for thumbnail, should throw not authorized error", async() => {
 
-    const thumbnailFile = await createThumbnail(file, file.filename, user);
-    const thumbnailID = thumbnailFile.metadata.thumbnailID;
-    const wrongUser = {
-        _id: "123456789012"
-    }
+//     const thumbnailFile = await createThumbnail(file, file.filename, user);
+//     const thumbnailID = thumbnailFile.metadata.thumbnailID;
+//     const wrongUser = {
+//         _id: "123456789012"
+//     }
 
-    await expect(fileService.getThumbnail(wrongUser, thumbnailID)).rejects.toThrow();
-})
+//     await expect(fileService.getThumbnail(wrongUser, thumbnailID)).rejects.toThrow();
+// })
 
 test("When giving file, should remove one time link", async() => {
 
