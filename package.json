@@ -8,7 +8,7 @@
   },
   "scripts": {
     "server": "live-server public/",
-    "build": "set NODE_OPTIONS=--max_old_space_size=8172 && tsc && webpack -p --env production && webpack --config webUI.config.js",
+    "build": "export NODE_OPTIONS=--max_old_space_size=8000 && tsc && webpack -p --env production && webpack --config webUI.config.js",
     "build:webUI": "webpack --config webUI.config.js",
     "build:dev": "tsc && webpack --env development",
     "dev-server": "webpack-dev-server",
