@@ -36,15 +36,14 @@ const getWebUIKey = () => {
         })
 
         const port = process.env.HTTP_PORT || process.env.PORT || "3000";
-        const url = "localhost";
+        const url =  process.env.DOCKER ? undefined : "localhost";
 
         const server = http.createServer(app) as any;
 
         server.listen(port, url, () => {
 
-            const fullURL = `http://localhost:${port!}`;
-
-            console.log("\nPlease Navigate To", fullURL, "To Enter Encryption Password\n")
+            console.log(`\nPlease navigate to http://localhost:${port} to enter encryption key\n`)
+           
         });
 
     })

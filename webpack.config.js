@@ -14,6 +14,7 @@ const path = require("path");
 
 module.exports = (env) => {
 
+    //console.log("env docker", process.env.DOCKER);
 
     if (env === "test") {
 
@@ -29,6 +30,7 @@ module.exports = (env) => {
 
         console.log("Loading production env variables")
         require("dotenv").config({path: ".env.production"});
+        require("dotenv").config({path: "docker-variables.env"});
     }
 
     console.log("env", env);

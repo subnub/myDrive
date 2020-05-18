@@ -43,7 +43,6 @@ export const startCreateAccount = (email, password) => {
 
     return (dispatch) => {
 
-
         const dt = {email, password};
         axios.post(currentURL+"/user-service/create", dt).then((response) => {
             

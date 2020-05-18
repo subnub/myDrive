@@ -18,3 +18,4 @@ package-lock.json
 .DS_Store
 dist/
 rds-combined-ca-bundle.pem
+docker-variables.env

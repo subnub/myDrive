@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  app:
+    container_name: mydrive-node
+    restart: always
+    build: .
+    ports: 
+      - '3000:3000'
+      - '8080:8080'
+    env_file:
+      - docker-variables.env
+    links:
+      - mongo
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - 'mongodb_data_volume:/data/db'
+volumes:
+      mongodb_data_volume:
+        external: true
