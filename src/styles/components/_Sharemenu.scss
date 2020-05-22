@@ -44,6 +44,10 @@
     font-size: 13.5px;
     font-weight: 200;
     white-space: nowrap;
+
+    @media (max-width: $desktop-breakpoint) {
+        max-width: 80%;
+    }
 }
 
 .sharemenu__subtitle {
@@ -126,6 +130,10 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
+
+    @media (max-width: $desktop-breakpoint) {
+        height: 49px;
+     }
 }
 
 .sharemenu__image {
