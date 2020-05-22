@@ -181,6 +181,22 @@ const initServer = async() => {
 
         stringBuilder += "PASSWORD=" + JWTsecret + "\n";
 
+        const getUseSSL = await prompts({
+            type: 'toggle',
+            name: 'value',
+            message: "Use SSL? (Will Require SSL Certificate certificate.crt, certificate.ca-bundle, And certificate.key At Root Of The Project)",
+            initial: true,
+            active: 'yes',
+            inactive: 'no'
+        })
+
+        const useSSL = getUseSSL.value;
+
+        if (useSSL) {
+
+            stringBuilder += "SSL=true\n";
+        }
+
         stringBuilder += "DISABLE_STORAGE=true\n";
         stringBuilder += "DOCKER=true\n";
         stringBuilder += "NODE_ENV=production\n";
@@ -317,6 +333,22 @@ const initServer = async() => {
         const JWTsecret = getJWTSecret.value;
 
         stringBuilderServer += "PASSWORD=" + JWTsecret + "\n";
+
+        const getUseSSL = await prompts({
+            type: 'toggle',
+            name: 'value',
+            message: "Use SSL? (Will Require SSL Certificate certificate.crt, certificate.ca-bundle, And certificate.key At Root Of The Project)",
+            initial: true,
+            active: 'yes',
+            inactive: 'no'
+        })
+
+        const useSSL = getUseSSL.value;
+
+        if (useSSL) {
+
+            stringBuilderServer += "SSL=true\n";
+        }
 
         stringBuilderServer += "NODE_ENV=production\n";
         stringBuilderClient += "PORT=3000\n";
