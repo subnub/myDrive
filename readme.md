@@ -9,6 +9,7 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * [Features](#features)
 * [Installation](#installation)
 * [WebUI For Encryption Key](#webui-for-encryption-key)
+* [Docker](#docker)
 * [Enviroment Variables](#enviroment-variables)
 * [Screenshots](#screenshots)
 * [Wiki](https://github.com/subnub/myDrive/wiki)
@@ -80,7 +81,27 @@ If you're using a service like SSH or a Droplet, you can forward the localhost c
 ssh -L localhost:3000:localhost:3000 username@ip_address
 ```
 
-Note: You can also disable using the webUI for the encryption key by providing a key in the server enviroment variables (e.g. KEY=password), but this is not recommended because it greatly reduces security.  
+Note: You can also disable using the webUI for the encryption key by providing a key in the server enviroment variables (e.g. KEY=password), but this is not recommended because it greatly reduces security. 
+
+## Docker
+
+MyDrive has built in Docker support, there are two options when using Docker, users can either use the Docker image that has MongoDB built in, or use the Docker image that just has the MyDrive image (If you're using a service like Atlas).
+
+Create the Docker Enviroment variables by running the 'npm run setup' command as seen in the installation section. Or by manually creating the file (e.g. docker-variables.env on the root of the project).
+
+Docker with mongoDB image:
+```bash
+docker-compose build
+```
+
+Docker without mongoDB image:
+```bash
+docker-compose -f docker-compose-no-mongo.yml build
+```
+Start the Docker Image:
+```bash
+docker-compose up
+```
 
 ## Screenshots
 
