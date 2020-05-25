@@ -114,6 +114,17 @@ Image Viewer
 Video Viewer
 ![Video Viewer](github_images/video-screenshot.png)
 
+Search For Files/Folders
+![Search](github_images/search-screenshot.png)
+
+Move File/Folders
+![Move](github_images/move-screenshot.png)
+
+Share
+![Share](github_images/share-screenshot.png)
+
+Folders
+![Folders](github_images/folder-screenshot.png)
 
 ## Environment Variables
 
