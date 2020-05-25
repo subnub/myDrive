@@ -1,5 +1,7 @@
 # ![MyDrive Logo](github_images/mydrivelogogit.png)
 
+# ![MyDrive Homepage](github_images/mydrivehome.png)
+
 # MyDrive
 
 MyDrive is an Open Source Cloud Server (Similar To Google Drive), built with Node.JS, Express, React, and MongoDB.
