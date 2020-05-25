@@ -8,6 +8,7 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 
 * [Features](#features)
 * [Installation](#installation)
+* [WebUI for Encryption Key](#WebUI For Encryption Key)
 * [Wiki](https://github.com/subnub/myDrive/wiki)
 * [Demo](#demo)
 * [Screenshots](#screenshots)
@@ -68,6 +69,17 @@ npm run create-indexes-database
 ``` javascript
 npm run start
 ```
+
+## WebUI For Encryption Key
+
+MyDrive will first host a server on http://localhost:3000 in order to safely get the encryption key, just navigate to this URL in a browser, and enter the encryption key. 
+
+If you're using a service like SSH or a Droplet, you can forward the localhost connection safely like so:
+```bash
+ssh -L localhost:3000:localhost:3000 username@ip_address
+```
+
+Note: You can also disable using the webUI for the encryption key by providing a key in the server enviroment variables (e.g. KEY=password), but this is not recommended because it greatly reduces security. 
 
 ## Demo
 
