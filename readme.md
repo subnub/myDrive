@@ -105,6 +105,16 @@ docker-compose up
 
 ## Screenshots
 
+Upload Files
+![MyDrive Upload](github_images/upload-screenshot.png)
+
+Image Viewer
+![Image Viewer](github_images/image-screenshot.png)
+
+Video Viewer
+![Video Viewer](github_images/video-screenshot.png)
+
+
 ## Environment Variables
 
 Create a config folder on the root of the project, and create a file with the name prod.env for the server. For the client variables create a .env.production file in the root of the project. 
