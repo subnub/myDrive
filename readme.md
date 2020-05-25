@@ -2,13 +2,27 @@
 
 # MyDrive
 
-MyDrive is an Open Source Cloud Server (Similar To Google Drive), MyDrive supports multiple services to store files (Amazon S3, MongoDB, the FileSystem), and is built with Node.js and Typescript.
+MyDrive is an Open Source Cloud Server (Similar To Google Drive), MyDrive supports multiple services to store files (Amazon S3, MongoDB, the FileSystem), and is built with Node.js and Typescript. MyDrive now even has Docker Images!
 
 ## Index
 
 * [Features](#features)
 
 ## Features
+
+* Upload Files
+* Download Files
+* Share Files
+* Mutilple DB Support (MongoDB, S3, Filesystem)
+* Photo Viewer
+* Video Viewer
+* Thumbnails
+* One-time download links
+* Move Folder/Files
+* Mobile Support
+* Docker Support
+* Search/Filter Options
+* AES256 Encryption
 
 Demo: https://mydrive-demo.herokuapp.com/
 - Note: The Upload and Download Features, and other core features, are disabled in the demo. 
