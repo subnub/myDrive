@@ -43,6 +43,7 @@ Linux users will need to make sure they have 'build-essential' installed:
 sudo apt-get install build-essential
 ```
 
+Setup:
 >Install Node Modules
 ``` javascript
 npm install
