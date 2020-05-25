@@ -70,7 +70,7 @@ Server Enviroment Variables:
 - DB_TYPE (Required): Sets the Database Type, options include s3/mongo/fs.
 - NODE_ENV (Required): Must be set to 'production'.
 - SSL (Optional): Enables SSL, place certificate.crt, certificate.ca-bundle, and certificate.key at the root of the project.
-- KEY (Optional): Encryption key for data, this is not recommended, please use the built webUI for setting the key.
+- KEY (Optional): Encryption key for data, this is not recommended, please use the built in webUI for setting the key.
 - DOCKER (Optional/Required): Sets the server to use docker, set this to true.
 - FS_DIRECTORY (Optional/Required): Sets the directory for file data on the file system. 
 - S3_ID (Optional/Required): Sets the Amazon S3 ID.
