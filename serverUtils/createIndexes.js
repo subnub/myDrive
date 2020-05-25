@@ -1,4 +1,6 @@
-const mongoose = require("../backend/db/mongoose");
+const getEnvVariables = require("./getEnvVaribables");
+getEnvVariables();
+const mongoose = require("./mongoServerUtil");
 const conn = mongoose.connection;
 
 const waitForDatabase = () => {
