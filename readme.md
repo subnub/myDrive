@@ -24,6 +24,13 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), MyDrive suppor
 * Search/Filter Options
 * AES256 Encryption
 
+## Installation
+
+>Create Enviroment Variables, Users can use the built in command to easily create the needed Enviroment files, or view the Enviroment Variables section to see how to manually create the files. 
+
+``` javascript
+npm run setup```
+
 Demo: https://mydrive-demo.herokuapp.com/
 - Note: The Upload and Download Features, and other core features, are disabled in the demo. 
 
