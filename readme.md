@@ -26,10 +26,24 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), MyDrive suppor
 
 ## Installation
 
->Create Enviroment Variables, Users can use the built in command to easily create the needed Enviroment files, or view the Enviroment Variables section to see how to manually create the files. 
+>Install Node Modules
+``` javascript
+npm install
+```
 
+>Create Enviroment Variables, Users can use the built in command to easily create the needed Enviroment files, or view the Enviroment Variables section to see how to manually create the files. 
 ``` javascript
 npm run setup
+```
+
+>Run the build command
+``` javascript
+npm run build
+```
+
+>Start the server
+``` javascript
+npm run start
 ```
 
 Demo: https://mydrive-demo.herokuapp.com/
