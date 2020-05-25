@@ -10,7 +10,7 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * [Installation](#installation)
 * [WebUI For Encryption Key](#webui-for-encryption-key)
 * [Docker](#docker)
-* [Enviroment Variables](#enviroment-variables)
+* [Environment Variables](#environment-variables)
 * [Screenshots](#screenshots)
 * [Wiki](https://github.com/subnub/myDrive/wiki)
 * [Demo](#demo)
@@ -20,7 +20,7 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * Upload Files
 * Download Files
 * Share Files
-* Mutilple DB Support (MongoDB, S3, Filesystem)
+* Multiple DB Support (MongoDB, S3, Filesystem)
 * Photo Viewer
 * Video Viewer
 * Thumbnails
@@ -52,7 +52,7 @@ Setup:
 npm install
 ```
 
->Create Enviroment Variables, Users can use the built in command to easily create the needed Enviroment files, or view the Enviroment Variables section to see how to manually create the files. 
+>Create Environment Variables, Users can use the built in command to easily create the needed Environment files, or view the Environment Variables section to see how to manually create the files. 
 ``` javascript
 npm run setup
 ```
@@ -62,7 +62,7 @@ npm run setup
 npm run build
 ```
 
->(Optional) Create the MongoDB indexes, this increases performace. MongoDB must be running for this command to work.
+>(Optional) Create the MongoDB indexes, this increases performance. MongoDB must be running for this command to work.
 ```javascript
 npm run create-indexes-database
 ```
@@ -87,7 +87,7 @@ Note: You can also disable using the webUI for the encryption key by providing a
 
 MyDrive has built in Docker support, there are two options when using Docker, users can either use the Docker image that has MongoDB built in, or use the Docker image that just has the MyDrive image (If you're using a service like Atlas).
 
-Create the Docker Enviroment variables by running the 'npm run setup' command as seen in the installation section. Or by manually creating the file (e.g. docker-variables.env on the root of the project).
+Create the Docker environment variables by running the 'npm run setup' command as seen in the installation section. Or by manually creating the file (e.g. docker-variables.env on the root of the project, see the enviroment section for more infomation).
 
 Docker with mongoDB image:
 ```bash
@@ -105,11 +105,11 @@ docker-compose up
 
 ## Screenshots
 
-## Enviroment Variables
+## Environment Variables
 
 Create a config folder on the root of the project, and create a file with the name prod.env for the server. For the client variables create a .env.production file in the root of the project. 
 
-Server Enviroment Variables:
+Server Environment Variables:
 
 - MONGODB_URL (Required): Sets the MongoDB URL, this should also work with DocumentDB. 
 - HTTP_PORT (Required): Sets the HTTP port number.
@@ -130,7 +130,7 @@ Server Enviroment Variables:
 - DOCUMENT_DB_BUNDLE (Optional): Enables SSL with documentDB.
 - BLOCK_CREATE_ACCOUNT (Optional): Blocks the ability to create accounts.
 
-Client Enviroment Variables
+Client Environment Variables
 
 - REMOTE_URL (Required): Sets the Remote URL for the client.
 - DISABLE_STORAGE (Optional): Disables storage, use this if you're not using ROOT on the server.
