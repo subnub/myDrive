@@ -59,6 +59,11 @@ npm run setup
 npm run build
 ```
 
+>(Optional) Create the MongoDB indexes, this increases performace. MongoDB must be running for this command to work.
+```javascript
+npm run create-indexes-database
+```
+
 >Start the server
 ``` javascript
 npm run start
