@@ -1,4 +1,4 @@
-# ![MyDrive Homepage](github_images/mydrivehome.png)
+# ![MyDrive Homepage](github_images/mydrivehome2.png)
 
 # MyDrive
 
