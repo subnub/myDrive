@@ -7,6 +7,10 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), MyDrive suppor
 ## Index
 
 * [Features](#features)
+* [Installation](#installation)
+* [Wiki](https://github.com/subnub/myDrive/wiki)
+* [Demo](#demo)
+* [Screenshots](#screenshots)
 
 ## Features
 
@@ -46,8 +50,12 @@ npm run build
 npm run start
 ```
 
+## Demo
+
 Demo: https://mydrive-demo.herokuapp.com/
 - Note: The Upload and Download Features, and other core features, are disabled in the demo. 
+
+## Screenshots
 
 ### Wiki
 
