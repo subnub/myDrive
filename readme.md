@@ -9,9 +9,10 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * [Features](#features)
 * [Installation](#installation)
 * [WebUI For Encryption Key](#webui-for-encryption-key)
+* [Enviroment Variables](#enviroment-variables)
+* [Screenshots](#screenshots)
 * [Wiki](https://github.com/subnub/myDrive/wiki)
 * [Demo](#demo)
-* [Screenshots](#screenshots)
 
 ## Features
 
@@ -79,12 +80,7 @@ If you're using a service like SSH or a Droplet, you can forward the localhost c
 ssh -L localhost:3000:localhost:3000 username@ip_address
 ```
 
-Note: You can also disable using the webUI for the encryption key by providing a key in the server enviroment variables (e.g. KEY=password), but this is not recommended because it greatly reduces security. 
-
-## Demo
-
-Demo: https://mydrive-demo.herokuapp.com/
-- Note: The Upload and Download Features, and other core features, are disabled in the demo. 
+Note: You can also disable using the webUI for the encryption key by providing a key in the server enviroment variables (e.g. KEY=password), but this is not recommended because it greatly reduces security.  
 
 ## Screenshots
 
@@ -118,9 +114,14 @@ Client Enviroment Variables
 - REMOTE_URL (Required): Sets the Remote URL for the client.
 - DISABLE_STORAGE (Optional): Disables storage, use this if you're not using ROOT on the server.
 
-### Wiki
+## Wiki
 
 For a more detailed list of myDrive features, including examples with images, visit the wiki here: https://github.com/subnub/myDrive/wiki
+
+## Demo
+
+Demo: https://mydrive-demo.herokuapp.com/
+- Note: The Upload and Download Features, and other core features, are disabled in the demo.
 
 MyDrive Features:
 
