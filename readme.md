@@ -2,7 +2,7 @@
 
 # MyDrive
 
-MyDrive is an Open Source Cloud Server (Similar To Google Drive), MyDrive supports multiple services to store files (Amazon S3, MongoDB, the FileSystem), and is built with Node.js and Typescript. MyDrive now even has Docker Images!
+MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service uses mongoDB to store file/folder meta data, and supports multiple databases to store the file chunks, such as Amazon S3, the Filesystem, or just MongoDB. MyDrive is built using Node.js, and Typescript. The service now even supports Docker images! 
 
 ## Index
 
@@ -29,6 +29,19 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), MyDrive suppor
 * AES256 Encryption
 
 ## Installation
+
+Required:
+- Node.js (13+ Recommended)
+- MongoDB (Unless using a service like Atlas)
+
+Windows users will usually need both the microsoft visual build tools, and python 2. These are required to build the sharp module:
+- Visual Tools: http://go.microsoft.com/fwlink/?LinkId=691126
+- Python 2: https://www.python.org/downloads/release/python-2717/
+
+Linux users will need to make sure they have 'build-essential' installed:
+```bash
+sudo apt-get install build-essential
+```
 
 >Install Node Modules
 ``` javascript
