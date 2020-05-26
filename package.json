@@ -8,7 +8,7 @@
   },
   "scripts": {
     "server": "live-server public/",
-    "build": "export NODE_OPTIONS=--max_old_space_size=8000 && tsc && webpack -p --env production && webpack --config webUI.config.js && node serverUtils/createIndexes.js",
+    "build": "tsc && webpack -p --env production && webpack --config webUI.config.js",
     "build:docker": "export NODE_OPTIONS=--max_old_space_size=8000 && tsc && webpack -p --env production && webpack --config webUI.config.js",
     "build:webUI": "webpack --config webUI.config.js",
     "build:dev": "tsc && webpack --env development",
@@ -17,6 +17,7 @@
     "start:dev": "NODE_ENV=development node dist/server/serverStart.js",
     "start": "NODE_ENV=production node dist/server/serverStart.js --env production",
     "create-indexes-database": "node serverUtils/createIndexes.js",
+    "increase-node-memory": "export NODE_OPTIONS=--max_old_space_size=8000",
     "create-indexes-database:dev": "node serverUtils/createIndexes.js",
     "setup": "node serverUtils/setupServer.js",
     "debug": "env-cmd -f ./config/prod.env node --expose-gc --inspect=9222 dist/server/serverStart.js --env production",
