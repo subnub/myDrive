@@ -15,6 +15,7 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * [Wiki](https://github.com/subnub/myDrive/wiki)
 * [Video](#video)
 * [Demo](#demo)
+* [Fund/Donate](#fund)
 
 ## Features
 
@@ -174,6 +175,12 @@ I created a short YouTube video, showing off myDrives design and features: https
 
 Demo: https://mydrive-demo.herokuapp.com/
 - Note: The Upload and Download Features, and other core features, are disabled in the demo.
+
+## Fund
+
+Like myDrive? Perhaps you'd like to contribute by funding me through patreon! MyDrive is made by myself, and only myself. I am a 22 year old developer, who goes to school, and work (A non-programming job) so any amount really helps! I hope to do programming as a full time job one day. 
+
+Patreon: https://www.patreon.com/subnub
 
 ## Questions? Feature Requests? Hiring? Contact Me!
 Contact Email: kyle.hoell@gmail.com
