@@ -135,7 +135,11 @@ Mobile
 
 ## Environment Variables
 
+You can easily create enviroment variables using the built in setup tool 'npm run setup', or manually create the files.
+
 Create a config folder on the root of the project, and create a file with the name prod.env for the server. For the client variables create a .env.production file in the root of the project. 
+
+Docker: If you're using Docker, instead create a file named 'docker-variables.env' on the root of the project. You must also include DOCKER=true in the servers enviroment variables. 
 
 Server Environment Variables:
 
@@ -145,18 +149,18 @@ Server Environment Variables:
 - PASSWORD (Required): Sets the JWT password. 
 - DB_TYPE (Required): Sets the Database Type, options include s3/mongo/fs.
 - NODE_ENV (Required): Must be set to 'production'.
-- SSL (Optional): Enables SSL, place certificate.crt, certificate.ca-bundle, and certificate.key at the root of the project.
+- SSL (Optional): Enables SSL, place certificate.crt, certificate.ca-bundle, and certificate.key at the root of the project. Set this to 'true'
 - KEY (Optional): Encryption key for data, this is not recommended, please use the built in webUI for setting the key.
-- DOCKER (Optional/Required): Sets the server to use docker, set this to true.
+- DOCKER (Optional/Required): Sets the server to use docker, set this to 'true'.
 - FS_DIRECTORY (Optional/Required): Sets the directory for file data on the file system. 
 - S3_ID (Optional/Required): Sets the Amazon S3 ID.
 - S3_KEY (Optional/Required): Sets the Amazon S3 Key.
 - S3_BUCKET (Optional/Required): Sets the Amazon Bucket.
 - ROOT (Optional): Uses a filesystem path, is used for storage space.
 - URL (Optional): Allows to specify URL to host on, this is usually not needed. 
-- USE_DOCUMENT_DB (Optional): Enables documentDB, this is experimental.
-- DOCUMENT_DB_BUNDLE (Optional): Enables SSL with documentDB.
-- BLOCK_CREATE_ACCOUNT (Optional): Blocks the ability to create accounts.
+- USE_DOCUMENT_DB (Optional): Enables documentDB, this is experimental, set this to 'true'.
+- DOCUMENT_DB_BUNDLE (Optional): Enables SSL with documentDB, set this to 'true'.
+- BLOCK_CREATE_ACCOUNT (Optional): Blocks the ability to create accounts, set this to 'true'.
 
 Client Environment Variables
 
