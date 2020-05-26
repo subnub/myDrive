@@ -127,7 +127,7 @@ Folders
 ![Folders](github_images/folder-screenshot.png)
 
 Mobile
-![Mobile](github_images/mobile-screenshot.jpeg =250x250)
+<img src="github_images/mobile-screenshot.jpeg" width="48">
 
 ## Environment Variables
 
