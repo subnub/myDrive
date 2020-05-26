@@ -13,6 +13,7 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * [Environment Variables](#environment-variables)
 * [Screenshots](#screenshots)
 * [Wiki](https://github.com/subnub/myDrive/wiki)
+* [Video](#video)
 * [Demo](#demo)
 
 ## Features
@@ -164,6 +165,10 @@ Client Environment Variables
 ## Wiki
 
 For a more detailed list of myDrive features, including examples with images, visit the wiki here: https://github.com/subnub/myDrive/wiki
+
+## Video
+
+I created a short YouTube video, showing off myDrives design and features: https://youtu.be/0YKU5CZHG4I
 
 ## Demo
 
