@@ -126,6 +126,9 @@ Share
 Folders
 ![Folders](github_images/folder-screenshot.png)
 
+Mobile
+![Mobile](github_images/mobile-screenshot.jpeg)
+
 ## Environment Variables
 
 Create a config folder on the root of the project, and create a file with the name prod.env for the server. For the client variables create a .env.production file in the root of the project. 
