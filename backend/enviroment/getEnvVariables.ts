@@ -6,7 +6,7 @@ const getEnvVariables = () => {
 
     const processType = process.env.NODE_ENV;
 
-    if (processType === 'production') {
+    if (processType === 'production' || processType === undefined) {
 
         require('dotenv').config({ path: configPath + "/prod.env"})
 

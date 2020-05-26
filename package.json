@@ -14,7 +14,7 @@
     "build:dev": "tsc && webpack --env development",
     "dev-server": "webpack-dev-server",
     "test": "NODE_ENV=test env-cmd -f ./config/test.env jest --config=jest.config.json --watchAll --runInBand",
-    "start:dev": "node dist/server/serverStart.js",
+    "start:dev": "NODE_ENV=dev node dist/server/serverStart.js",
     "start": "node dist/server/serverStart.js --env production",
     "create-indexes-database": "node serverUtils/createIndexes.js",
     "increase-node-memory": "export NODE_OPTIONS=--max_old_space_size=8000",
