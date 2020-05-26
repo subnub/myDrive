@@ -1,6 +1,7 @@
 
 import {startLoadMoreFiles} from "../../actions/files";
 import {startSetSelectedItem, setLastSelected} from "../../actions/selectedItem";
+import {setLoading} from "../../actions/main";
 import {setPopupFile} from "../../actions/popupFile";
 import mobileCheck from "../../utils/mobileCheck"
 import MainSection from "./MainSection";
@@ -16,6 +17,7 @@ class MainSectionContainer extends React.Component {
 
     constructor(props) {
         super(props);
+
     }
 
     folderClick = (id) => {
@@ -56,6 +58,44 @@ class MainSectionContainer extends React.Component {
 
     }
 
+    scrollEvent = (e) => {
+
+        if (!mobileCheck()) return;
+
+        const scrollY = window.pageYOffset;
+        const windowY = document.documentElement.scrollHeight;
+
+        let limit = window.localStorage.getItem("list-size") || 50
+        limit = parseInt(limit)
+
+        if (this.props.loading) return;
+
+        if ((windowY / 2) < scrollY && this.props.allowLoadMoreItems) {
+            console.log("Scroll Bottom Mobile");
+
+            if (this.props.files.length >= limit) {
+                const parent = this.props.parent;
+                const search = this.props.filter.search;
+                const sortBy = this.props.filter.sortBy;
+                const lastFileDate = this.props.files[this.props.files.length - 1].uploadDate
+                const lastFileName = this.props.files[this.props.files.length - 1].filename
+
+                this.props.dispatch(setLoading(true));
+                this.props.dispatch(startLoadMoreFiles(parent, sortBy, search, lastFileDate, lastFileName));
+
+            } 
+        }
+    }
+
+    componentDidMount = () => {
+        window.addEventListener("scroll", this.scrollEvent);
+    }
+
+    componentWillUnmount = () => {
+
+        window.removeEventListener("scroll", this.scrollEvent);
+    }
+
     downloadFile = (fileID) => {
 
         const config = {
@@ -74,7 +114,17 @@ class MainSectionContainer extends React.Component {
             document.body.appendChild(link);
             link.href = finalUrl;
             link.setAttribute('type', 'hidden');
+            link.setAttribute("download", true);
             link.click();
+
+            // const form = document.createElement("form");
+            // form.action = finalUrl;
+            // form.method = "GET";
+            // form.setAttribute("type", "hidden");
+
+            // document.body.append(form);
+
+            // form.submit();
 
         }).catch((err) => {
             console.log(err)
@@ -82,6 +132,8 @@ class MainSectionContainer extends React.Component {
     }
 
     loadMoreItems = () => {
+
+        if (mobileCheck()) return;
 
         console.log("loading more items", this.props.loading);
 

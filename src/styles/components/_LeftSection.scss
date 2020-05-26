@@ -35,6 +35,14 @@
     }
 }
 
+.add-button-2 {
+
+    display: none;
+    @media (max-width: $desktop-breakpoint) {
+        display: inline-flex;
+    }
+}
+
 .add-button__img {
     width: 30px;
     height: 30px;
@@ -108,6 +116,10 @@
     // padding: 0 140px 132px 36px;
     margin-top: 52px;
     box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302),0 1px 3px 1px rgba(60,64,67,0.149);
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-top: 75px;
+    }
 }
 
 .add_button__option__add-folder-wrapper {

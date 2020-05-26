@@ -16,3 +16,6 @@ certificate.key
 package-lock.json
 ._*
 .DS_Store
+dist/
+rds-combined-ca-bundle.pem
+docker-variables.env

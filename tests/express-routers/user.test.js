@@ -1,10 +1,14 @@
-const User = require("../../backend/models/user");
-const mongoose = require("../../backend/db/mongoose");
+import User from "../../dist/models/user";
+import mongoose from "../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../fixtures/createUser");
-const app = require("../../server/server");
+import servers from "../../dist/server/server";
 const request = require("supertest");
-const env = require("../../backend/enviroment/env")
+import env from "../../dist/enviroment/env";
+
+const {server, serverHttps} = servers;
+
+const app = server;
 
 let user;
 let userToken;

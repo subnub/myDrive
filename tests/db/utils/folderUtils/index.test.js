@@ -1,10 +1,11 @@
-const User = require("../../../../backend/models/user");
-const mongoose = require("../../../../backend/db/mongoose");
+import User from "../../../../dist/models/user";
+import mongoose from "../../../../dist/db/mongoose";
+import UtilsFolder from "../../../../dist/db/utils/folderUtils";
+import Folder from "../../../../dist/models/folder"
 const conn = mongoose.connection;
 const createUser = require("../../../fixtures/createUser");
-const UtilsFolder = require("../../../../backend/db/utils/folderUtils");
 const utilsFolder = new UtilsFolder();
-const Folder = require("../../../../backend/models/folder");
+
 
 let user; 
 let folder;

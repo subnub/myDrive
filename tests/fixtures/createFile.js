@@ -1,4 +1,4 @@
-const mongoose = require("../../backend/db/mongoose");
+import mongoose from "../../dist/db/mongoose";
 const conn = mongoose.connection;
 const crypto = require("crypto");
 const fs = require("fs");

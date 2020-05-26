@@ -3,10 +3,23 @@
     height: 37px;
 }
 
+.spacer__mobile {
+   
+    @media (max-width: $desktop-breakpoint) {
+        margin-top: calc(80px + 6vh);
+    }
+}
+
 .spacer__title {
     color: #5f6368;
     margin-left: 22px;
     font-weight: 500;
     font-size: 13px;
     margin-left: 38px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

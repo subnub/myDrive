@@ -1,13 +1,19 @@
 const prompt = require('password-prompt')
-const env = require("../backend/enviroment/env")
+import env from "../backend/enviroment/env";
 const crypto = require("crypto");
+
+// NOT IN USE
 
 const getKey = async() => {
 
     if (process.env.KEY) {
         // For Docker 
 
-        env.key = process.env.KEY
+        const password = process.env.KEY;
+
+        env.key = password;
+
+        //console.log("Docker Key", env.key);
 
     } else if (process.env.NODE_ENV) {
 

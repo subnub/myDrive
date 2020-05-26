@@ -14,7 +14,10 @@ const FolderItem = (props) => {
             
                 <div className={props._id !== props.selected ? "file__item__listview" : "file__item__listview file__item--selected"} 
                 onClick={() => props.folderClick(props._id, props.name)}
-                onContextMenu={(e) => props.getContextMenu(e)}>
+                onContextMenu={(e) => props.getContextMenu(e)}
+                onTouchStart={props.onTouchStart}
+                onTouchEnd={props.onTouchEnd}
+                onTouchMove={props.onTouchMove}>
                     
                     <div className="file__item__listview__title__wrapper file__item__listview__title__wrapper--folder">
                         <img className="file__image__listview" src="/images/folder-svg.svg"/>
@@ -33,7 +36,10 @@ const FolderItem = (props) => {
 
             <div className="folder__item"
                 onClick={() => props.folderClick(props._id, props.name)} 
-                onContextMenu={(e) => props.getContextMenu(e)}>
+                onContextMenu={(e) => props.getContextMenu(e)}
+                onTouchStart={props.onTouchStart}
+                onTouchEnd={props.onTouchEnd}
+                onTouchMove={props.onTouchMove}>
 
             <img className="folder__image" src="/images/folder-svg.svg"/>
             <h4 className={props._id !== props.selected ? "folder__title" : "folder__title folder__title--selected"}>{props.name}</h4>

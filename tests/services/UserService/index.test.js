@@ -1,9 +1,9 @@
-const User = require("../../../backend/models/user");
-const mongoose = require("../../../backend/db/mongoose");
+import User from "../../../dist/models/user";
+import mongoose from "../../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../../fixtures/createUser");
 
-const UserService = require("../../../backend/services/UserService");
+import UserService from "../../../dist/services/UserService";
 const userService = new UserService();
 
 let user;

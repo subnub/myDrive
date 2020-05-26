@@ -3,7 +3,15 @@
 }
 
 html {
-    font-size: 62.5%
+    font-size: 62.5%;
+    // --webkit-touch-callout: default;
+}
+
+input[type=text],
+input[type=email],
+input[type=password],
+textarea {
+    -webkit-appearance: none;
 }
 
 body {

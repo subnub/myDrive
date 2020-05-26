@@ -6,6 +6,7 @@ import {startSetStorage} from "./storage"
 import uuid from "uuid";
 import axios from "axios";
 import env from "../enviroment/envFrontEnd";
+import mobileCheck from "../utils/mobileCheck";
 const http = require('http');
 const https = require('https');
 
@@ -87,6 +88,10 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
             }
 
             dispatch(loadMoreFiles(results.data))
+           
+            if (mobileCheck()) {
+                dispatch(setLoading(false));
+            }
 
         }).catch((err) => {
             console.log(err)

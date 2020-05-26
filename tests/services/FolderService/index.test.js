@@ -1,13 +1,13 @@
-const User = require("../../../backend/models/user");
+import User from "../../../dist/models/user";
 const createUser = require("../../fixtures/createUser");
-const Folder = require("../../../backend/models/folder");
-const mongoose = require("../../../backend/db/mongoose");
+import Folder from "../../../dist/models/folder";
+import mongoose from "../../../dist/db/mongoose"
 const conn = mongoose.connection;
 const crypto = require("crypto");
 const createFile = require("../../fixtures/createFile");
 const path = require("path");
 const ObjectID = require('mongodb').ObjectID
-const FolderService = require("../../../backend/services/FolderService");
+import FolderService from "../../../dist/services/FolderService"
 const folderService = new FolderService();
 
 let user;

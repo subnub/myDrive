@@ -1,5 +1,6 @@
 import StorageWidget from ".././StorageWidget";
 import React from "react";
+import env from "../../enviroment/envFrontEnd";
 
 const SettingsMenu = (props) => (
 
@@ -27,18 +28,21 @@ const SettingsMenu = (props) => (
 
             {/*Storage*/}
 
-            <div className="settingsmenu__option">
+            {env.disableStorage ? undefined : 
             
-                <p className="settingsmenu__option__title settingsmenu__option__title--offset">Storage</p>
+                <div className="settingsmenu__option">
+            
+                    <p className="settingsmenu__option__title settingsmenu__option__title--offset">Storage</p>
 
-                <div className="settingsmenu__suboption settingsmenu__suboption--offset">
+                    <div className="settingsmenu__suboption settingsmenu__suboption--offset">
 
-                    <StorageWidget />
-                
-                </div>
+                        <StorageWidget />
+                    
+                    </div>
 
-            </div>
-
+                 </div>
+            
+            }
 
             {/*List Style*/}
 

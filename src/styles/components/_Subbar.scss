@@ -41,6 +41,21 @@
     user-select: none;
     // overflow-x: scroll;
 
+    @media (max-width: $desktop-breakpoint) { 
+        width: 100vw;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 7vh;
+        min-height: 50px;
+        user-select: none;
+        position: fixed;
+        top: 80px;
+        background: white;
+        z-index: 1;
+    }
+
+
 }
 
 .path__block {
@@ -51,6 +66,12 @@
     flex-direction: row;
     align-items: center;
     cursor: pointer;
+
+    @media (max-width: $desktop-breakpoint) {
+        height: 52px;
+        max-height: 52px;
+     }
+    
 }
 
 .path__wrapper {
@@ -89,10 +110,20 @@
     /* height: fit-content; */
     padding: 0px 0 2px 0;
     margin-top: 19px;
+
+    @media (max-width: $desktop-breakpoint) {
+        line-height: normal;
+        padding: unset;
+        margin: unset;
+        text-align: center;
+     }
 }
 
 .path__image {
     height: fit-content;
     /* width: 30px; */
     // margin-top: 7px;
+    @media (max-width: $desktop-breakpoint) {
+        //margin-top: 3px;
+     }
 }

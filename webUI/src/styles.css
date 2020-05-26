@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+#main-div {
+   height: 100vh;
+   width: 100vw;
+   /* background: blue; */
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+}
+
+#box-div {
+    height: 30%;
+    width: 90%;
+    /* background: purple; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    border: .5px;
+    border-style: groove;
+}
+
+@media (min-width:600px) { 
+    #box-div {
+
+        height: 30%;
+        width: 400px;
+        /* background: purple; */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        border: .5px;
+        border-style: groove;
+    }
+ }
+
+#input-password {
+    border: 1px solid #cacccd;
+    border-radius: 2px;
+    height: 43px;
+    font-size: 1.8rem;
+    font-weight: 300;
+    padding: 1.2rem;
+    margin: 0 0 1.2rem 0;
+    width: -webkit-fill-available;
+    margin-top: -17px;
+}
+
+#submit-button {
+    color: #fff;
+    background: #3c85ed;
+    font-size: 1.8rem;
+    padding: 1.2rem;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+}
+
+#title {
+    margin: 0 0 3rem 0;
+    line-height: 1;
+    font-family: Arial,Helvetica,sans-serif;
+    font-weight: 500;
+    color: #666;
+    font-size: 2em;
+    margin-top: 24px;
+}

@@ -1,20 +1,24 @@
-const User = require("../../backend/models/user");
-const mongoose = require("../../backend/db/mongoose");
+import User from "../../dist/models/user";
+import mongoose from "../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../fixtures/createUser");
 const createUser2 = require("../fixtures/createUser2");
 const createFile = require("../fixtures/createFile");
 const crypto = require("crypto");
 const path = require("path");
-const env = require("../../backend/enviroment/env");
-const createThumbnail = require("../../backend/services/FileService/utils/createThumbnail");
+import env from "../../dist/enviroment/env";
+import createThumbnail from "../../dist/services/ChunkService/utils/createThumbnail";
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
 const ObjectID = require('mongodb').ObjectID
-const app = require("../../server/server");
-const Folder = require("../../backend/models/folder");
+import servers from "../../dist/server/server";
+import Folder from "../../dist/models/folder";
 const temp = require("temp").track();
 const binaryPhraser = require("superagent-binary-parser");
+
+const {server, serverHttps} = servers;
+
+const app = server;
 
 let user;
 let userToken;
@@ -431,12 +435,13 @@ test("When giving tempToken, should remove temp token", async() => {
     .send()
     .expect(200);
 
+    const tempToken = token.body.tempToken;
+
     await request(app)
-    .delete(`/file-service/remove/token-video/${token}`)
+    .delete(`/file-service/remove/token-video/${tempToken}/1234`)
     .set("Authorization", `Bearer ${userToken}`)
     .send()
     .expect(200);
-
 })
 
 test("When not authorized, should not remove temp token", async() => {
@@ -448,8 +453,10 @@ test("When not authorized, should not remove temp token", async() => {
     .send()
     .expect(200);
 
+    const tempToken = token.body.tempToken;
+
     await request(app)
-    .delete(`/file-service/remove/token-video/${token}`)
+    .delete(`/file-service/remove/token-video/${tempToken}/1234`)
     .send()
     .expect(401);
 })

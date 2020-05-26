@@ -6,7 +6,10 @@ import React from "react";
 const QuickAccessItem = (props) => (
 
     <div className={"quick-"+props._id !== props.selected ? "quickaccess__item" : "quickaccess__item file__item--selected"} onClick={() => {props.fileClick(props._id, props, true)}} 
-    onContextMenu={(e) => props.getContextMenu(e)}>
+    onContextMenu={(e) => props.getContextMenu(e)}
+    onTouchStart={props.onTouchStart}
+    onTouchEnd={props.onTouchEnd}
+    onTouchMove={props.onTouchMove}>
 
         <div className="quickaccess__item__image__wrapper">
         <img className={props.state.imageClassname} src={props.state.image} onError={() => {props.image.src = "/images/file-svg.svg"; props.image.className="quickaccess__item__image"; props.failedToLoad = true}}/>

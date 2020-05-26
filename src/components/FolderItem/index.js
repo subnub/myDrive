@@ -8,6 +8,8 @@ class FolderItemContainer extends React.Component {
 
     constructor(props) {
         super(props)
+
+        this.lastTouch = 0;
     }
 
     shouldComponentUpdate = (nextProp) => {
@@ -19,9 +21,41 @@ class FolderItemContainer extends React.Component {
                 || nextProp.quickFilesLength !== this.props.quickFilesLength)
     }
 
+    onTouchStart = () => {
+        //alert("Touch start");
+        const date = new Date();
+        this.lastTouch = date.getTime();
+    }
+
+    onTouchMove = () => {
+
+        this.lastTouch = 0;
+    }
+
+    onTouchEnd = () => {
+
+        if (this.lastTouch === 0) {
+
+            //alert("last touch 0");
+            return;
+        }
+
+        const date = new Date();
+        const difference = date - this.lastTouch;
+        //alert("Touch end: " + difference)
+        //alert("touch end: " + difference);
+        this.lastTouch = 0;
+
+        if (difference > 500) {
+            //alert("Context menu");
+            this.getContextMenu();
+        }
+
+    }
+
     getContextMenu = (e) => {
 
-        e.preventDefault();
+        if (e) e.preventDefault();
 
         const isMobile = mobileCheck();
 
@@ -30,34 +64,36 @@ class FolderItemContainer extends React.Component {
 
         let styleObj = {right:0, left:0, top: "-14px", bottom: 0}
 
-        const clientY =  e.nativeEvent.clientY;
-        const clientX = e.nativeEvent.clientX;
-
-
-        if (clientY < (windowY / 3)) {
-
-            const bottomSize = this.props.quickFilesLength === 0 ? "-126px" : "-190px"
-
-            styleObj = {bottom: bottomSize, top:"unset"}
-        } 
-
-        if (clientY > ((windowY / 4) * 3.5)) {
-
-            styleObj = {bottom:"unset", top: "-190px"}
-        }
-
-        if (clientX > windowX / 2) {
-
-            styleObj = {...styleObj, left:"unset", right:0}
-
-        } else {
-         
-            styleObj = {...styleObj, left:0, right:"unset"}
-        }
-
         if (isMobile) {
 
             styleObj = {bottom: 0, left: "2px", top:"unset"}
+
+        } else {
+
+            const clientY =  e.nativeEvent.clientY;
+            const clientX = e.nativeEvent.clientX;
+
+
+            if (clientY < (windowY / 3)) {
+
+                const bottomSize = this.props.quickFilesLength === 0 ? "-126px" : "-190px"
+
+                styleObj = {bottom: bottomSize, top:"unset"}
+            } 
+
+            if (clientY > ((windowY / 4) * 3.5)) {
+
+                styleObj = {bottom:"unset", top: "-190px"}
+            }
+
+            if (clientX > windowX / 2) {
+
+                styleObj = {...styleObj, left:"unset", right:0}
+
+            } else {
+            
+                styleObj = {...styleObj, left:0, right:"unset"}
+            }
         }
 
         this.setState(() => styleObj)
@@ -95,6 +131,9 @@ class FolderItemContainer extends React.Component {
         return <FolderItem 
                 getContextMenu={this.getContextMenu} 
                 getClassName={this.getClassName}
+                onTouchStart={this.onTouchStart}
+                onTouchMove={this.onTouchMove}
+                onTouchEnd={this.onTouchEnd}
                 state={this.state}
                 {...this.props}/>
     }
