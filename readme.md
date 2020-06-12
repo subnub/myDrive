@@ -9,6 +9,7 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * [Features](#features)
 * [Installation](#installation)
 * [Guided Installation](https://github.com/subnub/myDrive/wiki/Guided-Installation-Setup)
+* [Guided Installation (Docker)](https://github.com/subnub/myDrive/wiki/Guided-Installation-Setup-(Docker))
 * [WebUI For Encryption Key](#webui-for-encryption-key)
 * [Docker](#docker)
 * [Environment Variables](#environment-variables)
