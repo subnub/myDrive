@@ -175,7 +175,7 @@ For a more detailed list of myDrive features, including examples with images, vi
 
 ## Video
 
-I created a short YouTube video, showing off myDrives design and features: https://youtu.be/0YKU5CZHG4I
+I created a short YouTube video, showing off myDrives design and features: https://www.youtube.com/watch?v=9tz1f9oDP5I
 
 ## Demo
 
