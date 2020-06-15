@@ -85,13 +85,13 @@ If you're using a service like SSH or a Droplet, you can forward the localhost c
 ssh -L localhost:3000:localhost:3000 username@ip_address
 ```
 
-Note: You can also disable using the webUI for the encryption key by providing a key in the server enviroment variables (e.g. KEY=password), but this is not recommended because it greatly reduces security. 
+Note: You can also disable using the webUI for the encryption key by providing a key in the server environment variables (e.g. KEY=password), but this is not recommended because it greatly reduces security. 
 
 ## Docker
 
 MyDrive has built in Docker support, there are two options when using Docker, users can either use the Docker image that has MongoDB built in, or use the Docker image that just has the MyDrive image (If you're using a service like Atlas).
 
-Create the Docker environment variables by running the 'npm run setup' command as seen in the installation section. Or by manually creating the file (e.g. docker-variables.env on the root of the project, see the enviroment section for more infomation).
+Create the Docker environment variables by running the 'npm run setup' command as seen in the installation section. Or by manually creating the file (e.g. docker-variables.env on the root of the project, see the environment section for more infomation).
 
 Docker with mongoDB image:
 ```bash
@@ -137,11 +137,11 @@ Mobile
 
 ## Environment Variables
 
-You can easily create enviroment variables using the built in setup tool 'npm run setup', or manually create the files.
+You can easily create environment variables using the built in setup tool 'npm run setup', or manually create the files.
 
 Create a config folder on the root of the project, and create a file with the name prod.env for the server. For the client variables create a .env.production file in the root of the project. 
 
-Docker: If you're using Docker, instead create a file named 'docker-variables.env' on the root of the project. You must also include DOCKER=true in the servers enviroment variables. 
+Docker: If you're using Docker, instead create a file named 'docker-variables.env' on the root of the project. You must also include DOCKER=true in the servers environment variables. 
 
 Server Environment Variables:
 
