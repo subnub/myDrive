@@ -40,7 +40,7 @@ class PopupWindow extends React.Component {
                     </video>
                 } 
 
-                <button className="button popup-window__button" onClick={() => this.props.downloadFile(this.props.popupFile._id)}>Download</button>
+                <button className="button popup-window__button" onClick={() => this.props.downloadFile(this.props.popupFile._id, this.props.popupFile)}>Download</button>
                 <img className="popup-window__close-button" onClick={this.props.hidePopupWindow} src="/images/close_icon.png"/>
             </div>
         )

@@ -2,22 +2,22 @@ import UploadItem from ".././UploadItem";
 import React from "react";
 
 const Uploader = React.forwardRef((props, ref) => (
-    <div className={props.uploads.length !== 0 ? "uploader__wrapper" : "uploader__wrapper--gone"}>
-    
-        <div className="uploader__header__wrapper">
-        
-            <h3 className="uploader__header__title">Uploads</h3>
 
-            <div className="uploader__header__button_wrapper">
-                <img className="uploader__header__button" onClick={() => props.minimizeUploader()} src={props.uploaderShow ? "/images/down-arrow-white.png" : "/images/up-arrow-white.png"}/>
-                <img className="uploader__header__button" onClick={() => props.cancelAllUploadsEvent()} src="/images/close-white-png.png"/>
+    <div class="upload__status" style={props.uploads.length !== 0 ? {display:"block"} : {display:"none"}}>
+			<div class="head__upload">
+                <p>Uploading {props.uploads.length} {props.uploads.length === 1 ? "file" : "files"}</p>
+				<div class="hide__upload">
+					<a onClick={() => props.minimizeUploader()}><img src="/assets/upload_hide.svg" alt="upload__hide"/></a>
+                    <a onClick={() => props.cancelAllUploadsEvent()}><img src="/assets/close-white.svg" style={{height:"24px"}} alt="upload__hide"/></a>
+				</div>
+			</div>
+            <div class="content__upload">
+
+                {props.uploaderShow ? props.uploads.map((upload) => {
+                    return <UploadItem key={upload.id} {...upload}/>
+                }) : undefined}
+
             </div>
-
-        </div>
-
-        <div className={props.uploaderShow ? "upload__item__block" : "upload__item__block upload__item__block--hide"} ref={ref}>
-            {props.uploads.map((upload) => <UploadItem key={upload.id} {...upload}/>)}
-        </div>
     </div>
 ))
 

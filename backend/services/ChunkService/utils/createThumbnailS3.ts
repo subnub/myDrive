@@ -7,22 +7,40 @@ import { UserInterface } from "../../../models/user";
 import uuid from "uuid";
 import env from "../../../enviroment/env";
 import s3 from "../../../db/s3";
+import s3Auth from "../../../db/S3Personal"
 
 const conn = mongoose.connection;
 
+const getS3Auth = async (file: FileInterface, user: UserInterface) => {
+
+    if (file.metadata.personalFile) {
+
+        const s3Data = await user.decryptS3Data();
+        //console.log("s3 data", s3Data)
+        return {s3Storage: s3Auth(s3Data.id, s3Data.key), bucket: s3Data.bucket};
+    } else {
+    
+        return {s3Storage: s3, bucket: env.s3Bucket};
+    }
+}
+
 const createThumbnailS3 = (file: FileInterface, filename: string, user: UserInterface) => {
 
-    return new Promise<FileInterface>((resolve, reject) => {
+    return new Promise<FileInterface>( async(resolve, reject) => {
 
         const password = user.getEncryptionKey();
 
         let CIPHER_KEY = crypto.createHash('sha256').update(password!).digest()       
         
         const thumbnailFilename = uuid.v4();
-    
-        const params: any = {Bucket: env.s3Bucket, Key: file.metadata.s3ID!};
 
-        const readStream = s3.getObject(params).createReadStream();
+        const {s3Storage, bucket} = await getS3Auth(file, user);
+
+        const isPersonalFile = file.metadata.personalFile;
+    
+        const params: any = {Bucket: bucket, Key: file.metadata.s3ID!};
+
+        const readStream = s3Storage.getObject(params).createReadStream();
 
         const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, file.metadata.IV);
 
@@ -48,19 +66,19 @@ const createThumbnailS3 = (file: FileInterface, filename: string, user: UserInte
             })
 
             const paramsWrite: any = {
-                Bucket: env.s3Bucket,
+                Bucket: bucket,
                 Body : readStream.pipe(decipher).pipe(imageResize).pipe(thumbnailCipher),
                 Key : thumbnailFilename
             };
 
-            s3.upload(paramsWrite, async(err: any, data: any) => {
+            s3Storage.upload(paramsWrite, async(err: any, data: any) => {
 
                 if (err) {
                     console.log("Amazon Upload Error", err);
                     reject("Amazon upload error");
                 }
 
-                const thumbnailModel = new Thumbnail({name: thumbnailFilename, owner: user._id, IV: thumbnailIV, s3ID: thumbnailFilename});
+                const thumbnailModel = new Thumbnail({name: thumbnailFilename, owner: user._id, IV: thumbnailIV, s3ID: thumbnailFilename, personalFile: isPersonalFile});
 
                 await thumbnailModel.save();
 

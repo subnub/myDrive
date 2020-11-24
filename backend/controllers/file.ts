@@ -4,15 +4,31 @@ import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 import {UserInterface} from "../models/user";
-import uuid from "uuid";
 import tempStorage from "../tempStorage/tempStorage";
+import sendShareEmail from "../utils/sendShareEmail";
 
 const fileService = new FileService()
 
-interface RequestType extends Request {
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    s3Enabled: boolean,
+}
+
+interface RequestTypeRefresh extends Request {
     user?: UserInterface,
-    auth?: boolean,
-    busboy: any,
+    encryptedToken?: string
+}
+
+interface RequestTypeFullUser extends Request {
+    user?: UserInterface,
+    encryptedToken?: string
+}
+
+interface RequestType extends Request {
+    user?: userAccessType,
+    encryptedToken?: string
 }
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
@@ -26,8 +42,7 @@ class FileController {
         this.chunkService = chunkService;
     }
 
-    getThumbnail = async(req: RequestType, res: Response) => {
-
+    getThumbnail = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
 
@@ -47,15 +62,14 @@ class FileController {
     
         } catch (e) {
 
-            const code = e.code || 500;
-            
-            console.log(e);
+            console.log("\nGet Thumbnail Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
     }
 
-    getFullThumbnail = async(req: RequestType, res: Response) => {
+    getFullThumbnail = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
             return;
@@ -69,13 +83,13 @@ class FileController {
             await this.chunkService.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
-            const code = e.code || 500;
-            console.log(e.message, e.exception)
-            return res.status(code).send();
+            console.log("\nGet Thumbnail Full Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
-    uploadFile = async(req: RequestType, res: Response) => {
+    uploadFile = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
         
@@ -93,12 +107,13 @@ class FileController {
          
             res.send(file);
             
-            console.log("file uploaded");
-    
         } catch (e) {
+            console.log("sending error upload")
             const code = e.code || 500;
             console.log(e.message, e.exception)
-            return res.status(code).send();
+            res.writeHead(code, {'Connection': 'close'})
+            res.end();
+            //return res.status(code).send();
         }
     }
 
@@ -131,6 +146,8 @@ class FileController {
     
             const id = req.params.id;
             const userID = req.user._id;
+
+            console.log("remove link", id);
     
             await fileService.removeLink(userID, id)
     
@@ -155,9 +172,9 @@ class FileController {
         try {
 
             const fileID = req.params.id;
-            const user = req.user;
+            const userID = req.user._id;
     
-            const token = await fileService.makePublic(user, fileID);
+            const token = await fileService.makePublic(userID, fileID);
 
             res.send(token);
     
@@ -247,9 +264,9 @@ class FileController {
     
         try {
     
-            const userID = req.user._id;
+            const user = req.user;
 
-            const quickList = await fileService.getQuickList(userID);
+            const quickList = await fileService.getQuickList(user);
 
             res.send(quickList);
     
@@ -270,12 +287,16 @@ class FileController {
     
         try {
 
+            console.log("Get file list")
+
+            const user = req.user;
             const query = req.query;
-            const userID = req.user._id;
             
-            const fileList = await fileService.getList(userID, query);
+            const fileList = await fileService.getList(user, query);
 
             res.send(fileList);
+
+            console.log("file list send", fileList.length)
     
         } catch (e) {
             
@@ -286,7 +307,7 @@ class FileController {
         }
     }
 
-    getDownloadToken = async(req: RequestType, res: Response) => {
+    getDownloadToken = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
             return 
@@ -309,7 +330,7 @@ class FileController {
         }
     }
 
-    getDownloadTokenVideo = async(req: RequestType, res: Response) => {
+    getDownloadTokenVideo = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
             return 
@@ -333,7 +354,7 @@ class FileController {
         }
     }
 
-    removeTempToken = async(req: RequestType, res: Response) => {
+    removeTempToken = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
             return 
@@ -358,9 +379,9 @@ class FileController {
         }
     }
 
-    streamVideo = async(req: RequestType, res: Response) => {
+    streamVideo = async(req: RequestTypeFullUser, res: Response) => {
 
-        if (!req.auth || !req.user) {
+        if (!req.user) {
             return;
         }
     
@@ -370,21 +391,7 @@ class FileController {
             const fileID = req.params.id;
             const headers = req.headers;
 
-            //tempStorage[req.params.uuid] = uuid.v4();
-            
-            console.log("stream request 2", tempStorage);
-
-            // req.on("close", () => {
-            //     console.log("req closed stream");
-            // })
-
-            // req.on("abort", () => {
-            //     console.log("Aborted");
-            // })
-    
             await this.chunkService.streamVideo(user, fileID, headers, res, req);
-    
-            //console.log("stream finished");
 
         } catch (e) {
 
@@ -397,18 +404,18 @@ class FileController {
 
     }
 
-    downloadFile = async(req: RequestType, res: Response) => {
+    downloadFile = async(req: RequestTypeFullUser, res: Response) => {
 
-        if (!req.auth || !req.user) {
+        if (!req.user) {
             return;
         }
     
         try {
     
-            console.log("download request")
-
             const user = req.user;
             const fileID = req.params.id;
+
+            console.log("DOWNLOAD FILE USER ID", user._id);
 
             await this.chunkService.downloadFile(user, fileID, res);
     
@@ -473,9 +480,33 @@ class FileController {
     
     }
 
-    moveFile = async(req: RequestType, res: Response) => {
+    sendEmailShare = async(req: RequestType, res: Response) => {
 
-        console.log("move request");
+        if (!req.user) {
+            return;
+        }
+
+        try {
+            
+            const user = req.user!;
+        
+            const fileID = req.body.file._id;
+            const respient = req.body.file.resp;
+        
+            const file = await fileService.getFileInfo(user._id, fileID);
+        
+            await sendShareEmail(file, respient)
+        
+            res.send()
+
+        } catch (e) {
+            console.log("Send Email Share Error", e);
+            const code = e.code || 500;
+            res.status(code).send();
+        }
+    }
+
+    moveFile = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;

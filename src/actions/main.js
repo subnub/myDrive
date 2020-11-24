@@ -32,7 +32,46 @@ export const setLoading = (load) => ({
     load
 })
 
-export const setLoginFailed = (message) => ({
+export const setLoginFailed = (message, code=401) => ({
     type: "SET_LOGIN_FAILED",
-    message
+    message, 
+    code
 })
+
+export const setCreateNewAccount = (value) => ({
+    type: "SET_CREATE_NEW_ACCOUNT",
+    value
+})
+
+export const setCurrentRouteType = (route) => ({
+    type:"SET_CURRENT_ROUTE_TYPE",
+    route
+})
+
+export const setCachedSearch = (search) => ({
+    type: "SET_CACHED_SEARCH",
+    search
+})
+
+export const openUploadOverlay = () => ({
+    type: "OPEN_UPLOAD_OVERLAY"
+})
+
+export const closeUploadOverlay = () => ({
+    type: "CLOSE_UPLOAD_OVERLAY"
+})
+
+export const setLeftSectionMode = (mode) => ({
+    type: "SET_LEFT_SECTION_MODE",
+    mode
+})
+
+export const setRightSectionMode = (mode) => ({
+    type: "SET_RIGHT_SECTION_MODE",
+    mode
+})
+
+// export const resetSettingsMain = (id) => ({
+//     type: "RESET_SETTINGS_MAIN",
+//     id
+// })

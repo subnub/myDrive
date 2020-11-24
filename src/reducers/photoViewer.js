@@ -1,5 +1,7 @@
 const defaultState = {
-    id: ""
+    id: "",
+    isGoogle: false,
+    isPersonal: false,
 }
 
 export default (state = defaultState, action) => {
@@ -10,14 +12,18 @@ export default (state = defaultState, action) => {
             
             return {
                 ...state,
-                id: action.id
+                id: action.id,
+                isGoogle: action.isGoogle,
+                isPersonal: action.isPersonal
             }
 
         case "RESET_PHOTO_ID":
 
             return {
                 ...state,
-                id: ""
+                id: "",
+                isGoogle: false,
+                isPersonal: false,
             }
 
         default:

@@ -3,8 +3,26 @@ import env from "../enviroment/env";
 import { Request, Response } from "express";
 import { UserInterface } from "../models/user";
 
-interface RequestType extends Request {
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    s3Enabled: boolean,
+}
+
+interface RequestTypeRefresh extends Request {
     user?: UserInterface,
+    encryptedToken?: string
+}
+
+interface RequestTypeFullUser extends Request {
+    user?: UserInterface,
+    encryptedToken?: string
+}
+
+interface RequestType extends Request {
+    user?: userAccessType,
+    encryptedToken?: string
 }
 
 class StorageController {

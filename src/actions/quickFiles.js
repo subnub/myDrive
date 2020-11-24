@@ -1,5 +1,6 @@
-import axios from "axios";
+import axios from "../axiosInterceptor";
 import env from "../enviroment/envFrontEnd";
+import mobilecheck from "../utils/mobileCheck";
 
 const currentURL = env.url;
 
@@ -12,17 +13,49 @@ export const startSetQuickFiles = () => {
 
     return (dispatch) => {
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        };
-       
-        axios.get(currentURL +`/file-service/quick-list`, config).then((results) => {
-        
-            dispatch(setQuickFiles(results.data))
+        if (!env.googleDriveEnabled) {
 
-        }).catch((err) => {
-            console.log(err)
-        })
+            axios.get(currentURL +`/file-service/quick-list`).then((results) => {
+        
+                //dispatch(setQuickFiles(results.data)) TEMP DISABLED FOR GOOGLE API
+    
+                let mongoData = results.data;
+                
+                const isMobile = mobilecheck();
+
+                if (mongoData.length > 10 && !isMobile) {
+                    mongoData = mongoData.slice(0, 10);
+                } else if (mongoData.length > 2 && isMobile) {
+                    mongoData = mongoData.slice(0, 2);
+                }
+
+                dispatch(setQuickFiles(mongoData))
+    
+            }).catch((err) => {
+                console.log(err)
+            })
+        } else {
+
+             // Temp Google Drive API
+             axios.get(currentURL +`/file-service-google-mongo/quick-list`).then((results) => {
+
+                let combinedData = results.data;
+
+                const isMobile = mobilecheck();
+
+                if (combinedData.length > 10 && !isMobile) {
+                    combinedData = combinedData.slice(0, 10);
+                } else if (combinedData.length > 2 && isMobile) {
+                    combinedData = combinedData.slice(0, 2);
+                }
+
+                dispatch(setQuickFiles(combinedData))
+    
+            }).catch((err) => {
+                console.log(err)
+            })
+            
+        }
     }
 }
 

@@ -1,3 +1,5 @@
+import mobilecheck from "../utils/mobileCheck";
+
 const defaultState = [];
 
 
@@ -9,9 +11,16 @@ export default (state = defaultState, action) => {
 
             return action.files
 
-        case "ADD_QUICK_FILE":
+        case "ADD_QUICK_FILE": {
 
-            return [action.file, ...state]
+            if ((mobilecheck() && state.length >= 2) || state.length >= 10) {
+                let temp = state;
+                temp.pop()
+                return [action.file, ...state]
+            } else {
+                return [action.file, ...state]
+            }
+        }
 
         case "EDIT_FILE":
 

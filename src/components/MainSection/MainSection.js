@@ -1,73 +1,62 @@
-import Subbar from ".././Subbar";
-import Filter from ".././Filter";
 import DataForm from ".././Dataform";
 import RightSection from ".././RightSection";
-import Spinner from ".././Spinner";
-import QuickAccess from ".././QuickAccess/index";
 import MoverMenu from ".././MoverMenu";
-import Spacer from ".././Spacer"
 import PopupWindow from '.././PopupWindow'
-import ShareMenu from ".././ShareMenu";
-import InfiniteScroll from 'react-infinite-scroller';
 import React from "react";
 
 
 const MainSection = React.forwardRef((props, ref) => {
 
     return (
-        <div className="main-container">
 
-            {props.showPopup ? <PopupWindow downloadFile={props.downloadFile}/> : undefined}
+        <div class="content__block">
+                <div className="overlay" style={(props.leftSectionMode === "open" || props.rightSectionMode === "open") ? {display:"block"} : {display:"none"}}>
+        
+                </div>
+				<div class="small__switcher--content">
+					<a onClick={props.switchLeftSectionMode} class="menu__button"><i class="fas fa-bars"></i></a>
+					<a onClick={props.switchRightSectionMode} class="image__viewer"><i class="fas fa-images"></i></a>
+				</div>
+				<div class="file__container" style={props.routeType === "search" ? {flexDirection: "column"} : {flexDirection:"row"}}>
 
-            <Subbar folderClick={props.folderClick} scrollParentRef={ref}/>
+					{true ? undefined : <div class="file__control--panel empty__control--panel">
+						<div class="file__get--started">
+							<div class="get__started--image">
+								<img src="/assets/get_startedfile.svg" alt="get"/>
+							</div>
+							<h6>All your files in one place</h6>
+							<p>Drag and drop a file to get started</p>
+						</div>
+					</div>}
 
-            <div className="sub-container">
+                    {props.routeType === "search" ? 
+                    <div class="file__control--panel folder__view" style={{paddingBottom:"0", marginBottom:"-50px"}}>
+                        <div class="results__files">
+                        <h2><span class="counter__result">{props.files.length + props.folders.length}</span> <span class="result__word">results</span> for <span class="result__search--word">{props.cachedSearch}</span></h2>
+                        <p class="searching__result">You are searching in <span class="root__parent">{props.parent === "/" ? "Home" : props.parentNameList.length !== 0 ? props.parentNameList[props.parentNameList.length - 1] : "Unknown"}</span> <span class="spacer"><img style={{height:"11px", marginTop:"2px", display:"none"}} src="/assets/smallspacer.svg" alt="spacer"/></span><span class="current__folder"></span> <a href="#" style={{display:"none"}} class='search__filter--global'>Show results from everywhere</a></p>
+						</div>
+                    </div> : undefined}
 
-                <div className="section" ref={ref}>
-
-                    {(props.quickFiles.length !== 0 && props.parent === "/") ? 
-                        <div className="spacer__mobile">
-                            <Spacer title="Quick Access"/>
-                            <QuickAccess 
-                                fileClick={props.fileClick}
-                                downloadFile={props.downloadFile}/>
-                        </div> :
-                        <div className="spacer__mobile">
-                        </div>} 
+                    {props.showPopup ? <PopupWindow downloadFile={props.downloadFile} /> : undefined}
                     
-
-                    <ShareMenu />
-
-                    <InfiniteScroll
-                        pageStart={0}
-                        loadMore={props.loadMoreItems}
-                        hasMore={props.allowLoadMoreItems}
-                        loader={<div className="loader" key={0}><Spinner /></div>}
-                        useWindow={false}
-                        getScrollParent={() => props.scrollParentRef}
-                    >
-
-
-                    <Filter />
-                    <DataForm 
-                        folderClick={props.folderClick}
-                        fileClick={props.fileClick}
-                        downloadFile={props.downloadFile}/>
-                    
-                    </InfiniteScroll>
-
                     {props.moverID.length === 0 ? undefined :
                     <MoverMenu />
                     }
-                    
-                </div>
 
-                <RightSection />
-            
-            </div>
+                    <DataForm
+                        folderClick={props.folderClick}
+                        fileClick={props.fileClick}
+                        downloadFile={props.downloadFile}/>
 
-        </div>
 
+                   <RightSection  
+                        folderClick={props.folderClick}
+                        fileClick={props.fileClick}
+                        downloadFile={props.downloadFile}
+                        /> 
+                   
+				</div>
+		</div>
 
 )
 

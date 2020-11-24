@@ -1,12 +1,11 @@
 import mongoose from "../../db/mongoose";
-import { Response, Request } from "express";
-import DbUtilFolder from "../../db/utils/folderUtils";
+import { Response, Request } from "express";;
 import DbUtilFile from "../../db/utils/fileUtils";
 import crypto from "crypto";
 import videoChecker from "../../utils/videoChecker"
 import imageChecker from "../../utils/imageChecker"
 import { ObjectID } from "mongodb";
-import createThumbnail from "./utils/createThumbnail";
+import createThumbnailAny from "./utils/createThumbailAny";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import NotFoundError from "../../utils/NotFoundError";
@@ -14,13 +13,15 @@ import {GridFSBucketWriteStream} from "mongodb";
 import awaitStream from "./utils/awaitStream";
 import awaitUploadStream from "./utils/awaitUploadStream";
 import User, { UserInterface } from "../../models/user";
-import Folder from "../../models/folder";
+import Folder, { FolderInterface } from "../../models/folder";
 import { FileInterface } from "../../models/file";
 import getBusboyData from "./utils/getBusboyData";
 import ChunkInterface from "./utils/ChunkInterface";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
 import getPrevIVMongo from "./utils/getPrevIVMongo";
 import awaitStreamVideo from "./utils/awaitStreamVideo";
+import addToStoageSize from "./utils/addToStorageSize";
+import subtractFromStorageSize from "./utils/subtractFromStorageSize";
 
 const conn = mongoose.connection;
 
@@ -51,10 +52,11 @@ class MongoService implements ChunkInterface {
         const parent = formData.get("parent") || "/"
         const parentList = formData.get("parentList") || "/";
         const size = formData.get("size") || ""
+        const personalFile = formData.get("personal-file") ? true : false;
         let hasThumbnail = false;
         let thumbnailID = ""
         const isVideo = videoChecker(filename)
-            
+
         const metadata = {
                 owner: user._id,
                 parent,
@@ -66,7 +68,6 @@ class MongoService implements ChunkInterface {
                 IV: initVect
         }
 
-
         let bucket = new mongoose.mongo.GridFSBucket(conn.db);
                 
         bucketStream = bucket.openUploadStream(filename, {metadata});
@@ -75,11 +76,13 @@ class MongoService implements ChunkInterface {
 
         const finishedFile = await awaitUploadStream(file.pipe(cipher), bucketStream, req, allStreamsToErrorCatch) as FileInterface;
 
+        await addToStoageSize(user, size, personalFile);
+
         const imageCheck = imageChecker(filename);
  
         if (finishedFile.length < 15728640 && imageCheck) {
 
-            const updatedFile = await createThumbnail(finishedFile, filename, user);
+            const updatedFile = await createThumbnailAny(finishedFile, filename, user);
 
             return updatedFile;
            
@@ -87,6 +90,46 @@ class MongoService implements ChunkInterface {
 
             return finishedFile;
         }
+    }
+
+    getFileWriteStream = async(user: UserInterface, file: FileInterface, parentFolder: FolderInterface) => {
+        
+        const password = user.getEncryptionKey(); 
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+
+        const initVect = crypto.randomBytes(16);
+
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+
+        const cipher = crypto.createCipheriv('aes256', CIPHER_KEY, initVect);
+
+        const filename = file.filename
+        const parent = parentFolder._id
+        const parentList = [...parentFolder.parentList, parentFolder._id]
+        const size = file.metadata.size
+        const personalFile = file.metadata.personalFile ? true : false
+        let hasThumbnail = file.metadata.hasThumbnail;
+        let thumbnailID = file.metadata.thumbnailID
+        const isVideo = file.metadata.isVideo;
+
+        const metadata = {
+            owner: user._id,
+            parent,
+            parentList,
+            hasThumbnail,
+            thumbnailID,
+            isVideo,
+            size,
+            IV: file.metadata.IV
+        }
+
+
+        let bucket = new mongoose.mongo.GridFSBucket(conn.db);
+                
+        const bucketStream = bucket.openUploadStream(filename, {metadata});
+
+        return bucketStream;
     }
 
     downloadFile = async(user: UserInterface, fileID: string, res: Response) => {
@@ -115,6 +158,28 @@ class MongoService implements ChunkInterface {
         const allStreamsToErrorCatch = [readStream, decipher];
 
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
+    }
+
+    getFileReadStream = async(user: UserInterface, fileID: string) => {
+
+        const currentFile = await dbUtilsFile.getFileInfo(fileID, user._id);
+
+        if (!currentFile) throw new NotFoundError("Download File Not Found");
+
+        const password = user.getEncryptionKey();
+
+        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+
+        const bucket = new mongoose.mongo.GridFSBucket(conn.db);
+
+        const IV = currentFile.metadata.IV.buffer as Buffer;
+        const readStream = bucket.openDownloadStream(new ObjectID(fileID));
+
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+
+        return readStream
     }
 
     getThumbnail = async(user: UserInterface, id: string) => {
@@ -167,12 +232,9 @@ class MongoService implements ChunkInterface {
         res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
         res.set('Content-Length', file.metadata.size.toString());
 
-        console.log("Sending Full Thumbnail...")
-
         const allStreamsToErrorCatch = [readStream, decipher];
 
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
-        console.log("Full thumbnail sent");
     }
 
     getPublicDownload = async(fileID: string, tempToken: any, res: Response) => {
@@ -307,6 +369,7 @@ class MongoService implements ChunkInterface {
         }
     
         await bucket.delete(new ObjectID(fileID));
+        await subtractFromStorageSize(userID, file.length, file.metadata.personalFile!);
     }
 
     deleteFolder = async(userID: string, folderID: string, parentList: string[]) => {

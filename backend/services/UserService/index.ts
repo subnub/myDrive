@@ -3,11 +3,25 @@ import bcrypt from "bcrypt";
 import NotFoundError from "../../utils/NotFoundError";
 import InternalServerError from "../../utils/InternalServerError";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
+import sendEmailVerification from "../../utils/sendVerificationEmail";
+import File from "../../models/file";
+import env from "../../enviroment/env";
+import getGoogleAuth from "../../db/googleAuth";
+import { google } from "googleapis";
+import jwt from "jsonwebtoken"
+import sendVerificationEmail from "../../utils/sendVerificationEmail";
+import sendPasswordResetEmail from "../../utils/sendPasswordResetEmail";
 
 type UserDataType = {
     email: string,
     password: string,
 }
+
+type jwtType = {
+    iv: Buffer,
+    _id: string,
+}
+
 
 const uknownUserType = User as unknown;
 
@@ -15,61 +29,106 @@ const UserStaticType = uknownUserType as {
     findByCreds: (email: string, password: string) => Promise<UserInterface>;
 };
 
-
 class UserService {
 
     constructor() {
 
     }
 
-    login = async(userData: UserDataType) => {
+    login = async(userData: UserDataType, ipAddress: string | undefined) => {
 
         const email = userData.email;
         const password = userData.password; 
 
         const user = await UserStaticType.findByCreds(email, password);
 
-        const token = await user.generateAuthToken();
+        if (!user) throw new NotFoundError("Cannot Find User");
 
-        if (!user || !token) throw new NotFoundError("Login User Not Found Error");
+        const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
 
-        return {user, token}
+        if (!accessToken || !refreshToken) throw new NotFoundError("Login User Not Found Error");
+        //if (!user.emailVerified) throw new NotEmailVertifiedError("Email Address Not Verified")
+
+        return {user, accessToken, refreshToken}
     }
 
-    logout = async(user: UserInterface, userToken: any) => {
+    logout = async(userID: string, refreshToken: string) => {
 
-        user.tokens = user.tokens.filter((token) => {
-            return token.token !== userToken;
-        })
+        const user = await User.findById(userID);
+
+        if (!user) throw new NotFoundError("Could Not Find User");
+
+        if (refreshToken) {
+            const decoded = jwt.verify(refreshToken, env.passwordRefresh!) as jwtType;  
+            const encrpytionKey = user.getEncryptionKey();
+            const encryptedToken = user.encryptToken(refreshToken, encrpytionKey, decoded.iv);
+
+            for (let i = 0; i < user.tokens.length; i++) {
+
+                const currentEncryptedToken = user.tokens[i].token;
+    
+                if (currentEncryptedToken === encryptedToken) {
+
+                    console.log("Refresh Token Found Logout!");
+                    user.tokens.splice(i, 1);
+                    await user.save();
+                    break;
+                }
+            }
+        }
 
         await user.save();
+
+        // user.tokens = user.tokens.filter((token) => {
+        //     return token.token !== userToken;
+        // })
+
+        // await user.save();
     }
 
-    logoutAll = async(user: UserInterface) => {
+    logoutAll = async(userID: string) => {
 
-        user.tokens = []
+        const user = await User.findById(userID);
+
+        if (!user) throw new NotFoundError("Could Not Find User");
+
+        user.tokens = [];
         user.tempTokens = [];
 
         await user.save();
+
+        // user.tokens = []
+        // user.tempTokens = [];
+
+        // await user.save();
     }
 
-    create = async(userData: any) => {
+    create = async(userData: any, ipAddress: string | undefined) => {
 
-        console.log("Create");
-
-        const user = new User(userData);
+        const user = new User({email: userData.email, password: userData.password});
         await user.save();
+
+        if (!user) throw new NotFoundError("User Not Found");
 
         await user.generateEncryptionKeys();
 
-        const token = await user.generateAuthToken();
+        const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+        const emailToken = await user.generateEmailVerifyToken();
 
-        if (!user || !token) throw new InternalServerError("Could Not Create New User Error");
+        await sendEmailVerification(user, emailToken);
 
-        return {user, token}
+        if (!accessToken || !refreshToken) throw new InternalServerError("Could Not Create New User Error");
+
+        return {user, accessToken, refreshToken}
     }
 
-    changePassword = async(user: UserInterface, oldPassword: string, newPassword: string) => {
+    changePassword = async(userID: string, oldPassword: string, newPassword: string, oldRefreshToken: string, ipAddress: string | undefined) => {
+
+        const user = await User.findById(userID);
+
+        if (!user) throw new NotFoundError("Could Not Find User");
+
+        const date = new Date();
 
         const isMatch = await bcrypt.compare(oldPassword, user.password);
 
@@ -81,15 +140,196 @@ class UserService {
 
         user.tokens = [];
         user.tempTokens = [];
+        user.passwordLastModified = date.getTime();
         
+        if (oldRefreshToken) {
+            const decoded = jwt.verify(oldRefreshToken, env.passwordRefresh!) as jwtType;  
+            const encrpytionKey = user.getEncryptionKey();
+            const encryptedToken = user.encryptToken(oldRefreshToken, encrpytionKey, decoded.iv);
+
+            for (let i = 0; i < user.tokens.length; i++) {
+
+                const currentEncryptedToken = user.tokens[i].token;
+    
+                if (currentEncryptedToken === encryptedToken) {
+
+                    console.log("Refresh Token Found Logout!");
+                    user.tokens.splice(i, 1);
+                    await user.save();
+                    break;
+                }
+            }
+        }
+
         await user.save();
         await user.changeEncryptionKey(encryptionKey!);
         
-        const newToken = await user.generateAuthToken();
+        const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
 
-        return newToken;
+        return {accessToken, refreshToken};
+
+        // const date = new Date();
+
+        // const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+        // if (!isMatch) throw new NotAuthorizedError("Change Passwords Do Not Match Error");
+
+        // const encryptionKey = user.getEncryptionKey();
+        
+        // user.password = newPassword;
+
+        // user.tokens = [];
+        // user.tempTokens = [];
+        // user.passwordLastModified = date.getTime();
+        
+        // await user.save();
+        // await user.changeEncryptionKey(encryptionKey!);
+        
+        // const newToken = await user.generateAuthToken();
+
+        // return newToken;
     }
 
+    refreshStorageSize = async(userID: string) => {
+        
+        const user = await User.findById(userID);
+
+        if (!user) throw new NotFoundError("Cannot find user");
+
+        const fileList = await File.find({"metadata.owner": user._id, "metadata.personalFile": null});
+    
+        let size = 0;
+
+        for (let currentFile of fileList) {
+            
+            size += currentFile.length;
+        }
+
+        user.storageData = {storageSize: size, storageLimit: 0};
+
+        await user.save();
+    }
+
+    getUserDetailed = async(userID: string) => {
+
+        const user = await User.findById(userID);
+        
+        if (!user) throw new NotFoundError("Cannot find user");
+
+        if (user.s3Enabled) {
+            const {bucket} = await user.decryptS3Data()
+            user.s3Data!.bucket = bucket;
+        }
+    
+        if (user.googleDriveEnabled) {
+    
+            const {clientID} = await user.decryptDriveIDandKey()
+    
+            const oauth2Client = await getGoogleAuth(user);
+            const drive = google.drive({version:"v3", auth: oauth2Client});
+    
+            const googleData = await drive.about.get({
+                fields: "storageQuota"
+            })
+      
+            user.storageDataGoogle = {storageLimit: +googleData.data.storageQuota!.limit!, storageSize: +googleData.data.storageQuota!.usage!}
+            user.googleDriveData!.id = clientID;
+        }
+    
+        if (!user.storageData || (!user.storageData.storageSize && !user.storageData.storageLimit)) user.storageData = {storageLimit: 0, storageSize: 0}
+        if (!user.storageDataPersonal || (!user.storageDataPersonal.storageSize)) user.storageDataPersonal = {storageSize: 0}
+        if (!user.storageDataGoogle || (!user.storageDataGoogle.storageLimit && !user.storageDataGoogle.storageSize)) user.storageDataGoogle = {storageLimit: 0, storageSize: 0}
+
+        delete user.privateKey;
+        delete user.publicKey;
+
+        return user;
+    }
+
+    verifyEmail = async(verifyToken: any) => {
+
+        const decoded: any = jwt.verify(verifyToken!, env.passwordAccess!);
+   
+        const iv = decoded.iv;
+        
+        const user = await User.findOne({_id: decoded._id}) as UserInterface;
+        const encrpytionKey = user.getEncryptionKey();
+        const encryptedToken = user.encryptToken(verifyToken, encrpytionKey, iv);
+
+        if (encryptedToken === user.emailToken) {
+            user.emailVerified = true;
+            await user.save();
+        } else {
+            throw new NotAuthorizedError('Email Token Verification Failed')
+        }
+    }
+
+    resendVerifyEmail = async(userID: string) => {
+
+        const user = await User.findById(userID);
+
+        if (!user) throw new NotFoundError("Cannot find user")
+
+        const verifiedEmail = user.emailVerified;
+
+        if (!verifiedEmail) {
+
+            const emailToken = await user.generateEmailVerifyToken();
+            await sendVerificationEmail(user, emailToken);
+
+        } else {
+            throw new NotAuthorizedError("Email Already Authorized")
+        }
+    }
+
+    sendPasswordReset = async(email: string) => {
+
+        const user = await User.findOne({email});
+
+        if (!user) throw new NotFoundError("User Not Found Password Reset Email")
+
+        const passwordResetToken = await user.generatePasswordResetToken();
+
+        await sendPasswordResetEmail(user, passwordResetToken!);
+    }
+
+    resetPassword = async(newPassword: string, verifyToken: any) => {
+
+        const decoded: any = jwt.verify(verifyToken!, env.passwordAccess!);
+   
+        const iv = decoded.iv;
+
+        const user = await User.findOne({_id: decoded._id}) as UserInterface;
+        const encrpytionKey = user.getEncryptionKey();
+        const encryptedToken = user.encryptToken(verifyToken, encrpytionKey, iv);
+
+        if (encryptedToken === user.passwordResetToken) {
+
+            const encryptionKey = user.getEncryptionKey();
+            
+            user.password = newPassword;
+
+            user.tokens = [];
+            user.tempTokens = [];
+            user.passwordResetToken = undefined;
+            
+            await user.save();
+            await user.changeEncryptionKey(encryptionKey!);
+
+        } else {
+            throw new NotAuthorizedError("Reset Password Token Do Not Match")
+        }
+    }
+    
+    addName = async(userID: string, name: string) => {
+
+        const user = await User.findById(userID);
+
+        if (!user) throw new NotFoundError("Cannot find user")
+
+        user.name = name;
+        await user.save();
+    }
 }
 
 export default UserService;

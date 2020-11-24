@@ -7,8 +7,26 @@ import S3Service from "../services/ChunkService/S3Service";
 
 const folderService = new FolderService();
 
-interface RequestType extends Request {
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    s3Enabled: boolean,
+}
+
+interface RequestTypeRefresh extends Request {
     user?: UserInterface,
+    encryptedToken?: string
+}
+
+interface RequestTypeFullUser extends Request {
+    user?: UserInterface,
+    encryptedToken?: string
+}
+
+interface RequestType extends Request {
+    user?: userAccessType,
+    encryptedToken?: string
 }
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
@@ -60,6 +78,58 @@ class FolderController {
             const parentList = req.body.parentList
 
             await this.chunkService.deleteFolder(userID, folderID, parentList);
+    
+            res.send();
+
+        } catch (e) {
+            
+            const code = e.code || 500
+
+            console.log(e);
+            res.status(code).send(e);
+        }
+    }
+
+    getSubfolderFullList = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+            return 
+        }
+
+        try {
+
+
+            const user = req.user;
+            const id: any = req.query.id;
+
+            const subfolderList = await folderService.getSubfolderFullList(user, id);
+
+            res.send(subfolderList);
+
+        } catch (e) {
+            const code = e.code || 500
+
+            console.log("Get Full Subfolder List Error", e);
+            res.status(code).send(e);
+        }
+    }
+
+    deletePersonalFolder = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+
+            return 
+        }
+    
+        try {
+    
+            const userID = req.user._id;
+            const folderID = req.body.id; 
+            const parentList = req.body.parentList
+
+            const s3Service = new S3Service();
+
+            await s3Service.deleteFolder(userID, folderID, parentList);
     
             res.send();
 
@@ -154,10 +224,10 @@ class FolderController {
     
         try {
     
-            const userID = req.user._id;
+            const user = req.user;
             const query = req.query;
 
-            const folderList = await folderService.getFolderList(userID, query);
+            const folderList = await folderService.getFolderList(user, query);
 
             res.send(folderList);
 

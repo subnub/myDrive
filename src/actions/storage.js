@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosInterceptor";
 import env from "../enviroment/envFrontEnd";
 
 const currentURL = env.url;
@@ -16,11 +16,7 @@ export const startSetStorage = () => {
             return;
         }
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        };
-
-        axios.get(currentURL +`/storage-service/info`, config).then((results) => {
+        axios.get(currentURL +`/storage-service/info`).then((results) => {
 
             dispatch(setStorage(results.data))
             

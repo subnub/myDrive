@@ -40,7 +40,7 @@ const getWebUIKey = () => {
 
         const server = http.createServer(app) as any;
 
-        server.listen(port, url, () => {
+        server.listen(port, () => {
 
             console.log(`\nPlease navigate to http://localhost:${port} to enter encryption key\n`)
            

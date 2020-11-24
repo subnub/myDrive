@@ -1,7 +1,6 @@
-import axios from "axios";
-import env from "../enviroment/envFrontEnd";
+import axios from "../axiosInterceptor";
 
-const currentURL = env.url;
+let cachedResults = {};
 
 export const setParent = (parent="/") => ({
     type: "SET_PARENT",
@@ -20,25 +19,40 @@ export const setParentList = (parentList, parentNameList) => ({
     parentNameList
 })
 
-export const startSetParentList = (id) => {
+export const startSetParentList = (id, isGoogle=false) => {
 
     return (dispatch) => {
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
+        if (cachedResults[id]) {
+
+            const {_id, name} = cachedResults[id];
+
+            const parentList = ["/", _id];
+            const parentNameList = ["Home", name];
+
+            dispatch(setParentList(parentList, parentNameList));
+
+            delete cachedResults[id];
+
+            return;
         }
 
-        axios.get(currentURL+`/folder-service/subfolder-list/?id=${id}`, config).then((response) => {
+        const URL = isGoogle ? `/folder-service-google/info/${id}` : `/folder-service/info/${id}`;
 
-            const parentList = response.data.folderIDList;
-            const parentNameList = response.data.folderNameList;
+        dispatch(setParentList(["/", ""], ["Home", ""]))
 
-            dispatch(setParentList(parentList, parentNameList))
-            
+        axios.get(URL).then((response) => {
+
+            const parentList = ["/", response.data._id];
+            const parentNameList = ["Home", response.data.name];
+
+            dispatch(setParentList(parentList, parentNameList));
+
+            cachedResults[id] = {_id: response.data._id, name: response.data.name};
+
         }).catch((err) => {
-            console.log(err);
+            console.log("Error getting folder info for parent list", err);
         })
-
     }
 }
 
@@ -77,6 +91,15 @@ export const addParentNameList = (name) => ({
     type: "ADD_PARENT_NAME_LIST",
     name
 })
+
+export const startResetParentList = () => {
+
+    return (dispatch) => {
+
+        cachedResults = {};
+        dispatch(resetParentList());
+    }
+}
 
 export const resetParentList = () => ({
     type: "RESET_PARENT_LIST"

@@ -15,7 +15,8 @@ class QuickAccessContainer extends React.Component {
 }
 
 const connectStateToProp = (state) => ({
-    quickFiles: state.quickFiles
+    quickFiles: state.quickFiles,
+    currentRouteType: state.main.currentRouteType
 })
 
 export default connect(connectStateToProp)(QuickAccessContainer)

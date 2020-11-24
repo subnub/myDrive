@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
     name: 
         {
             type:String,
-            trim: true
         },
     email: {
         type: String,
@@ -38,6 +37,14 @@ const userSchema = new mongoose.Schema({
         token: {
             type: String, 
             required: true
+        },
+        ipAddress: {
+            type: String,
+            required: true,
+        },
+        time: {
+            type: Number,
+            required: true
         }
     }],
     tempTokens: [{
@@ -51,8 +58,80 @@ const userSchema = new mongoose.Schema({
     },
     publicKey: {
         type: String, 
-    }
+    },
+    emailVerified: {
+        type: Boolean
+    },
+    emailToken: {
+        type: String,
+    },
+    passwordResetToken: {
+        type: String
+    },
+    googleDriveEnabled: {
+        type: Boolean
+    },
+    googleDriveData: {
 
+        id: {
+            type: String
+        },
+        key: {
+            type: String
+        },
+        iv: {
+            type: Buffer
+        },
+        token: {
+            type: String
+        }
+        // accessToken: {
+        //     type: String
+        // },
+        // refreshToken: {
+        //     type: String
+        // },
+        // tokenType: {
+        //     type: String
+        // },
+        // expiryDate: {
+        //     type: String
+        // }
+    },
+    s3Enabled: {
+        type: Boolean
+    },
+    s3Data: {
+        id: {
+            type: String
+        }, 
+        key: {
+            type: String
+        },
+        bucket: {
+            type: String
+        },
+        iv: {
+            type: Buffer
+        }
+    },
+    personalStorageCanceledDate: Number,
+    storageData: {
+        storageSize: Number,
+        storageLimit: Number
+    },
+    storageDataPersonal: {
+        storageSize: Number,
+    },
+    storageDataGoogle: {
+        storageSize: Number,
+        storageLimit: Number
+    },
+    activeSubscription: Boolean,
+    planID: String,
+    passwordLastModified: Number,
+    lastSubscriptionCheckTime: Number,
+    lastSubscriptionStatus: Boolean
 }, {
     timestamps: true
 })
@@ -67,16 +146,70 @@ export interface UserInterface extends Document {
     privateKey?: string,
     publicKey?: string,
     token?: string,
+    emailVerified?: boolean,
+    emailToken?: string,
+    passwordResetToken?: string,
+    googleDriveEnabled?: boolean,
+    googleDriveData?: {
+        id?: string,
+        key?: string,
+        iv?: Buffer,
+        // accessToken?: string,
+        // refreshToken?: string,
+        // tokenType?: string,
+        // expiryDate?: string,
+        token?: string,
+    },
+    s3Enabled?: boolean,
+    s3Data?: {
+        id?: string,
+        key?: string,
+        bucket?: string,
+        iv?: Buffer,
+    },
+    storageData?: {
+        storageSize?: number,
+        storageLimit?: number
+    },
+    storageDataPersonal?: {
+        storageSize?: number
+    },
+    storageDataGoogle?: {
+        storageSize?: number,
+        storageLimit?: number
+    }, 
+    activeSubscription?: boolean,
+    passwordLastModified?: number,
+    personalStorageCanceledDate?: number,
+    planID?: string,
+    lastSubscriptionCheckTime?: number,
+    lastSubscriptionStatus?: boolean,
 
     getEncryptionKey: () => Buffer | undefined;
     generateTempAuthToken: () => any;
     generateTempAuthTokenVideo: (cookie: string) => any;
     encryptToken: (tempToken: any, key: any, publicKey: any) => any;
+    decryptToken: (encryptedToken: any, key: any, publicKey: any) => any;
     findByCreds: (email: string, password: string) => UserInterface;
-    generateAuthToken: () => any;
+    generateAuthToken: (ipAddress: string | undefined) => Promise<{accessToken: string, refreshToken: string}>
     generateEncryptionKeys: () => Promise<void>;
     changeEncryptionKey: (randomKey: Buffer) => void; 
+    generateEmailVerifyToken: () => string;
+    generatePasswordResetToken: () => string;
+    encryptDriveIDandKey: (ID:string, key: string) => void; 
+    decryptDriveIDandKey: () => {clientID: string, clientKey: string};
+    encryptDriveTokenData: (token: Object) => void;
+    decryptDriveTokenData: () => any;
+    encryptS3Data: (id: string, key: string, bucket: string) => void;
+    decryptS3Data: () => {
+        id: string,
+        key: string,
+        bucket: string
+    }
 }
+
+const maxAgeAccess =  1000 * 5 * 10; //60 * 1000 * 20 + (1000 * 60);
+const maxAgeRefresh = 60 * 1000 * 60 * 24 * 30 + (1000 * 60);
 
 userSchema.pre("save", async function(this: any, next: any) {
     
@@ -121,21 +254,47 @@ userSchema.methods.toJSON = function() {
     return userObject;
 }
 
-userSchema.methods.generateAuthToken = async function() {
+userSchema.methods.generateAuthToken = async function(ipAddress: string | undefined) {
 
     const iv = crypto.randomBytes(16);
 
-    const user = this; 
-    let token = jwt.sign({_id:user._id.toString(), iv}, env.password!);
+    const user = this;
+
+    const date = new Date();
+    const time = date.getTime();
+
+    const userObj = {_id: user._id, emailVerified: user.emailVerified, email: user.email, s3Enabled: user.s3Enabled}
+    
+    let accessToken = jwt.sign({user: userObj, iv}, env.passwordAccess!, {expiresIn: maxAgeAccess.toString()});
+    let refreshToken = jwt.sign({_id:user._id.toString(), iv, time}, env.passwordRefresh!, {expiresIn: maxAgeRefresh.toString()});
 
     const encryptionKey = user.getEncryptionKey();
 
-    const encryptedToken = user.encryptToken(token, encryptionKey, iv);
+    const encryptedToken = user.encryptToken(refreshToken, encryptionKey, iv);
 
-    user.tokens = user.tokens.concat({token: encryptedToken});
+    //user.tokens = user.tokens.concat({token: encryptedToken});
 
-    await user.save();
-    return token;
+    ipAddress = ipAddress ? ipAddress : "";
+
+    await User.updateOne({_id: user._id}, {$push: {"tokens": {token: encryptedToken, ipAddress, time}}})
+
+    // console.log("saving user")
+    // console.log("user saved")
+    return {accessToken, refreshToken};
+
+    // const iv = crypto.randomBytes(16);
+
+    // const user = this; 
+    // let token = jwt.sign({_id:user._id.toString(), iv}, env.passwordAccess!);
+
+    // const encryptionKey = user.getEncryptionKey();
+
+    // const encryptedToken = user.encryptToken(token, encryptionKey, iv);
+
+    // user.tokens = user.tokens.concat({token: encryptedToken});
+
+    // await user.save();
+    // return token;
 }
 
 userSchema.methods.encryptToken = function(token: string, key: string, iv: any) {
@@ -243,7 +402,7 @@ userSchema.methods.generateTempAuthToken = async function() {
     const iv = crypto.randomBytes(16);
 
     const user = this as UserInterface; 
-    const token = jwt.sign({_id:user._id.toString(), iv}, env.password!, {expiresIn: "3000ms"});
+    const token = jwt.sign({_id:user._id.toString(), iv}, env.passwordAccess!, {expiresIn: "3000ms"});
 
     const encryptionKey = user.getEncryptionKey();
     const encryptedToken = user.encryptToken(token, encryptionKey, iv);
@@ -254,12 +413,169 @@ userSchema.methods.generateTempAuthToken = async function() {
     return token;
 }
 
+userSchema.methods.generateEmailVerifyToken = async function() {
+
+    const iv = crypto.randomBytes(16);
+
+    const user = this as UserInterface; 
+    const token = jwt.sign({_id:user._id.toString(), iv}, env.passwordAccess!, {expiresIn: "1d"});
+
+    const encryptionKey = user.getEncryptionKey();
+    const encryptedToken = user.encryptToken(token, encryptionKey, iv);
+
+    user.emailToken = encryptedToken;
+
+    await user.save();
+    return token;
+}
+
+userSchema.methods.encryptDriveIDandKey = async function(ID: string, key: string) {
+
+    const iv = crypto.randomBytes(16);
+
+    const user = this as UserInterface; 
+    
+    const encryptedKey = user.getEncryptionKey();
+
+    const encryptedDriveID = user.encryptToken(ID, encryptedKey, iv);
+    const encryptedDriveKey = user.encryptToken(key, encryptedKey, iv);
+    
+    if (!user.googleDriveData) user.googleDriveData = {};
+
+    user.googleDriveData!.id = encryptedDriveID;
+    user.googleDriveData!.key = encryptedDriveKey;
+    user.googleDriveData!.iv = iv;
+
+    await user.save();
+}
+
+userSchema.methods.decryptDriveIDandKey = async function() {
+    
+    const user = this as UserInterface; 
+    
+    const iv = user.googleDriveData!.iv;
+
+    const encryptedKey = user.getEncryptionKey();
+
+    const encryptedDriveID = user.googleDriveData?.id;
+    const encryptedDriveKey = user.googleDriveData?.key;
+
+    const decryptedDriveID = user.decryptToken(encryptedDriveID, encryptedKey, iv)
+    const decryptedDriveKey = user.decryptToken(encryptedDriveKey, encryptedKey, iv);
+    
+   return {
+       clientID: decryptedDriveID, 
+       clientKey: decryptedDriveKey
+   }
+}
+
+userSchema.methods.encryptDriveTokenData = async function(token: Object) {
+    
+    const user = this as UserInterface; 
+    const iv = user.googleDriveData?.iv;
+
+    const tokenToString = JSON.stringify(token);
+    
+    const encryptedKey = user.getEncryptionKey();
+
+    const encryptedDriveToken = user.encryptToken(tokenToString, encryptedKey, iv);;
+    
+    if (!user.googleDriveData) user.googleDriveData = {};
+
+    user.googleDriveData.token = encryptedDriveToken;
+    user.googleDriveEnabled = true;
+
+    await user.save();
+}
+
+userSchema.methods.decryptDriveTokenData = async function() {
+    
+    const user = this as UserInterface; 
+    
+    const iv = user.googleDriveData!.iv;
+
+    const encryptedKey = user.getEncryptionKey();
+
+    const encryptedToken = user.googleDriveData?.token;
+
+    const decryptedToken = user.decryptToken(encryptedToken, encryptedKey, iv);
+
+    const tokenToObj = JSON.parse(decryptedToken);
+    
+   return tokenToObj;
+}
+
+userSchema.methods.encryptS3Data = async function(ID: string, key: string, bucket: string) {
+
+    const iv = crypto.randomBytes(16);
+
+    const user = this as UserInterface; 
+    
+    const encryptedKey = user.getEncryptionKey();
+
+    const encryptedS3ID = user.encryptToken(ID, encryptedKey, iv);
+    const encryptedS3Key = user.encryptToken(key, encryptedKey, iv);
+    const encryptedS3Bucket = user.encryptToken(bucket, encryptedKey, iv);
+    
+    if (!user.s3Data) user.s3Data = {};
+
+    user.s3Data!.id = encryptedS3ID;
+    user.s3Data!.key = encryptedS3Key;
+    user.s3Data!.bucket = encryptedS3Bucket;
+    user.s3Data!.iv = iv;
+    user.s3Enabled = true;
+
+    await user.save();
+}
+
+userSchema.methods.decryptS3Data = async function() {
+
+    const user = this as UserInterface; 
+
+    const iv = user.s3Data?.iv;
+
+    const encryptedKey = user.getEncryptionKey();
+
+    const encrytpedS3ID = user.s3Data?.id;
+    const encryptedS3Key = user.s3Data?.key;
+    const encryptedS3Bucket = user.s3Data?.bucket;
+
+    const decrytpedS3ID = user.decryptToken(encrytpedS3ID, encryptedKey, iv);
+    const decryptedS3Key = user.decryptToken(encryptedS3Key, encryptedKey, iv);
+    const decryptedS3Bucket = user.decryptToken(encryptedS3Bucket, encryptedKey, iv);
+
+    //console.log("decrypted keys", decrytpedS3ID, decryptedS3Key, decryptedS3Bucket);
+
+    return {
+        id: decrytpedS3ID,
+        key: decryptedS3Key,
+        bucket: decryptedS3Bucket,
+    }
+}
+
+userSchema.methods.generatePasswordResetToken = async function() {
+
+    console.log("generating reset password token")
+    const iv = crypto.randomBytes(16);
+
+    const user = this as UserInterface; 
+    const token = jwt.sign({_id:user._id.toString(), iv}, env.passwordAccess!, {expiresIn: "1h"});
+
+    const encryptionKey = user.getEncryptionKey();
+    const encryptedToken = user.encryptToken(token, encryptionKey, iv);
+
+    user.passwordResetToken = encryptedToken;
+
+    await user.save();
+    return token;
+}
+
 userSchema.methods.generateTempAuthTokenVideo = async function(cookie: string) {
 
     const iv = crypto.randomBytes(16);
 
     const user = this; 
-    const token = jwt.sign({_id:user._id.toString(), cookie, iv}, env.password!, {expiresIn:"5h"});
+    const token = jwt.sign({_id:user._id.toString(), cookie, iv}, env.passwordAccess!, {expiresIn:"5h"});
 
     const encryptionKey = user.getEncryptionKey();
     const encryptedToken = user.encryptToken(token, encryptionKey, iv);
@@ -273,3 +589,4 @@ userSchema.methods.generateTempAuthTokenVideo = async function(cookie: string) {
 const User = mongoose.model<UserInterface>("User", userSchema);
 
 export default User;
+module.exports = User;

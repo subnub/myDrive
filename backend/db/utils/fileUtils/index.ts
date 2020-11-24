@@ -32,7 +32,7 @@ class DbUtil {
 
         const file = await conn.db.collection("fs.files")
             .findOneAndUpdate({"_id": new ObjectID(fileID), 
-            "metadata.owner": userID}, 
+            "metadata.owner": new ObjectID(userID)}, 
             {"$unset": {"metadata.linkType": "", "metadata.link": ""}}) as FileInterface;
 
         return file;
@@ -42,7 +42,7 @@ class DbUtil {
 
         const file = await conn.db.collection("fs.files")
             .findOneAndUpdate({"_id": new ObjectID(fileID), 
-            "metadata.owner": userID}, 
+            "metadata.owner": new ObjectID(userID)}, 
             {"$set": {"metadata.linkType": "public", "metadata.link": token}}) as FileInterface
 
         return file;
@@ -60,7 +60,7 @@ class DbUtil {
 
         const file = await conn.db.collection("fs.files")
             .findOneAndUpdate({"_id": new ObjectID(fileID), 
-            "metadata.owner": userID}, 
+            "metadata.owner": new ObjectID(userID)}, 
             {"$set": {"metadata.linkType": "one", "metadata.link": token}}) as FileInterface;
 
         return file;
@@ -69,15 +69,23 @@ class DbUtil {
     getFileInfo = async(fileID: string, userID: string) => {
 
         const file = await conn.db.collection("fs.files")
-            .findOne({"metadata.owner": userID, "_id": new ObjectID(fileID)}) as FileInterface;
+            .findOne({"metadata.owner": new ObjectID(userID), "_id": new ObjectID(fileID)}) as FileInterface;
 
         return file;
     }
 
-    getQuickList = async(userID: string) => {
+    getQuickList = async(userID: string, s3Enabled: boolean) => {
+
+        let query: any = {"metadata.owner": new ObjectID(userID)}
+
+        // if (s3Enabled) {
+        //     query = {...query, "metadata.personalFile": true}
+        // } else if (!s3Enabled){
+        //     query = {...query, "metadata.personalFile": null}
+        // }
 
         const fileList = await conn.db.collection("fs.files")
-            .find({"metadata.owner": userID})
+            .find(query)
             .sort({uploadDate: -1})
             .limit(10)
             .toArray() as FileInterface[];
@@ -109,8 +117,10 @@ class DbUtil {
 
     getFileSearchList = async(userID: string, searchQuery: RegExp) => {
 
+        let query:any = {"metadata.owner": new ObjectID(userID), "filename": searchQuery};
+
         const fileList = await conn.db.collection("fs.files")
-        .find({"metadata.owner": userID, "filename": searchQuery})
+        .find(query)
         .limit(10)
         .toArray() as FileInterface[];
 
@@ -121,7 +131,7 @@ class DbUtil {
 
         const file = await conn.db.collection("fs.files")
             .findOneAndUpdate({"_id": new ObjectID(fileID), 
-            "metadata.owner": userID}, {"$set": {"filename": title}}) as FileInterface;
+            "metadata.owner": new ObjectID(userID)}, {"$set": {"filename": title}}) as FileInterface;
     
         return file;
     }
@@ -130,7 +140,7 @@ class DbUtil {
 
         const file = await conn.db.collection("fs.files")
             .findOneAndUpdate({"_id": new ObjectID(fileID), 
-            "metadata.owner": userID}, {"$set": {"metadata.parent": parent, "metadata.parentList": parentList}})
+            "metadata.owner": new ObjectID(userID)}, {"$set": {"metadata.parent": parent, "metadata.parentList": parentList}})
     
         return file;
     }
@@ -138,7 +148,7 @@ class DbUtil {
     getFileListByParent = async(userID: string, parentListString: string) => {
 
         const fileList = await conn.db.collection("fs.files")
-            .find({"metadata.owner": userID, 
+            .find({"metadata.owner": new ObjectID(userID), 
             "metadata.parentList":  {$regex : `.*${parentListString}.*`}}).toArray() as FileInterface[];
         
         return fileList;
@@ -147,7 +157,7 @@ class DbUtil {
     getFileListByOwner = async(userID: string) => {
 
         const fileList = await conn.db.collection("fs.files")
-                        .find({"metadata.owner": userID}).toArray() as FileInterface[];
+                        .find({"metadata.owner": new ObjectID(userID)}).toArray() as FileInterface[];
 
         return fileList;
     }
@@ -159,3 +169,4 @@ class DbUtil {
 }
 
 export default DbUtil;
+module.exports = DbUtil;

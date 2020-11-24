@@ -1,5 +1,8 @@
+import s3 from "../db/s3"
+import { ObjectID } from "mongodb"
+
 export interface QueryInterface {
-    "metadata.owner": string,
+    "metadata.owner": ObjectID,
     "metadata.parent"?: string,
     filename?: string | RegExp | {
         $lt?: string,
@@ -9,17 +12,21 @@ export interface QueryInterface {
         $lt?: Date,
         $gt?: Date,
     },
+    "metadata.personalFile"?: boolean | null
 }
 
-const createQuery = (owner: string, parent: string, sortBy: string, startAt: number, startAtDate: number, searchQuery: string | RegExp, startAtName: string) => {
+const createQuery = (owner: string, parent: string, sortBy: string, startAt: number, startAtDate: number, searchQuery: string | RegExp, s3Enabled: boolean,startAtName: string, storageType: string, folderSearch: boolean) => {
 
-    let query: QueryInterface = {"metadata.owner": owner}
+    let query: QueryInterface = {"metadata.owner": new ObjectID(owner)}
 
     if (searchQuery !== "") {
 
         searchQuery = new RegExp(searchQuery, 'i')
 
         query = {...query, filename: searchQuery}
+
+        if (parent !== "/" || folderSearch) query = {...query, "metadata.parent": parent}
+        //if (parent === "home") query = {...query, "metadata.parent": "/"};
 
     } else {
 
@@ -46,6 +53,18 @@ const createQuery = (owner: string, parent: string, sortBy: string, startAt: num
         }
     }
 
+    // if (s3Enabled) {
+    //     query = {...query, "metadata.personalFile": true}
+    // } else if (!s3Enabled) {
+    //     query = {...query, "metadata.personalFile": null}
+    // }
+
+    // if (storageType === "s3") {
+    //     query = {...query, "metadata.personalFile": true}
+    // }
+
+    console.log("storage type", storageType)
+    console.log("query", query);
 
     return query;
 

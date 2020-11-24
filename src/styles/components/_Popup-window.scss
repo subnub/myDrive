@@ -9,7 +9,7 @@
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
-    z-index: 1;
+    z-index: 5;
     -webkit-box-shadow: 0 11px 8px 0 rgba(0,0,0,0.2);
     box-shadow: 0 11px 8px 0 rgba(0,0,0,0.2);
     border: 2px solid #dadce0;
@@ -22,7 +22,7 @@
     @media (max-width: $desktop-breakpoint) {
         width: 100%;
         height: 100%;
-        z-index: 2;
+        z-index: 5;
     }
     
 }
@@ -61,20 +61,47 @@
 
 .popup-window__image--loaded {
 
-    width: 94vw;
-    max-height: 70vh;
-    object-fit: cover;
+    width: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
     opacity: 1;
-    max-width: 94vw;
     border-radius: 6px;
-    height: 70vh;
+    height: 100%;
     cursor: pointer;
 
+    @media (max-width: $desktop-breakpoint) { 
+        width: 90vw;
+        max-height: 70vh;
+        max-width: 90vw;
+        object-fit: contain;
+        opacity: 1;
+        border-radius: 6px;
+        height: 70vh;
+        cursor: pointer;
+    }
 }
 
 .popup-window__button {
-    width: unset;
-    margin-bottom: 12px;
+    // width: unset;
+    // margin-bottom: 12px;
+    font-size: unset;
+    padding: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3c85ee;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 6px;
+
+    &:hover{
+        background-color: darken($color: #3c85ee, $amount: 20);
+    }
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-bottom: 12px;
+    }
 }
 
 .popup-window__image__wrapper {
@@ -92,21 +119,33 @@
     max-height: 50%;
 
     @media (max-width: $desktop-breakpoint) {
+        // flex-direction: column-reverse;
+        // align-items: center;
+        // display: flex;
+        // margin-bottom: 50px;
+        // overflow: visible;
+        // // height: 65%;
+        // // width: 99%;
+        // max-width: 100%;
+        // overflow: hidden;
+        // position: relative;
+        // justify-content: center;
+        // // max-height: 50%;
+        // height: 70%;
+        // width: 100%;
+        // max-height: 70%;
+
         flex-direction: column-reverse;
         align-items: center;
         display: flex;
         margin-bottom: 50px;
         overflow: visible;
-        // height: 65%;
-        // width: 99%;
-        max-width: 100%;
-        overflow: hidden;
+        /* max-width: 100%; */
+        //overflow: hidden;
         position: relative;
         justify-content: center;
-        // max-height: 50%;
-        height: 70%;
-        width: 100%;
-        max-height: 70%;
+        height: 100vh;
+        width: 100vw;
     }
 
 }

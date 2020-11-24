@@ -133,7 +133,11 @@ class SubbarContainer extends React.Component {
 
         } else {
 
-            history.push(`/folder/${id}`)
+            if (this.props.isGoogle) {
+                history.push(`/folder-google/${id}`)    
+            } else {
+                history.push(`/folder/${id}`)
+            }
         }
         
     }
@@ -166,6 +170,7 @@ const connectPropToState = (state) => ({
     showSideBar: state.main.showSideBar,
     currentlySearching: state.filter.currentlySearching,
     search: state.filter.search,
+    isGoogle: state.filter.isGoogle
 })
 
 export default connect(connectPropToState)(SubbarContainer)

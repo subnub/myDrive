@@ -27,3 +27,11 @@ export const setCurrentlySearching = () => ({
 export const resetCurrentlySearching = () => ({
     type: "RESET_CURRENTLY_SEARCHING"
 })
+
+export const setNotGoogle = () => ({
+    type: "SET_NOT_GOOGLE"
+})
+
+export const setIsGoogle = () => ({
+    type: "SET_IS_GOOGLE"
+})

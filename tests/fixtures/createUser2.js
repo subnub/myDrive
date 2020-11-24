@@ -25,6 +25,10 @@ const createUser2 = async() => {
 
     const token = await user.generateAuthToken();
 
+    user.emailVerified = true;
+
+    await user.save();
+
     return {user, token};
 }
 

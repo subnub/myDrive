@@ -1,6 +1,10 @@
 import {startSetQuickFiles} from "./quickFiles";
 import env from "../enviroment/envFrontEnd";
-const axios = require("axios");
+import Swal from "sweetalert2";
+import {addNewFolderTreeID, addDeleteFolderTreeID, removeDeleteFolderTreeID, addRenameFolderTreeID, setFirstLoadDetailsFolderTree} from "./folderTree"
+import { startResetCache } from "./files";
+import uuid from "uuid";
+import axios from "../axiosInterceptor";
 
 const currentURL = env.url;
 
@@ -9,25 +13,43 @@ export const addFolder = (folder) => ({
     folder
 })
 
-export const startAddFolder = (name, owner, parent, parentList) => {
+export const startAddFolder = (name, owner, parent, parentList, isGoogle=false) => {
 
     return (dispatch) => {
+
+        if (env.uploadMode === '') {
+            console.log("No Storage Accounts!");
+            Swal.fire({
+                icon: 'error',
+                title: 'No Storage Accounts Active',
+                text: 'Go to settings to add a storage account',
+              })
+            return;
+        }
 
         if (name.length === 0) {
             return;
         }
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        };
 
-        const body = {name, parent, owner, parentList};
+        const storageType = env.uploadMode;
 
-        axios.post(currentURL+"/folder-service/upload", body, config).then((response) => {
+        let body = {name, parent, owner, parentList};
+
+        if (storageType === "s3") body = {...body, personalFolder: true}
+
+        // TEMP FIX THIS
+        const url = storageType === "drive" ? currentURL+"/folder-service-google/upload" : currentURL+"/folder-service/upload";
+
+        axios.post(url, body).then((response) => {
 
             const folder = response.data;
 
             dispatch(addFolder(folder))
+            dispatch(addNewFolderTreeID(folder._id, folder))
+            dispatch(startResetCache());
+
+            if (parent === "/") dispatch(setFirstLoadDetailsFolderTree({status: "RESET", resetToken: uuid.v4()}));
 
         }).catch((err) => {
             console.log(err)
@@ -40,24 +62,42 @@ export const setFolders = (folders) => ({
     folders
 })
 
-export const startSetFolders = (parent = "/", sortby="DEFAULT", search="") => {
+export const startSetFolders = (parent = "/", sortby="DEFAULT", search="", isGoogle=false, storageType="DEFAULT") => {
 
     return (dispatch) => {
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        }
-
         dispatch(setFolders([]))
 
-        axios.get(currentURL+`/folder-service/list?parent=${parent}&sortby=${sortby}&search=${search}`, config).then((response) => {
-           
-            const folders = response.data;
-            dispatch(setFolders(folders))
+        if (isGoogle) {
+            
+            axios.get(currentURL +`/folder-service-google/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((results) => {
+                const googleList = results.data;
+                dispatch(setFolders(googleList)) 
+            }).catch((err) => {
+                console.log(err)
+            })
+        } else if (env.googleDriveEnabled && parent === "/") {
 
-        }).catch((err) => {
-            console.log(err);
-        })
+             // Temp Google Drive API
+             axios.get(currentURL +`/folder-service-google-mongo/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((results) => {
+                const googleMongoList = results.data;
+                dispatch(setFolders(googleMongoList))
+              
+            }).catch((err) => {
+                console.log(err)
+            })
+
+        } else {
+
+            axios.get(currentURL+`/folder-service/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((response) => {
+           
+                const folders = response.data;
+                dispatch(setFolders(folders)) //DISABLED TEMP
+    
+            }).catch((err) => {
+                console.log(err);
+            })
+        }
     }
 }
 
@@ -66,21 +106,26 @@ export const removeFolder = (id) => ({
     id
 })
 
-export const startRemoveFolder = (id, parentList) => {
+export const startRemoveFolder = (id, parentList, isGoogle=false, parent, personalFolder=false) => {
 
     return (dispatch) => {
 
         const data = {id, parentList};
 
-        const headers = {'Authorization': "Bearer " + window.localStorage.getItem("token")}
+        const url = isGoogle ? currentURL+`/folder-service-google/remove` : personalFolder ? `/folder-service-personal/remove` : currentURL+`/folder-service/remove`;
 
-        axios.delete(currentURL+`/folder-service/remove`, {
-            headers,
+        console.log("personal folder", personalFolder);
+
+        axios.delete(url, {
             data
         }).then((response) => {
            
             dispatch(removeFolder(id));
             dispatch(startSetQuickFiles())
+            dispatch(addDeleteFolderTreeID(id, {_id:id}))
+            dispatch(startResetCache());
+
+            if (parent === "/") dispatch(setFirstLoadDetailsFolderTree({status: "RESET", resetToken: uuid.v4()}));
 
         }).catch((err) => {
             console.log(err);
@@ -94,19 +139,21 @@ export const editFolder = (id, folder) => ({
     folder
 })
 
-export const startRenameFolder = (id, title) => {
+export const startRenameFolder = (id, title, isGoogle=false, parent) => {
     
     return (dispatch) => {
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        };
-
         const data = {id, title}
 
-        axios.patch(currentURL+"/folder-service/rename", data, config).then((response) => {
+        const url = isGoogle ? currentURL+"/folder-service-google/rename" : currentURL+"/folder-service/rename";
+ 
+        axios.patch(url, data).then((response) => {
 
             dispatch(editFolder(id, {name: title}))
+            dispatch(addRenameFolderTreeID(id, {_id:id, name: title}));
+            dispatch(startResetCache());
+
+            if (parent === "/") dispatch(setFirstLoadDetailsFolderTree({status: "RESET", resetToken: uuid.v4()}));
 
         }).catch((err) => {
             console.log(err)

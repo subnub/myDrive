@@ -6,6 +6,9 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require("path");
 
+const GoogleFontsPlugin = require("@beyonk/google-fonts-webpack-plugin")
+
+
 //console.log("node env", process.env.NODE_ENV);
 
 //process.env.NODE_ENV = process.env.NODE_ENV || "development"
@@ -70,7 +73,8 @@ module.exports = (env) => {
 						}
 					}
 				]
-            }]
+            },
+        ]
         },
         plugins: [
             CSSExtract,
@@ -78,9 +82,17 @@ module.exports = (env) => {
                 "process.env.PORT": JSON.stringify(process.env.PORT),
                 "process.env.REMOTE_URL": JSON.stringify(process.env.REMOTE_URL),
                 "process.env.ENABLE_VIDEO_TRANSCODING": JSON.stringify(process.env.ENABLE_VIDEO_TRANSCODING),
-                "process.env.DISABLE_STORAGE": JSON.stringify(process.env.DISABLE_STORAGE)
+                "process.env.DISABLE_STORAGE": JSON.stringify(process.env.DISABLE_STORAGE),
+                "process.env.COMMERCIAL_MODE" : JSON.stringify(process.env.COMMERCIAL_MODE)
             }),
-            new CompressionPlugin()
+            new CompressionPlugin(),
+            new GoogleFontsPlugin({
+                fonts: [
+                    { family: "Roboto", variants: ["100", "300", "400", "500", "700"], display: "swap" }
+                ],
+                outputDir: "/dist/",
+                /* ...options */
+            })
         ],
         devtool: isProduction ? "source-map" : "inline-source-map",
         devServer: {

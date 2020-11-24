@@ -15,7 +15,6 @@ const awaitStream = <T>(inputSteam: any, outputStream: any, allStreamsToErrorCat
         })
 
         inputSteam.pipe(outputStream).on("finish", (data: T) => {
-            console.log("await stream finished")
             resolve(data);
         })
     })

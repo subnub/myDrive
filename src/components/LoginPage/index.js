@@ -1,8 +1,10 @@
 import LoginPage from "./LoginPage";
 import {startLogin, startLoginCheck, startCreateAccount} from "../../actions/auth"
-import {setLoginFailed} from "../../actions/main";
+import {setLoginFailed, setCreateNewAccount} from "../../actions/main";
 import {connect} from "react-redux";
 import React from "react";
+import axios from "../../axiosInterceptor";
+import Swal from "sweetalert2";
 
 class LoginPageContainer extends React.Component {
 
@@ -15,13 +17,31 @@ class LoginPageContainer extends React.Component {
             email: "",
             password: "",
             verifyPassword: "",
+            resetPasswordMode: false,
+            verifyEmailResent: false,
+            verifyEmailResentTimer: 0,
+            verifyEmailResentTimerStarted: false
         }
+
+        this.timer;
     }
 
     loginWithToken = () => {
 
-        const token = window.localStorage.getItem("token");
-        this.props.dispatch(startLoginCheck(token, this.props.currentRoute))
+        this.props.dispatch(startLoginCheck(this.props.currentRoute))
+    }
+
+    componentDidUpdate = () => {
+
+        if (this.props.createNewAccount) {
+            this.props.dispatch(setCreateNewAccount(false));
+
+            Swal.fire({
+                icon: 'info',
+                title: 'Email Verification Sent',
+                text: 'Sent Email Verification, Please Check Your Inbox.',
+              })
+        }
     }
 
     login = (e) => {
@@ -32,7 +52,24 @@ class LoginPageContainer extends React.Component {
         const password = this.state.password
         const verifyPassword = this.state.verifyPassword;
 
-        if (this.state.loginMode) {
+        if (this.state.resetPasswordMode) {
+
+            const data = {
+                email,
+            }
+            axios.post("/user-service/send-password-reset", data).then((response) => {
+       
+                Swal.fire(
+                    'Check your email',
+                    'If the email address matches any in our database, we’ll send you an email with instructions on how to reset your password. \nIf you still have problems accessing your account, please send an email to support@piedpiperapp.com',
+                    'success'
+                  )
+
+            }).catch((err) => {
+                console.log("Reset Password Err", err);
+            })
+
+        } else if (this.state.loginMode) {
 
             this.props.dispatch(startLogin(email, password, this.props.currentRoute))
 
@@ -45,6 +82,16 @@ class LoginPageContainer extends React.Component {
             this.props.dispatch(setLoginFailed("Passwords Do Not Match"));
         }
     }   
+
+    switchResetPasswordMode = () => {
+
+        this.setState(() => {
+            return {
+                ...this.state,
+                resetPasswordMode: !this.state.resetPasswordMode
+            }
+        })
+    }
 
     switchLoginMode = () => {
 
@@ -90,15 +137,96 @@ class LoginPageContainer extends React.Component {
         }))
     } 
 
+    startVerifyEmailTimer = () => {
+
+        this.timer = window.setInterval(this.decreaseVerifyTimer, 1000)
+
+    }
+
+    decreaseVerifyTimer = () => {
+
+        if (this.state.verifyEmailResentTimer <= 0 && this.state.verifyEmailResentTimerStarted) {
+            clearInterval(this.timer);
+            return this.setState(() => {
+                return {
+                    ...this.state,
+                    verifyEmailResentTimerStarted: false,
+                    verifyEmailResentTimer: 0,
+                    verifyEmailResent: false
+                }
+            })
+        }
+
+        this.setState(() => {
+
+            return {
+                ...this.state,
+                verifyEmailResentTimer: this.state.verifyEmailResentTimer - 1
+            }
+        })
+    }
+
+    resendEmail = () => {
+
+        if (this.state.verifyEmailResentTimer !== 0) {
+            console.log("verify email timer not at 0 yet");
+            return;
+        }
+
+        axios.post("/user-service/resend-verify-email").then((response) => {
+            
+            this.setState(() => {
+                return {
+                    ...this.state,
+                    verifyEmailResent: true,
+                    verifyEmailResentTimer: 59,
+                    verifyEmailResentTimerStarted: true
+                }
+            }, () => {
+                this.startVerifyEmailTimer()
+            })
+        })
+    }
+
+    logout = () => {
+     
+        window.localStorage.removeItem("token");
+
+        this.props.dispatch(setLoginFailed(false))
+
+        this.setState(() => {
+            return {
+                ...this.state,
+                value: undefined,
+                loginMode: true,
+                email: "",
+                password: "",
+                verifyPassword: "",
+                resetPasswordMode: false,
+                verifyEmailResent: false,
+                verifyEmailResentTimer: 0,
+                verifyEmailResentTimerStarted: false
+            }
+        })
+    }
+
+    componentDidMount = () => {
+
+        this.loginWithToken();
+    }
+
     render() {
 
         return <LoginPage 
                     loginWithToken={this.loginWithToken}
                     switchLoginMode={this.switchLoginMode}
+                    switchResetPasswordMode={this.switchResetPasswordMode}
                     login={this.login}
                     emailOnChange={this.emailOnChange}
                     passwordOnChange={this.passwordOnChange}
                     verifyPasswordOnChange={this.verifyPasswordOnChange}
+                    resendEmail={this.resendEmail}
+                    logout={this.logout}
                     {...this.props}
                     state={this.state}/>
 
@@ -109,7 +237,9 @@ class LoginPageContainer extends React.Component {
 const mapStateToProps = (state) => ({
     id: state.auth.id,
     loginFailed: state.main.loginFailed,
-    currentRoute: state.routes.currentRoute
+    loginFailedCode: state.main.loginFailedCode,
+    currentRoute: state.routes.currentRoute,
+    createNewAccount: state.main.createNewAccount,
 })
 
 export default connect(mapStateToProps)(LoginPageContainer)

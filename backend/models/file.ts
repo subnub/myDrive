@@ -53,6 +53,7 @@ const fileSchema = new mongoose.Schema({
             link: String,
             filePath: String,
             s3ID: String,
+            personalFile: Boolean,
 
         },
         required: true
@@ -79,9 +80,11 @@ export interface FileInterface extends Document {
         link?: string,
         filePath?: string,
         s3ID?: string,
+        personalFile? : boolean
     }
 }
 
 const File = mongoose.model<FileInterface>("fs.files", fileSchema);
 
 export default File;
+module.exports = File;

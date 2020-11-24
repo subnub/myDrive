@@ -3,10 +3,28 @@ import env from "../enviroment/env";
 import UserService from "../services/UserService";
 import { Request, Response } from "express";
 import { UserInterface } from "../models/user";
+import { createLoginCookie, createLogoutCookie } from "../cookies/createCookies";
+import NotFoundError from "../utils/NotFoundError";
+import InternalServerError from "../utils/InternalServerError";
+
 const UserProvider = new UserService();
 
-interface RequestType extends Request {
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    admin: boolean,
+    botChecked: boolean,
+    username: string,
+}
+
+interface RequestTypeRefresh extends Request {
     user?: UserInterface,
+    encryptedToken?: string
+}
+
+interface RequestType extends Request {
+    user?: userAccessType,
     encryptedToken?: string
 }
 
@@ -21,17 +39,14 @@ class UserController {
         try {
 
             const user = req.user!;
-            user.tokens = [];
-            user.tempTokens = [];
-            user.password = '';
-            user.privateKey = undefined;
-            user.publicKey = undefined;
 
             res.send(user)
     
         } catch (e) {
 
-            res.status(500).send(e);
+            console.log("\nGet User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -40,23 +55,56 @@ class UserController {
         try {
 
             const body = req.body;
+            const ipAddress = req.clientIp;
 
-            const {user, token} = await UserProvider.login(body);
+            const {user, accessToken, refreshToken} = await UserProvider.login(body, ipAddress);
+
+            await user.save();
+
+            createLoginCookie(res, accessToken, refreshToken);
 
             user.tokens = [];
-            user.tempTokens = [];
-            user.password = '';
+            user.tempTokens = []
             user.privateKey = undefined;
             user.publicKey = undefined;
-    
-            res.status(200).send({user, token});
+
+            res.status(200).send({user});
     
         } catch (e) {
     
-            const code = e.code || 500;
+            console.log("\nLogin User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
 
-            console.log(e);
-            res.status(code).send(e);
+    getToken = async(req: RequestTypeRefresh, res: Response) => {
+
+        try {
+
+            console.log("\nCreating New Refresh Token...")
+
+            const user = req.user;
+
+            if (!user) throw new NotFoundError("User Not Found");
+
+            console.log("tokens", user.tokens.length);
+
+            const {accessToken, refreshToken} = await user.generateAuthToken(req.clientIp);
+
+            if (!accessToken || !refreshToken) throw new InternalServerError("User/Access/Refresh Token Missing");
+
+            createLoginCookie(res, accessToken, refreshToken);
+
+            res.status(201).send();
+
+            console.log("New Refresh Token And Access Token Sent");
+
+        } catch (e) {
+
+            console.log("\nGet Refresh Token User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -69,32 +117,42 @@ class UserController {
         
         try {
             
-            const user = req.user;
-            const token = req.encryptedToken;
+            const userID = req.user._id;
+            const refreshToken = req.cookies["refresh-token"];
 
-            await UserProvider.logout(user, token);
+            await UserProvider.logout(userID, refreshToken);
+
+            createLogoutCookie(res);
     
             res.send();
     
         } catch (e) {
     
-            res.status(500).send(e);
+            console.log("\nLogout User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
     logoutAll = async(req: RequestType, res: Response) => {
 
+        if (!req.user) return;
+
         try {
 
-            const user = req.user;
+            const userID = req.user._id;
 
-            await UserProvider.logoutAll(user!);
+            await UserProvider.logoutAll(userID);
+
+            createLogoutCookie(res);
     
             res.send();
     
         } catch (e) {
     
-            res.status(500).send(e);
+            console.log("\nLogout All User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -107,7 +165,11 @@ class UserController {
         
         try {
     
-            const {user, token} = await UserProvider.create(req.body);
+            const ipAddress = req.clientIp;
+
+            const {user, accessToken, refreshToken} = await UserProvider.create(req.body, ipAddress);
+
+            createLoginCookie(res, accessToken, refreshToken);
 
             user.tokens = [];
             user.tempTokens = []
@@ -115,14 +177,13 @@ class UserController {
             user.privateKey = undefined;
             user.publicKey = undefined;
     
-            res.status(201).send({user, token})
+            res.status(201).send({user})
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nCreate User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -134,21 +195,161 @@ class UserController {
         }
     
         try {
-            
-            const user = req.user;
+        
+            const userID = req.user._id;
             const oldPassword = req.body.oldPassword;
             const newPassword = req.body.newPassword;
+            const oldRefreshToken = req.cookies["refresh-token"];
+            const ipAddress = req.clientIp;
 
-            const newToken = await UserProvider.changePassword(user, oldPassword, newPassword);
+            const {accessToken, refreshToken} = await UserProvider.changePassword(userID, oldPassword, newPassword, oldRefreshToken, ipAddress);
             
-            res.send(newToken);
+            createLoginCookie(res, accessToken, refreshToken);
+
+            res.send();
     
         } catch (e) {
     
-            const code = e.code || 500;
+            console.log("\nChange Password User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
 
-            console.log(e);
-            res.status(code).send(e);
+    refreshStorageSize = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+            return;
+        }
+
+        try {
+
+            const userID = req.user._id;
+
+            await UserProvider.refreshStorageSize(userID);
+
+            res.send();
+
+        } catch (e) {
+            console.log("\nRefresh Storage Size User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+
+    getUserDetailed = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+            return;
+        }
+
+        try {
+
+            const userID = req.user._id;
+
+            const userDetailed = await UserProvider.getUserDetailed(userID);
+
+            res.send(userDetailed);
+
+        } catch (e) {
+            console.log("\nGet User Detailed User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+
+    verifyEmail = async(req: RequestType, res: Response) => {
+
+        try {
+
+            const verifyToken = req.body.emailToken;
+
+            await UserProvider.verifyEmail(verifyToken);
+
+            res.send();
+
+        } catch (e) {
+            console.log("\nVerify Email User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+
+    resendVerifyEmail = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+            return;
+        }
+
+        try {
+
+            const userID = req.user._id;
+
+            await UserProvider.resendVerifyEmail(userID);
+
+            res.send();
+
+        } catch (e) {
+            console.log("\nResend Email User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+
+    sendPasswordReset = async(req: RequestType, res: Response) => {
+
+        try {
+
+            const email = req.body.email;
+
+            await UserProvider.sendPasswordReset(email);
+
+            res.send();
+
+        } catch (e) {
+            console.log("\nSend Password Reset Email User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+
+    resetPassword = async(req: RequestType, res: Response) => {
+
+        try {
+
+            const verifyToken = req.body.passwordToken;
+            const newPassword = req.body.password;
+
+            await UserProvider.resetPassword(newPassword, verifyToken);
+
+            res.send();
+
+        } catch (e) {
+            console.log("\nReset Password User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+    
+    addName = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+            return;
+        }
+
+        try {
+
+            const userID = req.user._id;
+            const name = req.body.name;
+
+            await UserProvider.addName(userID, name);
+
+            res.send();
+
+        } catch (e) {
+            console.log("\nAdd Name User Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

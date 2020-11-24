@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../axiosInterceptor";
 import env from "../enviroment/envFrontEnd";
 
 const currentURL = env.url;
@@ -8,14 +8,10 @@ export const setSelectedItem = (selectedItem) => ({
     selectedItem
 })
 
-export const startSetSelectedItem = (id, file, fromQuickItems) => {
+export const startSetSelectedItem = (id, file, fromQuickItems, isGoogleDrive) => {
 
     return (dispatch) => {
         
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        };
-
         const currentDate = Date.now();
 
         dispatch(setLastSelected(currentDate));
@@ -27,28 +23,62 @@ export const startSetSelectedItem = (id, file, fromQuickItems) => {
         }
 
         if (file) {
-                
-            axios.get(currentURL +`/file-service/info/${id}`, config).then((results) => {
 
-                const {filename: name, length: size, uploadDate: date, parentName: location, metadata, _id: id} = results.data;
+            if (isGoogleDrive) {
 
-                dispatch(setSelectedItem({name, size, date, file, location, transcoded: metadata.transcoded, isVideo: metadata.isVideo, id, linkType: metadata.linkType, link: metadata.link}))
-                
-            }).catch((err) => {
-                console.log(err)
-            })
+                axios.get(currentURL +`/file-service-google/info/${id}`).then((results) => {
+
+                    console.log("file info google", results.data, results.data.id);
+
+                    const data = results.data;
+
+                    const {filename: name, length: size, uploadDate: date, parentName: location, metadata, _id: id} = results.data;
+    
+                    dispatch(setSelectedItem({name, size, date, file, location, transcoded: metadata.transcoded, isVideo: metadata.isVideo, id, linkType: metadata.linkType, link: metadata.link, drive: metadata.drive, personalFile: metadata.personalFile, data: results.data}))
+
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+            } else {
+
+                axios.get(currentURL +`/file-service/info/${id}`).then((results) => {
+
+                    const {filename: name, length: size, uploadDate: date, parentName: location, metadata, _id: id} = results.data;
+    
+                    dispatch(setSelectedItem({name, size, date, file, location, transcoded: metadata.transcoded, isVideo: metadata.isVideo, id, linkType: metadata.linkType, link: metadata.link, drive: metadata.drive, personalFile: metadata.personalFile, data: results.data}))
+                    
+                }).catch((err) => {
+                    console.log(err)
+                })
+            }
 
         } else {
 
-            axios.get(currentURL +`/folder-service/info/${id}`, config).then((results) => {
+            if (isGoogleDrive) {
 
-                const {name, 0: size, createdAt: date, parentName: location} = results.data;
+                axios.get(currentURL +`/folder-service-google/info/${id}`).then((results) => {
 
-                dispatch(setSelectedItem({name, size, date, file, location}))
-                
-            }).catch((err) => {
-                console.log(err)
-            })
+                    const {name, 0: size, createdAt: date, parentName: location, _id: id, drive, personalFolder: personalFile} = results.data;
+    
+                    dispatch(setSelectedItem({name, size, date, file, location, data: results.data, id, drive, personalFile}))
+                    
+                }).catch((err) => {
+                    console.log(err)
+                })
+
+            } else {
+
+                axios.get(currentURL +`/folder-service/info/${id}`).then((results) => {
+
+                    const {name, 0: size, createdAt: date, parentName: location, _id: id, drive, personalFolder: personalFile} = results.data;
+    
+                    dispatch(setSelectedItem({name, size, date, file, location, data: results.data, id, drive, personalFile}))
+                    
+                }).catch((err) => {
+                    console.log(err)
+                })
+            }
         }
     }
 }

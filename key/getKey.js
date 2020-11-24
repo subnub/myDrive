@@ -1,5 +1,5 @@
 const prompt = require('password-prompt')
-import env from "../backend/enviroment/env";
+const env = require("../dist/enviroment/env")
 const crypto = require("crypto");
 
 // NOT IN USE
@@ -9,7 +9,9 @@ const getKey = async() => {
     if (process.env.KEY) {
         // For Docker 
 
-        const password = process.env.KEY;
+        let password = process.env.KEY;
+
+        password = crypto.createHash("md5").update(password).digest("hex");
 
         env.key = password;
 
