@@ -2,6 +2,7 @@ import {Response } from "express";
 
 const maxAgeAccess =  1000 * 5;//60 * 1000 * 20;
 const maxAgeRefresh = 60 * 1000 * 60 * 24 * 30;
+const maxAgeStreamVideo = 60 * 1000 * 60 * 24;
 
 export const createLoginCookie = (res: Response, accessToken: string, refreshToken: string) => {
 
@@ -32,6 +33,16 @@ export const createLogoutCookie = (res: Response) => {
     res.cookie("refresh-token", {}, {
         httpOnly: true,
         maxAge: 0,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production"
+    })
+}
+
+export const createStreamVideoCookie = (res: Response, streamVideoAccessToken: string) => {
+
+    res.cookie("video-access-token", streamVideoAccessToken, {
+        httpOnly: true,
+        maxAge: maxAgeStreamVideo,
         sameSite: "strict",
         secure: process.env.NODE_ENV === "production"
     })

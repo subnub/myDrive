@@ -5,6 +5,7 @@ import env from "../../enviroment/envFrontEnd";
 import {connect} from "react-redux";
 import React from "react";
 import { setPhotoID } from "../../actions/photoViewer";
+import axiosNonInterceptor from "axios";
 
 const currentURL = env.url;
 
@@ -94,36 +95,57 @@ class PopupWindowContainer extends React.Component {
 
     getVideo = () => {
 
-        const config = {
-            headers: {
-            uuid: window.sessionStorage.getItem("uuid")
-        }
+        // const config = {
+        //     headers: {
+        //     uuid: window.sessionStorage.getItem("uuid")
+        // }
             
-        };    
+        // };   
+        
+        axios.get("/file-service/download/access-token-stream-video").then(() => {
 
-        axios.get(currentURL +'/file-service/download/get-token-video',config)
-        .then((response) => {
-            
-            this.tempToken =  response.data.tempToken;
-
-            const uuidID = window.sessionStorage.getItem("uuid");
+            console.log("stream video got token")
 
             const isDrive = this.props.popupFile.metadata.drive;
             const isPersonal = this.props.popupFile.metadata.personalFile;
-
+    
             const finalUrl = isDrive ? 
-            currentURL + `/file-service-google/stream-video/${this.props.popupFile._id}/${this.tempToken}/${uuidID}` 
-            : !isPersonal ? currentURL + `/file-service/stream-video/${this.props.popupFile._id}/${this.tempToken}/${uuidID}` 
-            : currentURL + `/file-service-personal/stream-video/${this.props.popupFile._id}/${this.tempToken}/${uuidID}`
-
+            currentURL + `/file-service-google/stream-video/${this.props.popupFile._id}` 
+            : !isPersonal ? currentURL + `/file-service/stream-video/${this.props.popupFile._id}` 
+            : currentURL + `/file-service-personal/stream-video/${this.props.popupFile._id}`
+    
             this.setState(() => ({
                 ...this.state,
                 video: finalUrl
             }))
 
-        }).catch((err) => {
-            console.log(err)
+        }).catch((e) => {
+            console.log("Stream Video Error", e.message);
         })
+
+        // axios.get(currentURL +'/file-service/download/get-token-video',config)
+        // .then((response) => {
+            
+        //     this.tempToken =  response.data.tempToken;
+
+        //     const uuidID = window.sessionStorage.getItem("uuid");
+
+        //     const isDrive = this.props.popupFile.metadata.drive;
+        //     const isPersonal = this.props.popupFile.metadata.personalFile;
+
+        //     const finalUrl = isDrive ? 
+        //     currentURL + `/file-service-google/stream-video/${this.props.popupFile._id}/${this.tempToken}/${uuidID}` 
+        //     : !isPersonal ? currentURL + `/file-service/stream-video/${this.props.popupFile._id}/${this.tempToken}/${uuidID}` 
+        //     : currentURL + `/file-service-personal/stream-video/${this.props.popupFile._id}/${this.tempToken}/${uuidID}`
+
+        //     this.setState(() => ({
+        //         ...this.state,
+        //         video: finalUrl
+        //     }))
+
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
     }
 
     componentWillUnmount = () => {

@@ -6,6 +6,7 @@ import S3Service from "../services/ChunkService/S3Service";
 import {UserInterface} from "../models/user";
 import tempStorage from "../tempStorage/tempStorage";
 import sendShareEmail from "../utils/sendShareEmail";
+import { createStreamVideoCookie } from "../cookies/createCookies";
 
 const fileService = new FileService()
 
@@ -330,29 +331,54 @@ class FileController {
         }
     }
 
-    getDownloadTokenVideo = async(req: RequestTypeFullUser, res: Response) => {
+    getAccessTokenStreamVideo = async(req: RequestTypeFullUser, res: Response) => {
 
-        if (!req.user) {
-            return 
-        }
-    
+        if (!req.user) return;
+
         try {
-    
+
             const user = req.user;
-            const cookie = req.headers.uuid as string;
-    
-            const tempToken = await fileService.getDownloadTokenVideo(user, cookie);
-    
-            res.send({tempToken});
-    
+
+            const ipAddress = req.clientIp;
+
+            const streamVideoAccessToken = await user.generateAuthTokenStreamVideo(ipAddress);
+
+            createStreamVideoCookie(res, streamVideoAccessToken);
+
+            res.send();
+
         } catch (e) {
 
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Access Token Stream Video Fle Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
+
     }
+
+    // getDownloadTokenVideo = async(req: RequestTypeFullUser, res: Response) => {
+
+    //     if (!req.user) {
+    //         return 
+    //     }
+    
+    //     try {
+    
+    //         const user = req.user;
+    //         const cookie = req.headers.uuid as string;
+    
+    //         const tempToken = await fileService.getDownloadTokenVideo(user, cookie);
+    
+    //         res.send({tempToken});
+    
+    //     } catch (e) {
+
+    //         const code = e.code || 500;
+
+    //         console.log(e);
+    //         res.status(code).send()
+    //     }
+    // }
 
     removeTempToken = async(req: RequestTypeFullUser, res: Response) => {
 

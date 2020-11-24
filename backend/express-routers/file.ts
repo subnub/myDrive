@@ -7,6 +7,7 @@ import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 import ChunkInterface from "../services/ChunkService/utils/ChunkInterface";
 import authFullUser from "../middleware/authFullUser";
+import authStreamVideo from "../middleware/authStreamVideo";
 
 let fileController: FileController;
 let chunkService: ChunkInterface;
@@ -48,11 +49,17 @@ router.get("/file-service/quick-list", auth, fileController.getQuickList);
 
 router.get("/file-service/list", auth, fileController.getList);
 
-router.get("/file-service/download/get-token", authFullUser, fileController.getDownloadToken);
+//router.get("/file-service/download/get-token", authFullUser, fileController.getDownloadToken);
 
-router.get("/file-service/download/get-token-video", auth, fileController.getDownloadTokenVideo);
+//router.get("/file-service/download/get-token-video", auth, fileController.getDownloadTokenVideo);
 
-router.get("/file-service/stream-video/:id/:tempToken/:uuid", auth, fileController.streamVideo);
+router.get("/file-service/download/access-token-stream-video", authFullUser, fileController.getAccessTokenStreamVideo)
+
+router.get("/file-service/stream-video/:id", authStreamVideo, fileController.streamVideo);
+
+//router.get("/file-service/stream-video/:id/:tempToken/:uuid", auth, fileController.streamVideo);
+
+//router.get("/file-service/stream-video/:id", auth, fileController.streamVideo);
 
 router.get("/file-service/download/:id", authFullUser, fileController.downloadFile);
 
@@ -68,7 +75,9 @@ router.patch("/file-service/move", auth, fileController.moveFile);
 
 router.delete("/file-service/remove-link/:id", auth, fileController.removeLink);
 
-router.delete("/file-service/remove/token-video/:tempToken/:uuid", auth, fileController.removeTempToken);
+//router.delete("/file-service/remove/token-video/:tempToken/:uuid", auth, fileController.removeTempToken);
+
+router.delete("/file-service/remove/token-video/:id", auth, fileController.removeTempToken);
 
 router.delete("/file-service/remove", auth, fileController.deleteFile);
 

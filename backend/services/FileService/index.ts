@@ -161,16 +161,20 @@ class MongoFileService {
         return tempToken;
     }
 
-    getDownloadTokenVideo = async(user: UserInterface, cookie: string) => {
-
-        if (!cookie) throw new NotAuthorizedError("Get Download Token Video Cookie Not Authorized Error");
-
-        const tempToken = await user.generateTempAuthTokenVideo(cookie);
-
-        if (!tempToken) throw new NotAuthorizedError("Get Download Token Video Not Authorized Error");
-
-        return tempToken;
+    getAccessTokenStreamVideo = async() => {
+        
     }
+
+    // getDownloadTokenVideo = async(user: UserInterface, cookie: string) => {
+
+    //     if (!cookie) throw new NotAuthorizedError("Get Download Token Video Cookie Not Authorized Error");
+
+    //     const tempToken = await user.generateTempAuthTokenVideo(cookie);
+
+    //     if (!tempToken) throw new NotAuthorizedError("Get Download Token Video Not Authorized Error");
+
+    //     return tempToken;
+    // }
 
     removeTempToken = async(user: UserInterface, tempToken: any, currentUUID: string) => {
 

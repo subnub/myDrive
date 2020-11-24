@@ -51,6 +51,14 @@ const userSchema = new mongoose.Schema({
         token: {
             type: String, 
             required: true
+        },
+        ipAddress: {
+            type: String,
+            required: true,
+        },
+        time: {
+            type: Number,
+            required: true
         }
     }],
     privateKey: {
@@ -187,11 +195,12 @@ export interface UserInterface extends Document {
 
     getEncryptionKey: () => Buffer | undefined;
     generateTempAuthToken: () => any;
-    generateTempAuthTokenVideo: (cookie: string) => any;
+    // generateTempAuthTokenVideo: (cookie: string) => any;
     encryptToken: (tempToken: any, key: any, publicKey: any) => any;
     decryptToken: (encryptedToken: any, key: any, publicKey: any) => any;
     findByCreds: (email: string, password: string) => UserInterface;
     generateAuthToken: (ipAddress: string | undefined) => Promise<{accessToken: string, refreshToken: string}>
+    generateAuthTokenStreamVideo: (ipAddress: string | undefined) => Promise<string>
     generateEncryptionKeys: () => Promise<void>;
     changeEncryptionKey: (randomKey: Buffer) => void; 
     generateEmailVerifyToken: () => string;
@@ -210,6 +219,8 @@ export interface UserInterface extends Document {
 
 const maxAgeAccess =  1000 * 5 * 10; //60 * 1000 * 20 + (1000 * 60);
 const maxAgeRefresh = 60 * 1000 * 60 * 24 * 30 + (1000 * 60);
+
+const maxAgeAccessStreamVideo = 60 * 1000 * 60 * 24;
 
 userSchema.pre("save", async function(this: any, next: any) {
     
@@ -252,6 +263,28 @@ userSchema.methods.toJSON = function() {
     delete userObject.tempTokens;
 
     return userObject;
+}
+
+userSchema.methods.generateAuthTokenStreamVideo = async function(ipAddress: string | undefined) {
+
+    const iv = crypto.randomBytes(16);
+
+    const user = this;
+
+    const date = new Date();
+    const time = date.getTime();
+    
+    let accessTokenStreamVideo = jwt.sign({_id:user._id.toString(), iv, time}, env.passwordAccess!, {expiresIn: maxAgeAccessStreamVideo.toString()});
+
+    const encryptionKey = user.getEncryptionKey();
+
+    const encryptedToken = user.encryptToken(accessTokenStreamVideo, encryptionKey, iv);
+
+    ipAddress = ipAddress ? ipAddress : "";
+
+    await User.updateOne({_id: user._id}, {$push: {"tempTokens": {token: encryptedToken, ipAddress, time}}});
+
+    return accessTokenStreamVideo;
 }
 
 userSchema.methods.generateAuthToken = async function(ipAddress: string | undefined) {
