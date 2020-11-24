@@ -59,7 +59,19 @@ class FolderTreeStorageContainer extends React.Component {
 
     componentDidMount = () => {
 
-        //this.getFolders();
+        // const hideFolderTree = localStorage.getItem("hide-folder-tree");
+
+        // if (hideFolderTree) {
+
+        //     this.setState(() => ({
+        //         hideFolderTree
+        //     }))
+            
+        // } else {
+        //     this.getFolders();
+        // }
+
+        this.getFolders();
     }
 
     componentDidUpdate = () => {
@@ -98,6 +110,7 @@ class FolderTreeStorageContainer extends React.Component {
     }
 
     render() {
+
         return <FolderTreeStorage arrowClick={this.arrowClick} state={this.state} {...this.props}/>
     }
 }

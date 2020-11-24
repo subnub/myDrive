@@ -53,6 +53,8 @@ class SettingsPageContainer extends React.Component {
             descendingSort: true,
             dropToUpload: true,
             doubleClickFolders: false,
+            hideFolderTree: false,
+            showFolderTreeScrollBars: false
         }
 
         this.uploadReference = React.createRef()
@@ -99,7 +101,9 @@ class SettingsPageContainer extends React.Component {
       const nameMode = window.localStorage.getItem("name-mode");
       const ascMode = window.localStorage.getItem("asc-mode");
       const dropToUpload = window.localStorage.getItem("non_drop-mode");
-      const doubleClickFolders = window.localStorage.getItem("double-click-folders")
+      const doubleClickFolders = window.localStorage.getItem("double-click-folders");
+      const hideFolderTree = window.localStorage.getItem("hide-folder-tree");
+      const showFolderTreeScrollBars = window.localStorage.getItem("show-folder-tree-scroll-bars")
 
       this.setState(() => {
         return {
@@ -109,6 +113,8 @@ class SettingsPageContainer extends React.Component {
           descendingSort: !ascMode,
           dropToUpload: !dropToUpload,
           doubleClickFolders: doubleClickFolders,
+          hideFolderTree: hideFolderTree,
+          showFolderTreeScrollBars
         }
       })
     }
@@ -786,6 +792,44 @@ class SettingsPageContainer extends React.Component {
     })
   }
 
+  hideFolderTreeOnChange = () =>{
+
+    if (this.state.hideFolderTree) {
+
+      window.localStorage.removeItem("hide-folder-tree");
+
+    } else {
+
+      console.log("setting hide folder tree to true")
+
+      window.localStorage.setItem("hide-folder-tree", true);
+    }
+    
+    this.setState(() => ({
+      ...this.state,
+      hideFolderTree: !this.state.hideFolderTree
+    }))
+
+  }
+
+  showFolderTreeScrollBarsOnChange = () => {
+
+    if (this.state.showFolderTreeScrollBars) {
+
+      window.localStorage.removeItem("show-folder-tree-scroll-bars");
+
+    } else {
+
+      window.localStorage.setItem("show-folder-tree-scroll-bars", true);
+    }
+
+    this.setState(() => ({
+      ...this.state,
+      showFolderTreeScrollBars: !this.state.showFolderTreeScrollBars
+    }))
+
+  }
+
   render() {
     return (
 
@@ -1258,6 +1302,14 @@ class SettingsPageContainer extends React.Component {
             <p>
               <input checked={this.state.doubleClickFolders} onChange={this.doubleClickOnChange} type="checkbox" id="test5" />
               <label for="test5">Double Click To Enter Folders On Mobile</label>
+            </p>
+            <p>
+              <input checked={this.state.hideFolderTree} onChange={this.hideFolderTreeOnChange} type="checkbox" id="test6" />
+              <label for="test6">Hide Folder Tree</label>
+            </p>
+            <p>
+              <input checked={this.state.showFolderTreeScrollBars} onChange={this.showFolderTreeScrollBarsOnChange} type="checkbox" id="test7" />
+              <label for="test7">Show Folder Tree Scroll Bars</label>
             </p>
           </div>
         </div>

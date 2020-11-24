@@ -19,6 +19,7 @@ class LeftSectionContainer extends React.Component {
 
         this.state = {
             open: false,
+            hideFolderTree: false,
         }
     }
 
@@ -64,6 +65,15 @@ class LeftSectionContainer extends React.Component {
 
     componentDidMount = () => {
         document.addEventListener('mousedown', this.handleClickOutside);
+
+        const hideFolderTree = localStorage.getItem("hide-folder-tree");
+
+        if (hideFolderTree) {
+
+            this.setState(() => ({
+                hideFolderTree
+            }))
+        }
     }
 
     componentWillUnmount = () => {

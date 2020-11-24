@@ -28,6 +28,22 @@
     // border-radius: 10px;
 }
 
+.folder-tree__box-hide-scroll-bars {
+
+    width: 95%;
+    height: 85%;
+    overflow: scroll;
+
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+        width: 0px;
+        background: transparent
+    }
+
+}
+
 .folder-tree__storage {
     // width: 100%;
     // height: 55px;

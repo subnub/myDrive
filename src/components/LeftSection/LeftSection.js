@@ -60,7 +60,7 @@ class LeftSection extends React.Component {
 						<FolderTree />
 						
 					</div>
-					<div class="utility__buttons">
+					<div class={this.props.state.hideFolderTree ? "utility__buttons utility__buttons_no_border" : "utility__buttons"}>
 						<ul>
 							{/* <li><a href="#"><span><img src="/assets/utility1.svg" alt="utility"/></span> Shared with me</a></li>
 							<li><a href="#"><span><img src="/assets/utility2.svg" alt="utility"/></span> Recent Files</a></li>
