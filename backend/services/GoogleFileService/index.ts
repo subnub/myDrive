@@ -15,6 +15,7 @@ import axios from "axios";
 import awaitUploadGoogle from "../ChunkService/utils/awaitUploadGoogle";
 import {googleQueryType} from "../../utils/createQueryGoogle";
 import GoogleDbUtils from "../../db/utils/googleFileUtils";
+import sortGoogleMongoQuickFiles from "../../utils/sortGoogleMongoQuickFiles";
 
 const googleDbUtils = new GoogleDbUtils();
 
@@ -48,19 +49,8 @@ class GoogleFileService {
     }
 
     getMongoGoogleList = async(user: UserInterface, query: googleQueryType) => {
-
-        const oauth2Client = await getGoogleAuth(user);
-
-        const limit = query.limit;
-
-        let parent = query.parent === "/" ? "root" : query.parent;
-
-        const {queryBuilder, orderBy} = createQueryGoogle(query, parent)
-
-        const previosPageToken = query.pageToken;
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-        const files = await drive.files.list({pageSize: limit, fields: `nextPageToken, files(${fields})`, q: queryBuilder, orderBy, pageToken: previosPageToken});
+        
+        const files = await googleDbUtils.getList(query, user);
 
         const nextPageToken = files.data.nextPageToken;
 
@@ -77,11 +67,7 @@ class GoogleFileService {
 
     getFileInfo = async(user: UserInterface, id: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-        
-        const file = await drive.files.get({fileId: id, fields: fields});
+        const file = await googleDbUtils.getFileInfo(id, user);
 
         const userID = user._id;
         const convertedFile = convertDriveToMongo(file.data, userID);
@@ -91,47 +77,24 @@ class GoogleFileService {
 
     getGoogleMongoQuickList = async(user: UserInterface) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-   
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-    
-        let query = 'mimeType != "application/vnd.google-apps.folder" and trashed=false';
-    
-        const files = await drive.files.list({pageSize: 10, fields: `nextPageToken, files(${fields})`, q: query});
-    
+        const files = await googleDbUtils.getQuickList(user);
+
         const userID = user._id
         const convertedFiles = convertDriveListToMongoList(files.data.files, userID);
         
         const quickList = await fileService.getQuickList(user);
     
-        let combinedData = [...convertedFiles, ...quickList]
-    
-        combinedData = combinedData.sort((a, b) => {
-            const convertedDateA = new Date(a.uploadDate).getTime();
-            const convertedDateB = new Date(b.uploadDate).getTime();
-        
-            return convertedDateB - convertedDateA;
-        })
+        const sortedGoogleMongoQuickList = sortGoogleMongoQuickFiles(convertedFiles, quickList);
 
-        if (combinedData.length >= 10) {
-            combinedData = combinedData.slice(0, 10);
-        }
-
-        return combinedData;
+        return sortedGoogleMongoQuickList;
     }
 
     getGoogleMongoSuggestedList = async(user: UserInterface, searchQuery: string) => {
         
-        const driveQuery = `name contains "${searchQuery}" and  mimeType != "application/vnd.google-apps.folder" and trashed=false`
-        const driveQueryFolder = `name contains "${searchQuery}" and mimeType = "application/vnd.google-apps.folder" and trashed=false`
-
-        const oauth2Client = await getGoogleAuth(user);
-    
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-        const files = await drive.files.list({pageSize: 10, fields: `nextPageToken, files(${fields})`, q: driveQuery});
-        const folders = await drive.files.list({pageSize: 10, fields: `nextPageToken, files(${fields})`, q: driveQueryFolder});
+        const {files, folders} = await googleDbUtils.getSuggestedList(searchQuery, user);
         
         const userID = user._id;
+
         const convertedFiles = convertDriveListToMongoList(files.data.files, userID);
         const convertedFolders = convertDriveFoldersToMongoFolders(folders.data.files, userID);
         
@@ -145,28 +108,17 @@ class GoogleFileService {
 
     renameFile = async(user: UserInterface, fileID: string, title: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-    
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        await drive.files.update({fileId: fileID, requestBody: {name:title}})
+        await googleDbUtils.renameFile(fileID, title, user);
     }
 
     removeFile = async(user: UserInterface, fileID: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-    
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        await drive.files.delete({fileId:fileID});
+        await googleDbUtils.removeFile(fileID, user);
     }
 
     downloadFile = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const fileMetadata = await drive.files.get({fileId: fileID, fields: "*"})
+        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + '"');
@@ -195,10 +147,7 @@ class GoogleFileService {
 
     downloadDoc = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const fileMetadata = await drive.files.get({fileId: fileID, fields: "*"})
+        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + ".pdf" + '"');
@@ -223,10 +172,7 @@ class GoogleFileService {
 
     getThumbnail = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const fileMetadata = await drive.files.get({fileId: fileID, fields: "*"})
+        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + '"');
@@ -254,10 +200,7 @@ class GoogleFileService {
 
     getFullThumbnail = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const fileMetadata = await drive.files.get({fileId: fileID, fields: "*"})
+        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + '"');
@@ -289,10 +232,7 @@ class GoogleFileService {
         const currentUUID = uuid.v4();
         tempStorage[tempUUID] = currentUUID;
 
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const fileMetadata = await drive.files.get({fileId: fileID, fields: "*"})
+        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
 
         const fileSize = +fileMetadata.data.size!
         
@@ -406,72 +346,19 @@ class GoogleFileService {
 
     moveFile = async(user: UserInterface, fileID: string, parentID: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const previousFile = await drive.files.get({
-            fileId: fileID,
-            fields: "*"
-        })
-
-        const previousParent = previousFile.data.parents![0];
-
-        await drive.files.update({
-            fileId: fileID,
-            addParents: parentID,
-            removeParents: previousParent,
-            fields: fields
-        })
+        await googleDbUtils.moveFile(fileID, parentID, user);
     }
 
     makeFilePublic = async(user: UserInterface, fileID: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const publicFile = await drive.permissions.create({
-            requestBody: {
-                type: "anyone",
-                role: "reader"
-            },
-            fileId: fileID,
-            fields: "*"
-        })
-
-        const fileDetails = await drive.files.get({
-            fileId: fileID, 
-            fields: fields
-        })
-
-        const publicURL = fileDetails.data.webViewLink!;
+        const publicURL = await googleDbUtils.makeFilePublic(fileID, user);
 
         return publicURL;
     }
 
     removePublicLink = async(user: UserInterface, fileID: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-    
-        const fileMetadata = await drive.files.get({
-            fileId: fileID,
-            fields: "*",
-        })
-    
-        const permissions = await drive.permissions.get({
-            fileId: fileID,
-            permissionId: fileMetadata.data.permissionIds![0]
-        })
-    
-        console.log(permissions.data)
-    
-        await drive.permissions.delete({
-            fileId: fileID,
-            permissionId: fileMetadata.data.permissionIds![0]
-        })    
+        await googleDbUtils.removePublicLink(fileID, user);   
     }
 }
 
