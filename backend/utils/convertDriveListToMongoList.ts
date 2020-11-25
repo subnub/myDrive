@@ -1,6 +1,6 @@
 import convertDriveToMongo from "./convertDriveToMongo";
 
-const convertDriveListToMongoList = (driveObjs: any, ownerID:string, pageToken?: string) => {
+const convertDriveListToMongoList = (driveObjs: any, ownerID:string, pageToken?: string | null | undefined) => {
 
     let convertedObjs = [];
 

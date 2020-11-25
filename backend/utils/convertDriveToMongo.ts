@@ -1,6 +1,6 @@
 import videoChecker from "./videoChecker";
 
-const convertDriveToMongo = (driveObj: any, ownerID: string, pageToken?: string) => {
+const convertDriveToMongo = (driveObj: any, ownerID: string, pageToken?: string | undefined | null) => {
 
     let convertedObj: any = {};
     convertedObj._id = driveObj.id;

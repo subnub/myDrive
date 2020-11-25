@@ -205,7 +205,7 @@ export interface UserInterface extends Document {
     changeEncryptionKey: (randomKey: Buffer) => void; 
     generateEmailVerifyToken: () => string;
     generatePasswordResetToken: () => string;
-    encryptDriveIDandKey: (ID:string, key: string) => void; 
+    encryptDriveIDandKey: (ID:string, key: string) => Promise<void>; 
     decryptDriveIDandKey: () => {clientID: string, clientKey: string};
     encryptDriveTokenData: (token: Object) => void;
     decryptDriveTokenData: () => any;

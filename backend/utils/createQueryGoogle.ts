@@ -25,4 +25,10 @@ const createQueryGoogle = (query: any, parent: any) => {
     return {queryBuilder, orderBy}
 }
 
+export interface googleQueryType {
+    limit: number,
+    parent: string,
+    pageToken: string,
+}
+
 export default createQueryGoogle;

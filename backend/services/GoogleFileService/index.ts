@@ -13,6 +13,10 @@ import uuid from "uuid";
 import getBusboyData from "../ChunkService/utils/getBusboyData";
 import axios from "axios";
 import awaitUploadGoogle from "../ChunkService/utils/awaitUploadGoogle";
+import {googleQueryType} from "../../utils/createQueryGoogle";
+import GoogleDbUtils from "../../db/utils/googleFileUtils";
+
+const googleDbUtils = new GoogleDbUtils();
 
 interface RequestType extends Request {
     user?: UserInterface,
@@ -30,22 +34,11 @@ class GoogleFileService {
         
     }
 
-    getList = async(user: UserInterface, query: any) => {
+    getList = async(user: UserInterface, query: googleQueryType) => {
 
-        const oauth2Client = await getGoogleAuth(user);
+        const files = await googleDbUtils.getList(query, user);
 
-        const limit: any = query.limit as any;
-
-        let parent = query.parent === "/" ? "root" : query.parent;
-
-        const {queryBuilder, orderBy} = createQueryGoogle(query, parent)
-
-        const previosPageToken: any = query.pageToken;
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-        const files = await drive.files.list({pageSize: limit, fields: `nextPageToken, files(${fields})`, q: queryBuilder, orderBy, pageToken: previosPageToken});
-
-        const nextPageToken: any = files.data.nextPageToken;
+        const nextPageToken = files.data.nextPageToken;
 
         const userID = user._id;
 
@@ -54,22 +47,22 @@ class GoogleFileService {
         return convertedFiles;
     }
 
-    getMongoGoogleList = async(user: UserInterface, query: any) => {
+    getMongoGoogleList = async(user: UserInterface, query: googleQueryType) => {
 
         const oauth2Client = await getGoogleAuth(user);
 
-        const limit: any = query.limit as any;
+        const limit = query.limit;
 
         let parent = query.parent === "/" ? "root" : query.parent;
 
         const {queryBuilder, orderBy} = createQueryGoogle(query, parent)
 
-        const previosPageToken: any = query.pageToken;
+        const previosPageToken = query.pageToken;
 
         const drive = google.drive({version:"v3", auth: oauth2Client});
         const files = await drive.files.list({pageSize: limit, fields: `nextPageToken, files(${fields})`, q: queryBuilder, orderBy, pageToken: previosPageToken});
 
-        const nextPageToken: any = files.data.nextPageToken;
+        const nextPageToken = files.data.nextPageToken;
 
         const userID = user._id;
 
