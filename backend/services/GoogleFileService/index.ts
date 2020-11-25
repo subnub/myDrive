@@ -14,10 +14,10 @@ import getBusboyData from "../ChunkService/utils/getBusboyData";
 import axios from "axios";
 import awaitUploadGoogle from "../ChunkService/utils/awaitUploadGoogle";
 import {googleQueryType} from "../../utils/createQueryGoogle";
-import GoogleDbUtils from "../../db/utils/googleFileUtils";
+import GoogleDbFileUtils from "../../db/utils/googleFileUtils";
 import sortGoogleMongoQuickFiles from "../../utils/sortGoogleMongoQuickFiles";
 
-const googleDbUtils = new GoogleDbUtils();
+const googleDbFileUtils = new GoogleDbFileUtils();
 
 interface RequestType extends Request {
     user?: UserInterface,
@@ -37,7 +37,7 @@ class GoogleFileService {
 
     getList = async(user: UserInterface, query: googleQueryType) => {
 
-        const files = await googleDbUtils.getList(query, user);
+        const files = await googleDbFileUtils.getList(query, user);
 
         const nextPageToken = files.data.nextPageToken;
 
@@ -50,7 +50,7 @@ class GoogleFileService {
 
     getMongoGoogleList = async(user: UserInterface, query: googleQueryType) => {
         
-        const files = await googleDbUtils.getList(query, user);
+        const files = await googleDbFileUtils.getList(query, user);
 
         const nextPageToken = files.data.nextPageToken;
 
@@ -67,7 +67,7 @@ class GoogleFileService {
 
     getFileInfo = async(user: UserInterface, id: string) => {
 
-        const file = await googleDbUtils.getFileInfo(id, user);
+        const file = await googleDbFileUtils.getFileInfo(id, user);
 
         const userID = user._id;
         const convertedFile = convertDriveToMongo(file.data, userID);
@@ -77,7 +77,7 @@ class GoogleFileService {
 
     getGoogleMongoQuickList = async(user: UserInterface) => {
 
-        const files = await googleDbUtils.getQuickList(user);
+        const files = await googleDbFileUtils.getQuickList(user);
 
         const userID = user._id
         const convertedFiles = convertDriveListToMongoList(files.data.files, userID);
@@ -91,7 +91,7 @@ class GoogleFileService {
 
     getGoogleMongoSuggestedList = async(user: UserInterface, searchQuery: string) => {
         
-        const {files, folders} = await googleDbUtils.getSuggestedList(searchQuery, user);
+        const {files, folders} = await googleDbFileUtils.getSuggestedList(searchQuery, user);
         
         const userID = user._id;
 
@@ -108,17 +108,17 @@ class GoogleFileService {
 
     renameFile = async(user: UserInterface, fileID: string, title: string) => {
 
-        await googleDbUtils.renameFile(fileID, title, user);
+        await googleDbFileUtils.renameFile(fileID, title, user);
     }
 
     removeFile = async(user: UserInterface, fileID: string) => {
 
-        await googleDbUtils.removeFile(fileID, user);
+        await googleDbFileUtils.removeFile(fileID, user);
     }
 
     downloadFile = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
+        const {fileMetadata, drive} = await googleDbFileUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + '"');
@@ -147,7 +147,7 @@ class GoogleFileService {
 
     downloadDoc = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
+        const {fileMetadata, drive} = await googleDbFileUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + ".pdf" + '"');
@@ -172,7 +172,7 @@ class GoogleFileService {
 
     getThumbnail = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
+        const {fileMetadata, drive} = await googleDbFileUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + '"');
@@ -200,7 +200,7 @@ class GoogleFileService {
 
     getFullThumbnail = async(user: UserInterface, fileID: string, res: Response) => {
 
-        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
+        const {fileMetadata, drive} = await googleDbFileUtils.getDownloadFileMetadata(fileID, user);
 
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + fileMetadata.data.name! + '"');
@@ -232,7 +232,7 @@ class GoogleFileService {
         const currentUUID = uuid.v4();
         tempStorage[tempUUID] = currentUUID;
 
-        const {fileMetadata, drive} = await googleDbUtils.getDownloadFileMetadata(fileID, user);
+        const {fileMetadata, drive} = await googleDbFileUtils.getDownloadFileMetadata(fileID, user);
 
         const fileSize = +fileMetadata.data.size!
         
@@ -346,19 +346,19 @@ class GoogleFileService {
 
     moveFile = async(user: UserInterface, fileID: string, parentID: string) => {
 
-        await googleDbUtils.moveFile(fileID, parentID, user);
+        await googleDbFileUtils.moveFile(fileID, parentID, user);
     }
 
     makeFilePublic = async(user: UserInterface, fileID: string) => {
 
-        const publicURL = await googleDbUtils.makeFilePublic(fileID, user);
+        const publicURL = await googleDbFileUtils.makeFilePublic(fileID, user);
 
         return publicURL;
     }
 
     removePublicLink = async(user: UserInterface, fileID: string) => {
 
-        await googleDbUtils.removePublicLink(fileID, user);   
+        await googleDbFileUtils.removePublicLink(fileID, user);   
     }
 }
 

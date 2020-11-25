@@ -6,6 +6,10 @@ import createQueryGoogleFolder from "../../utils/createQueryGoogleFolder";
 import FolderService from "../FolderService";
 import sortGoogleMongoFolderList from "../../utils/sortGoogleMongoFolderList";
 import convertDriveFolderToMongoFolder from "../../utils/convertDriveFolderToMongoFolder";
+import createQueryGoogle, {googleQueryType} from "../../utils/createQueryGoogle";
+import GoogleDbFolderUtils from "../../db/utils/googleFolderUtils";
+
+const googleDbFolderUtils = new GoogleDbFolderUtils();
 
 const folderService = new FolderService();
 
@@ -17,62 +21,41 @@ class GoogleFolderService {
 
     }
 
-    getList = async(user: UserInterface, query: any) => {
+    getList = async(user: UserInterface, query: googleQueryType) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-
-        const limit: any = query.limit as any;
-
-        let parent = query.parent === "/" ? "root" : query.parent;
-
-        const {orderBy, queryBuilder} = createQueryGoogleFolder(query, parent);
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-        const files = await drive.files.list({pageSize: limit, fields: `files(${fields})`, q: queryBuilder, orderBy});
+        const folders = await googleDbFolderUtils.getList(query, user);
         
         const userID = user._id;
 
-        const convertedFiles = convertDriveFoldersToMongoFolders(files.data.files, userID);
+        const convertedFolders = convertDriveFoldersToMongoFolders(folders.data.files, userID);
 
-        return convertedFiles;
+        return convertedFolders;
     }
 
     getGoogleMongoList = async(user: UserInterface, query: any) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-
-        const limit: any = query.limit as any;
-
-        let parent = query.parent === "/" ? "root" : query.parent;
-
-        const {orderBy, queryBuilder} = createQueryGoogleFolder(query, parent)
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-        const files = await drive.files.list({pageSize: limit, fields: `files(${fields})`, q: queryBuilder, orderBy});
+        const googleFolderList = await googleDbFolderUtils.getList(query, user);
         
         const userID = user._id;
 
-        const convertedFiles = convertDriveFoldersToMongoFolders(files.data.files, userID);
+        const convertedFolders = convertDriveFoldersToMongoFolders(googleFolderList.data.files, userID);
 
         const folderList = await folderService.getFolderList(user, query);
 
-        const mongoGoogleList = sortGoogleMongoFolderList([...convertedFiles, ...folderList], query);
+        const mongoGoogleList = sortGoogleMongoFolderList([...convertedFolders, ...folderList], query);
 
         return mongoGoogleList;
     }
     
     getInfo = async(user: UserInterface, id: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-        const file = await drive.files.get({fileId: id, fields: fields});
+       const folder = await googleDbFolderUtils.getInfo(id, user);
 
         const userID = user._id;
         
-        const convertedFile = convertDriveFolderToMongoFolder(file.data, userID);
+        const convertedFolder = convertDriveFolderToMongoFolder(folder.data, userID);
 
-        return convertedFile;
+        return convertedFolder;
     }
 
     getSubFolderList = async(user: UserInterface, id: string) => {
@@ -173,40 +156,20 @@ class GoogleFolderService {
         return folderList;
     }
 
-    renameFolder = async(user: UserInterface, fileID: string, title: string) => {
+    renameFolder = async(user: UserInterface, folderID: string, title: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        await drive.files.update({fileId: fileID, requestBody: {name:title}})
+        await googleDbFolderUtils.renameFolder(folderID, title, user);
     }
 
-    removeFolder = async(user: UserInterface, fileID: string) => {
+    removeFolder = async(user: UserInterface, folderID: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        await drive.files.delete({fileId:fileID});
+        await googleDbFolderUtils.removeFolder(folderID, user);
     }
 
-    upload = async(user: UserInterface, name: string, parent: string, ) => {
+    upload = async(user: UserInterface, name: string, parent: string) => {
         
-        parent = parent === "/" ? "root" : parent;
-    
-        const oauth2Client = await getGoogleAuth(user);
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const folderMetadata = {
-            name,
-            mimeType: 'application/vnd.google-apps.folder',
-            parents: [parent]
-        }
-
-        const createdFolder = await drive.files.create({
-            requestBody: folderMetadata,
-            fields: fields
-        })
-
+        const createdFolder = await googleDbFolderUtils.uploadFolder(name, parent, user);
+        
         const userID = user._id;
 
         const convertedFolder = convertDriveFolderToMongoFolder(createdFolder.data, userID)
@@ -216,23 +179,8 @@ class GoogleFolderService {
 
     moveFolder = async(user: UserInterface, fileID: string, parentID: string) => {
 
-        const oauth2Client = await getGoogleAuth(user);
+        await googleDbFolderUtils.moveFolder(fileID, parentID, user);
 
-        const drive = google.drive({version:"v3", auth: oauth2Client});
-
-        const previousFile = await drive.files.get({
-            fileId: fileID,
-            fields: fields
-        })
-
-        const previousParent = previousFile.data.parents![0];
-
-        await drive.files.update({
-            fileId: fileID,
-            addParents: parentID,
-            removeParents: previousParent,
-            fields: fields
-        })
     }
 }
 
