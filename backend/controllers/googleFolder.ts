@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {UserInterface} from "../models/user";
 import GoogleFolderService from "../services/GoogleFolderService";
+import { googleQueryType } from "../utils/createQueryGoogle";
 
 const googleFolderService = new GoogleFolderService();
 
@@ -41,7 +42,7 @@ class GoogleFolderController {
         try {
 
             const user = req.user;
-            const query = req.query;
+            const query = req.query as unknown as googleQueryType;
 
             const folderList = await googleFolderService.getList(user, query);
 
@@ -152,10 +153,10 @@ class GoogleFolderController {
         try {
 
             const user = req.user;
-            const fileID = req.body.id;
+            const folderID = req.body.id;
             const title = req.body.title
 
-            await googleFolderService.renameFolder(user, fileID, title);
+            await googleFolderService.renameFolder(user, folderID, title);
 
             res.send();
 
@@ -175,9 +176,9 @@ class GoogleFolderController {
         try {
 
             const user = req.user;
-            const fileID = req.body.id;
+            const folderID = req.body.id;
 
-            await googleFolderService.removeFolder(user, fileID)
+            await googleFolderService.removeFolder(user, folderID)
 
             res.send();
 
@@ -219,10 +220,10 @@ class GoogleFolderController {
         try {
 
             const user = req.user;
-            const fileID = req.body.id;
+            const folderID = req.body.id;
             const parentID = req.body.parent;
 
-            await googleFolderService.moveFolder(user, fileID, parentID);
+            await googleFolderService.moveFolder(user, folderID, parentID);
 
             res.send();
 

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {UserInterface} from "../models/user";
 import GoogleFileService from "../services/GoogleFileService";
+import { googleQueryType } from "../utils/createQueryGoogle";
 
 const googleFileService = new GoogleFileService();
 
@@ -42,7 +43,7 @@ class GoogleFileController {
         try {
 
             const user = req.user;
-            const query = req.query;
+            const query = req.query as unknown as googleQueryType;
 
             const googleFiles = await googleFileService.getList(user, query);
 
@@ -64,7 +65,7 @@ class GoogleFileController {
         try {
 
             const user = req.user;
-            const query = req.query;
+            const query = req.query as unknown as googleQueryType;
 
             const mongoGoogleFiles = await googleFileService.getMongoGoogleList(user, query);
 
