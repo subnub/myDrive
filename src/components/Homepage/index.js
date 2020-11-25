@@ -162,7 +162,7 @@ class HomePageContainer extends React.Component {
 
     setSessionStorage = () => {
 
-        window.sessionStorage.setItem("uuid", uuid());
+        window.sessionStorage.setItem("uuid", uuid.v4());
     }
     
     componentWillUnmount = () => {

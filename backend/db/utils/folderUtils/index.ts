@@ -33,13 +33,13 @@ class DbUtil {
         //     query = {...query, "personalFolder": null}
         // }
 
-        // if (type) {
-        //     if (type === "mongo") {
-        //         query = {...query, "personalFolder": null}
-        //     } else if (type === "s3") {
-        //         query = {...query, "personalFolder": true}
-        //     }
-        // }
+        if (type) {
+            if (type === "mongo") {
+                query = {...query, "personalFolder": null}
+            } else if (type === "s3") {
+                query = {...query, "personalFolder": true}
+            }
+        }
 
         // if (storageType === "s3") {
         //     query = {...query, "personalFolder": true}

@@ -305,6 +305,8 @@ class S3Service implements ChunkInterface {
 
         const tempUUID = req.params.uuid;
 
+        console.log("temp uuid", tempUUID);
+
         await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
         s3ReadStream.destroy();
     }

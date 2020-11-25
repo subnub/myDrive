@@ -307,6 +307,7 @@ class FileSystemService implements ChunkInterface {
         const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
             start: fixedStart,
             end: fixedEnd,
+            highWaterMark: 128 * 1024 
         });
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
@@ -321,6 +322,10 @@ class FileSystemService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
+        readStream.on("close", () => {
+            console.log("read stream closed")
+        })
+
         // req.on("close", () => {
         //     // console.log("req closed");
         //     readStream.destroy();
@@ -328,7 +333,10 @@ class FileSystemService implements ChunkInterface {
 
         const tempUUID = req.params.uuid;
 
+        //console.log("temp uuid", tempUUID);
+
         await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
+        console.log("await stream finished")
         readStream.destroy();
     }
 

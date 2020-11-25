@@ -2,6 +2,7 @@ import {Router} from "express";
 import auth from "../middleware/auth";
 import PersonalFileController from "../controllers/personalFile";
 import authFullUser from "../middleware/authFullUser";
+import authStreamVideo from "../middleware/authStreamVideo";
 
 const personalFileController = new PersonalFileController();
 
@@ -15,7 +16,7 @@ router.get("/file-service-personal/thumbnail/:id", authFullUser, personalFileCon
 
 router.get("/file-service-personal/full-thumbnail/:id", authFullUser, personalFileController.getFullPersonalThumbnail);
 
-router.get("/file-service-personal/stream-video/:id/:tempToken/:uuid", authFullUser, personalFileController.streamPersonalVideo);
+router.get("/file-service-personal/stream-video/:id", authStreamVideo, personalFileController.streamPersonalVideo);
 
 router.get("/file-service-personal/public/download/:id/:tempToken", personalFileController.getPublicPersonalDownload);
 
