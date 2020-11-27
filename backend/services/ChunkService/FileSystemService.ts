@@ -27,6 +27,7 @@ import fixStartChunkLength from "./utils/fixStartChunkLength";
 import Folder, { FolderInterface } from "../../models/folder";
 import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
+const StreamSkip = require("stream-skip");
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -288,14 +289,25 @@ class FileSystemService implements ChunkInterface {
 
         let currentIV = IV;
 
-        let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+        //let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+
+        let fixedStart = 0;
+        let fixedEnd = currentFile.length;
+
+        if (start === 0 && end === 1) {
+            console.log("safari request");
+            fixedStart = 0;
+            fixedEnd = 15;    
+        } else {
+            fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+        }
 
         if (+start === 0) {
     
             fixedStart = 0;
         }
     
-        const fixedEnd = currentFile.length;
+        
     
         const differenceStart = start - fixedStart;
 
@@ -303,12 +315,45 @@ class FileSystemService implements ChunkInterface {
     
             currentIV = await getPrevIVFS(fixedStart - 16, currentFile.metadata.filePath!) as Buffer;
         }
-            
-        const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
-            start: fixedStart,
-            end: fixedEnd,
-            highWaterMark: 128 * 1024 
-        });
+        
+        console.log("start", start, fixedStart, end, fixedEnd, differenceStart);
+
+        let readStream;
+
+        if (start === 0 && end === 1) {
+
+            readStream = fs.createReadStream(currentFile.metadata.filePath!, {
+                start: fixedStart,
+                end: fixedEnd,
+            });
+
+        } else {
+
+            readStream = fs.createReadStream(currentFile.metadata.filePath!, {
+                start: fixedStart,
+                end: fixedEnd,
+                // highWaterMark: 1024
+            })
+        }
+
+        // } else if (fixedStart !== 0 && start !== 0) {
+
+        //     readStream = fs.createReadStream(currentFile.metadata.filePath!, {
+        //         start: fixedStart + differenceStart,
+        //         end: fixedEnd,
+        //     });
+
+        // } else {
+        //     readStream = fs.createReadStream(currentFile.metadata.filePath!, {
+        //         start: fixedStart,
+        //         end: fixedEnd,
+        //     });
+        // }
+
+        // const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
+        //     start: fixedStart,
+        //     end: fixedEnd,
+        // });
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
@@ -322,9 +367,9 @@ class FileSystemService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
-        readStream.on("close", () => {
-            console.log("read stream closed")
-        })
+        // readStream.on("close", () => {
+        //     console.log("read stream closed")
+        // })
 
         // req.on("close", () => {
         //     // console.log("req closed");
@@ -335,7 +380,17 @@ class FileSystemService implements ChunkInterface {
 
         //console.log("temp uuid", tempUUID);
 
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
+        // return;
+        // if (start === 0 && end === 1) {
+        //     await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
+        // } else {
+        //     await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
+        // }
+
+
+
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch, readStream);
+
         console.log("await stream finished")
         readStream.destroy();
     }

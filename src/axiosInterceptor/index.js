@@ -1,109 +1,58 @@
 import axios from 'axios';
-import createAuthRefreshInterceptor from "axios-auth-refresh";
 
-// const refreshAuthLogic = failedRequest => axios.post("/user-service/get-token").then(tokenRefreshResponse => {
-    
-//     return Promise.resolve();
-// }).catch(() => {
-//     return Promise.reject(failedRequest);
-// });
- 
-// // Instantiate the interceptor (you can chain it as it returns the axios instance)
-// createAuthRefreshInterceptor(axios, refreshAuthLogic);
+const sleep = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, 150);
+  })
+}
 
-// const client = axios.create();
-// axiosRetry(client, {
-//   retries: 0,
-// })
-
-//axiosRetry(axios, { retries: 3 });
-
-// const getNewToken = () => {
-//   return new Promise((resolve, reject) => {
-//       axios.post("/user-service/get-token").then((response) => {
-//         console.log("get token response");
-//         resolve();
-//       }).catch((e) => {
-//         resolve();
-//       })
-//   })
-// }
-
-// axios.interceptors.response.use(null, (error) => {
-//   if (error.config && error.response && error.response.status === 401 && !error._tried) {
-//     return getNewToken().then(() => {
-//       console.log("got new token");
-//       error._tried = true;
-//       return axios.request(error.config);
-//     })
-//   }
-
-//   return Promise.reject(error);
-// });
-
-const axiosNoRetry = axios.create();
 const axiosRetry = axios.create();
+const axiosNoRetry = axios.create();
 const axios3 = axios.create();
 
-const sleep = (sleepybio) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(sleepybio);
-    }, 100);
-  })
-}
-
-const sleep2 = (sleepybio) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(sleepybio);
-    }, 1500);
-  })
-}
-
 axiosRetry.interceptors.response.use((response) => {
-  console.log("axios interceptor successful")
+  //console.log("axios interceptor successful")
   return response;
 }, (error) => {
 
   return new Promise((resolve, reject) => {
 
-    console.log("request interceptor failed", error.config.url);
+    //console.log("request interceptor failed", error.config.url);
 
     let originalRequest = error.config;
 
+    if (error.response.status !== 401) {
+        //console.log("error does not equal 401");
+        return reject(error);
+    }
+
     if (originalRequest.ran === true) {
-      console.log("original request ran", error.config.url);
+      //console.log("original request ran", error.config.url);
       return reject(error);
     }
     
     if (error.config.url === "/user-service/get-token") {
-          console.log("error url equal to refresh token route")
+          //console.log("error url equal to refresh token route")
           return reject();
-        }
+    }
     
     axiosNoRetry.post("/user-service/get-token").then((cookieResponse) => {
       
-      console.log("sleeping")
       return sleep("sleepy boi");
 
     }).then((sleepres) => {
 
-      console.log(sleepres);
-
-      console.time("test");
       return axios3(originalRequest);
 
     }).then((response) => {
 
-      console.timeEnd("test");
-
-      console.log("axios 3");
       resolve(response)
 
     }).catch((e) => {
 
-      console.log("error");
+      //console.log("error");
       return reject(error);
 
     })
@@ -114,95 +63,61 @@ axiosRetry.interceptors.response.use((response) => {
 // axios.interceptors.response.use( (response) => {
 
 //     console.log("axios interceptor")
+//   // Return a successful response back to the calling service
 //     return response;
-
 // }, (error) => {
 
+//     const originalRequest = error.config;
+
+//     if (originalRequest.ran) {
+//       console.log("Request already ran");
+//       return Promise.reject(error);
+//     }
+
+//     console.log("axios interceptor failed first request")
+//   // Return any error which is not due to authentication back to the calling service
+//   if (error.response.status !== 401) {
+//       console.log("error does not equal 401");
 //     return new Promise((resolve, reject) => {
+//       reject(error);
+//     });
+//   }
 
-//       //axios.interceptors.response.eject(this);
+//   // Logout user if token refresh didn't work or user is disabled
 
-//       const originalRequest = error.config;
+//   console.log("error url", error.config.url);
 
-//       if (originalRequest.ran === 3) {
-//         console.log("Max retry count", error.config.url);
-//         return reject(error);
-//       } 
+//   if (error.config.url === "/user-service/get-token") {
+//       console.log("error url equal to refresh token route")
+//     return new Promise((resolve, reject) => {
+//       reject(error);
+//     });
+//   }
 
-//       console.log("axios retry count", originalRequest.ran, originalRequest.ran === 3);
+//   // Try request again with new token
 
-//       if (error.response.status !== 401) {
-//         console.log("error does not equal 401");
-//         return reject(error);
-//       }
+//   // return new Promise((resolve, reject) => {
+//   // })
 
-//       axiosNoRetry.post("/user-service/get-token").then((cookieResponse) => {
+//   return axios.post("/user-service/get-token").then((cookieResponse) => {
 
-//         console.log("cookie status", cookieResponse.status);
+//     console.log("cookie status", cookieResponse.status);
 
-//         if (cookieResponse.status === 201) {
-      
-//             originalRequest.ran = originalRequest.ran ? originalRequest.ran + 1 : 1;
-//             //return axios(originalRequest);
-//             //return resolve(axios(originalRequest));
+//     if (cookieResponse.status === 201) {
+//         console.log("cookie response", cookieResponse.data);
 
-//             return "value"
+//         originalRequest.ran = true;
+//         return axios(originalRequest);
 
-//         } else {
-//             return reject(error);
-//         }
-
-//       }).then(() => {
-
-//         axiosNoRetry(originalRequest).then((newRequest) => {
-//             console.log("new request", newRequest.data);
-//             resolve(newRequest)
-//         }).catch((newError) => {
-//           console.log("new request error", newError);
-//           return reject(newError)
-//         })
-
-//       })
-
-//     })
-
-//     // const originalRequest = error.config;
-
-//     // if (originalRequest.ran === 3) {
-//     //   console.log("Max retry count", error.config.url);
-//     //   return Promise.reject(error);
-//     // }
-
-//     // console.log("axios retry count", originalRequest.ran);
-
-//     // if (error.response.status !== 401) {
-//     //     console.log("error does not equal 401");
-//     //   return new Promise((resolve, reject) => {
-//     //     reject(error);
-//     //   });
-//     // }
-
-//     // if (error.config.url === "/user-service/get-token") {
-//     //     console.log("error url equal to refresh token route")
-//     //   return new Promise((resolve, reject) => {
-//     //     reject(error);
-//     //   });
-//     // }
-
-//     // return axiosNoRetry.post("/user-service/get-token").then((cookieResponse) => {
-
-//     //   console.log("cookie status", cookieResponse.status);
-
-//     //   if (cookieResponse.status === 201) {
-    
-//     //       originalRequest.ran = originalRequest.ran ? originalRequest.ran + 1 : 1;
-//     //       return axios(originalRequest);
-
-//     //   } else {
-//     //       return Promise.reject(error);
-//     //   }
-
-//     // })
+//     } else {
+//         return Promise.reject(error);
+//     }
+//   })
+//   // .catch((cookieError) => {
+//   //   console.log("cookieError", cookieError);
+//   //   return Promise.reject(error);
+//   // })
+  
 // });
 
 export default axiosRetry;
