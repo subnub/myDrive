@@ -277,6 +277,14 @@ class MongoService implements ChunkInterface {
 
     streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => {
         
+        // To get this all working correctly with encryption and across
+        // All browsers took many days, tears, and some of my sanity. 
+        // Shoutout to Tyzoid for helping me with the decryption
+        // And and helping me understand how the IVs work.
+        // Also fuck you Apple, Safari is turning into 
+        // Internet explorer at this point. 
+        // Thanks Tim Apple
+
         const userID = user._id;
         const currentFile = await dbUtilsFile.getFileInfo(fileID, userID);
 
@@ -305,18 +313,51 @@ class MongoService implements ChunkInterface {
 
         let currentIV = IV;
 
-        let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+        let fixedStart = 0;
+        let fixedEnd = currentFile.length;
+
+        if (start === 0 && end === 1) {
+            
+            // This is for Safari/iOS, Safari will request the first
+            // Byte before actually playing the video. Needs to be 
+            // 16 bytes.
+
+            fixedStart = 0;
+            fixedEnd = 15;    
+
+        } else {
+
+            // If you're a normal browser, or this isn't Safari's first request
+            // We need to make it so start is divisible by 16, since AES256
+            // Has a block size of 16 bytes.
+
+            fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+        }
 
         if (+start === 0) {
     
+            // This math will not work if the start is 0
+            // So if it is we just change fixed start back
+            // To 0.
+
             fixedStart = 0;
         }
 
-        const fixedEnd = currentFile.length;
+        // We also need to calculate the difference between the start and the 
+        // Fixed start position. Since there will be an offset if the original
+        // Request is not divisible by 16, it will not return the right part
+        // Of the file, you will see how we do this in the awaitStreamVideo
+        // code.
     
         const differenceStart = start - fixedStart;
 
+
         if (fixedStart !== 0 && start !== 0) {
+
+            // If this isn't the first request, the way AES256 works is when you try to
+            // Decrypt a certain part of the file that isn't the start, the IV will 
+            // Actually be the 16 bytes ahead of where you are trying to 
+            // Start the decryption.
     
             currentIV = await getPrevIVMongo(fixedStart - 16, fileID) as Buffer;
         }
@@ -341,15 +382,8 @@ class MongoService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
-        // req.on("close", () => {
-        //     // console.log("req closed");
-        //     readStream.destroy();
-        // })
-
-
-        const tempUUID = req.params.uuid;
-
-        //await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, allStreamsToErrorCatch, readStream);
+        
         readStream.destroy();
     }
 

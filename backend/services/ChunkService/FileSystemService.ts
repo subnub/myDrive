@@ -261,6 +261,14 @@ class FileSystemService implements ChunkInterface {
 
     streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => {
 
+        // To get this all working correctly with encryption and across
+        // All browsers took many days, tears, and some of my sanity. 
+        // Shoutout to Tyzoid for helping me with the decryption
+        // And and helping me understand how the IVs work.
+        // Also fuck you Apple, Safari is turning into 
+        // Internet explorer at this point. 
+        // Thanks Tim Apple
+
         const userID = user._id;
         const currentFile: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
 
@@ -289,71 +297,60 @@ class FileSystemService implements ChunkInterface {
 
         let currentIV = IV;
 
-        //let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
-
         let fixedStart = 0;
         let fixedEnd = currentFile.length;
 
         if (start === 0 && end === 1) {
-            console.log("safari request");
+            
+            // This is for Safari/iOS, Safari will request the first
+            // Byte before actually playing the video. Needs to be 
+            // 16 bytes.
+
             fixedStart = 0;
             fixedEnd = 15;    
+
         } else {
+
+            // If you're a normal browser, or this isn't Safari's first request
+            // We need to make it so start is divisible by 16, since AES256
+            // Has a block size of 16 bytes.
+
             fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
         }
 
         if (+start === 0) {
-    
+            
+            // This math will not work if the start is 0
+            // So if it is we just change fixed start back
+            // To 0.
+
             fixedStart = 0;
         }
     
         
-    
+        // We also need to calculate the difference between the start and the 
+        // Fixed start position. Since there will be an offset if the original
+        // Request is not divisible by 16, it will not return the right part
+        // Of the file, you will see how we do this in the awaitStreamVideo
+        // code.
+
         const differenceStart = start - fixedStart;
 
+
         if (fixedStart !== 0 && start !== 0) {
+
+            // If this isn't the first request, the way AES256 works is when you try to
+            // Decrypt a certain part of the file that isn't the start, the IV will 
+            // Actually be the 16 bytes ahead of where you are trying to 
+            // Start the decryption.
     
             currentIV = await getPrevIVFS(fixedStart - 16, currentFile.metadata.filePath!) as Buffer;
         }
-        
-        console.log("start", start, fixedStart, end, fixedEnd, differenceStart);
 
-        let readStream;
-
-        if (start === 0 && end === 1) {
-
-            readStream = fs.createReadStream(currentFile.metadata.filePath!, {
-                start: fixedStart,
-                end: fixedEnd,
-            });
-
-        } else {
-
-            readStream = fs.createReadStream(currentFile.metadata.filePath!, {
-                start: fixedStart,
-                end: fixedEnd,
-                // highWaterMark: 1024
-            })
-        }
-
-        // } else if (fixedStart !== 0 && start !== 0) {
-
-        //     readStream = fs.createReadStream(currentFile.metadata.filePath!, {
-        //         start: fixedStart + differenceStart,
-        //         end: fixedEnd,
-        //     });
-
-        // } else {
-        //     readStream = fs.createReadStream(currentFile.metadata.filePath!, {
-        //         start: fixedStart,
-        //         end: fixedEnd,
-        //     });
-        // }
-
-        // const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
-        //     start: fixedStart,
-        //     end: fixedEnd,
-        // });
+        const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
+            start: fixedStart,
+            end: fixedEnd,
+        });
 
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
@@ -367,31 +364,8 @@ class FileSystemService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
-        // readStream.on("close", () => {
-        //     console.log("read stream closed")
-        // })
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, allStreamsToErrorCatch, readStream);
 
-        // req.on("close", () => {
-        //     // console.log("req closed");
-        //     readStream.destroy();
-        // })
-
-        const tempUUID = req.params.uuid;
-
-        //console.log("temp uuid", tempUUID);
-
-        // return;
-        // if (start === 0 && end === 1) {
-        //     await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
-        // } else {
-        //     await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
-        // }
-
-
-
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch, readStream);
-
-        console.log("await stream finished")
         readStream.destroy();
     }
 
