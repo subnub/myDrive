@@ -3,10 +3,11 @@ import FileService from "../services/FileService";
 import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
-import {UserInterface} from "../models/user";
+import User, {UserInterface} from "../models/user";
 import tempStorage from "../tempStorage/tempStorage";
 import sendShareEmail from "../utils/sendShareEmail";
-import { createStreamVideoCookie } from "../cookies/createCookies";
+import { createStreamVideoCookie, removeStreamVideoCookie } from "../cookies/createCookies";
+import { ObjectID } from "mongodb";
 
 const fileService = new FileService()
 
@@ -24,7 +25,8 @@ interface RequestTypeRefresh extends Request {
 
 interface RequestTypeFullUser extends Request {
     user?: UserInterface,
-    encryptedToken?: string
+    encryptedToken?: string,
+    accessTokenStreamVideo?: string
 }
 
 interface RequestType extends Request {
@@ -354,6 +356,30 @@ class FileController {
             res.status(code).send();
         }
 
+    }
+
+    removeStreamVideoAccessToken = async(req: RequestTypeFullUser, res: Response) => {
+
+        if (!req.user) return;
+
+        try {
+
+            const userID = req.user._id;
+
+            const accessTokenStreamVideo = req.accessTokenStreamVideo!;
+
+            await User.updateOne({_id: userID}, {$pull: {tempTokens: {token: accessTokenStreamVideo}}});
+
+            removeStreamVideoCookie(res);
+
+            res.send();
+
+        } catch (e) {
+
+            console.log("\Remove Video Token File Router Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
     }
 
     // getDownloadTokenVideo = async(req: RequestTypeFullUser, res: Response) => {

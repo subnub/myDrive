@@ -79,14 +79,11 @@ class MobileContextMenuContainer extends React.Component {
 
         this.props.dispatch(setLastSelected(0));
 
-        axios.get(currentURL +'/file-service/download/get-token')
-        .then((response) => {
-
-            const tempToken = response.data.tempToken;
+        axios.post("/user-service/get-token").then((response) => {
 
             const finalUrl = 
-            isGoogle ? !isGoogleDoc ? currentURL + `/file-service-google/download/${fileID}/${tempToken}` : currentURL + `/file-service-google-doc/download/${fileID}/${tempToken}`  
-            : !isPersonal ? currentURL + `/file-service/download/${fileID}/${tempToken}` : currentURL + `/file-service-personal/download/${fileID}/${tempToken}`
+            isGoogle ? !isGoogleDoc ? currentURL + `/file-service-google/download/${fileID}` : currentURL + `/file-service-google-doc/download/${fileID}`  
+            : !isPersonal ? currentURL + `/file-service/download/${fileID}` : currentURL + `/file-service-personal/download/${fileID}`
 
             const link = document.createElement('a');
             document.body.appendChild(link);
@@ -95,9 +92,29 @@ class MobileContextMenuContainer extends React.Component {
             link.setAttribute("download", true);
             link.click();
 
-        }).catch((err) => {
-            console.log(err)
+        }).catch((e) => {
+            console.log("Download file get refresh token error", e);
         })
+
+        // axios.get(currentURL +'/file-service/download/get-token')
+        // .then((response) => {
+
+        //     const tempToken = response.data.tempToken;
+
+        //     const finalUrl = 
+        //     isGoogle ? !isGoogleDoc ? currentURL + `/file-service-google/download/${fileID}/${tempToken}` : currentURL + `/file-service-google-doc/download/${fileID}/${tempToken}`  
+        //     : !isPersonal ? currentURL + `/file-service/download/${fileID}/${tempToken}` : currentURL + `/file-service-personal/download/${fileID}/${tempToken}`
+
+        //     const link = document.createElement('a');
+        //     document.body.appendChild(link);
+        //     link.href = finalUrl;
+        //     link.setAttribute('type', 'hidden');
+        //     link.setAttribute("download", true);
+        //     link.click();
+
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
     }
 
     moveOnClick = () => {

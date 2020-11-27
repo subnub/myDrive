@@ -8,6 +8,7 @@ interface RequestType extends Request {
     user?: UserInterface,
     token?: string,
     encryptedToken?: string,
+    accessTokenStreamVideo?: string
 }
 
 // type jwtType = {
@@ -84,6 +85,7 @@ const authStreamVideo = async(req: RequestType, res: Response, next: NextFunctio
         if (!tokenFound) throw new Error("Refresh Token Not Found");
 
         req.user = user;
+        req.accessTokenStreamVideo = encryptedToken;
 
         next();
 

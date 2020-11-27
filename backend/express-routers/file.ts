@@ -57,6 +57,8 @@ router.get("/file-service/download/access-token-stream-video", authFullUser, fil
 
 router.get("/file-service/stream-video/:id", authStreamVideo, fileController.streamVideo);
 
+router.delete("/file-service/remove-stream-video-token", authStreamVideo, fileController.removeStreamVideoAccessToken);
+
 //router.get("/file-service/stream-video/:id/:tempToken/:uuid", auth, fileController.streamVideo);
 
 //router.get("/file-service/stream-video/:id", auth, fileController.streamVideo);

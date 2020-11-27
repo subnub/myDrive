@@ -47,3 +47,13 @@ export const createStreamVideoCookie = (res: Response, streamVideoAccessToken: s
         secure: process.env.NODE_ENV === "production"
     })
 }
+
+export const removeStreamVideoCookie = (res: Response) => {
+
+    res.cookie("video-access-token", {}, {
+        httpOnly: true,
+        maxAge: 0,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV === "production"
+    })
+}
