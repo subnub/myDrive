@@ -7,7 +7,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
     return new Promise((resolve, reject) => {
 
         req.on("close", () => {
-            readStream.close();
+            // readStream.close();
             decipher.destroy();
             resolve();
         })
@@ -17,6 +17,19 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
                 stream.destroy();
             })
             resolve();
+        })
+
+        streamsToErrorCatch.forEach((currentStream) => {
+
+            currentStream.on("error", (e: Error) => {
+
+                reject({
+                    message: "Await Video Stream Input Error",
+                    code: 500,
+                    error: e
+                })
+
+            })
         })
 
         readStream.on("close", () => {

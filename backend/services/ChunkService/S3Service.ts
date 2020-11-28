@@ -298,6 +298,16 @@ class S3Service implements ChunkInterface {
             // Has a block size of 16 bytes.
 
             fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+
+            // I goofed up and forgot to add the encrypted file size to S3 data, 
+            // It just used the normal file size :(
+            // So you'll notice only on the S3 route do i need to fix the end length 
+            // To, this is because the other 2 routes use the encrypted file size
+            // Which is always a multiple of 16. I cannot change this now
+            // Since previous versions will still have the issue, but 
+            // This is a simple fix luckily. 
+
+            fixedEnd = fixedEnd % 16 === 0 ? fixedEnd : fixEndChunkLength(fixedEnd)
         }
 
         if (+start === 0) {
@@ -337,6 +347,8 @@ class S3Service implements ChunkInterface {
         const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
 
         const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, currentIV);
+
+        decipher.setAutoPadding(false);
 
         res.writeHead(206, head);
 
