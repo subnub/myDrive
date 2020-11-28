@@ -217,7 +217,7 @@ export interface UserInterface extends Document {
     }
 }
 
-const maxAgeAccess =  1000 * 5 * 10; //60 * 1000 * 20 + (1000 * 60);
+const maxAgeAccess =  60 * 1000 * 20 + (1000 * 60);
 const maxAgeRefresh = 60 * 1000 * 60 * 24 * 30 + (1000 * 60);
 
 const maxAgeAccessStreamVideo = 60 * 1000 * 60 * 24;

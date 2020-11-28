@@ -25,7 +25,7 @@ const removeOldTokens = async(userID: string, ipAddress: string | undefined, old
 
     try {
 
-        const minusTime = oldTime - (1000 * 5 * 10);
+        const minusTime = oldTime - (1000 * 60 * 60);
 
         ipAddress = ipAddress ? ipAddress : "";
 

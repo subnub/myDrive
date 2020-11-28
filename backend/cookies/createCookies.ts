@@ -1,6 +1,6 @@
 import {Response } from "express";
 
-const maxAgeAccess =  1000 * 5;//60 * 1000 * 20;
+const maxAgeAccess =  60 * 1000 * 20;
 const maxAgeRefresh = 60 * 1000 * 60 * 24 * 30;
 const maxAgeStreamVideo = 60 * 1000 * 60 * 24;
 
