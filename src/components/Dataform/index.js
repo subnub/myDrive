@@ -44,7 +44,7 @@ class DataFormContainer extends React.Component {
             
             const date = new Date();
 
-            if (this.props.loadMoreItems && this.timeout < date.getTime() && !this.props.loading) {
+            if (this.props.loadMoreItems && this.timeout < date.getTime() && !this.props.loadingMoreItems) {
                 this.timeout = date.getTime() + 500;
                 this.loadMoreItems();
             } else {
@@ -145,7 +145,8 @@ const mapStateToProp = (state) => ({
     search: state.filter.search,
     isGoogle: state.filter.isGoogle,
     loadMoreItems: state.main.loadMoreItems,
-    loading: state.main.loading
+    loading: state.main.loading,
+    loadingMoreItems: state.main.loadingMoreItems
 })
 
 export default connect(mapStateToProp)(DataFormContainer);

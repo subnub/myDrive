@@ -1,5 +1,5 @@
 import {addUpload, editUpload, cancelUpload} from "./uploads";
-import {loadMoreItems, setLoading} from "./main"
+import {loadMoreItems, setLoading, setLoadingMoreItems} from "./main"
 import {resetSelected} from "./selectedItem";
 import {addQuickFile, startSetQuickFiles, setQuickFiles} from "./quickFiles";
 import {startSetStorage} from "./storage"
@@ -296,6 +296,8 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
 
         //dispatch(setLoading(true))
 
+        dispatch(setLoadingMoreItems(true));
+
         let limit = window.localStorage.getItem("list-size") || 50
         limit = parseInt(limit)
 
@@ -314,6 +316,7 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
                     dispatch(loadMoreItems(true))
                 }
              
+                dispatch(setLoadingMoreItems(false));
                 //dispatch(setLoading(false))
 
             }).catch((err) => {
@@ -336,7 +339,8 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
                     dispatch(loadMoreItems(true))
                 }
                 
-                dispatch(setLoading(false))
+                // dispatch(setLoading(false))
+               dispatch(setLoadingMoreItems(false));
     
             }).catch((err) => {
                 console.log(err)

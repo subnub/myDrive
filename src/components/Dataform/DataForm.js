@@ -4,6 +4,7 @@ import React from "react";
 import QuickAccess from "../QuickAccess";
 import ParentBar from "../ParentBar";
 import Spinner from "../Spinner";
+import SpinnerImage from "../SpinnerImage";
 
 const DataForm = (props) => (
   <div className={props.parent === "/" ? "file__control--panel" : "file__control--panel folder__view"}>
@@ -122,8 +123,12 @@ const DataForm = (props) => (
             />
           ))}
         </table> 
-}
+        }
 
+        <div className="dataform-loadmore-files" style={props.loadingMoreItems ? {} : {display: "none"}}>
+          <SpinnerImage />
+        </div>
+  
         {/* {props.loading ? 
         <div className="dataform__spinner__wrapper">
           <Spinner />

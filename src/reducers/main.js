@@ -14,6 +14,7 @@ const defaultState = {
     uploadOverlayOpen: false,
     leftSectionMode: "",
     rightSectionMode: "",
+    loadingMoreItems: false
     // resetSettingsMain: "",
 }
 
@@ -31,6 +32,14 @@ export default (state = defaultState, action) => {
         //     }
 
         // }
+
+        case "LOADING_MORE_ITEMS": {
+            
+            return {
+                ...state,
+                loadingMoreItems: action.loading
+            }
+        }
 
         case "SET_LEFT_SECTION_MODE": {
 

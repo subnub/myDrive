@@ -71,6 +71,11 @@ export const setRightSectionMode = (mode) => ({
     mode
 })
 
+export const setLoadingMoreItems = (loading) => ({
+    type: "LOADING_MORE_ITEMS",
+    loading
+})
+
 // export const resetSettingsMain = (id) => ({
 //     type: "RESET_SETTINGS_MAIN",
 //     id
