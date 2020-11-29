@@ -81,6 +81,18 @@ class FileItemContainer extends React.Component {
         })
     }
 
+    thumbnailOnError = () => {
+
+        console.log("thumbnail on error");
+
+        this.setState(() => ({
+            ...this.state,
+            imageSrc: "/images/file-svg.svg",
+            imageClassname: "noSelect file__item-no-thumbnail",
+        }))
+
+    }
+
     componentDidMount = () => {
 
         const hasThumbnail = this.props.metadata.hasThumbnail;
@@ -531,6 +543,7 @@ class FileItemContainer extends React.Component {
                 startFileClick={this.startFileClick}
                 clickStopPropagation={this.clickStopPropagation}
                 removeDeleteMode={this.removeDeleteMode}
+                thumbnailOnError={this.thumbnailOnError}
                 state={this.state}
                 {...this.props}/>
     }

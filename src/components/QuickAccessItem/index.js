@@ -111,6 +111,18 @@ class QuickAccessItemContainer extends React.Component {
         })
     }
 
+    thumbnailOnError = () => {
+
+        console.log("thumbnail on error");
+
+        this.setState(() => ({
+            ...this.state,
+            image: "/images/file-svg.svg",
+            imageClassname: "noSelect file__item-no-thumbnail",
+        }))
+
+    }
+
     onTouchStart = () => {
         const date = new Date();
         this.lastTouch = date.getTime();
@@ -253,6 +265,7 @@ class QuickAccessItemContainer extends React.Component {
                 closeEditNameMode={this.closeEditNameMode}
                 changeDeleteMode={this.changeDeleteMode}
                 startMovingFile={this.startMovingFile}
+                thumbnailOnError={this.thumbnailOnError}
                 state={this.state} 
                 {...this.props}/>
     }

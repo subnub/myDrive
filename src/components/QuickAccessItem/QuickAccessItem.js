@@ -15,7 +15,7 @@ const QuickAccessItem = (props) => (
                     <NewContextMenu gridMode={true} quickItemMode={true} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/>
                 </div>
 	    <div class="access__image">
-			<img className={props.state.imageClassname} src={props.state.image} alt="access"/>
+			<img className={props.state.imageClassname} src={props.state.image} onError={props.thumbnailOnError}/>
         </div>
         <div class="access__info--file">
 			<p className="noSelect" style={"quick-"+props._id !== props.selected ? {} : {color:"white"}}>{capitalize(props.filename)}</p>
