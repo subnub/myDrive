@@ -24,7 +24,7 @@ class QuickAccessItemContainer extends React.Component {
         this.state = {
             contextMenuPos: {},
             image: "/images/file-svg.svg",
-            imageClassname: "quickaccess__item__image",
+            imageClassname: "noSelect file__item-no-thumbnail",
             contextSelected: false,
         }
     }
@@ -70,7 +70,7 @@ class QuickAccessItemContainer extends React.Component {
     getThumbnail = async() => {
 
         const thumbnailID = this.props.metadata.thumbnailID;
-        const imageClassname = "quickaccess__item__image quickaccess__item__image--no-opacity"
+        const imageClassname = "noSelect"
 
         // GOOGLE DRIVE IMAGE
         if (this.props.metadata.drive) {
@@ -88,7 +88,7 @@ class QuickAccessItemContainer extends React.Component {
         await this.setState(() => ({
             ...this.state,
             image: "/images/file-svg.svg",
-            imageClassname: "quickaccess__item__image"
+            imageClassname: "noSelect file__item-no-thumbnail"
         }))
 
         const isPersonal = this.props.metadata.personalFile;

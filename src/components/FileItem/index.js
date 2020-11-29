@@ -25,7 +25,7 @@ class FileItemContainer extends React.Component {
         this.state = {
             contextMenuPos: {},
             imageSrc: "/images/file-svg.svg",
-            imageClassname: this.props.listView ? "file__image__listview" : "file__image",
+            imageClassname: "noSelect file__item-no-thumbnail",
             contextSelected: false,
             editNameMode: false,
             editName: this.props.filename,
@@ -40,7 +40,8 @@ class FileItemContainer extends React.Component {
         this.imageLoaded = true;
 
         const thumbnailID = this.props.metadata.thumbnailID;
-        const imageClassname = this.props.listView ? "file__image__listview--no-opacity" : "file__image--no-opacity"
+        // const imageClassname = this.props.listView ? "file__image__listview--no-opacity" : "file__image--no-opacity"
+        const imageClassname = "noSelect"
 
         if (this.props.metadata.drive) {
           
@@ -58,7 +59,7 @@ class FileItemContainer extends React.Component {
         await this.setState(() => ({
             ...this.state,
             imageSrc: "/images/file-svg.svg",
-            imageClassname: this.props.listView ? "file__image__listview" : "file__image"
+            imageClassname: "noSelect file__item-no-thumbnail"
         }))
 
         const url = !this.props.metadata.personalFile ? `/file-service/thumbnail/${thumbnailID}` : `/file-service-personal/thumbnail/${thumbnailID}`;

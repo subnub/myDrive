@@ -101,7 +101,7 @@ const FileItem = (props) => {
                     <NewContextMenu gridMode={true} quickItemMode={true} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/>
                 </div>
                 <div class="access__image noSelect">
-                <img className="noSelect" src={props.state.imageSrc} alt="access"/>
+                <img class={props.state.imageClassname} src={props.state.imageSrc} alt="access"/>
                 </div>
                 <div class="access__info--file">
                 <p className="noSelect" style={props._id !== props.selected ? {} : {color:"white"}}>{capitalize(props.filename)}</p>
