@@ -73,7 +73,9 @@ class MainSectionContainer extends React.Component {
 
     scrollEvent = (e) => {
 
-        if (!mobileCheck()) return;
+        //if (!mobileCheck()) return;
+
+        return;
 
         const scrollY = window.pageYOffset;
         const windowY = document.documentElement.scrollHeight;
@@ -84,7 +86,9 @@ class MainSectionContainer extends React.Component {
         if (this.props.loading) return;
 
         if ((windowY / 2) < scrollY && this.props.allowLoadMoreItems) {
-           
+
+            console.log("load more main")
+            
             if (this.props.files.length >= limit) {
                 const parent = this.props.parent;
                 const search = this.props.filter.search;
@@ -107,6 +111,8 @@ class MainSectionContainer extends React.Component {
     }
 
     componentDidUpdate = () => {
+
+        console.log("main updated");
 
         // console.log("update ID main", getUpdateSettingsID());
 
@@ -191,6 +197,10 @@ class MainSectionContainer extends React.Component {
     }
 
     loadMoreItems = () => {
+    
+        return;
+
+        console.log("load more main")
 
         if (mobileCheck()) return;
 

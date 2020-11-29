@@ -55,6 +55,10 @@ class DataFormContainer extends React.Component {
 
     loadMoreItems = () => {
 
+        // return;
+
+        console.log("load more items dataform");
+
         let limit = window.localStorage.getItem("list-size") || 50
         limit = parseInt(limit)
 

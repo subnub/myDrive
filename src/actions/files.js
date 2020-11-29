@@ -296,7 +296,7 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
 
     return (dispatch) => {
 
-        dispatch(setLoading(true))
+        //dispatch(setLoading(true))
 
         let limit = window.localStorage.getItem("list-size") || 50
         limit = parseInt(limit)
@@ -316,7 +316,7 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
                     dispatch(loadMoreItems(true))
                 }
              
-                dispatch(setLoading(false))
+                //dispatch(setLoading(false))
 
             }).catch((err) => {
                 console.log(err)
@@ -326,6 +326,8 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
 
             axios.get(currentURL +`/file-service/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}`).then((results) => {
             
+                //console.log("load more files result", results.data.length)
+
                 dispatch(loadMoreFiles(results.data))
     
                 if (results.data.length !== limit) {
