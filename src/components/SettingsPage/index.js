@@ -370,7 +370,7 @@ class SettingsPageContainer extends React.Component {
 
       const clientID = this.state.googleID;
       const clientKey = this.state.googleSecret;
-      const clientRedirect = env.url + "/add-google-account"
+      const clientRedirect = "/add-google-account"
 
       const data = {
           clientID, 
@@ -644,7 +644,7 @@ class SettingsPageContainer extends React.Component {
 
       const tempToken = response.data.tempToken;
 
-      const finalUrl = env.url + `/user-service/download-personal-file-list/${tempToken}`;
+      const finalUrl = `/user-service/download-personal-file-list/${tempToken}`;
 
       const link = document.createElement('a');
       document.body.appendChild(link);

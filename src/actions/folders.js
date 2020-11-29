@@ -6,8 +6,6 @@ import { startResetCache } from "./files";
 import uuid from "uuid";
 import axios from "../axiosInterceptor";
 
-const currentURL = env.url;
-
 export const addFolder = (folder) => ({
     type: "ADD_FOLDER",
     folder
@@ -39,7 +37,7 @@ export const startAddFolder = (name, owner, parent, parentList, isGoogle=false) 
         if (storageType === "s3") body = {...body, personalFolder: true}
 
         // TEMP FIX THIS
-        const url = storageType === "drive" ? currentURL+"/folder-service-google/upload" : currentURL+"/folder-service/upload";
+        const url = storageType === "drive" ? "/folder-service-google/upload" : "/folder-service/upload";
 
         axios.post(url, body).then((response) => {
 
@@ -70,7 +68,7 @@ export const startSetFolders = (parent = "/", sortby="DEFAULT", search="", isGoo
 
         if (isGoogle) {
             
-            axios.get(currentURL +`/folder-service-google/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((results) => {
+            axios.get(`/folder-service-google/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((results) => {
                 const googleList = results.data;
                 dispatch(setFolders(googleList)) 
             }).catch((err) => {
@@ -79,7 +77,7 @@ export const startSetFolders = (parent = "/", sortby="DEFAULT", search="", isGoo
         } else if (env.googleDriveEnabled && parent === "/") {
 
              // Temp Google Drive API
-             axios.get(currentURL +`/folder-service-google-mongo/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((results) => {
+             axios.get(`/folder-service-google-mongo/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((results) => {
                 const googleMongoList = results.data;
                 dispatch(setFolders(googleMongoList))
               
@@ -89,7 +87,7 @@ export const startSetFolders = (parent = "/", sortby="DEFAULT", search="", isGoo
 
         } else {
 
-            axios.get(currentURL+`/folder-service/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((response) => {
+            axios.get(`/folder-service/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`).then((response) => {
            
                 const folders = response.data;
                 dispatch(setFolders(folders)) //DISABLED TEMP
@@ -112,7 +110,7 @@ export const startRemoveFolder = (id, parentList, isGoogle=false, parent, person
 
         const data = {id, parentList};
 
-        const url = isGoogle ? currentURL+`/folder-service-google/remove` : personalFolder ? `/folder-service-personal/remove` : currentURL+`/folder-service/remove`;
+        const url = isGoogle ? `/folder-service-google/remove` : personalFolder ? `/folder-service-personal/remove` : `/folder-service/remove`;
 
         console.log("personal folder", personalFolder);
 
@@ -145,7 +143,7 @@ export const startRenameFolder = (id, title, isGoogle=false, parent) => {
 
         const data = {id, title}
 
-        const url = isGoogle ? currentURL+"/folder-service-google/rename" : currentURL+"/folder-service/rename";
+        const url = isGoogle ? "/folder-service-google/rename" : "/folder-service/rename";
  
         axios.patch(url, data).then((response) => {
 

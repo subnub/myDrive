@@ -115,13 +115,14 @@ class FolderService {
         const type = query.type;
         const storageType = query.storageType || undefined;
         const folderSearch = query.folder_search || undefined;
+        const itemType = query.itemType || undefined;
         sortBy = sortBySwitch(sortBy);
 
         const s3Enabled = user.s3Enabled ? true : false;
 
         if (searchQuery.length === 0) {
 
-            const folderList = await utilsFolder.getFolderListByParent(userID, parent, sortBy, s3Enabled, type, storageType);
+            const folderList = await utilsFolder.getFolderListByParent(userID, parent, sortBy, s3Enabled, type, storageType, itemType);
 
             if (!folderList) throw new NotFoundError("Folder List Not Found Error");
 
@@ -130,7 +131,7 @@ class FolderService {
         } else {
 
             searchQuery = new RegExp(searchQuery, 'i')
-            const folderList = await utilsFolder.getFolderListBySearch(userID, searchQuery, sortBy, type, parent, storageType, folderSearch);
+            const folderList = await utilsFolder.getFolderListBySearch(userID, searchQuery, sortBy, type, parent, storageType, folderSearch, itemType);
 
             if (!folderList) throw new NotFoundError("Folder List Not Found Error");
 

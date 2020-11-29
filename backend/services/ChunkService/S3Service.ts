@@ -201,6 +201,8 @@ class S3Service implements ChunkInterface {
 
         const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
 
+        console.log("download personal file", currentFile.filename);
+
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + currentFile.filename + '"');
         res.set('Content-Length', currentFile.metadata.size.toString()); 

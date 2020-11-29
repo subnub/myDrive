@@ -2,8 +2,6 @@ import axios from "../axiosInterceptor";
 import env from "../enviroment/envFrontEnd";
 import mobilecheck from "../utils/mobileCheck";
 
-const currentURL = env.url;
-
 export const setQuickFiles = (files) => ({
     type: "SET_QUICK_FILES",
     files
@@ -15,7 +13,7 @@ export const startSetQuickFiles = () => {
 
         if (!env.googleDriveEnabled) {
 
-            axios.get(currentURL +`/file-service/quick-list`).then((results) => {
+            axios.get(`/file-service/quick-list`).then((results) => {
         
                 //dispatch(setQuickFiles(results.data)) TEMP DISABLED FOR GOOGLE API
     
@@ -37,7 +35,7 @@ export const startSetQuickFiles = () => {
         } else {
 
              // Temp Google Drive API
-             axios.get(currentURL +`/file-service-google-mongo/quick-list`).then((results) => {
+             axios.get(`/file-service-google-mongo/quick-list`).then((results) => {
 
                 let combinedData = results.data;
 

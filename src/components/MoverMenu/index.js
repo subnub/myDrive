@@ -47,7 +47,7 @@ class MoverMenuContainer extends React.Component {
 
         if (this.props.isFile) {
 
-            const url = this.props.isGoogle ? currentURL+`/file-service-google/move` : currentURL+`/file-service/move`;
+            const url = this.props.isGoogle ? `/file-service-google/move` : `/file-service/move`;
 
             axios.patch(url, data).then((response) => {
         
@@ -60,7 +60,7 @@ class MoverMenuContainer extends React.Component {
         
         } else {
 
-            const url = this.props.isGoogle ? currentURL+`/folder-service-google/move` : currentURL+`/folder-service/move`;
+            const url = this.props.isGoogle ? `/folder-service-google/move` : `/folder-service/move`;
 
             axios.patch(url, data).then((response) => {
            
@@ -101,9 +101,9 @@ class MoverMenuContainer extends React.Component {
         const id = this.props.isGoogle ? "root" : "/"
 
         const url = this.props.isGoogle ? 
-        currentURL+`/folder-service-google/list?search=${searchValue}&sortBy=DEFAULT}` 
-        : this.props.isPersonal ? currentURL+`/folder-service/list?parent=${id}&search=${searchValue}&storageType=s3&sortBy=DEFAULT` 
-        : currentURL+`/folder-service/list?parent=${id}&search=${searchValue}&storageType=stripe&sortBy=DEFAULT`;
+        `/folder-service-google/list?search=${searchValue}&sortBy=DEFAULT}` 
+        : this.props.isPersonal ? `/folder-service/list?parent=${id}&search=${searchValue}&itemType=personal&sortBy=DEFAULT` 
+        : `/folder-service/list?parent=${id}&search=${searchValue}&itemType=nonpersonal&sortBy=DEFAULT`;
 
         axios.get(url).then((response) => {
            
@@ -136,7 +136,7 @@ class MoverMenuContainer extends React.Component {
 
         const id = this.props.isGoogle ? "root" : "/"; 
 
-        const url = this.props.isGoogle ? currentURL+`/folder-service-google/list?parent=${id}` : this.props.isPersonal ? currentURL+`/folder-service/list?parent=${id}&storageType=s3` : currentURL+`/folder-service/list?parent=${id}&storageType=stripe`;
+        const url = this.props.isGoogle ? `/folder-service-google/list?parent=${id}` : this.props.isPersonal ? `/folder-service/list?parent=${id}&itemType=personal` : `/folder-service/list?parent=${id}&itemType=nonpersonal`;
 
         axios.get(url).then((response) => {
                
@@ -179,7 +179,7 @@ class MoverMenuContainer extends React.Component {
             historyList.pop();
         }
 
-        const url = this.props.isGoogle ? currentURL+`/folder-service-google/list?parent=${currentID}` : this.props.isPersonal ? currentURL+`/folder-service/list?parent=${currentID}&storageType=s3` : currentURL+`/folder-service/list?parent=${currentID}&storageType=stripe`;
+        const url = this.props.isGoogle ? `/folder-service-google/list?parent=${currentID}` : this.props.isPersonal ? `/folder-service/list?parent=${currentID}&itemType=personal` : `/folder-service/list?parent=${currentID}&itemType=nonpersonal`;
 
         axios.get(url).then((response) => {
            
@@ -212,7 +212,7 @@ class MoverMenuContainer extends React.Component {
 
         if (lastTimeDifference < 1500 && id === this.state.selected) {
     
-            const url = this.props.isGoogle ? currentURL+`/folder-service-google/list?parent=${id}` : this.props.isPersonal ? currentURL+`/folder-service/list?parent=${id}&storageType=s3` : currentURL+`/folder-service/list?parent=${id}&storageType=stripe`;
+            const url = this.props.isGoogle ? `/folder-service-google/list?parent=${id}` : this.props.isPersonal ? `/folder-service/list?parent=${id}&itemType=personal` : `/folder-service/list?parent=${id}&itemType=nonpersonal`;
 
             axios.get(url).then((response) => {
                
@@ -250,7 +250,7 @@ class MoverMenuContainer extends React.Component {
 
         const id = this.props.isGoogle ? "root" : "/"
 
-        const url = this.props.isGoogle ? currentURL+`/folder-service-google/list?parent=${id}` : this.props.isPersonal ? currentURL+`/folder-service/list?parent=${id}&storageType=s3` : currentURL+`/folder-service/list?parent=${id}&storageType=stripe`;
+        const url = this.props.isGoogle ? `/folder-service-google/list?parent=${id}` : this.props.isPersonal ? `/folder-service/list?parent=${id}&itemType=personal` : `/folder-service/list?parent=${id}&itemType=nonpersonal`;
 
         axios.get(url).then((response) => {
            

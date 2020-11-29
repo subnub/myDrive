@@ -5,8 +5,6 @@ import React from "react";
 import {resetPhotoID} from "../../actions/photoViewer";
 import axios from "../../axiosInterceptor";
 
-const currentURL = env.url;
-
 class PhotoViewerContainer extends React.Component {
 
     constructor(props) {
@@ -28,8 +26,8 @@ class PhotoViewerContainer extends React.Component {
             responseType: 'arraybuffer'
         }; 
         
-        const url = this.props.isGoogle ? currentURL +`/file-service-google/full-thumbnail/${this.props.photoID}` 
-        : !this.props.isPersonal ? currentURL +`/file-service/full-thumbnail/${this.props.photoID}` : currentURL +`/file-service-personal/full-thumbnail/${this.props.photoID}`;
+        const url = this.props.isGoogle ? `/file-service-google/full-thumbnail/${this.props.photoID}` 
+        : !this.props.isPersonal ? `/file-service/full-thumbnail/${this.props.photoID}` : `/file-service-personal/full-thumbnail/${this.props.photoID}`;
 
         axios.get(url, config).then((response) => {
 

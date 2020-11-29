@@ -23,7 +23,7 @@ class DbUtil {
         return folder;
     }
 
-    getFolderListByParent = async(userID: string, parent: string, sortBy: string, s3Enabled: boolean, type: string, storageType: string) => {
+    getFolderListByParent = async(userID: string, parent: string, sortBy: string, s3Enabled: boolean, type: string, storageType: string, itemType: string) => {
 
         let query: any = {"owner": userID, "parent": parent};
 
@@ -41,6 +41,11 @@ class DbUtil {
             }
         }
 
+        if (itemType) {
+            if (itemType === "personal") query = {...query, "personalFolder": true}
+            if (itemType === "nonpersonal") query = {...query, "personalFolder": null}
+        }
+
         // if (storageType === "s3") {
         //     query = {...query, "personalFolder": true}
         // }
@@ -51,7 +56,7 @@ class DbUtil {
         return folderList;
     }
 
-    getFolderListBySearch = async(userID: string, searchQuery: string, sortBy: string, type: string, parent: string, storageType: string, folderSearch: boolean) => {
+    getFolderListBySearch = async(userID: string, searchQuery: string, sortBy: string, type: string, parent: string, storageType: string, folderSearch: boolean, itemType: string) => {
 
         let query: any = {"name": searchQuery,"owner": userID};
 
@@ -70,6 +75,12 @@ class DbUtil {
 
         if (parent && (parent !== "/" || folderSearch)) {
             query = {...query, parent}
+        }
+
+        if (itemType) {
+
+            if (itemType === "personal") query = {...query, "personalFolder": true}
+            if (itemType === "nonpersonal") query = {...query, "personalFolder": null}
         }
 
         const folderList = await Folder.find(query)

@@ -13,8 +13,6 @@ import { setMoverID } from "../../actions/mover";
 import mobilecheck from "../../utils/mobileCheck";
 import { setMobileContextMenu } from "../../actions/mobileContextMenu";
 
-const currentURL = env.url;
-
 class RightSectionContainer extends React.Component {
 
     constructor(props) {
@@ -65,7 +63,7 @@ class RightSectionContainer extends React.Component {
 
         const data = {id: props.selectedItem.id}
 
-        axios.delete(currentURL +'/file-service/transcode-video/remove', {
+        axios.delete('/file-service/transcode-video/remove', {
             data
         }).then(() => {
             
@@ -97,7 +95,7 @@ class RightSectionContainer extends React.Component {
         }))
     
 
-        axios.post(currentURL +'/file-service/transcode-video', data,config)
+        axios.post('/file-service/transcode-video', data,config)
         .then((response) => {
             
             const data = response.data;

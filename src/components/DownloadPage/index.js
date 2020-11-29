@@ -1,11 +1,8 @@
 import DownloadPage from "./DownloadPage";
 import capitalize from "../../utils/capitalize";
-import env from "../../enviroment/envFrontEnd";
 import axios from "../../axiosInterceptor";
 import bytes from "bytes";
 import React from "react";
-
-const currentURL = env.url;
 
 class DownloadPageContainer extends React.Component {
 
@@ -44,7 +41,7 @@ class DownloadPageContainer extends React.Component {
         const _id = this.props.match.params.id;
         const tempToken = this.props.match.params.tempToken
 
-        axios.get(currentURL +`/file-service/public/info/${_id}/${tempToken}`).then((results) => {
+        axios.get(`/file-service/public/info/${_id}/${tempToken}`).then((results) => {
 
            const data = results.data;
 
@@ -70,7 +67,7 @@ class DownloadPageContainer extends React.Component {
 
         const _id = this.props.match.params.id;
         const tempToken = this.props.match.params.tempToken
-        const finalUrl = !this.isPersonalFile ? currentURL + `/file-service/public/download/${_id}/${tempToken}` : currentURL + `/file-service-personal/public/download/${_id}/${tempToken}`;
+        const finalUrl = !this.isPersonalFile ? `/file-service/public/download/${_id}/${tempToken}` : `/file-service-personal/public/download/${_id}/${tempToken}`;
    
         const link = document.createElement('a');
         document.body.appendChild(link);

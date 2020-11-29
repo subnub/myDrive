@@ -5,8 +5,6 @@ import {connect} from "react-redux";
 import {setInsertedFolderTreeID} from "../../actions/folderTree"
 import FolderTreeStorage from "./FolderTreeStorage";
 
-const currentURL = env.url;
-
 class FolderTreeStorageContainer extends React.Component {
 
     constructor(props) {
@@ -25,8 +23,8 @@ class FolderTreeStorageContainer extends React.Component {
 
         const parent = this.props.type === "drive" ? "root" : "/"; 
         
-        const url = this.props.type === "drive" ? currentURL + `/folder-service-google/list?parent=${parent}` 
-        : currentURL + `/folder-service/list?parent=${parent}&type=${this.props.type}`; 
+        const url = this.props.type === "drive" ? `/folder-service-google/list?parent=${parent}` 
+        : `/folder-service/list?parent=${parent}&type=${this.props.type}`; 
 
         axios.get(url).then((response) => {
 
@@ -99,7 +97,7 @@ class FolderTreeStorageContainer extends React.Component {
         const id = this.props.firstLoadDetails._id;
 
         const url = (this.props.type === "drive") 
-        ? currentURL + `/folder-service-google/subfolder-list-full?id=${id}` : currentURL + `/folder-service/subfolder-list-full?id=${id}`
+        ? `/folder-service-google/subfolder-list-full?id=${id}` : `/folder-service/subfolder-list-full?id=${id}`
 
         axios.get(url).then((response) => {
             if (response.data.length !== 0) {

@@ -14,8 +14,6 @@ import reduceQuickItemList from "../utils/reduceQuickItemList";
 const http = require('http');
 const https = require('https');
 
-const currentURL = env.url;
-
 let cachedResults = {}
 
 export const setFiles = (files) => ({
@@ -226,7 +224,7 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
 
         if (isGoogle) {
 
-            axios.get(currentURL +`/file-service-google/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
+            axios.get(`/file-service-google/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
                 
                 const googleList = results.data;
                 //dispatch(loadMoreFiles(googleList))
@@ -245,7 +243,7 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
         } else if (env.googleDriveEnabled && parent === "/") {
 
             // Temp Google Drive API
-            axios.get(currentURL +`/file-service-google-mongo/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
+            axios.get(`/file-service-google-mongo/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
                 // console.log("Google Data", results.data.data.files);
                 // const convertedList = convertDriveListToMongoList(results.data.data.files);
                 // console.log("Converted List", convertedList);
@@ -266,7 +264,7 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
             })
         } else {
 
-            axios.get(currentURL +`/file-service/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
+            axios.get(`/file-service/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
    
                 const mongoData = results.data;
                 //dispatch(setLoading(true))
@@ -304,7 +302,7 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
         if (isGoogle) {
 
              // Temp Google Drive API
-            axios.get(currentURL +`/file-service-google/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}&pageToken=${pageToken}`).then((results) => {
+            axios.get(`/file-service-google/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}&pageToken=${pageToken}`).then((results) => {
             
                 dispatch(loadMoreFiles(results.data))
         
@@ -324,7 +322,7 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
 
         } else {
 
-            axios.get(currentURL +`/file-service/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}`).then((results) => {
+            axios.get(`/file-service/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}`).then((results) => {
             
                 //console.log("load more files result", results.data.length)
 
@@ -413,7 +411,7 @@ export const startAddFile = (uploadInput, parent, parentList, storageSwitcherTyp
             data.append('file', currentFile);
 
 
-            const url = storageType === "drive" ? currentURL +'/file-service-google/upload' : storageType === "s3" ? currentURL +'/file-service-personal/upload' : currentURL +'/file-service/upload';
+            const url = storageType === "drive" ? '/file-service-google/upload' : storageType === "s3" ? '/file-service-personal/upload' : '/file-service/upload';
 
             axios.post(url, data, config)
             .then(function (response) {
@@ -454,7 +452,7 @@ export const startRemoveFile = (id, isGoogle=false, isPersonal=false) => {
 
         if (isGoogle) {
 
-            axios.delete(currentURL+"/file-service-google/remove", {
+            axios.delete("/file-service-google/remove", {
                 data
             }).then(() => {
                 dispatch(removeFile(id))
@@ -469,7 +467,7 @@ export const startRemoveFile = (id, isGoogle=false, isPersonal=false) => {
 
         } else {
 
-            const url = !isPersonal ? currentURL+"/file-service/remove" : currentURL+"/file-service-personal/remove";
+            const url = !isPersonal ? "/file-service/remove" : "/file-service-personal/remove";
 
             axios.delete(url, {
                 data
@@ -496,7 +494,7 @@ export const startRenameFile = (id, title, isGoogle=false) => {
 
         if (isGoogle) {
 
-            axios.patch(currentURL+"/file-service-google/rename", data).then(() => {
+            axios.patch("/file-service-google/rename", data).then(() => {
 
                 dispatch(editFile(id, {filename: title}))
 
@@ -507,7 +505,7 @@ export const startRenameFile = (id, title, isGoogle=false) => {
             })
         } else {
 
-            axios.patch(currentURL+"/file-service/rename", data).then(() => {
+            axios.patch("/file-service/rename", data).then(() => {
 
                 dispatch(editFile(id, {filename: title}))
     

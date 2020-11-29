@@ -7,8 +7,6 @@ import {connect} from "react-redux"
 import FolderTreeStorageSub2 from ".././FolderTreeStorageSub";
 import FolderTreeStorageSub from "./FolderTreeStorageSub";
 
-const currentURL = env.url;
-
 class FolderTreeStorageSubContainer extends React.Component {
     
     constructor(props) {
@@ -244,7 +242,7 @@ class FolderTreeStorageSubContainer extends React.Component {
 
         const parent = this.props.folder._id;
         
-        const url = this.props.type === "drive" ? currentURL + `/folder-service-google/list?parent=${parent}` : currentURL + `/folder-service/list?parent=${parent}`;
+        const url = this.props.type === "drive" ? `/folder-service-google/list?parent=${parent}` : `/folder-service/list?parent=${parent}`;
         axios.get(url).then((response) => {
 
             this.setState(() => {

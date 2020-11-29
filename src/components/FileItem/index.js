@@ -11,8 +11,6 @@ import Swal from "sweetalert2"
 import { setMoverID } from "../../actions/mover";
 import { setMobileContextMenu } from "../../actions/mobileContextMenu";
 
-const currentURL = env.url;
-
 class FileItemContainer extends React.Component {
 
     constructor(props) {
@@ -63,7 +61,7 @@ class FileItemContainer extends React.Component {
             imageClassname: this.props.listView ? "file__image__listview" : "file__image"
         }))
 
-        const url = !this.props.metadata.personalFile ? currentURL +`/file-service/thumbnail/${thumbnailID}` : currentURL +`/file-service-personal/thumbnail/${thumbnailID}`;
+        const url = !this.props.metadata.personalFile ? `/file-service/thumbnail/${thumbnailID}` : `/file-service-personal/thumbnail/${thumbnailID}`;
     
         axios.get(url, config).then((results) => {
 

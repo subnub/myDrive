@@ -166,6 +166,8 @@ class PersonalFileController {
     
         try {
 
+            console.log("download personal")
+
             const s3Service = new S3Service();
     
             const user = req.user;

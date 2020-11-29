@@ -1,7 +1,4 @@
 import axios from "../axiosInterceptor";
-import env from "../enviroment/envFrontEnd";
-
-const currentURL = env.url;
 
 export const setSelectedItem = (selectedItem) => ({
     type: "SET_SELECTED_ITEM", 
@@ -26,7 +23,7 @@ export const startSetSelectedItem = (id, file, fromQuickItems, isGoogleDrive) =>
 
             if (isGoogleDrive) {
 
-                axios.get(currentURL +`/file-service-google/info/${id}`).then((results) => {
+                axios.get(`/file-service-google/info/${id}`).then((results) => {
 
                     console.log("file info google", results.data, results.data.id);
 
@@ -42,7 +39,7 @@ export const startSetSelectedItem = (id, file, fromQuickItems, isGoogleDrive) =>
 
             } else {
 
-                axios.get(currentURL +`/file-service/info/${id}`).then((results) => {
+                axios.get(`/file-service/info/${id}`).then((results) => {
 
                     const {filename: name, length: size, uploadDate: date, parentName: location, metadata, _id: id} = results.data;
     
@@ -57,7 +54,7 @@ export const startSetSelectedItem = (id, file, fromQuickItems, isGoogleDrive) =>
 
             if (isGoogleDrive) {
 
-                axios.get(currentURL +`/folder-service-google/info/${id}`).then((results) => {
+                axios.get(`/folder-service-google/info/${id}`).then((results) => {
 
                     const {name, 0: size, createdAt: date, parentName: location, _id: id, drive, personalFolder: personalFile} = results.data;
     
@@ -69,7 +66,7 @@ export const startSetSelectedItem = (id, file, fromQuickItems, isGoogleDrive) =>
 
             } else {
 
-                axios.get(currentURL +`/folder-service/info/${id}`).then((results) => {
+                axios.get(`/folder-service/info/${id}`).then((results) => {
 
                     const {name, 0: size, createdAt: date, parentName: location, _id: id, drive, personalFolder: personalFile} = results.data;
     

@@ -1,8 +1,6 @@
 import axios from "../axiosInterceptor";
 import env from "../enviroment/envFrontEnd";
 
-const currentURL = env.url;
-
 export const setStorage = (info) => ({
     type: "SET_STORAGE",
     info
@@ -16,7 +14,7 @@ export const startSetStorage = () => {
             return;
         }
 
-        axios.get(currentURL +`/storage-service/info`).then((results) => {
+        axios.get(`/storage-service/info`).then((results) => {
 
             dispatch(setStorage(results.data))
             

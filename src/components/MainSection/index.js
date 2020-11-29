@@ -12,8 +12,6 @@ import {history} from "../../routers/AppRouter";
 import React from "react";
 import { getUpdateSettingsID } from "../../utils/updateSettings";
 
-const currentURL = env.url;
-
 class MainSectionContainer extends React.Component {
 
     constructor(props) {
@@ -160,9 +158,13 @@ class MainSectionContainer extends React.Component {
 
         axios.post("/user-service/get-token").then((response) => {
 
+           
+
             const finalUrl = 
-            isGoogle ? !isGoogleDoc ? currentURL + `/file-service-google/download/${fileID}` : currentURL + `/file-service-google-doc/download/${fileID}`  
-            : !isPersonal ? currentURL + `/file-service/download/${fileID}` : currentURL + `/file-service-personal/download/${fileID}`
+            isGoogle ? !isGoogleDoc ? `/file-service-google/download/${fileID}` : `/file-service-google-doc/download/${fileID}`  
+            : !isPersonal ? `/file-service/download/${fileID}` : `/file-service-personal/download/${fileID}`
+
+            console.log("download file", finalUrl);
 
             const link = document.createElement('a');
             document.body.appendChild(link);

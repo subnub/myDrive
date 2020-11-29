@@ -5,8 +5,6 @@ import axios from "../axiosInterceptor";
 import env from "../enviroment/envFrontEnd";
 import {setCreateNewAccount} from "./main";
 
-const currentURL = env.url;
-
 export const login = (id) => ({
     type: "LOGIN",
     id
@@ -22,7 +20,7 @@ export const startLogin = (email, password, currentRoute) => {
 
         const dt = {email, password};
 
-        axios.post(currentURL+"/user-service/login", dt).then((response) => {
+        axios.post("/user-service/login", dt).then((response) => {
 
             console.log("USER SERVICE LOGIN RESPONSE")
 
@@ -62,7 +60,7 @@ export const startCreateAccount = (email, password) => {
     return (dispatch) => {
 
         const dt = {email, password};
-        axios.post(currentURL+"/user-service/create", dt).then((response) => {
+        axios.post("/user-service/create", dt).then((response) => {
             
             const token = response.data.token;
             const id = response.data.user._id;
@@ -154,7 +152,7 @@ export const startLogoutAll = () => {
 
     return (dispatch) => {
 
-        axios.post(currentURL+"/user-service/logout-all").then(() => {
+        axios.post("/user-service/logout-all").then(() => {
 
             window.localStorage.removeItem("token")
 
@@ -176,7 +174,7 @@ export const startLogout = () => {
 
     return (dispatch) => {
 
-        axios.post(currentURL+"/user-service/logout").then(() => {
+        axios.post("/user-service/logout").then(() => {
 
             window.localStorage.removeItem("token")
 

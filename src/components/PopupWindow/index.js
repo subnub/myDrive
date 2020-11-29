@@ -7,8 +7,6 @@ import React from "react";
 import { setPhotoID } from "../../actions/photoViewer";
 import axiosNonInterceptor from "axios";
 
-const currentURL = env.url;
-
 class PopupWindowContainer extends React.Component {
 
     constructor(props) {
@@ -65,8 +63,8 @@ class PopupWindowContainer extends React.Component {
         const isDrive = this.props.popupFile.metadata.drive;
         const isPersonal = this.props.popupFile.metadata.personalFile;
 
-        const url = isDrive ? currentURL +`/file-service-google/thumbnail/${thumbnailID}` 
-        : !isPersonal ? currentURL +`/file-service/thumbnail/${thumbnailID}` : currentURL +`/file-service-personal/thumbnail/${thumbnailID}`;
+        const url = isDrive ? `/file-service-google/thumbnail/${thumbnailID}` 
+        : !isPersonal ? `/file-service/thumbnail/${thumbnailID}` : `/file-service-personal/thumbnail/${thumbnailID}`;
 
         axios.get(url, config).then((results) => {
 
@@ -110,9 +108,9 @@ class PopupWindowContainer extends React.Component {
             const isPersonal = this.props.popupFile.metadata.personalFile;
     
             const finalUrl = isDrive ? 
-            currentURL + `/file-service-google/stream-video/${this.props.popupFile._id}` 
-            : !isPersonal ? currentURL + `/file-service/stream-video/${this.props.popupFile._id}` 
-            : currentURL + `/file-service-personal/stream-video/${this.props.popupFile._id}`
+            `/file-service-google/stream-video/${this.props.popupFile._id}` 
+            : !isPersonal ? `/file-service/stream-video/${this.props.popupFile._id}` 
+            : `/file-service-personal/stream-video/${this.props.popupFile._id}`
     
             this.setState(() => ({
                 ...this.state,

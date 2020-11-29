@@ -6,10 +6,7 @@ import { startRenameFile, startRemoveFile } from "../../actions/files";
 import { setShareSelected, setLastSelected } from "../../actions/selectedItem";
 import { resetMobileContextMenu } from "../../actions/mobileContextMenu";
 import axios from "../../axiosInterceptor";
-import env from "../../enviroment/envFrontEnd";
 import { setMoverID } from "../../actions/mover";
-
-const currentURL = env.url;
 
 class MobileContextMenuContainer extends React.Component {
 
@@ -82,8 +79,8 @@ class MobileContextMenuContainer extends React.Component {
         axios.post("/user-service/get-token").then((response) => {
 
             const finalUrl = 
-            isGoogle ? !isGoogleDoc ? currentURL + `/file-service-google/download/${fileID}` : currentURL + `/file-service-google-doc/download/${fileID}`  
-            : !isPersonal ? currentURL + `/file-service/download/${fileID}` : currentURL + `/file-service-personal/download/${fileID}`
+            isGoogle ? !isGoogleDoc ? `/file-service-google/download/${fileID}` : `/file-service-google-doc/download/${fileID}`  
+            : !isPersonal ? `/file-service/download/${fileID}` : `/file-service-personal/download/${fileID}`
 
             const link = document.createElement('a');
             document.body.appendChild(link);

@@ -10,7 +10,7 @@ const router = Router();
 
 router.post("/file-service-personal/upload", authFullUser, personalFileController.uploadPersonalFile);
 
-router.get("/file-service-personal/download/:id/:tempToken", authFullUser, personalFileController.downloadPersonalFile);
+router.get("/file-service-personal/download/:id", authFullUser, personalFileController.downloadPersonalFile);
 
 router.get("/file-service-personal/thumbnail/:id", authFullUser, personalFileController.getPersonalThumbnail);
 

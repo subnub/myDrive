@@ -93,7 +93,7 @@ class QuickAccessItemContainer extends React.Component {
 
         const isPersonal = this.props.metadata.personalFile;
     
-        const url = !isPersonal ? currentURL +`/file-service/thumbnail/${thumbnailID}` : currentURL +`/file-service-personal/thumbnail/${thumbnailID}`;
+        const url = !isPersonal ? `/file-service/thumbnail/${thumbnailID}` : `/file-service-personal/thumbnail/${thumbnailID}`;
 
         axios.get(url, config).then((results) => {
      

@@ -97,33 +97,33 @@ class HeaderContainer extends React.Component {
 
         return;
 
-        if (this.searchValue === "") {
+        // if (this.searchValue === "") {
             
-            return this.setState(() => {
-                return {
-                    ...this.state, 
-                    suggestedList: {
-                        fileList: [],
-                        folderList: []
-                    }
-                }
-            })
-        }
+        //     return this.setState(() => {
+        //         return {
+        //             ...this.state, 
+        //             suggestedList: {
+        //                 fileList: [],
+        //                 folderList: []
+        //             }
+        //         }
+        //     })
+        // }
 
-        const url = !env.googleDriveEnabled ? currentURL +`/file-service/suggested-list?search=${this.searchValue}` : currentURL +`/file-service-google-mongo/suggested-list?search=${this.searchValue}`
+        // const url = !env.googleDriveEnabled ? currentURL +`/file-service/suggested-list?search=${this.searchValue}` : currentURL +`/file-service-google-mongo/suggested-list?search=${this.searchValue}`
 
-        axios.get(url).then((results) => {
+        // axios.get(url).then((results) => {
 
-            this.setState(() => {
-                return {
-                    ...this.state, 
-                    suggestedList: results.data
-                }
-            }) 
+        //     this.setState(() => {
+        //         return {
+        //             ...this.state, 
+        //             suggestedList: results.data
+        //         }
+        //     }) 
 
-        }).catch((err) => {
-            console.log(err)
-        })
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
     }
 
     showSettings = () => {

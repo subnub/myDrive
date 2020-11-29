@@ -47,7 +47,7 @@ class ShareMenuContainer extends React.Component {
 
     componentDidUpdate = () => {
         if (!this.props.shareSelected.metadata) return;
-        const shareURL = this.props.shareSelected.metadata.drive ?  this.props.shareSelected.metadata.link : `${currentURL}/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
+        const shareURL = this.props.shareSelected.metadata.drive ?  this.props.shareSelected.metadata.link : `/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
         if (this.props.shareSelected.metadata.link && shareURL !== this.state.title) {
            
             this.setState(() => {
@@ -76,7 +76,7 @@ class ShareMenuContainer extends React.Component {
             
             if (result.value) {
 
-                const url = this.props.shareSelected.metadata.drive ? currentURL +`/file-service-google/make-public/${this.props.shareSelected._id}` : currentURL +`/file-service/make-public/${this.props.shareSelected._id}`;
+                const url = this.props.shareSelected.metadata.drive ? `/file-service-google/make-public/${this.props.shareSelected._id}` : `/file-service/make-public/${this.props.shareSelected._id}`;
         
                 axios.patch(url, undefined).then((results) => {
                     
@@ -131,7 +131,7 @@ class ShareMenuContainer extends React.Component {
             
             if (result.value) {
         
-                axios.patch(currentURL +`/file-service/make-one/${this.props.shareSelected._id}`, undefined).then((results) => {
+                axios.patch(`/file-service/make-one/${this.props.shareSelected._id}`, undefined).then((results) => {
                     
                     this.props.dispatch(editFile(this.props.shareSelected._id,{"metadata": {
                         ...this.props.shareSelected.metadata,
@@ -161,7 +161,7 @@ class ShareMenuContainer extends React.Component {
 
     removeLink = () => {
 
-        const url = this.props.shareSelected.metadata.drive ? currentURL +`/file-service-google/remove-link/${this.props.shareSelected._id}` : currentURL +`/file-service/remove-link/${this.props.shareSelected._id}`
+        const url = this.props.shareSelected.metadata.drive ? `/file-service-google/remove-link/${this.props.shareSelected._id}` : `/file-service/remove-link/${this.props.shareSelected._id}`
 
         axios.delete(url, {
         }).then(() => {
