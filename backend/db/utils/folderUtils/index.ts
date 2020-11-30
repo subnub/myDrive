@@ -33,6 +33,10 @@ class DbUtil {
         //     query = {...query, "personalFolder": null}
         // }
 
+        if (!s3Enabled) {
+            query = {...query, "personalFolder": null}
+        }
+
         if (type) {
             if (type === "mongo") {
                 query = {...query, "personalFolder": null}
@@ -48,7 +52,11 @@ class DbUtil {
 
         // if (storageType === "s3") {
         //     query = {...query, "personalFolder": true}
+        // } else {
+        //     query = {...query, "personalFolder": null}
         // }
+
+        console.log("folder query", query);
 
         const folderList = await Folder.find(query)
         .sort(sortBy) as FolderInterface[];

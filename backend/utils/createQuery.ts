@@ -55,9 +55,10 @@ const createQuery = (owner: string, parent: string, sortBy: string, startAt: num
 
     // if (s3Enabled) {
     //     query = {...query, "metadata.personalFile": true}
-    // } else if (!s3Enabled) {
-    //     query = {...query, "metadata.personalFile": null}
-    // }
+    // } else 
+    if (!s3Enabled) {
+        query = {...query, "metadata.personalFile": null}
+    }
 
     // if (storageType === "s3") {
     //     query = {...query, "metadata.personalFile": true}

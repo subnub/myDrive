@@ -70,6 +70,8 @@ class SettingsPageContainer extends React.Component {
             env.emailAddress = response.data.email
             this.props.dispatch(setParent(uuid.v4()))
 
+            console.log("user detailed", response.data)
+
             this.setState(() => {
                 return {
                     ...this.state,
@@ -78,7 +80,7 @@ class SettingsPageContainer extends React.Component {
                 }
             }, () => {
 
-              this.getInvoiceData();
+              // this.getInvoiceData();
               this.props.dispatch(setLoading(false))
 
             })
@@ -640,11 +642,9 @@ class SettingsPageContainer extends React.Component {
 
     e.preventDefault()
 
-    axios.get('/file-service/download/get-token').then((response) => {
+    axios.post('/user-service/get-token').then((response) => {
 
-      const tempToken = response.data.tempToken;
-
-      const finalUrl = `/user-service/download-personal-file-list/${tempToken}`;
+      const finalUrl = `/user-service/download-personal-file-list`;
 
       const link = document.createElement('a');
       document.body.appendChild(link);
@@ -831,6 +831,11 @@ class SettingsPageContainer extends React.Component {
   }
 
   render() {
+
+    if (this.props.loading) {
+      return <HomepageSpinner />
+    }
+
     return (
 
         <div>
@@ -840,8 +845,6 @@ class SettingsPageContainer extends React.Component {
 <div onClick={this.showSideBar} class="overlay" style={this.state.sideBarOpen ? {display: "block"} : {display:"none"}}></div>
 
 <Header goHome={this.goHome}/>
-
-<HomepageSpinner />
 
 <div class="main__wrapper--container settings__container" style={this.props.loading ? {display: "none"} : {}}>
   <div class="menu__block" style={this.state.sideBarOpen ? {left: "0px"} : {left:"-250px"}}>
@@ -1116,8 +1119,9 @@ class SettingsPageContainer extends React.Component {
                     style={{backgroundColor:"#3c85ee", width: !this.state.loaded ? "0%" : this.state.userDetails.googleDriveEnabled ? `${this.getStoragePercentageGoogle()}%` : '0%'}}
                   ></div>
                 </div>
-                <span>{!this.state.loaded ? "Loading..." : this.state.userDetails.googleDriveEnabled ? `${bytes(this.state.userDetails.storageDataGoogle.storageSize)} of 
-                  ${bytes(this.state.userDetails.storageDataGoogle.storageLimit)} used` : ""}</span>
+                <span>{this.state.userDetails.googleDriveEnabled ? !this.state.userDetails.storageDataGoogle.failed ? `${bytes(this.state.userDetails.storageDataGoogle.storageSize)} of 
+                  ${bytes(this.state.userDetails.storageDataGoogle.storageLimit)} used` : "Failed" : ""}
+                </span>
               </div>
             </div>
             <div class="value__updater">
@@ -1140,7 +1144,8 @@ class SettingsPageContainer extends React.Component {
                     style={{backgroundColor:"#3c85ee", width:"100%"}}
                   ></div>
                 </div>
-                <span>{!this.state.loaded ? "Loading..." : this.state.userDetails.s3Enabled ? `${bytes(this.state.userDetails.storageDataPersonal.storageSize)} used` : ""}</span>
+                <span>{this.state.userDetails.s3Enabled ? !this.state.userDetails.storageDataPersonal.failed ? 
+                `${bytes(this.state.userDetails.storageDataPersonal.storageSize)} used` : "Failed" : ""}</span>
               </div>
             </div>
             <div class="value__updater">

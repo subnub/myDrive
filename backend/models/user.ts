@@ -126,14 +126,17 @@ const userSchema = new mongoose.Schema({
     personalStorageCanceledDate: Number,
     storageData: {
         storageSize: Number,
-        storageLimit: Number
+        storageLimit: Number,
+        failed: Boolean,
     },
     storageDataPersonal: {
         storageSize: Number,
+        failed: Boolean,
     },
     storageDataGoogle: {
         storageSize: Number,
-        storageLimit: Number
+        storageLimit: Number,
+        failed: Boolean,
     },
     activeSubscription: Boolean,
     planID: String,
@@ -177,14 +180,17 @@ export interface UserInterface extends Document {
     },
     storageData?: {
         storageSize?: number,
-        storageLimit?: number
+        storageLimit?: number,
+        failed?: boolean,
     },
     storageDataPersonal?: {
-        storageSize?: number
+        storageSize?: number,
+        failed?: boolean,
     },
     storageDataGoogle?: {
         storageSize?: number,
-        storageLimit?: number
+        storageLimit?: number,
+        failed?: boolean,
     }, 
     activeSubscription?: boolean,
     passwordLastModified?: number,

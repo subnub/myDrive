@@ -48,7 +48,7 @@ class UserPeronsalService {
 
     downloadPersonalFileList = async(user: userAccessType) => {
 
-        const fileList = await File.find({"metadata.owner": user._id, "metadata.personalFile": true});
+        const fileList = await File.find({"metadata.owner": new ObjectID(user._id), "metadata.personalFile": true});
 
         const folderList = await Folder.find({"owner": user._id.toString(), 'personalFolder': true});
 
@@ -80,9 +80,9 @@ class UserPeronsalService {
     
         for (let currentObj of personalFileList) {
          
-            await File.deleteMany({_id: currentObj._id, 'metadata.owner': user._id});
+            await File.deleteMany({_id: new ObjectID(currentObj._id), 'metadata.owner': new ObjectID(user._id)});
         
-            currentObj.metadata.owner = user._id;
+            currentObj.metadata.owner = new ObjectID(user._id);
             currentObj._id = new ObjectID(currentObj._id)
             const oldIV: any = currentObj.metadata.IV;
             const IV: any = Buffer.from(oldIV, 'base64');
@@ -98,7 +98,7 @@ class UserPeronsalService {
     
         for (let currentObj of personalFolderList) {
     
-            await Folder.deleteMany({_id: currentObj._id, owner: user._id.toString()});
+            await Folder.deleteMany({_id: new ObjectID(currentObj._id), owner: user._id.toString()});
     
             currentObj._id = new ObjectID(currentObj._id)
             currentObj.owner = user._id.toString();
@@ -111,7 +111,7 @@ class UserPeronsalService {
     
         for (let currentObj of personalThumbnailList) {
     
-            await Thumbnail.deleteMany({_id: currentObj._id, owner: user._id.toString()});
+            await Thumbnail.deleteMany({_id: new ObjectID(currentObj._id), owner: user._id.toString()});
     
             currentObj._id = new ObjectID(currentObj._id);
             currentObj.owner = user._id.toString();
@@ -131,15 +131,17 @@ class UserPeronsalService {
 
     removeS3Metadata = async(user: userAccessType) => {
         
-        const fileList =  await File.find({"metadata.owner": user._id,
+        const fileList =  await File.find({"metadata.owner": new ObjectID(user._id),
         "metadata.personalFile": true})
 
         for (let currentFile of fileList) {
 
+            await File.deleteOne({_id: new ObjectID(currentFile._id)});
             await File.deleteOne({_id: currentFile._id});
 
             if (currentFile.metadata.hasThumbnail) {
 
+                await Thumbnail.deleteOne({_id: new ObjectID(currentFile.metadata.thumbnailID)})
                 await Thumbnail.deleteOne({_id: currentFile.metadata.thumbnailID})
             }
         }

@@ -7,7 +7,7 @@ const userPersonalController = new UserPersonalController();
 
 const router = Router();
 
-router.get("/user-service/download-personal-file-list/:tempToken", auth, userPersonalController.downloadPersonalFileList);
+router.get("/user-service/download-personal-file-list", auth, userPersonalController.downloadPersonalFileList);
 
 router.post("/user-service/upload-personal-file-list", auth, userPersonalController.uploadPersonalFileList);
 

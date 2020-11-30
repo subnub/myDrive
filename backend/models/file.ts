@@ -1,5 +1,5 @@
 import mongoose, {Document} from "mongoose";
-import { Binary } from "mongodb";
+import { Binary, ObjectID } from "mongodb";
 
 const fileSchema = new mongoose.Schema({
     
@@ -68,7 +68,7 @@ export interface FileInterface extends Document {
     filename: string,
     lastErrorObject: {updatedExisting: any}
     metadata: {
-        owner: string,
+        owner: string | ObjectID,
         parent: string,
         parentList: string,
         hasThumbnail: boolean,

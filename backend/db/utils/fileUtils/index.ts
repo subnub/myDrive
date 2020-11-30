@@ -80,9 +80,10 @@ class DbUtil {
 
         // if (s3Enabled) {
         //     query = {...query, "metadata.personalFile": true}
-        // } else if (!s3Enabled){
-        //     query = {...query, "metadata.personalFile": null}
-        // }
+        // } else 
+        if (!s3Enabled){
+            query = {...query, "metadata.personalFile": null}
+        }
 
         const fileList = await conn.db.collection("fs.files")
             .find(query)

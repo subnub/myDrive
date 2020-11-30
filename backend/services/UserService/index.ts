@@ -217,28 +217,44 @@ class UserService {
         if (!user) throw new NotFoundError("Cannot find user");
 
         if (user.s3Enabled) {
-            const {bucket} = await user.decryptS3Data()
-            user.s3Data!.bucket = bucket;
+
+            try {
+                const {bucket} = await user.decryptS3Data()
+                user.s3Data!.bucket = bucket;
+            } catch (e) {
+                console.log("getting s3 storage data error");
+                user.storageDataPersonal = {storageSize: 0, failed: true}
+            }
+            
         }
     
         if (user.googleDriveEnabled) {
+
+            try {
+
+                const {clientID} = await user.decryptDriveIDandKey()
     
-            const {clientID} = await user.decryptDriveIDandKey()
-    
-            const oauth2Client = await getGoogleAuth(user);
-            const drive = google.drive({version:"v3", auth: oauth2Client});
-    
-            const googleData = await drive.about.get({
-                fields: "storageQuota"
-            })
-      
-            user.storageDataGoogle = {storageLimit: +googleData.data.storageQuota!.limit!, storageSize: +googleData.data.storageQuota!.usage!}
-            user.googleDriveData!.id = clientID;
+                const oauth2Client = await getGoogleAuth(user);
+                const drive = google.drive({version:"v3", auth: oauth2Client});
+        
+                const googleData = await drive.about.get({
+                    fields: "storageQuota"
+                })
+        
+                user.storageDataGoogle = {storageLimit: +googleData.data.storageQuota!.limit!, storageSize: +googleData.data.storageQuota!.usage!}
+                user.googleDriveData!.id = clientID;
+
+            } catch (e) {
+
+                user.storageDataGoogle = {storageLimit: 0, storageSize: 0, failed: true}
+                console.log("get google drive storage data error", e.message);
+            }
+
         }
     
         if (!user.storageData || (!user.storageData.storageSize && !user.storageData.storageLimit)) user.storageData = {storageLimit: 0, storageSize: 0}
-        if (!user.storageDataPersonal || (!user.storageDataPersonal.storageSize)) user.storageDataPersonal = {storageSize: 0}
-        if (!user.storageDataGoogle || (!user.storageDataGoogle.storageLimit && !user.storageDataGoogle.storageSize)) user.storageDataGoogle = {storageLimit: 0, storageSize: 0}
+        if (!user.storageDataPersonal || (!user.storageDataPersonal.storageSize && !user.storageDataPersonal.failed)) user.storageDataPersonal = {storageSize: 0}
+        if (!user.storageDataGoogle || (!user.storageDataGoogle.storageLimit && !user.storageDataGoogle.storageSize && !user.storageDataGoogle.failed)) user.storageDataGoogle = {storageLimit: 0, storageSize: 0}
 
         delete user.privateKey;
         delete user.publicKey;
