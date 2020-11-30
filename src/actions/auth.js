@@ -22,9 +22,8 @@ export const startLogin = (email, password, currentRoute) => {
 
         axios.post("/user-service/login", dt).then((response) => {
 
-            console.log("USER SERVICE LOGIN RESPONSE")
+            // console.log("USER SERVICE LOGIN RESPONSE")
 
-            const token = response.data.token;
             const id = response.data.user._id;
             const emailVerified = response.data.user.emailVerified;
 
@@ -34,7 +33,9 @@ export const startLogin = (email, password, currentRoute) => {
             env.emailAddress = response.data.user.email;
             env.name = response.data.user.name || ""
 
-            window.localStorage.setItem("token", token);
+            //window.localStorage.setItem("token", token);
+
+            console.log("USER SERVICE LOGIN RESPONSE", response.data.user);
 
             if (emailVerified) {
 

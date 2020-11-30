@@ -61,7 +61,7 @@ class LoginPageContainer extends React.Component {
        
                 Swal.fire(
                     'Check your email',
-                    'If the email address matches any in our database, we’ll send you an email with instructions on how to reset your password. \nIf you still have problems accessing your account, please send an email to support@piedpiperapp.com',
+                    'If the email address matches any in our database, we’ll send you an email with instructions on how to reset your password.',
                     'success'
                   )
 
@@ -190,24 +190,36 @@ class LoginPageContainer extends React.Component {
 
     logout = () => {
      
-        window.localStorage.removeItem("token");
+        // window.localStorage.removeItem("token");
 
-        this.props.dispatch(setLoginFailed(false))
+        axios.post("/user-service/logout").then((response) => {
 
-        this.setState(() => {
-            return {
-                ...this.state,
-                value: undefined,
-                loginMode: true,
-                email: "",
-                password: "",
-                verifyPassword: "",
-                resetPasswordMode: false,
-                verifyEmailResent: false,
-                verifyEmailResentTimer: 0,
-                verifyEmailResentTimerStarted: false
-            }
+            console.log("user logged out verify email");
+            
+            //this.props.dispatch(setLoginFailed(false))
+
+            window.location.reload();
+            
+            // this.setState(() => {
+            //     return {
+            //         ...this.state,
+            //         value: undefined,
+            //         loginMode: true,
+            //         email: "",
+            //         password: "",
+            //         verifyPassword: "",
+            //         resetPasswordMode: false,
+            //         verifyEmailResent: false,
+            //         verifyEmailResentTimer: 0,
+            //         verifyEmailResentTimerStarted: false,
+            //     }
+            // })
+
+        }).catch((e) => {
+            window.location.reload();
+            console.log("Cannot logout user verify email");
         })
+
     }
 
     componentDidMount = () => {

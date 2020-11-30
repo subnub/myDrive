@@ -146,7 +146,7 @@ class HeaderContainer extends React.Component {
 
         const parent = this.props.parent;
 
-        history.push(`/search/${this.searchValue}?parent=${parent}&folder_search=true&storageType=stripe`)
+        history.push(`/search/${this.searchValue}?parent=${parent}&folder_search=true`)
 
         this.searchValue = ''
 

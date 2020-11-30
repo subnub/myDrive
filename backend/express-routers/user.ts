@@ -3,6 +3,7 @@ import auth from "../middleware/auth";
 import authNoEmailVerification from "../middleware/authNoEmailVerificication"
 import UserController from "../controllers/user";
 import authRefresh from "../middleware/authRefresh";
+import authLogout from "../middleware/authLogout";
 
 const userController = new UserController();
 
@@ -16,9 +17,9 @@ router.get("/user-service/user-detailed", auth, userController.getUserDetailed);
 
 router.post("/user-service/login", userController.login);
 
-router.post("/user-service/logout", auth, userController.logout);
+router.post("/user-service/logout", authLogout, userController.logout);
 
-router.post("/user-service/logout-all", auth, userController.logoutAll);
+router.post("/user-service/logout-all", authLogout, userController.logoutAll);
 
 router.post("/user-service/create", userController.createUser);
 

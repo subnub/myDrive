@@ -130,6 +130,7 @@ class UserController {
     
             console.log("\nLogout User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            createLogoutCookie(res);
             res.status(code).send();
         }
     }

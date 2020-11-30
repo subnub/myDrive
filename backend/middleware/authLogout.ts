@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import User, {UserInterface} from "../models/user";
 import env from "../enviroment/env";
 import {Request, Response, NextFunction} from "express";
-import userUpdateCheck from "../utils/userUpdateCheck";
+import { createLogoutCookie } from "../cookies/createCookies";
 
 interface RequestType extends Request {
     user?: userAccessType,
@@ -34,14 +34,9 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
         const decoded = jwt.verify(accessToken, env.passwordAccess!) as jwtType;
 
-        let user = decoded.user;
+        const user = decoded.user;
 
         if (!user) throw new Error("No User");
-
-        if (!user.emailVerified) {
-            const ipAddress = req.clientIp;
-            user = await userUpdateCheck(res, user._id, ipAddress);
-        }
 
         req.user = user;
 
@@ -49,6 +44,7 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     } catch (e) {
         console.log("\nAuthorization Middleware No Email Verifiaction Error:", e.message);
+        createLogoutCookie(res);
         return res.status(401).send("Error Authenticating");
     }
 }

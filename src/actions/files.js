@@ -55,6 +55,8 @@ export const startSetFileAndFolderItems = (historyKey, parent="/", sortby="DEFAU
 
             return;
         }
+
+        //isGoogle = env.googleDriveEnabled;
     
         let limit = window.localStorage.getItem("list-size") || 50
         limit = parseInt(limit);
@@ -67,30 +69,39 @@ export const startSetFileAndFolderItems = (historyKey, parent="/", sortby="DEFAU
             //fileURL = 
             console.log("Searching");
 
-            if (storageType === "stripe") {
+            // if (storageType === "stripe") {
 
-                console.log("Pied Search")
+            //     console.log("Pied Search")
 
-                fileURL = `/file-service/list?search=${search}&storageType=${storageType}`;
-                folderURL = `/folder-service/list?search=${search}&storageType=${storageType}`
-            } else if (folderSearch) {
+            //     fileURL = `/file-service/list?search=${search}&storageType=${storageType}`;
+            //     folderURL = `/folder-service/list?search=${search}&storageType=${storageType}`
+            // if (folderSearch) {
 
-                console.log("Folder Search")
+            //     console.log("Folder Search")
 
-                fileURL = `/file-service/list?search=${search}&folder_search=${true}&parent=${parent}`
-                folderURL = `/folder-service/list?search=${search}&folder_search=${true}&parent=${parent}`
+            //     fileURL = `/file-service/list?search=${search}&folder_search=${true}&parent=${parent}`
+            //     folderURL = `/folder-service/list?search=${search}&folder_search=${true}&parent=${parent}`
 
-            } else {
+            // } else {
                 
-                console.log("Everywhere Search")
+            //     console.log("Everywhere Search")
 
-                if (env.googleDriveEnabled) {
-                    fileURL = `/file-service-google-mongo/list?search=${search}`;
-                    folderURL = `/folder-service-google-mongo/list?search=${search}`;
-                } else {
-                    fileURL = `/file-service/list?search=${search}`;
-                    folderURL = `/folder-service/list?search=${search}`;
-                }
+            //     if (env.googleDriveEnabled) {
+            //         fileURL = `/file-service-google-mongo/list?search=${search}`;
+            //         folderURL = `/folder-service-google-mongo/list?search=${search}`;
+            //     } else {
+            //         fileURL = `/file-service/list?search=${search}`;
+            //         folderURL = `/folder-service/list?search=${search}`;
+            //     }
+            // }
+
+
+            if (env.googleDriveEnabled) {
+                fileURL = `/file-service-google-mongo/list?search=${search}`;
+                folderURL = `/folder-service-google-mongo/list?search=${search}`;
+            } else {
+                fileURL = `/file-service/list?search=${search}`;
+                folderURL = `/folder-service/list?search=${search}`;
             }
 
 
@@ -141,6 +152,8 @@ export const startSetAllItems = (clearCache, parent="/", sortby="DEFAULT", searc
     return (dispatch) => {
 
         if (clearCache) cachedResults = {};
+
+        //isGoogle = env.googleDriveEnabled;
 
         if (cachedResults[parent]) {
 
@@ -224,7 +237,7 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
 
         console.log("Fetching file list");
 
-        if (isGoogle) {
+        if (env.googleDriveEnabled) {
 
             console.log("is google")
 
