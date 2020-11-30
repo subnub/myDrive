@@ -36,15 +36,17 @@ class ShareModelContainer extends React.Component {
 
     //`/file-service/info/${id}`
 
-    axios.get(`/file-service/info/${id}`).then((response) => {
+    const url = this.props.shareSelected.metadata.drive ? `/file-service-google/info/${id}` : `/file-service/info/${id}`;
+
+    axios.get(url).then((response) => {
 
         console.log("file info response", response.data);
 
         const linkType = response.data.metadata.linkType;
 
-        const shareURL = this.props.shareSelected.metadata.drive ? results.data : `/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
+        const shareURL = this.props.shareSelected.metadata.drive ? response.data.metadata.link : `/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
 
-        console.log("share link type", linkType);
+        console.log("share link type", linkType, response.data);
 
         this.setState(() => ({
           ...this.state,
@@ -430,7 +432,7 @@ class ShareModelContainer extends React.Component {
                 <button onClick={this.makePublic} className="button popup-window__button">Make Public</button>
               </div>
               <div className="share-button__wrapper">
-                <button onClick={this.makeOne} className="button popup-window__button">Make One Time Link</button>
+                <button onClick={this.makeOne} style={this.props.shareSelected.metadata.drive ? {display: "none"} : {}} className="button popup-window__button">Make One Time Link</button>
               </div>
             </div>
             <div class="get__share--link" style={this.state.shared ? {} : {display: "none"}}>

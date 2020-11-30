@@ -177,6 +177,9 @@
 						&:hover{
 							opacity:.7;
 						}
+						&>img{
+							cursor: pointer;
+						}
 					}
 				}
 			}
@@ -289,6 +292,9 @@
 						transition:.4s ease all;
 						&:hover{
 							opacity:.7;
+						}
+						&>img{
+							cursor: pointer;
 						}
 					}
 				}
@@ -517,6 +523,9 @@
 							transition:.4s ease all;
 							&:hover{
 								opacity:.7;
+							}
+							&>img{
+								cursor: pointer;
 							}
 						}
 					}

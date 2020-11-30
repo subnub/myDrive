@@ -18,7 +18,7 @@ class UserPeronsalService {
         
     }
     
-    addS3Storage = async(user: UserInterface, s3Data: any) => {
+    addS3Storage = async(user: UserInterface, s3Data: any, ipAddress: string | undefined) => {
 
         const {id, key, bucket} = s3Data;
 
@@ -28,9 +28,11 @@ class UserPeronsalService {
         await user.encryptS3Data(id, key, bucket);
 
         await user.save();
+
+        return await user.generateAuthToken(ipAddress);
     }
 
-    removeS3Storage = async(user: UserInterface) => {
+    removeS3Storage = async(user: UserInterface, ipAddress: string | undefined) => {
         
         const date = new Date();
 
@@ -40,6 +42,8 @@ class UserPeronsalService {
         user.personalStorageCanceledDate = date.getTime();
 
         await user.save();
+
+        return await user.generateAuthToken(ipAddress);
     }
 
     downloadPersonalFileList = async(user: userAccessType) => {

@@ -24,7 +24,7 @@ class PopupWindow extends React.Component {
                         {!this.props.popupFile.metadata.hasThumbnail ? <h3 className="popup-window__subtitle">No Preview Available</h3> : undefined}
             
                         {!this.props.popupFile.metadata.hasThumbnail ? <img className={this.props.state.imageClassname} src={this.props.state.image}/> 
-                        : <img className={this.props.state.imageClassname} onClick={this.props.setPhotoViewerWindow} src={this.props.state.image}/>}
+                        : <img className={this.props.state.imageClassname} onClick={this.props.setPhotoViewerWindow} src={this.props.state.image} onError={this.props.thumbnailOnError}/>}
 
                         <div className={this.props.state.spinnerClassname}>
                             {!this.props.popupFile.metadata.hasThumbnail ? undefined : <Spinner />}

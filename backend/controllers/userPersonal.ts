@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserInterface } from "../models/user";
 import UserServicePersonal from "../services/UserPersonalService";
+import { createLoginCookie } from "../cookies/createCookies";
 
 const UserProviderPersonal = new UserServicePersonal()
 
@@ -42,8 +43,11 @@ class UserPersonalController {
 
             const user = req.user;
             const s3Data = req.body;
+            const ipAddress = req.clientIp;
 
-            await UserProviderPersonal.addS3Storage(user, s3Data);
+            const {accessToken, refreshToken} = await UserProviderPersonal.addS3Storage(user, s3Data, ipAddress);
+
+            createLoginCookie(res, accessToken, refreshToken);
 
             res.send();
 
@@ -63,8 +67,11 @@ class UserPersonalController {
         try {
 
             const user = req.user;
+            const ipAddress = req.clientIp;
 
-            await UserProviderPersonal.removeS3Storage(user);
+            const {accessToken, refreshToken} = await UserProviderPersonal.removeS3Storage(user, ipAddress);
+
+            createLoginCookie(res, accessToken, refreshToken);
 
             res.send();
 

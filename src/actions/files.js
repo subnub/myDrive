@@ -176,6 +176,8 @@ export const startSetAllItems = (clearCache, parent="/", sortby="DEFAULT", searc
         `/folder-service/list?parent=${parent}&sortby=${sortby}&search=${search}&storageType=${storageType}`;
     
         const quickItemsURL = !env.googleDriveEnabled ? `/file-service/quick-list` : `/file-service-google-mongo/quick-list`;
+
+        console.log("google drive enabled", env.googleDriveEnabled);
     
         dispatch(setFiles([]))
         dispatch(setFolders([]))
@@ -224,6 +226,8 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
 
         if (isGoogle) {
 
+            console.log("is google")
+
             axios.get(`/file-service-google/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
                 
                 const googleList = results.data;
@@ -241,6 +245,8 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
                 console.log(err)
             })
         } else if (env.googleDriveEnabled && parent === "/") {
+
+            console.log("is not google")
 
             // Temp Google Drive API
             axios.get(`/file-service-google-mongo/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
@@ -263,6 +269,9 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
                 console.log(err)
             })
         } else {
+
+            console.log("is not google")
+
 
             axios.get(`/file-service/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
    
@@ -303,6 +312,8 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
 
         if (isGoogle) {
 
+            console.log("is google")
+
              // Temp Google Drive API
             axios.get(`/file-service-google/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}&pageToken=${pageToken}`).then((results) => {
             
@@ -324,6 +335,8 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
             })
 
         } else {
+
+            console.log("is not google")
 
             axios.get(`/file-service/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}`).then((results) => {
             

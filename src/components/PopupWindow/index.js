@@ -84,6 +84,16 @@ class PopupWindowContainer extends React.Component {
         })
     }
 
+    thumbnailOnError = () => {
+
+        this.setState(() => ({
+            ...this.state,
+            imageClassname: "popup-window__image",
+            spinnerClassname: "popup-window__spinner__wrapper popup-window--gone",
+            image: "/images/cloud-svg.svg"
+        }))
+    }
+
     handleClickOutside = (e) => {
 
         if (this.wrapperRef && !this.wrapperRef.current.contains(event.target)) {
@@ -99,6 +109,8 @@ class PopupWindowContainer extends React.Component {
         // }
             
         // };   
+
+        console.log("gettings stream video token")
         
         axios.get("/file-service/download/access-token-stream-video").then(() => {
 
@@ -173,11 +185,24 @@ class PopupWindowContainer extends React.Component {
 
         document.addEventListener('mousedown', this.handleClickOutside);
         
-        if (this.props.popupFile.metadata.hasThumbnail && !this.props.popupFile.metadata.isVideo) {
+        if (this.props.popupFile.metadata.hasThumbnail && !this.props.popupFile.metadata.isVideo && !this.props.popupFile.metadata.drive) {
 
             this.getThumbnail()
 
-        } else if (this.props.popupFile.metadata.isVideo) {
+        } else if (this.props.popupFile.metadata.drive && this.props.popupFile.metadata.hasThumbnail && !this.props.popupFile.metadata.googleDoc && !this.props.popupFile.metadata.isVideo) {
+
+            this.getThumbnail();
+
+        } else if (this.props.popupFile.metadata.drive && this.props.popupFile.metadata.hasThumbnail && !this.props.popupFile.metadata.isVideo) {
+
+            this.setState(() => ({
+                ...this.state,
+                imageClassname: "popup-window__image",
+                spinnerClassname: "popup-window__spinner__wrapper popup-window--gone",
+                image: "/images/cloud-svg.svg"
+            }))
+
+        }else if (this.props.popupFile.metadata.isVideo) {
 
             this.getVideo();
         }
@@ -203,6 +228,7 @@ class PopupWindowContainer extends React.Component {
                 hidePopupWindow={this.hidePopupWindow}
                 state={this.state}
                 setPhotoViewerWindow={this.setPhotoViewerWindow}
+                thumbnailOnError={this.thumbnailOnError}
                 {...this.props}
                 />
     }

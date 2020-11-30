@@ -43,8 +43,8 @@ class FileItemContainer extends React.Component {
         // const imageClassname = this.props.listView ? "file__image__listview--no-opacity" : "file__image--no-opacity"
         const imageClassname = "noSelect"
 
-        if (this.props.metadata.drive) {
-          
+        if (this.props.metadata.drive && !this.props.metadata.googleDoc) {
+
             return await this.setState(() => ({
                 ...this.state,
                 imageSrc: this.props.metadata.thumbnailID,

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserInterface } from "../models/user";
 import UserServiceGoogle from "../services/UserGoogle";
+import { createLoginCookie } from "../cookies/createCookies";
 
 const UserProviderGoogle = new UserServiceGoogle();
 
@@ -64,8 +65,11 @@ class UserGoogleController {
 
             const user = req.user;
             const code = req.body.code;
+            const ipAddress = req.clientIp;
 
-            await UserProviderGoogle.addGoogleStorage(user, code);
+            const {accessToken, refreshToken} = await UserProviderGoogle.addGoogleStorage(user, code, ipAddress);
+
+            createLoginCookie(res, accessToken, refreshToken);
 
             res.send();
 
@@ -85,8 +89,11 @@ class UserGoogleController {
         try {
 
             const user = req.user
+            const ipAddress = req.clientIp;
 
-            await UserProviderGoogle.removeGoogleStorage(user);
+            const {accessToken, refreshToken} = await UserProviderGoogle.removeGoogleStorage(user, ipAddress);
+
+            createLoginCookie(res, accessToken, refreshToken);
 
             res.send();
 

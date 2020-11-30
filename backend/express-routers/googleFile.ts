@@ -2,6 +2,7 @@ import {Router} from "express";
 import auth from "../middleware/auth";
 import GoogleFileController from "../controllers/googleFile";
 import authFullUser from "../middleware/authFullUser";
+import authStreamVideo from "../middleware/authStreamVideo";
 
 const googleController = new GoogleFileController();
 
@@ -21,15 +22,15 @@ router.patch("/file-service-google/rename", authFullUser, googleController.renam
 
 router.delete("/file-service-google/remove", authFullUser, googleController.removeFile);
 
-router.get("/file-service-google/download/:id/:tempToken", authFullUser, googleController.downloadFile);
+router.get("/file-service-google/download/:id", authFullUser, googleController.downloadFile);
 
-router.get("/file-service-google-doc/download/:id/:tempToken", authFullUser, googleController.downloadDoc);
+router.get("/file-service-google-doc/download/:id", authFullUser, googleController.downloadDoc);
 
 router.get("/file-service-google/thumbnail/:id", authFullUser, googleController.getThumbnail);
 
 router.get("/file-service-google/full-thumbnail/:id", authFullUser, googleController.getFulllThumbnail);
 
-router.get("/file-service-google/stream-video/:id/:tempToken/:uuid", authFullUser, googleController.streamVideo);
+router.get("/file-service-google/stream-video/:id", authStreamVideo, googleController.streamVideo);
 
 router.post("/file-service-google/upload", authFullUser, googleController.uploadFile);
 

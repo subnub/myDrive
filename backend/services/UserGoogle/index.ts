@@ -27,7 +27,7 @@ class UserGoogleService {
         return url;
     }
 
-    addGoogleStorage = async(user: UserInterface, code: string) => {
+    addGoogleStorage = async(user: UserInterface, code: string, ipAddress: string | undefined) => {
 
         const redirectURL = env.remoteURL + "/add-google-account";
 
@@ -42,7 +42,7 @@ class UserGoogleService {
             redirectURL,
         );
 
-        return new Promise((resolve, reject) => {
+        return new Promise<{accessToken: string, refreshToken: string}>((resolve, reject) => {
             oauth2Client.getToken(code, async(err, tokens) => {
 
                 if (!err) {
@@ -51,7 +51,9 @@ class UserGoogleService {
     
                     user.encryptDriveTokenData(token);
 
-                    resolve();
+                    const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+
+                    resolve({accessToken, refreshToken});
                     
                 } else {
                    reject("Get Google Token Error")
@@ -60,12 +62,14 @@ class UserGoogleService {
         })
     }
 
-    removeGoogleStorage = async(user: UserInterface) => {
+    removeGoogleStorage = async(user: UserInterface, ipAddress: string | undefined) => {
 
         user.googleDriveEnabled = undefined;
         user.googleDriveData = undefined;
 
         await user.save();
+
+        return await user.generateAuthToken(ipAddress);
     }
 }
 
