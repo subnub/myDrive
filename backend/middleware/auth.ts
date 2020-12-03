@@ -47,7 +47,11 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
         next();
 
     } catch (e) {
-        console.log("\nAuthorization Middleware Error:", e.message);
+
+        if (e.message !== "No Access Token" && 
+        e.message !== "No User" &&
+        e.message !== "Email Not Verified") console.log("\nAuthorization Middleware Error:", e.message);
+        
         res.status(401).send("Error Authenticating");
     }
 }

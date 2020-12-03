@@ -16,11 +16,6 @@ type jwtType = {
     time: number
 }
 
-// type userAccessType = {
-//     _id: string,
-//     emailVerified: boolean,
-//     email: string,
-// }
 const removeOldTokens = async(userID: string, ipAddress: string | undefined, oldTime: number) => {
 
     try {
@@ -41,10 +36,6 @@ const removeOldTokens = async(userID: string, ipAddress: string | undefined, old
 const authRefresh = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
-
-        console.log("\nrefresh token auth")
-
-        //if (true === true) throw new Error("test");
 
         const refreshToken = req.cookies["refresh-token"];
 
@@ -82,7 +73,11 @@ const authRefresh = async(req: RequestType, res: Response, next: NextFunction) =
         next();
 
     } catch (e) {
-        console.log("\nAuthorization Refresh Middleware Error:", e.message);
+
+        if (e.message !== "No Refresh Token" && 
+        e.message !== "No User" &&
+        e.message !== "Refresh Token Not Found") console.log("\nAuthorization Refresh Middleware Error:", e.message);
+
         res.status(401).send("Error Refreshing Token");
     }
 }

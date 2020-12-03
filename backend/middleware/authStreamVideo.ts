@@ -55,7 +55,7 @@ const authStreamVideo = async(req: RequestType, res: Response, next: NextFunctio
 
         const accessTokenStreamVideo = req.cookies["video-access-token"];
 
-        if (!accessTokenStreamVideo) throw new Error("No Stream Video Access Token");
+        if (!accessTokenStreamVideo) throw new Error("No Access Token");
 
         const decoded = jwt.verify(accessTokenStreamVideo, env.passwordAccess!) as jwtType;
 
@@ -63,7 +63,7 @@ const authStreamVideo = async(req: RequestType, res: Response, next: NextFunctio
 
         const user = await User.findById(new ObjectID(decoded._id));
 
-        if (!user) throw new Error("No User Stream Video");
+        if (!user) throw new Error("No User");
 
         const encrpytionKey = user.getEncryptionKey();
         const encryptedToken = user.encryptToken(accessTokenStreamVideo, encrpytionKey, decoded.iv);
@@ -82,7 +82,7 @@ const authStreamVideo = async(req: RequestType, res: Response, next: NextFunctio
             }
         }
 
-        if (!tokenFound) throw new Error("Refresh Token Not Found");
+        if (!tokenFound) throw new Error("Access Token Not Found");
 
         req.user = user;
         req.accessTokenStreamVideo = encryptedToken;
@@ -90,7 +90,11 @@ const authStreamVideo = async(req: RequestType, res: Response, next: NextFunctio
         next();
 
     } catch (e) {
-        console.log("\nAuthorization Middleware Error:", e.message);
+
+        if (e.message !== "No Access Token" && 
+        e.message !== "No User" &&
+        e.message !== "Access Token Not Found") console.log("\nAuthorization Stream Video Middleware Error:", e.message);
+        
         res.status(401).send("Error Authenticating");
     }
 }

@@ -26,8 +26,6 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
-        console.log("\nAUTH NO EMAIL");
-
         const accessToken = req.cookies["access-token"];
 
         if (!accessToken) throw new Error("No Access Token");
@@ -48,7 +46,10 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
         next();
 
     } catch (e) {
-        console.log("\nAuthorization Middleware No Email Verifiaction Error:", e.message);
+
+        if (e.message !== "No Access Token" && 
+        e.message !== "No User") console.log("\nAuthorization No Email Verification Middleware Error:", e.message);
+
         return res.status(401).send("Error Authenticating");
     }
 }

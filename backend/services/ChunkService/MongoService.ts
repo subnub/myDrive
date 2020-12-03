@@ -284,7 +284,6 @@ class MongoService implements ChunkInterface {
         // And and helping me understand how the IVs work.
         // Also fuck you Apple, Safari is turning into 
         // Internet explorer at this point. 
-        // Thanks Tim Apple
 
         const userID = user._id;
         const currentFile = await dbUtilsFile.getFileInfo(fileID, userID);
