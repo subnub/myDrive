@@ -32,7 +32,7 @@ const MainSection = React.forwardRef((props, ref) => {
                     {props.routeType === "search" ? 
                     <div class="file__control--panel folder__view" style={{paddingBottom:"0", marginBottom:"-50px"}}>
                         <div class="results__files">
-                        <h2><span class="counter__result">{props.files.length + props.folders.length}</span> <span class="result__word">results</span> for <span class="result__search--word">{props.cachedSearch}</span></h2>
+                        <h2><span class="counter__result">{props.files.length + props.folders.length >= 50 ? "50+" : props.files.length + props.folders.length}</span> <span class="result__word">results</span> for <span class="result__search--word">{props.cachedSearch}</span></h2>
                         <p class="searching__result">You are searching in <span class="root__parent">{props.parent === "/" ? "Home" : props.parentNameList.length !== 0 ? props.parentNameList[props.parentNameList.length - 1] : "Unknown"}</span> <span class="spacer"><img style={{height:"11px", marginTop:"2px", display:"none"}} src="/assets/smallspacer.svg" alt="spacer"/></span><span class="current__folder"></span> <a href="#" style={{display:"none"}} class='search__filter--global'>Show results from everywhere</a></p>
 						</div>
                     </div> : undefined}

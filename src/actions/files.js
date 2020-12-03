@@ -316,6 +316,8 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
 
     return (dispatch) => {
 
+        console.log("search", search)
+
         //dispatch(setLoading(true))
 
         dispatch(setLoadingMoreItems(true));

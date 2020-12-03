@@ -48,6 +48,7 @@ class HomePageContainer extends React.Component {
                 this.props.dispatch(startResetParentList());
 
             } else if (pathname.includes("/search")) {
+                console.log("login check set search")
                 this.setSearchItems();
                 return;
 
@@ -90,6 +91,7 @@ class HomePageContainer extends React.Component {
         const idSplit = isGoogle ? history.location.pathname.split("/folder-google/") : isPersonal ? history.location.pathname.split("/folder-personal/") : history.location.pathname.split("/folder/");
         const id = idSplit[1];
     
+        this.props.dispatch(setSearch(""))
         this.props.dispatch(setCurrentRouteType("folder"))
         isGoogle ? this.props.dispatch(setIsGoogle()) : this.props.dispatch(setNotGoogle())
         this.props.dispatch(setQuickFiles([]));
@@ -120,6 +122,7 @@ class HomePageContainer extends React.Component {
 
         if (pathname === "/home") {
 
+            this.props.dispatch(setSearch(""))
             this.getFiles();
             this.props.dispatch(startSetStorage());
             this.props.dispatch(resetCurrentlySearching());
@@ -144,7 +147,7 @@ class HomePageContainer extends React.Component {
             this.props.dispatch(startSetFolders(undefined, undefined, value));
             this.props.dispatch(setParent)
             this.props.dispatch(setParentList(["/"], ["Home"]))   
-            this.props.dispatch(setSearch(""))
+            // this.props.dispatch(setSearch(""))
             this.props.dispatch(startSetStorage());
 
         }
@@ -199,7 +202,7 @@ class HomePageContainer extends React.Component {
         this.props.dispatch(startSetFileAndFolderItems("",parent, undefined, value, undefined, storageType, folderSearch))
         this.props.dispatch(setCurrentlySearching());
         parent ? this.props.dispatch(startSetParentList(parent)) : this.props.dispatch(setParentList(["/"], ["Home"]))       
-        this.props.dispatch(setSearch(""))
+        this.props.dispatch(setSearch(value))
         this.props.dispatch(startSetStorage());
         this.props.dispatch(resetStorageSwitcherStorage())
         this.props.dispatch(setQuickFiles([]))
@@ -223,6 +226,7 @@ class HomePageContainer extends React.Component {
            
         } else if (this.lastLocationKey !== history.location.key) {
 
+            this.props.dispatch(setSearch(""))
             this.props.dispatch(setCurrentRouteType("home"))
             this.props.dispatch(setNotGoogle());
             this.getFiles(this.clearCache);
