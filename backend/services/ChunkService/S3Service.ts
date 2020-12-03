@@ -26,6 +26,7 @@ import DbUtilFile from "../../db/utils/fileUtils/index";
 import s3Auth from "../../db/S3Personal";
 import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
+import ForbiddenError from "../../utils/ForbiddenError";
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -39,7 +40,7 @@ class S3Service implements ChunkInterface {
 
         const password = user.getEncryptionKey(); 
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const initVect = crypto.randomBytes(16);
 
@@ -116,7 +117,7 @@ class S3Service implements ChunkInterface {
 
         const password = user.getEncryptionKey(); 
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const initVect = crypto.randomBytes(16);
 
@@ -191,7 +192,7 @@ class S3Service implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+        if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
         const {s3Storage, bucket} = await this.getS3Auth(currentFile, user);
 
@@ -224,7 +225,7 @@ class S3Service implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+        if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
         const {s3Storage, bucket} = await this.getS3Auth(currentFile, user);
 
@@ -258,7 +259,7 @@ class S3Service implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const fileSize = currentFile.metadata.size;
 
@@ -367,13 +368,13 @@ class S3Service implements ChunkInterface {
 
          const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
     
         if (thumbnail.owner !== user._id.toString()) {
 
-            throw new NotAuthorizedError('Thumbnail Unauthorized Error');
+            throw new ForbiddenError('Thumbnail Unauthorized Error');
         }
 
         const iv = thumbnail.IV!;
@@ -406,7 +407,7 @@ class S3Service implements ChunkInterface {
         const password = user.getEncryptionKey();
         const IV = file.metadata.IV.buffer as Buffer;
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const {s3Storage, bucket} = await this.getS3Auth(file, user);
 
@@ -439,7 +440,7 @@ class S3Service implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+        if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
         const IV = file.metadata.IV.buffer as Buffer;
 

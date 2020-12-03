@@ -27,6 +27,7 @@ import fixStartChunkLength from "./utils/fixStartChunkLength";
 import Folder, { FolderInterface } from "../../models/folder";
 import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
+import ForbiddenError from "../../utils/ForbiddenError";
 const StreamSkip = require("stream-skip");
 
 const dbUtilsFile = new DbUtilFile();
@@ -42,7 +43,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey(); 
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const initVect = crypto.randomBytes(16);
 
@@ -113,7 +114,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey(); 
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const initVect = crypto.randomBytes(16);
 
@@ -158,7 +159,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const filePath = currentFile.metadata.filePath!;
 
@@ -187,7 +188,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const filePath = currentFile.metadata.filePath!;
 
@@ -206,13 +207,13 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
     
         if (thumbnail.owner !== user._id.toString()) {
 
-            throw new NotAuthorizedError('Thumbnail Unauthorized Error');
+            throw new ForbiddenError('Thumbnail Unauthorized Error');
         }
 
         const iv = thumbnail.IV!;
@@ -242,7 +243,7 @@ class FileSystemService implements ChunkInterface {
         const password = user.getEncryptionKey();
         const IV = file.metadata.IV.buffer as Buffer;
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const readStream = fs.createReadStream(file.metadata.filePath!);
 
@@ -276,7 +277,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const fileSize = currentFile.metadata.size;
                     
@@ -381,7 +382,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+        if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
         const IV = file.metadata.IV.buffer as Buffer;
                    

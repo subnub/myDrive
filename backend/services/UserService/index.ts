@@ -11,6 +11,7 @@ import { google } from "googleapis";
 import jwt from "jsonwebtoken"
 import sendVerificationEmail from "../../utils/sendVerificationEmail";
 import sendPasswordResetEmail from "../../utils/sendPasswordResetEmail";
+import ForbiddenError from "../../utils/ForbiddenError";
 
 type UserDataType = {
     email: string,
@@ -132,7 +133,7 @@ class UserService {
 
         const isMatch = await bcrypt.compare(oldPassword, user.password);
 
-        if (!isMatch) throw new NotAuthorizedError("Change Passwords Do Not Match Error");
+        if (!isMatch) throw new ForbiddenError("Change Passwords Do Not Match Error");
 
         const encryptionKey = user.getEncryptionKey();
         
@@ -276,7 +277,7 @@ class UserService {
             user.emailVerified = true;
             await user.save();
         } else {
-            throw new NotAuthorizedError('Email Token Verification Failed')
+            throw new ForbiddenError('Email Token Verification Failed')
         }
     }
 
@@ -294,7 +295,7 @@ class UserService {
             await sendVerificationEmail(user, emailToken);
 
         } else {
-            throw new NotAuthorizedError("Email Already Authorized")
+            throw new ForbiddenError("Email Already Authorized")
         }
     }
 
@@ -333,7 +334,7 @@ class UserService {
             await user.changeEncryptionKey(encryptionKey!);
 
         } else {
-            throw new NotAuthorizedError("Reset Password Token Do Not Match")
+            throw new ForbiddenError("Reset Password Token Do Not Match")
         }
     }
     

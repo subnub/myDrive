@@ -22,6 +22,7 @@ import getPrevIVMongo from "./utils/getPrevIVMongo";
 import awaitStreamVideo from "./utils/awaitStreamVideo";
 import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
+import ForbiddenError from "../../utils/ForbiddenError";
 
 const conn = mongoose.connection;
 
@@ -37,7 +38,7 @@ class MongoService implements ChunkInterface {
 
         const password = user.getEncryptionKey(); 
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         let bucketStream: GridFSBucketWriteStream;
 
@@ -96,7 +97,7 @@ class MongoService implements ChunkInterface {
         
         const password = user.getEncryptionKey(); 
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const initVect = crypto.randomBytes(16);
 
@@ -140,7 +141,7 @@ class MongoService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const bucket = new mongoose.mongo.GridFSBucket(conn.db);
 
@@ -168,7 +169,7 @@ class MongoService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const bucket = new mongoose.mongo.GridFSBucket(conn.db);
 
@@ -186,13 +187,13 @@ class MongoService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
     
         if (thumbnail.owner !== user._id.toString()) {
 
-            throw new NotAuthorizedError('Thumbnail Unauthorized Error');
+            throw new ForbiddenError('Thumbnail Unauthorized Error');
         }
 
         const iv =  thumbnail.data.slice(0, 16);
@@ -220,7 +221,7 @@ class MongoService implements ChunkInterface {
         const password = user.getEncryptionKey();
         const IV = file.metadata.IV.buffer as Buffer;
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const readStream = bucket.openDownloadStream(new ObjectID(fileID))
 
@@ -249,7 +250,7 @@ class MongoService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+        if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
         const bucket = new mongoose.mongo.GridFSBucket(conn.db);
 
@@ -292,7 +293,7 @@ class MongoService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const fileSize = currentFile.metadata.size;
                     
