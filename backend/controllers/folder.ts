@@ -57,10 +57,9 @@ class FolderController {
     
         } catch (e) {
 
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nUpload Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -83,10 +82,9 @@ class FolderController {
 
         } catch (e) {
             
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nDelete Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -107,10 +105,10 @@ class FolderController {
             res.send(subfolderList);
 
         } catch (e) {
-            const code = e.code || 500
-
-            console.log("Get Full Subfolder List Error", e);
-            res.status(code).send(e);
+           
+            console.log("\nGet Subfolder List Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -135,10 +133,9 @@ class FolderController {
 
         } catch (e) {
             
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nDelete Personal Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -159,10 +156,9 @@ class FolderController {
 
         } catch (e) {
            
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nDelete All Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -183,10 +179,9 @@ class FolderController {
     
         } catch (e) {
 
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nGet Info Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -208,10 +203,9 @@ class FolderController {
     
         } catch (e) {
             
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nGet Subfolder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -233,10 +227,9 @@ class FolderController {
 
         } catch (e) {
             
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nGet Folder List Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -258,11 +251,9 @@ class FolderController {
 
         } catch (e) {
 
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
-
+            console.log("\nMove Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -284,11 +275,9 @@ class FolderController {
             
         } catch (e) {
     
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
-    
+            console.log("\nRename Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

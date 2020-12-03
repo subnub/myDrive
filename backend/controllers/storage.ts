@@ -50,8 +50,9 @@ class StorageController {
     
         } catch (e) {
     
-            console.log(e);
-            res.status(500).send(e);
+            console.log("\nGet Storage Error Storage Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

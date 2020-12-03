@@ -49,9 +49,10 @@ class UserGoogleController {
             res.send(url);
 
         } catch (e) {
-            const code = 500;
-            console.log("Create Google Storage URL Error", e);
-            res.status(code).send(e);
+            
+            console.log("\nCreate Storage URL Error Google User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -74,9 +75,10 @@ class UserGoogleController {
             res.send();
 
         } catch (e) {
-            const code = 500;
-            console.log("Add Google Storage Error", e);
-            res.status(code).send(e);
+            
+            console.log("\nAdd Google Storage Error Google User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -98,9 +100,10 @@ class UserGoogleController {
             res.send();
 
         } catch (e) {
-            const code = 500;
-            console.log("Remove Google Storage Error", e);
-            res.status(code).send(e);
+            
+            console.log("\nRemove Google Storage Error Google User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

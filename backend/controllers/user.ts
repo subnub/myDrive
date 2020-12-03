@@ -232,6 +232,7 @@ class UserController {
             res.send();
 
         } catch (e) {
+
             console.log("\nRefresh Storage Size User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
@@ -253,6 +254,7 @@ class UserController {
             res.send(userDetailed);
 
         } catch (e) {
+
             console.log("\nGet User Detailed User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
@@ -270,6 +272,7 @@ class UserController {
             res.send();
 
         } catch (e) {
+
             console.log("\nVerify Email User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
@@ -291,6 +294,7 @@ class UserController {
             res.send();
 
         } catch (e) {
+
             console.log("\nResend Email User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
@@ -308,6 +312,7 @@ class UserController {
             res.send();
 
         } catch (e) {
+
             console.log("\nSend Password Reset Email User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
@@ -326,6 +331,7 @@ class UserController {
             res.send();
 
         } catch (e) {
+
             console.log("\nReset Password User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
@@ -348,6 +354,7 @@ class UserController {
             res.send();
 
         } catch (e) {
+            
             console.log("\nAdd Name User Route Error:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();

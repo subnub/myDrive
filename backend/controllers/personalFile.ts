@@ -53,9 +53,8 @@ class PersonalFileController {
     
         } catch (e) {
 
-            const code = 500;
-            
-            console.log(e);
+            console.log("\nGet Thumbnail Error Personal File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
@@ -77,9 +76,10 @@ class PersonalFileController {
             await s3Service.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
-            const code = 500;
-            console.log(e.message, e.exception)
-            return res.status(code).send();
+            
+            console.log("\nGet Full Thumbnail Error Personal File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -104,9 +104,10 @@ class PersonalFileController {
             res.send(file);
     
         } catch (e) {
-            const code = 500;
-            console.log("s3 personal upload err", e.message, e.exception, e)
-            return res.status(code).send();
+            
+            console.log("\nUpload File Error Personal File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -123,10 +124,8 @@ class PersonalFileController {
     
         } catch (e) {
     
-            const code = 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nGet Public Download Error Personal File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         } 
     }
@@ -149,10 +148,8 @@ class PersonalFileController {
 
         } catch (e) {
 
-            const code = 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nStream Video Error Personal File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
@@ -166,8 +163,6 @@ class PersonalFileController {
     
         try {
 
-            console.log("download personal")
-
             const s3Service = new S3Service();
     
             const user = req.user;
@@ -177,10 +172,8 @@ class PersonalFileController {
     
         } catch (e) {
             
-            const code = 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nDownload File Error Personal File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         } 
     }
@@ -204,10 +197,9 @@ class PersonalFileController {
     
         } catch (e) {
             
-            const code = 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nDelete File Error Personal File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

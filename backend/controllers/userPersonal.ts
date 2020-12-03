@@ -52,9 +52,10 @@ class UserPersonalController {
             res.send();
 
         } catch (e) {
-            const code = 500;
-            console.log("Add S3 Storage Error", e);
-            res.status(code).send(e);
+            
+            console.log("\nAdd S3 Storage Error Personal User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -76,9 +77,10 @@ class UserPersonalController {
             res.send();
 
         } catch (e) {
-            const code = 500;
-            console.log("Remove S3 Storage Error", e);
-            res.status(code).send(e);
+            
+            console.log("\nRemove S3 Storage Error Personal User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -97,9 +99,10 @@ class UserPersonalController {
             res.send();
 
         } catch (e) {
-            const code = 500;
-            console.log("Remove S3 Storage Error", e);
-            res.status(code).send(e);
+            
+            console.log("\nRemove S3 Metadata Error Personal User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -123,10 +126,9 @@ class UserPersonalController {
 
         } catch (e) {
 
-            const code = 500;
-
-            console.log("Download personal file list error", e);
-            res.status(code).send(e);
+            console.log("\nDownload S3 Metadata Error Personal User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -147,9 +149,10 @@ class UserPersonalController {
             res.send();
 
         } catch (e) {
-            const code = 500;
-            console.log("Upload personal file list error", e);
-            res.status(code).send(e);
+            
+            console.log("\nUpload S3 Metadata Error Personal User Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

@@ -49,9 +49,10 @@ class GoogleFolderController {
             res.send(folderList);
 
         } catch (e) {
-            console.log("Get Google Folder List Error", e);
-            const code = 500;
-            res.status(code).send()
+            
+            console.log("\nGet Google List Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -71,9 +72,10 @@ class GoogleFolderController {
             res.send(folderList);
 
         } catch (e) {
-            console.log("Get Google Mongo Folder List Error", e);
-            const code = 500;
-            res.status(code).send()
+           
+            console.log("\nGet Google/Mongo List Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -93,9 +95,10 @@ class GoogleFolderController {
             res.send(folderInfo);
 
         } catch (e) {
-            console.log("Get Google Info Error", e);
-            const code = 500;
-            res.status(code).send()
+            
+            console.log("\nGet Info Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -115,9 +118,10 @@ class GoogleFolderController {
             res.send(nameAndIDList);
 
         } catch (e) {
-            console.log("Get Google Subfolder Error", e);
-            const code = 500;
-            res.status(code).send()
+            
+            console.log("\nGet Subfolder List Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
 
     }
@@ -138,9 +142,10 @@ class GoogleFolderController {
             res.send(fullSubfolderList);
 
         } catch (e) {
-            console.log("Get Google Full Subfolder Error", e);
-            const code = 500;
-            res.status(code).send()
+            
+            console.log("\nGet Full Subfolder List Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -161,9 +166,10 @@ class GoogleFolderController {
             res.send();
 
         } catch (e) {
-            console.log("Rename Google Folder Error", e);
-            const code = 500;
-            res.status(code).send()
+            
+            console.log("\nRename Folder Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -183,9 +189,10 @@ class GoogleFolderController {
             res.send();
 
         } catch (e) {
-            console.log("Remove Google Folder Error", e);
-            const code = 500;
-            res.status(code).send()
+            
+            console.log("\nRemove Folder Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -205,9 +212,10 @@ class GoogleFolderController {
             res.send(createdFolder);
 
         } catch (e) {
-            console.log("Upload Google Folder Error", e);
-            const code = 500;
-            res.status(code).send()
+            
+            console.log("\nUpload Folder Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -228,9 +236,10 @@ class GoogleFolderController {
             res.send();
 
         } catch (e) {
-            console.log("Move Folder Google Error", e);
-            const code = 500;
-            res.status(code).send() 
+            
+            console.log("\nMove Folder Error Google Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     } 
 }

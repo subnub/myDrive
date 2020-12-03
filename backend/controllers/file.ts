@@ -86,6 +86,7 @@ class FileController {
             await this.chunkService.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
+
             console.log("\nGet Thumbnail Full Error File Route:", e.message);
             const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
@@ -111,12 +112,11 @@ class FileController {
             res.send(file);
             
         } catch (e) {
-            console.log("sending error upload")
-            const code = e.code || 500;
-            console.log(e.message, e.exception)
+
+            console.log("\nUploading File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.writeHead(code, {'Connection': 'close'})
             res.end();
-            //return res.status(code).send();
         }
     }
 
@@ -131,10 +131,8 @@ class FileController {
     
         } catch (e) {
     
-            const code = e.code || 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nGet Public Download Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         } 
     }
@@ -158,9 +156,8 @@ class FileController {
     
         } catch (e) {
 
-            const code = e.code || 500;
-
-            console.log(e);
+            console.log("\nRemove Public Link Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
@@ -183,9 +180,8 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
+            console.log("\nMake Public Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
     }
@@ -203,10 +199,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Public Info Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -227,10 +222,9 @@ class FileController {
 
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nMake One Time Public Link Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
 
     }
@@ -252,10 +246,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet File Info Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -275,10 +268,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Quick List Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -290,23 +282,18 @@ class FileController {
     
         try {
 
-            console.log("Get file list")
-
             const user = req.user;
             const query = req.query;
             
             const fileList = await fileService.getList(user, query);
 
             res.send(fileList);
-
-            console.log("file list send", fileList.length)
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet File List Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -326,10 +313,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Download Token Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -424,10 +410,9 @@ class FileController {
             
         } catch (e) {
 
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nRemove Temp Token Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -447,10 +432,8 @@ class FileController {
 
         } catch (e) {
 
-            const code = e.code || 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nStream Video Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
@@ -467,16 +450,12 @@ class FileController {
             const user = req.user;
             const fileID = req.params.id;
 
-            console.log("DOWNLOAD FILE USER ID", user._id);
-
             await this.chunkService.downloadFile(user, fileID, res);
     
         } catch (e) {
             
-            const code = e.code || 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nDownload File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         } 
     }
@@ -499,10 +478,9 @@ class FileController {
     
         } catch (e) {
     
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Suggested List Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -524,10 +502,9 @@ class FileController {
             
         } catch (e) {
     
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nRename File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     
     }
@@ -552,8 +529,9 @@ class FileController {
             res.send()
 
         } catch (e) {
-            console.log("Send Email Share Error", e);
-            const code = e.code || 500;
+           
+            console.log("\nSend Share Email Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
     }
@@ -578,10 +556,9 @@ class FileController {
             
         } catch (e) {
     
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nMove File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
 
     }
@@ -603,10 +580,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nDelete File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }
