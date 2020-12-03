@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import React from "react";
 import axios from "../../axiosInterceptor";
 import Swal from "sweetalert2";
+import env from "../../enviroment/envFrontEnd";
 
 class LoginPageContainer extends React.Component {
 
@@ -224,7 +225,13 @@ class LoginPageContainer extends React.Component {
 
     componentDidMount = () => {
 
+        env.emailAddress = "";
+        this.setState(() => ({
+            ...this.state,
+            email: "",
+        }))
         this.loginWithToken();
+
     }
 
     render() {

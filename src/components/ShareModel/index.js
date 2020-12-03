@@ -44,7 +44,7 @@ class ShareModelContainer extends React.Component {
 
         const linkType = response.data.metadata.linkType;
 
-        const shareURL = this.props.shareSelected.metadata.drive ? response.data.metadata.link : `/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
+        const shareURL = this.props.shareSelected.metadata.drive ? response.data.metadata.link : `${currentURL}/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
 
         console.log("share link type", linkType, response.data);
 
@@ -123,6 +123,15 @@ class ShareModelContainer extends React.Component {
 
     if (this.state.sendTo.length === 0 || !this.state.loaded) return;
 
+    if (!this.state.shared) {
+      Swal.fire({
+        icon: 'error',
+        title: 'You must share the file first',
+        text: 'Select make public or make one time before sending email',
+      })
+      return;
+    }
+
     console.log("sending email share request")
 
     const data = {
@@ -146,6 +155,11 @@ class ShareModelContainer extends React.Component {
 
     }).catch((err) => {
         console.log("share file email failed", err)
+        Swal.fire({
+          icon: 'error',
+          title: 'Cannot send share email',
+          text: 'An error occurred when sending share email',
+        })
     })
 
   }
@@ -242,6 +256,11 @@ class ShareModelContainer extends React.Component {
 
     }).catch((err) => {
         console.log(err)
+        Swal.fire({
+          icon: 'error',
+          title: 'Cannot remove public link',
+          text: 'An error occurred when removing public link',
+        })
     })
     
   }
@@ -295,6 +314,11 @@ class ShareModelContainer extends React.Component {
 
             }).catch((err) => {
                 console.log(err)
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Cannot make public',
+                  text: 'An error occurred when making file public'
+                })
             })
         }
       })
@@ -350,6 +374,11 @@ class ShareModelContainer extends React.Component {
       
               }).catch((err) => {
                   console.log(err)
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Cannot make one time public link',
+                    text: 'An error occurred when making one time public link',
+                  })
               })
             
 
@@ -382,6 +411,11 @@ class ShareModelContainer extends React.Component {
         }}))
     }).catch((err) => {
         console.log(err)
+        Swal.fire({
+          icon: 'error',
+          title: 'Cannot remove public link',
+          text: 'An error occurred when removing public link',
+        })
     })
   }
 

@@ -10,6 +10,8 @@ export const startSetStorage = () => {
 
     return (dispatch) => {
 
+        return;
+
         if (env.disableStorage === "true") {
             return;
         }

@@ -35,6 +35,7 @@ const LoginPage = (props) => {
                                 <div class="confirm__email">
                                     <h2>Confirm your email address</h2>
                                     <p>We've sent a confirmation email to <span>{env.emailAddress ? env.emailAddress.length !== 0 ? env.emailAddress : props.state.email : props.state.email}</span>.</p>
+                                    <p>Refresh this page after confirming email.</p>
                                     <form action="">
                                         {/* <div class="group__input">
                                             <input type="text" placeholder="Enter one-time PIN"/>
@@ -153,7 +154,6 @@ const LoginPage = (props) => {
                             <div class="checkemail__pass" style={{display:"none"}}>
                                 <h2>Check your email</h2>
                                 <p>If the email address matches any in our database, we’ll send you an email with instructions on how to reset your password</p>
-                                <p>If you still have problems accessing your account, please send an email to support@piedpiperapp.com</p>
                             </div>
                         
                         </div>

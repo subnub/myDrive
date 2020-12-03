@@ -143,24 +143,24 @@ class UserService {
         user.tempTokens = [];
         user.passwordLastModified = date.getTime();
         
-        if (oldRefreshToken) {
-            const decoded = jwt.verify(oldRefreshToken, env.passwordRefresh!) as jwtType;  
-            const encrpytionKey = user.getEncryptionKey();
-            const encryptedToken = user.encryptToken(oldRefreshToken, encrpytionKey, decoded.iv);
+        // if (oldRefreshToken) {
+        //     const decoded = jwt.verify(oldRefreshToken, env.passwordRefresh!) as jwtType;  
+        //     const encrpytionKey = user.getEncryptionKey();
+        //     const encryptedToken = user.encryptToken(oldRefreshToken, encrpytionKey, decoded.iv);
 
-            for (let i = 0; i < user.tokens.length; i++) {
+        //     for (let i = 0; i < user.tokens.length; i++) {
 
-                const currentEncryptedToken = user.tokens[i].token;
+        //         const currentEncryptedToken = user.tokens[i].token;
     
-                if (currentEncryptedToken === encryptedToken) {
+        //         if (currentEncryptedToken === encryptedToken) {
 
-                    console.log("Refresh Token Found Logout!");
-                    user.tokens.splice(i, 1);
-                    await user.save();
-                    break;
-                }
-            }
-        }
+        //             console.log("Refresh Token Found Logout!");
+        //             user.tokens.splice(i, 1);
+        //             await user.save();
+        //             break;
+        //         }
+        //     }
+        // }
 
         await user.save();
         await user.changeEncryptionKey(encryptionKey!);
@@ -276,6 +276,8 @@ class UserService {
         if (encryptedToken === user.emailToken) {
             user.emailVerified = true;
             await user.save();
+            return user;
+            
         } else {
             throw new ForbiddenError('Email Token Verification Failed')
         }

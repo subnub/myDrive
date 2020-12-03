@@ -537,8 +537,8 @@ class SettingsPageContainer extends React.Component {
 
     axios.post(`/user-service/change-password/`, data).then((results) => {
                     
-      const newToken = results.data;
-      window.localStorage.setItem("token", newToken);
+      //const newToken = results.data;
+      // window.localStorage.setItem("token", newToken);
 
       this.changeShowChangePassword()
       //this.getUserDetails()

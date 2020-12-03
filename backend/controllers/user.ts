@@ -266,8 +266,13 @@ class UserController {
         try {
 
             const verifyToken = req.body.emailToken;
+            const ipAddress = req.clientIp;
 
-            await UserProvider.verifyEmail(verifyToken);
+            const user = await UserProvider.verifyEmail(verifyToken);
+
+            const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+
+            createLoginCookie(res, accessToken, refreshToken);
 
             res.send();
 
