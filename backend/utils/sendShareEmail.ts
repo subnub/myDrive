@@ -5,6 +5,10 @@ const currentURL = env.remoteURL;
 
 const sendShareEmail = async (file: any, respient: string) => {
 
+    if (process.env.NODE_ENV === "test") {
+        return;
+    }
+
     const apiKey: any = env.sendgridKey;
     const sendgridEmail:any = env.sendgridEmail;
 

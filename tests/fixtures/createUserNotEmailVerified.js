@@ -14,9 +14,9 @@ const createUser = async() => {
     const userData = {
         _id: userID,
         name: "Test User", 
-        email: "test2@test.com", 
+        email: "test23@test.com", 
         password: "12345678",
-        emailVerified: true,
+        emailVerified: false,
         tokens: []
     }
 

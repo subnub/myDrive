@@ -257,9 +257,6 @@ class UserService {
         if (!user.storageDataPersonal || (!user.storageDataPersonal.storageSize && !user.storageDataPersonal.failed)) user.storageDataPersonal = {storageSize: 0}
         if (!user.storageDataGoogle || (!user.storageDataGoogle.storageLimit && !user.storageDataGoogle.storageSize && !user.storageDataGoogle.failed)) user.storageDataGoogle = {storageLimit: 0, storageSize: 0}
 
-        delete user.privateKey;
-        delete user.publicKey;
-
         return user;
     }
 
@@ -341,6 +338,8 @@ class UserService {
     }
     
     addName = async(userID: string, name: string) => {
+
+        if (!name || name.length === 0) throw new ForbiddenError("No name")
 
         const user = await User.findById(userID);
 

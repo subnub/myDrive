@@ -4,6 +4,10 @@ import sgMail from "@sendgrid/mail";
 
 const sendVerificationEmail = async (user: UserInterface, emailToken: string) => {
 
+    if (process.env.NODE_ENV === "test") {
+        return;
+    }
+
     const apiKey: any = env.sendgridKey;
     const sendgridEmail:any = env.sendgridEmail;
     const url = env.remoteURL + `/verify-email/${emailToken}`    
