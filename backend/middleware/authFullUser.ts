@@ -36,7 +36,7 @@ const authFullUser = async(req: RequestType, res: Response, next: NextFunction) 
         const user = decoded.user;
 
         if (!user) throw new Error("No User");
-        if (!user.emailVerified) throw new Error("Email Not Verified")
+        if (!user.emailVerified && !env.disableEmailVerification) throw new Error("Email Not Verified")
 
         const fullUser = await User.findById(user._id);
 

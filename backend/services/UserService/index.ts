@@ -106,7 +106,7 @@ class UserService {
 
     create = async(userData: any, ipAddress: string | undefined) => {
 
-        const user = new User({email: userData.email, password: userData.password});
+        const user = new User({email: userData.email, password: userData.password, emailVerified: env.disableEmailVerification});
         await user.save();
 
         if (!user) throw new NotFoundError("User Not Found");
@@ -116,7 +116,7 @@ class UserService {
         const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
         const emailToken = await user.generateEmailVerifyToken();
 
-        await sendEmailVerification(user, emailToken);
+        if (!env.disableEmailVerification) await sendEmailVerification(user, emailToken);
 
         if (!accessToken || !refreshToken) throw new InternalServerError("Could Not Create New User Error");
 

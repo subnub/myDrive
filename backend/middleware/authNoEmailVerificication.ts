@@ -36,7 +36,7 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
         if (!user) throw new Error("No User");
 
-        if (!user.emailVerified) {
+        if (!user.emailVerified && !env.disableEmailVerification) {
             const ipAddress = req.clientIp;
             user = await userUpdateCheck(res, user._id, ipAddress);
         }

@@ -302,7 +302,7 @@ userSchema.methods.generateAuthToken = async function(ipAddress: string | undefi
     const date = new Date();
     const time = date.getTime();
 
-    const userObj = {_id: user._id, emailVerified: user.emailVerified, email: user.email, s3Enabled: user.s3Enabled, googleDriveEnabled: user.googleDriveEnabled}
+    const userObj = {_id: user._id, emailVerified: user.emailVerified || env.disableEmailVerification, email: user.email, s3Enabled: user.s3Enabled, googleDriveEnabled: user.googleDriveEnabled}
     
     let accessToken = jwt.sign({user: userObj, iv}, env.passwordAccess!, {expiresIn: maxAgeAccess.toString()});
     let refreshToken = jwt.sign({_id:user._id.toString(), iv, time}, env.passwordRefresh!, {expiresIn: maxAgeRefresh.toString()});

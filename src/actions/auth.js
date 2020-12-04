@@ -67,7 +67,7 @@ export const startCreateAccount = (email, password) => {
             const id = response.data.user._id;
             const emailVerified = response.data.user.emailVerified;
 
-            window.localStorage.setItem("token", token);
+            // window.localStorage.setItem("token", token);
     
             if (emailVerified) {
                 dispatch(setLoginFailed(false))
