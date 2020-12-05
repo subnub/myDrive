@@ -189,7 +189,7 @@ class MongoService implements ChunkInterface {
 
         if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
-        const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
+        const thumbnail = await Thumbnail.findById(new ObjectID(id)) as ThumbnailInterface;
     
         if (thumbnail.owner !== user._id.toString()) {
 

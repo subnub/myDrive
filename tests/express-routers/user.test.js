@@ -295,6 +295,45 @@ test("When not email verified should not change password", async() => {
     .expect(401);
 })
 
+test("When not email verified, but email verification disabled, should change password", async() => {
+
+    env.disableEmailVerification = true;
+
+    const appSession = session(app);
+
+    const {userData: userData2} = await createUserNotEmailVerified();
+    await loginUser(appSession, userData2);
+
+    const oldPassword = "12345678";
+    const newPassword = "987654321";
+
+    await appSession
+    .post(`/user-service/change-password`)
+    .send({
+        oldPassword, 
+        newPassword
+    })
+    .expect(200);
+
+    await request(app)
+    .post(`/user-service/login`)
+    .send({
+        email: userData2.email,
+        password: oldPassword
+    })
+    .expect(500);
+
+    await request(app)
+    .post(`/user-service/login`)
+    .send({
+        email: userData2.email,
+        password: newPassword
+    })
+    .expect(200);
+
+    env.disableEmailVerification = undefined;
+})
+
 test("When not giving email, should not create user", async() => {
 
     await request(app)
@@ -396,6 +435,37 @@ test("When not email verified should not get detailed user", async() => {
     await loginUser(appSession, userData2);
 
     await request(app).get("/user-service/user-detailed").send().expect(401);
+})
+
+test("When not email verified but email verification disabled should get detailed user", async() => {
+
+    env.disableEmailVerification = true;
+
+    const appSession = session(app);
+    
+    const {userData: userData2} = await createUserNotEmailVerified();
+    await loginUser(appSession, userData2);
+
+    const response = await appSession.get("/user-service/user-detailed").send().expect(200);
+
+    const responseData = response.body;
+    const email = responseData.email;
+    const username = responseData.username;
+    const password = responseData.password;
+    const emailVerified = responseData.emailVerified;
+    const tokens = responseData.tokens;
+    const publicKey = responseData.publicKey;
+    const privateKey = responseData.privateKey;
+
+    expect(email).toEqual(userData2.email);
+    expect(username).toEqual(userData2.username);
+    expect(password).toEqual(undefined);
+    expect(emailVerified).toEqual(false);
+    expect(tokens).toEqual(undefined);
+    expect(publicKey).toEqual(undefined);
+    expect(privateKey).toEqual(undefined)
+
+    env.disableEmailVerification = undefined;
 })
 
 test("When giving existing email should send password reset email", async() => {

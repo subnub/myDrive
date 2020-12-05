@@ -15,7 +15,8 @@ const createUser2 = async() => {
         _id: userID,
         name: "Test User", 
         email: "test3@test.com", 
-        password: "12345678",
+        password: "123456789",
+        emailVerified: true,
     }
 
     let user = new User(userData);
@@ -29,7 +30,7 @@ const createUser2 = async() => {
 
     await user.save();
 
-    return {user, token};
+    return {user, userData};
 }
 
 module.exports = createUser2;

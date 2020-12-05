@@ -28,6 +28,7 @@ import Folder, { FolderInterface } from "../../models/folder";
 import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
 import ForbiddenError from "../../utils/ForbiddenError";
+import { ObjectID } from "mongodb";
 const StreamSkip = require("stream-skip");
 
 const dbUtilsFile = new DbUtilFile();
@@ -209,7 +210,7 @@ class FileSystemService implements ChunkInterface {
 
         if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
-        const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
+        const thumbnail = await Thumbnail.findById(new ObjectID(id)) as ThumbnailInterface;
     
         if (thumbnail.owner !== user._id.toString()) {
 

@@ -27,6 +27,7 @@ import s3Auth from "../../db/S3Personal";
 import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
 import ForbiddenError from "../../utils/ForbiddenError";
+import { ObjectID } from "mongodb";
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -369,7 +370,7 @@ class S3Service implements ChunkInterface {
 
         if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
-        const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
+        const thumbnail = await Thumbnail.findById(new ObjectID(id)) as ThumbnailInterface;
     
         if (thumbnail.owner !== user._id.toString()) {
 

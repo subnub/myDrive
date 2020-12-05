@@ -2,7 +2,6 @@ import User from "../../../dist/models/user";
 import mongoose from "../../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../../fixtures/createUser");
-
 import UserService from "../../../dist/services/UserService";
 const userService = new UserService();
 

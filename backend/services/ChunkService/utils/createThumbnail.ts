@@ -50,7 +50,7 @@ const createThumbnail = (file: FileInterface, filename: string, user: UserInterf
                     await thumbnailModel.save();
     
                     const getUpdatedFile = await conn.db.collection("fs.files")
-                        .findOneAndUpdate({"_id": file._id}, {"$set": {"metadata.hasThumbnail": true, "metadata.thumbnailID": thumbnailModel._id}})
+                        .findOneAndUpdate({"_id": new ObjectID(file._id)}, {"$set": {"metadata.hasThumbnail": true, "metadata.thumbnailID": thumbnailModel._id}})
     
                     let updatedFile: FileInterface = getUpdatedFile.value;
     
