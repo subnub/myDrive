@@ -131,7 +131,7 @@ class FolderService {
         } else {
 
             searchQuery = new RegExp(searchQuery, 'i')
-            const folderList = await utilsFolder.getFolderListBySearch(userID, searchQuery, sortBy, type, parent, storageType, folderSearch, itemType);
+            const folderList = await utilsFolder.getFolderListBySearch(userID, searchQuery, sortBy, type, parent, storageType, folderSearch, itemType, s3Enabled);
 
             if (!folderList) throw new NotFoundError("Folder List Not Found Error");
 

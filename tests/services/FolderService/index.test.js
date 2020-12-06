@@ -9,50 +9,89 @@ const path = require("path");
 const ObjectID = require('mongodb').ObjectID
 import FolderService from "../../../dist/services/FolderService"
 const folderService = new FolderService();
+const createUserDbType = require("../../fixtures/createUserDbType");
+const createUser2 = require("../../fixtures/createUser2");
 
 let user;
 let folder;
 
+const waitForDatabase = () => {
+
+    return new Promise((resolve, reject) => {
+
+        if (conn.readyState !== 1) {
+
+            conn.once("open", () => {
+                
+                resolve();
+    
+            })
+
+        } else {
+
+            resolve();
+        }
+    
+    })
+}
+
 beforeEach(async(done) => {
 
-    if (conn.readyState === 0) {
+    await waitForDatabase();
 
-        conn.once("open", async() => {
+    const {user: gotUser} = await createUser();
+    user = gotUser;
 
-            const {user: gotUser} = await createUser();
-            user = gotUser;
-
-            const folderData = {
-                name: "bunny",
-                parent: "/",
-                owner: user._id,
-                parentList: ["/"]
-            }
-    
-            folder = new Folder(folderData);
-            await folder.save();
-
-            done();
-        })
-
-    } else {
-        
-        // user = await createUser();
-        const {user: gotUser} = await createUser();
-        user = gotUser;
-        
-        const folderData = {
-            name: "bunny",
-            parent: "/",
-            owner: user._id,
-            parentList: ["/"]
-        }
-
-        folder = new Folder(folderData);
-        await folder.save();
-
-        done();
+    const folderData = {
+        name: "bunny",
+        parent: "/",
+        owner: user._id,
+        parentList: ["/"]
     }
+
+    folder = new Folder(folderData);
+    await folder.save();
+
+    done();
+
+    // if (conn.readyState === 0) {
+
+    //     conn.once("open", async() => {
+
+    //         const {user: gotUser} = await createUser();
+    //         user = gotUser;
+
+    //         const folderData = {
+    //             name: "bunny",
+    //             parent: "/",
+    //             owner: user._id,
+    //             parentList: ["/"]
+    //         }
+    
+    //         folder = new Folder(folderData);
+    //         await folder.save();
+
+    //         done();
+    //     })
+
+    // } else {
+        
+    //     // user = await createUser();
+    //     const {user: gotUser} = await createUser();
+    //     user = gotUser;
+        
+    //     const folderData = {
+    //         name: "bunny",
+    //         parent: "/",
+    //         owner: user._id,
+    //         parentList: ["/"]
+    //     }
+
+    //     folder = new Folder(folderData);
+    //     await folder.save();
+
+    //     done();
+    // }
     
 })
 
@@ -307,4 +346,275 @@ test("When giving userID, folderID, and parentID, for folder with subitems, shou
     expect(updatedFolderThree.parentList[2].toString()).toBe(folderOne._id.toString());
     expect(updatedFolderThree.parentList[3].toString()).toBe(folderTwo._id.toString());
     expect(updatedFolderThree.parentList.length).toBe(4);
+})
+
+test("When searching for folder should return list of searched items", async() => {
+
+    const {user: user2} = await createUser2();
+
+    const folderData2 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"]
+    }
+
+
+    const folderData3 = {
+        name: "dog",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"]
+    }
+
+
+    const folder2 = new Folder(folderData2);
+    const folder3 = new Folder(folderData2);
+    const folder4 = new Folder(folderData3);
+
+    await folder2.save();
+    await folder3.save();
+    await folder4.save();
+
+    const folderList = await folderService.getFolderList(user2, {search: "bunny"})
+
+    expect(folderList.length).toBe(2);
+})
+
+test("When searching for list with personal folders should return list with personal folders", async() => {
+
+    const {user: user2} = await createUserDbType(true);
+
+    const folderData2 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+
+    const folderData3 = {
+        name: "dog",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"]
+    }
+
+
+    const folder2 = new Folder(folderData2);
+    const folder3 = new Folder(folderData2);
+    const folder4 = new Folder(folderData3);
+
+    await folder2.save();
+    await folder3.save();
+    await folder4.save();
+
+    const folderList = await folderService.getFolderList(user2, {search: "bunny"})
+
+    expect(folderList.length).toBe(2);
+})
+
+test("When user no longer has personal folders enabled, should return list with no personal folders when searching", async() => {
+
+    const {user: user2} = await createUserDbType();
+
+    const folderData2 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+    const folderData4 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+    }
+
+
+    const folderData3 = {
+        name: "dog",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"]
+    }
+
+
+    const folder2 = new Folder(folderData2);
+    const folder3 = new Folder(folderData4);
+    const folder4 = new Folder(folderData3);
+
+    await folder2.save();
+    await folder3.save();
+    await folder4.save();
+
+    const folderList = await folderService.getFolderList(user2, {search: "bunny"})
+
+    expect(folderList.length).toBe(1);
+
+})
+
+test("When user no longer has personal folders enabled, and only has personal folders should return empty list when searching", async() => {
+
+    const {user: user2} = await createUserDbType();
+
+    const folderData2 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+    const folderData4 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+
+    const folderData3 = {
+        name: "dog",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"]
+    }
+
+
+    const folder2 = new Folder(folderData2);
+    const folder3 = new Folder(folderData4);
+    const folder4 = new Folder(folderData3);
+
+    await folder2.save();
+    await folder3.save();
+    await folder4.save();
+
+    const folderList = await folderService.getFolderList(user2, {search: "bunny"})
+
+    expect(folderList.length).toBe(0);
+})
+
+test("When user has personal folder enabled should get folder list with personal folder", async() => {
+
+    const {user: user2} = await createUserDbType(true);
+
+    const folderData2 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+
+    const folderData3 = {
+        name: "dog",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"]
+    }
+
+
+    const folder2 = new Folder(folderData2);
+    const folder3 = new Folder(folderData2);
+    const folder4 = new Folder(folderData3);
+
+    await folder2.save();
+    await folder3.save();
+    await folder4.save();
+
+    const folderList = await folderService.getFolderList(user2, {})
+
+    expect(folderList.length).toBe(3);
+
+})
+
+test("When user no longer has personal folders enabled should return list without personal folders", async() => {
+
+    const {user: user2} = await createUserDbType();
+
+    const folderData2 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+    const folderData4 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+    }
+
+
+    const folderData3 = {
+        name: "dog",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"]
+    }
+
+
+    const folder2 = new Folder(folderData2);
+    const folder3 = new Folder(folderData4);
+    const folder4 = new Folder(folderData3);
+
+    await folder2.save();
+    await folder3.save();
+    await folder4.save();
+
+    const folderList = await folderService.getFolderList(user2, {})
+
+    expect(folderList.length).toBe(2);
+})
+
+test("When user no longer has personal folders enabled, and there are only personal folders should return empty list", async() => {
+
+    const {user: user2} = await createUserDbType();
+
+    const folderData2 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+    const folderData4 = {
+        name: "bunny",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+
+    const folderData3 = {
+        name: "dog",
+        parent: "/",
+        owner: user2._id,
+        parentList: ["/"],
+        personalFolder: true
+    }
+
+
+    const folder2 = new Folder(folderData2);
+    const folder3 = new Folder(folderData4);
+    const folder4 = new Folder(folderData3);
+
+    await folder2.save();
+    await folder3.save();
+    await folder4.save();
+
+    const folderList = await folderService.getFolderList(user2, {})
+
+    expect(folderList.length).toBe(0);
+
 })

@@ -64,7 +64,7 @@ class DbUtil {
         return folderList;
     }
 
-    getFolderListBySearch = async(userID: string, searchQuery: string, sortBy: string, type: string, parent: string, storageType: string, folderSearch: boolean, itemType: string) => {
+    getFolderListBySearch = async(userID: string, searchQuery: string, sortBy: string, type: string, parent: string, storageType: string, folderSearch: boolean, itemType: string, s3Enabled: boolean) => {
 
         let query: any = {"name": searchQuery,"owner": userID};
 
@@ -83,6 +83,10 @@ class DbUtil {
 
         if (parent && (parent !== "/" || folderSearch)) {
             query = {...query, parent}
+        }
+
+        if (!s3Enabled) {
+            query = {...query, "personalFolder": null}
         }
 
         if (itemType) {

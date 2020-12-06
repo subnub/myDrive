@@ -467,6 +467,38 @@ test("When user no longer has personal file enabled, should no longer show perso
     expect(receivedFileList[0].metadata.personalFile).toBe(undefined);
 })
 
+test("When user no longer has personal file enabled, and there is only personal files should return empty list", async() => {
+
+    const initVect = crypto.randomBytes(16);
+
+    const {userData, user: user2} = await createUserDbType();
+
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+
+    const receivedFileList = await fileService.getList(user2, {});
+
+    expect(receivedFileList.length).toBe(0);
+})
+
 test("When personal file enabled should return quicklist with personal file", async() => {
 
     const initVect = crypto.randomBytes(16);
@@ -533,6 +565,39 @@ test("When personal file is no longer enabled, should return quicklist without p
 
 })
 
+test("When personal file is no longer enabled, and there are only files that are personal should return empty quicklist", async() => {
+
+    const initVect = crypto.randomBytes(16);
+
+    const {userData, user: user2} = await createUserDbType();
+
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+
+    const receivedQuickList = await fileService.getQuickList(user2);
+
+    expect(receivedQuickList.length).toBe(0);
+
+})
+
 test("When giving search query should get searched list", async() => {
 
     const {user: user2} = await createUser2()
@@ -595,6 +660,40 @@ test("When giving search query and having personal file should searched list wit
     expect(receivedFileList[0].filename).toBe(filename);
     expect(receivedFileList[1].filename).toBe(filename);
     expect(receivedFileList[0].metadata.personalFile).toBe(true)
+})
+
+test("When giving search with user that has personal file disabled, should return empty list if all files are personal", async() => {
+
+    const {user: user2} = await createUserDbType()
+
+    const initVect = crypto.randomBytes(16);
+
+    const filename = "bunny.png";
+    const filename2 = "dog.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+    const file4 = await createFile(filename2, filepath, metadata, user2);
+
+    const receivedFileList = await fileService.getList(user2, {search: "bunny"})
+
+    expect(receivedFileList.length).toBe(0);
 })
 
 test("When giving search query with user that has disabled personal file should return list without personal file", async() => {
