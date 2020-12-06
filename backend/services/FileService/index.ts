@@ -47,7 +47,7 @@ class MongoFileService {
 
     makePublic = async(userID: string, fileID: string) => {
 
-        const token = await jwt.sign({_id: userID.toString()}, env.passwordAccess!);
+        const token = jwt.sign({_id: userID.toString()}, env.passwordAccess!);
 
         const file = await dbUtilsFile.makePublic(fileID, userID, token);
 
@@ -72,7 +72,7 @@ class MongoFileService {
 
     makeOneTimePublic = async(userID: string, fileID: string) => {
 
-        const token = await jwt.sign({_id: userID.toString()}, env.passwordAccess!);
+        const token = jwt.sign({_id: userID.toString()}, env.passwordAccess!);
 
         const file = await dbUtilsFile.makeOneTimePublic(fileID, userID, token);
 

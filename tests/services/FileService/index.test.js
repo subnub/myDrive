@@ -12,6 +12,7 @@ const ObjectID = require('mongodb').ObjectID
 import Folder from "../../../dist/models/folder";
 import FileService from "../../../dist/services/FileService";
 const fileService = new FileService();
+const createUserDbType = require("../../fixtures/createUserDbType");
 
 let user; 
 let file;
@@ -19,51 +20,92 @@ let file;
 process.env.KEY = "1234";
 env.key = "1234";
 
+const waitForDatabase = () => {
+
+    return new Promise((resolve, reject) => {
+
+        if (conn.readyState !== 1) {
+
+            conn.once("open", () => {
+                
+                resolve();
+    
+            })
+
+        } else {
+
+            resolve();
+        }
+    
+    })
+}
+
 beforeEach(async(done) => {
 
-    if (conn.readyState === 0) {
+    await waitForDatabase();
 
-        conn.once("open", async() => {
-
-            const initVect = crypto.randomBytes(16);
+    const initVect = crypto.randomBytes(16);
             
-            // user = await createUser();
-            const {user: gotUser} = await createUser();
-            user = gotUser;
-            
-            const filename = "bunny.png";
-            const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
-            const metadata = {
-                owner: user._id,
-                parent: "/",
-                parentList: "/",
-                "IV": initVect
-            }
-            
-            file = await createFile(filename, filepath, metadata, user);
+    // user = await createUser();
+    const {user: gotUser} = await createUser();
+    user = gotUser;
     
-            done();
-        })
-    } else {
-
-            const initVect = crypto.randomBytes(16);
-            //user = await createUser();
-            const {user: gotUser} = await createUser();
-            user = gotUser;
-            
-            const filename = "bunny.png";
-            const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
-            const metadata = {
-                owner: user._id,
-                parent: "/",
-                parentList: "/",
-                "IV": initVect
-            }
-            
-            file = await createFile(filename, filepath, metadata, user);
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect
+    }
     
-            done();
-    }  
+    file = await createFile(filename, filepath, metadata, user);
+
+    done();
+
+    // if (conn.readyState === 0) {
+
+    //     conn.once("open", async() => {
+
+    //         const initVect = crypto.randomBytes(16);
+            
+    //         // user = await createUser();
+    //         const {user: gotUser} = await createUser();
+    //         user = gotUser;
+            
+    //         const filename = "bunny.png";
+    //         const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    //         const metadata = {
+    //             owner: user._id,
+    //             parent: "/",
+    //             parentList: "/",
+    //             "IV": initVect
+    //         }
+            
+    //         file = await createFile(filename, filepath, metadata, user);
+    
+    //         done();
+    //     })
+    // } else {
+
+    //         const initVect = crypto.randomBytes(16);
+    //         //user = await createUser();
+    //         const {user: gotUser} = await createUser();
+    //         user = gotUser;
+            
+    //         const filename = "bunny.png";
+    //         const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    //         const metadata = {
+    //             owner: user._id,
+    //             parent: "/",
+    //             parentList: "/",
+    //             "IV": initVect
+    //         }
+            
+    //         file = await createFile(filename, filepath, metadata, user);
+    
+    //         done();
+    // }  
 })
 
 
@@ -135,7 +177,7 @@ test("When giving user, and fileID, should make file public and return token", a
 
     const fileID = file._id;
 
-    const recievedToken = await fileService.makePublic(user, fileID);
+    const recievedToken = await fileService.makePublic(user._id, fileID);
 
     expect(recievedToken.length).not.toBe(0);
 })
@@ -259,26 +301,26 @@ test("When giving wrong userID for file list, should return list with 0 length",
     expect(receivedList.length).toBe(0);
 })
 
-test("When giving user, should create download token", async() => {
+// test("When giving user, should create download token", async() => {
 
-    const recievedToken = await fileService.getDownloadToken(user);
+//     const recievedToken = await fileService.getDownloadToken(user);
 
-    expect(recievedToken.length).not.toBe(0);
-})
+//     expect(recievedToken.length).not.toBe(0);
+// })
 
-test("When giving user and cookie, should create video download token", async() => {
+// test("When giving user and cookie, should create video download token", async() => {
 
-    const recievedToken = await fileService.getDownloadTokenVideo(user, {});
+//     const recievedToken = await fileService.getDownloadTokenVideo(user, {});
 
-    expect(recievedToken.length).not.toBe(0);
-})
+//     expect(recievedToken.length).not.toBe(0);
+// })
 
-test("When giving user and tempToken, should remove temp token", async() => {
+// test("When giving user and tempToken, should remove temp token", async() => {
 
-    const tempToken = await user.generateTempAuthToken();
+//     const tempToken = await user.generateTempAuthToken();
 
-    await fileService.removeTempToken(user, tempToken);
-})
+//     await fileService.removeTempToken(user, tempToken);
+// })
 
 test("When giving userID and search query, should return suggested list", async() => {
 
@@ -359,6 +401,136 @@ test("When giving an non existing folderID for file move, should throw not found
     await expect(fileService.moveFile(userID, fileID, wrongFolderID)).rejects.toThrow();
 })
 
+test("When giving user with personal data enabled, should return personal file when getting file list", async() => {
+
+    const initVect = crypto.randomBytes(16);
+
+    const {userData, user: user2} = await createUserDbType(true);
+
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+
+    const receivedFileList = await fileService.getList(user2, {});
+
+    expect(receivedFileList.length).toBe(2);
+    expect(receivedFileList[0].metadata.personalFile).toBe(undefined);
+    expect(receivedFileList[1].metadata.personalFile).toBe(true);
+})
+
+test("When user no longer has personal file enabled, should no longer show personal file", async() => {
+
+    const initVect = crypto.randomBytes(16);
+
+    const {userData, user: user2} = await createUserDbType();
+
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+
+    const receivedFileList = await fileService.getList(user2, {});
+
+    expect(receivedFileList.length).toBe(1);
+    expect(receivedFileList[0].metadata.personalFile).toBe(undefined);
+})
+
+test("When personal file enabled should return quicklist with personal file", async() => {
+
+    const initVect = crypto.randomBytes(16);
+
+    const {userData, user: user2} = await createUserDbType(true);
+
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+
+    const receivedQuickList = await fileService.getQuickList(user2);
+
+    expect(receivedQuickList.length).toBe(2);
+    expect(receivedQuickList[0].metadata.personalFile).toBe(undefined);
+    expect(receivedQuickList[1].metadata.personalFile).toBe(true);
+})
+
+test("When personal file is no longer enabled, should return quicklist without personal file", async() => {
+
+    const initVect = crypto.randomBytes(16);
+
+    const {userData, user: user2} = await createUserDbType();
+
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+
+    const receivedQuickList = await fileService.getQuickList(user2);
+
+    expect(receivedQuickList.length).toBe(1);
+    expect(receivedQuickList[0].metadata.personalFile).toBe(undefined);
+
+})
 // test("When giving userID, and fileID, should remove file", async() => {
 
 //     const userID = user._id;
