@@ -18,6 +18,7 @@ const binaryPhraser = require("superagent-binary-parser");
 const session = require("supertest-session");
 const loginUser = require("../fixtures/loginUser");
 const createUserNotEmailVerified = require("../fixtures/createUserNotEmailVerified");
+const Thumbnail = require("../../dist/models/thumbnail");
 
 const {server, serverHttps} = servers;
 
@@ -91,6 +92,8 @@ afterEach(async(done) => {
     let bucket = new mongoose.mongo.GridFSBucket(conn.db);
             
     await User.deleteMany({});
+
+    await Thumbnail.deleteMany({});
 
     const allFiles = await conn.db.collection("fs.files").find({}).toArray();
 
@@ -325,6 +328,68 @@ test("When giving wrong auth token for file info, should return 404 error", asyn
     .expect(404);
 
     expect(response.body).toEqual({});
+})
+
+test("When not email verified should not get file info, and should return 401", async() => {
+
+    const appSession = session(app);
+    
+    const {userData: userData3, user: user3} = await createUserNotEmailVerified();
+    await loginUser(appSession, userData3);
+
+    const initVect = crypto.randomBytes(16);
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../fixtures/media/folder.png")
+    const metadata = {
+        owner: user3._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+    
+    const file2 = await createFile(filename, filepath, metadata, user3);
+
+    const fileID = file2._id;
+
+    const response = await appSession
+    .get(`/file-service/info/${fileID}`)
+    .send()
+    .expect(401);
+
+    expect(response.body).toEqual({})
+})
+
+test("When not email verified but email verification disabled should return file info", async() => {
+
+    env.disableEmailVerification = true;
+
+    const appSession = session(app);
+    
+    const {userData: userData3, user: user3} = await createUserNotEmailVerified();
+    await loginUser(appSession, userData3);
+
+    const initVect = crypto.randomBytes(16);
+    const filename = "bunny.png";
+    const filepath = path.join(__dirname, "../fixtures/media/folder.png")
+    const metadata = {
+        owner: user3._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+    
+    const file2 = await createFile(filename, filepath, metadata, user3);
+
+    const fileID = file2._id;
+
+    const response = await appSession
+    .get(`/file-service/info/${fileID}`)
+    .send()
+    .expect(200);
+
+    expect(response.body._id).toEqual(fileID.toString());
+
+    env.disableEmailVerification = undefined;
 })
 
 test("When giving the wrong tempToken for public file info, should return 404 error", async() => {

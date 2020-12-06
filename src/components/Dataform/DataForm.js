@@ -43,7 +43,7 @@ const DataForm = (props) => (
 
         {props.parent === "/" ? (
         <div class="head__recent--files noSelect" style={props.loading ? {display: "none"} : {}}>
-          <h2>Home Files</h2>
+          <h2>{props.search !== "" ? "Files" : "Home Files"}</h2>
           <div class="view__recent">
             <ul>
               <li onClick={props.changeListViewMode}>
