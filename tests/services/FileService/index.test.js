@@ -2,6 +2,7 @@ import User from "../../../dist/models/user";
 import mongoose from "../../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../../fixtures/createUser");
+const createUser2 = require("../../fixtures/createUser2");
 const path = require("path");
 const createFile = require("../../fixtures/createFile");
 const crypto = require("crypto");
@@ -530,6 +531,106 @@ test("When personal file is no longer enabled, should return quicklist without p
     expect(receivedQuickList.length).toBe(1);
     expect(receivedQuickList[0].metadata.personalFile).toBe(undefined);
 
+})
+
+test("When giving search query should get searched list", async() => {
+
+    const {user: user2} = await createUser2()
+
+    const initVect = crypto.randomBytes(16);
+
+    const filename = "bunny.png";
+    const filename2 = "dog.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata, user2);
+    const file4 = await createFile(filename2, filepath, metadata, user2);
+
+    const receivedFileList = await fileService.getList(user2, {search: "bunny"})
+
+    expect(receivedFileList.length).toBe(2);
+    expect(receivedFileList[0].filename).toBe(filename);
+    expect(receivedFileList[1].filename).toBe(filename);
+
+})
+
+test("When giving search query and having personal file should searched list with personal file", async() => {
+
+    const {user: user2} = await createUserDbType(true)
+
+    const initVect = crypto.randomBytes(16);
+
+    const filename = "bunny.png";
+    const filename2 = "dog.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+    const file4 = await createFile(filename2, filepath, metadata, user2);
+
+    const receivedFileList = await fileService.getList(user2, {search: "bunny"})
+
+    expect(receivedFileList.length).toBe(2);
+    expect(receivedFileList[0].filename).toBe(filename);
+    expect(receivedFileList[1].filename).toBe(filename);
+    expect(receivedFileList[0].metadata.personalFile).toBe(true)
+})
+
+test("When giving search query with user that has disabled personal file should return list without personal file", async() => {
+
+    const {user: user2} = await createUser2()
+
+    const initVect = crypto.randomBytes(16);
+
+    const filename = "bunny.png";
+    const filename2 = "dog.png";
+    const filepath = path.join(__dirname, "../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+    }
+
+    const metadata2 = {
+        owner: user2._id,
+        parent: "/",
+        parentList: "/",
+        "IV": initVect,
+        personalFile: true
+    }
+
+    const file2 = await createFile(filename, filepath, metadata, user2);
+    const file3 = await createFile(filename, filepath, metadata2, user2);
+    const file4 = await createFile(filename2, filepath, metadata, user2);
+
+    const receivedFileList = await fileService.getList(user2, {search: "bunny"})
+
+    expect(receivedFileList.length).toBe(1);
+    expect(receivedFileList[0].filename).toBe(filename);
+    expect(receivedFileList[0].metadata.personalFile).toBe(undefined)
+    
 })
 // test("When giving userID, and fileID, should remove file", async() => {
 
