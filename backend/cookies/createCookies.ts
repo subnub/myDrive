@@ -1,8 +1,13 @@
 import {Response } from "express";
+import env from "../enviroment/env";
 
 const maxAgeAccess =  60 * 1000 * 20;
 const maxAgeRefresh = 60 * 1000 * 60 * 24 * 30;
 const maxAgeStreamVideo = 60 * 1000 * 60 * 24;
+
+const secureCookies = env.secureCookies ? env.secureCookies === "true" ? true : false : false;
+
+console.log("Secure Cookies", secureCookies);
 
 export const createLoginCookie = (res: Response, accessToken: string, refreshToken: string) => {
 
@@ -10,14 +15,14 @@ export const createLoginCookie = (res: Response, accessToken: string, refreshTok
         httpOnly: true,
         maxAge: maxAgeAccess,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
+        secure: secureCookies
     })
 
     res.cookie("refresh-token",refreshToken, {
         httpOnly: true,
         maxAge: maxAgeRefresh,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
+        secure: secureCookies
     })
 }
 
@@ -27,14 +32,14 @@ export const createLogoutCookie = (res: Response) => {
         httpOnly: true,
         maxAge: 0,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
+        secure: secureCookies
     })
 
     res.cookie("refresh-token", {}, {
         httpOnly: true,
         maxAge: 0,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
+        secure: secureCookies
     })
 }
 
@@ -44,7 +49,7 @@ export const createStreamVideoCookie = (res: Response, streamVideoAccessToken: s
         httpOnly: true,
         maxAge: maxAgeStreamVideo,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
+        secure: secureCookies
     })
 }
 
@@ -54,6 +59,6 @@ export const removeStreamVideoCookie = (res: Response) => {
         httpOnly: true,
         maxAge: 0,
         sameSite: "strict",
-        secure: process.env.NODE_ENV === "production"
+        secure: secureCookies
     })
 }

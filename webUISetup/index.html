@@ -60,40 +60,6 @@
                 </div>
             </div>
 
-            <div class="section-wrapper">
-                <div id="docker-text__wrapper">
-                    <p id="docker-text">Activate Commercial Mode?</p>
-                </div>
-                <div id="docker-select__wrapper">
-                    <select id="commercial-select" name="Commercial" class="docker-select">
-                        <option value="no">No</option>
-                        <option value="yes">Yes</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="stripe-wrapper" class="docker-hidden">
-                <div id="docker-text__wrapper">
-                    <p id="docker-text">Enter Stripe API Key</p>
-                </div>
-                <div id="docker-select__wrapper">
-                    <form id="mongo-form">
-                        <input id="stripe-input" class="mongo-input" placeholder="Stripe API Key" type="password"/>
-                    </form>
-                </div>
-            </div>
-
-            <!-- <div id="stripe-wrapper-email" class="docker-hidden">
-                <div id="docker-text__wrapper">
-                    <p id="docker-text">Enter Stripe API Key</p>
-                </div>
-                <div id="docker-select__wrapper">
-                    <form id="mongo-form">
-                        <input id="stripe-input-email" class="mongo-input" placeholder="Stripe Email"/>
-                    </form>
-                </div>
-            </div> -->
-
             <div id="mongoURL-wrapper" class="section-wrapper">
                 <div id="docker-text__wrapper">
                     <p id="docker-text">Enter MongoDB URL</p>
@@ -110,7 +76,7 @@
                     <p id="docker-text">Use WebUI For Encryption Key (Recommended, Selecting No Will Require You To Enter An Encryption Key Now, Which Is Less Secure)</p>
                 </div>
                 <div id="docker-select__wrapper">
-                    <select id="encryption-select" name="docker" class="docker-select">
+                    <select id="encryption-select" name="encryption-key" class="docker-select">
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
                     </select>
@@ -124,13 +90,14 @@
 
             <div class="section-wrapper">
                 <div id="docker-text__wrapper">
-                    <p id="docker-text">Enter The Client URL/IP Address (Must Be A Valid Link, Include Port With IP Address If Needed)</p>
+                    <p id="docker-text">Enter The Client URL/IP Address (Must Be A Valid Link, If Using a URL Start With "https://" or "http://", Include Port With IP Address If Needed, Do Not End The URL In a Slash "/")</p>
                 </div>
                 <div id="docker-select__wrapper">
                     <form id="mongo-form">
                         <input id="client-input" class="mongo-input" placeholder="Client URL"/>
                     </form>
                 </div>
+                <p id="client-input-invalid-text" class="invalid-input-text-hidden">Error: URL Cannot End In a Slash ("/")</p>
             </div>
 
             <div class="section-wrapper">
@@ -141,7 +108,7 @@
                     <select id="db-select" name="docker" class="docker-select">
                         <option value="fs">FileSystem</option>
                         <option value="s3">Amazon S3</option>
-                        <option value="mongo">MongoDB</option>
+                        <option value="mongo">MongoDB (Not Recommended)</option>
                     </select>
                 </div>
             </div>
@@ -185,7 +152,7 @@
                 </div>
             </div>
 
-            <div id="filesystem-wrapper" class="section-wrapper">
+            <!-- <div id="filesystem-wrapper" class="section-wrapper">
                 <div id="docker-text__wrapper">
                     <p id="docker-text">Enter JWT Secret</p>
                 </div>
@@ -194,9 +161,66 @@
                         <input id="jwt-input" class="mongo-input" placeholder="JWT Secret" type="password"/>
                     </form>
                 </div>
+            </div> -->
+
+            <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter Access Token Secret</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="access-token-input" class="mongo-input" placeholder="Access Token Secret" type="password"/>
+                    </form>
+                </div>
             </div>
 
             <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter Refresh Token Secret</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="refresh-token-input" class="mongo-input" placeholder="Refresh Token Secret" type="password"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter Cookie Secret</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="cookie-input" class="mongo-input" placeholder="Cookie Secret" type="password"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="ssl-select-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use Secure Cookies? (You Can Only Use Secure Cookies If You Are Using HTTPS/SSL, Do Not Select This Option If You Do Not Have HTTPS or else Cookies/Logging in Will Not Work At All. This is Highly Recommended if You Have HTTPS/SSL)</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="secure-cookie-select" name="secure-cookie" class="docker-select">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use SendGrid To Send Emails? (For Account Email Verification And Password Resets)</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="sendgrid-select" name="sendgrid" class="docker-select">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="sendgrid-wrapper" class="docker-hidden">
                 <div id="docker-text__wrapper">
                     <p id="docker-text">Enter A SendGrid API Key</p>
                 </div>
@@ -207,7 +231,7 @@
                 </div>
             </div>
 
-            <div id="filesystem-wrapper" class="section-wrapper">
+            <div id="sendgrid-wrapper2" class="docker-hidden">
                 <div id="docker-text__wrapper">
                     <p id="docker-text">Enter Email Address, This Will Be The Email Address For Sending Email Verifications, And Password Resets.</p>
                 </div>
@@ -220,7 +244,7 @@
 
             <div id="ssl-select-wrapper" class="section-wrapper">
                 <div id="docker-text__wrapper">
-                    <p id="docker-text">Use SSL? (Will Require SSL Certificate certificate.crt, certificate.ca-bundle, And certificate.key At Root Of The Project)</p>
+                    <p id="docker-text">Use SSL? (Will Require SSL Certificate certificate.crt, certificate.ca-bundle, And certificate.key At Root Of The Project. If You Are Hosting On a Service That Already Provides HTTPS/SSL Select No)</p>
                 </div>
                 <div id="docker-select__wrapper">
                     <select id="ssl-select" name="docker" class="docker-select">

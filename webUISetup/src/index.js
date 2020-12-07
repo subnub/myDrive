@@ -19,14 +19,19 @@ const s3IDInput = document.getElementById("s3-id-input");
 const s3KeyInput = document.getElementById("s3-key-input");
 const s3BucketInput = document.getElementById("s3-bucket-input");
 const fsInput = document.getElementById("fs-input");
-const jwtInput = document.getElementById("jwt-input");
 const SSLSelect = document.getElementById("ssl-select");
 const sendGridInput = document.getElementById("sendgrid-input");
 const sendGridInputEmail = document.getElementById("sendgrid-input-email");
-const commericalSelection = document.getElementById('commercial-select');
-const stripeWrapper = document.getElementById('stripe-wrapper');
 // const stripeEmailWrapper = document.getElementById('stripe-wrapper-email');
-const stripeInput = document.getElementById('stripe-input');
+const sendGridSelect = document.getElementById("sendgrid-select")
+const sendGridWrapper = document.getElementById("sendgrid-wrapper");
+const sendGridWrapper2 = document.getElementById("sendgrid-wrapper2");
+const clientInvalidInputText = document.getElementById("client-input-invalid-text");
+
+const accessTokenInput = document.getElementById("access-token-input");
+const refreshTokenInput = document.getElementById("refresh-token-input")
+const cookieInput = document.getElementById("cookie-input");
+const secureCookieSelect = document.getElementById("secure-cookie-select");
 //const stripeInputEmail = document.getElementById('stripe-input-email');
 
 dockerSelection.addEventListener("change", (e) => {
@@ -54,17 +59,6 @@ dockerSelectionMongoURL.addEventListener("change", () => {
     }
 })
 
-commericalSelection.addEventListener('change', (e) => {
-
-    const commericalMode = commericalSelection.value === 'yes';
-
-    if (commericalMode) {
-        stripeWrapper.className = 'section-wrapper';
-    } else {
-        stripeWrapper.className = 'docker-hidden'
-    }
-})
-
 encryptionSelect.addEventListener("change", () => {
 
     const useWebUIForEncryption = encryptionSelect.value === "yes";
@@ -80,6 +74,8 @@ encryptionSelect.addEventListener("change", () => {
 })
 
 dbSelect.addEventListener("change", () => {
+
+    console.log("db select on change")
 
     const storageType = dbSelect.value;
 
@@ -100,6 +96,52 @@ dbSelect.addEventListener("change", () => {
     }
 })
 
+sendGridSelect.addEventListener("change", () => {
+
+    //section-wrapper
+
+    const sendGridEnabled = sendGridSelect.value === "yes";
+
+    if (sendGridEnabled) {
+
+        sendGridWrapper.className = 'section-wrapper'
+        sendGridWrapper2.className = 'section-wrapper'
+
+    } else {
+
+        sendGridWrapper.classList = "docker-hidden";
+        sendGridWrapper2.classList = "docker-hidden";
+    }
+})
+
+clientInput.addEventListener("input", () => {
+
+    const value = clientInput.value;
+    console.log("value", value)
+    
+    if (value && value.length !== 0) {
+
+        const lastCharacter = value[value.length - 1];
+        console.log("last character", lastCharacter)
+
+        if (lastCharacter === "/") {
+            
+            clientInput.className = "mongo-input input-invalid"
+            clientInvalidInputText.className = "invalid-input-text"
+
+        } else {
+
+            clientInput.className = "mongo-input";
+            clientInvalidInputText.className = "invalid-input-text-hidden"
+        }
+
+    } else {
+        clientInput.className = "mongo-input"
+        clientInvalidInputText.className = "invalid-input-text-hidden"
+    }
+    
+})
+
 saveButton.addEventListener("click", () => {
 
     let clientObj = {}
@@ -107,8 +149,8 @@ saveButton.addEventListener("click", () => {
 
     // Client
     clientObj.REMOTE_URL = clientInput.value;
-    if (dbSelect.value !== "fs") clientObj.DISABLE_STORAGE = true;
-    if (commericalSelection.value === "yes") clientObj.COMMERCIAL_MODE = true;
+    clientObj.DISABLE_STORAGE = true;
+    //if (dbSelect.value !== "fs") clientObj.DISABLE_STORAGE = true;
 
     // Server
     serverObj.HTTP_PORT = 3000;
@@ -119,32 +161,35 @@ saveButton.addEventListener("click", () => {
     if (encryptionSelect.value !== "yes") serverObj.KEY = encryptionInput.value;
     if (dockerSelection.value === "yes") serverObj.DOCKER = true;
     if (SSLSelect.value === "yes") serverObj.SSL = true;
-    if (commericalSelection.value === "yes") serverObj.STRIPE_KEY = stripeInput.value;
-    serverObj.DB_TYPE = dbSelect.value;
-    serverObj.PASSWORD = jwtInput.value;
-    serverObj.SENDGRID_KEY = sendGridInput.value;
-    serverObj.SENDGRID_EMAIL = sendGridInputEmail.value
+    if (secureCookieSelect.value === "yes") serverObj.SECURE_COOKIES = true;
+    if (sendGridSelect.value === "no") serverObj.DISABLE_EMAIL_VERIFICATION = true;
+    if (sendGridSelect.value === "yes") serverObj.SENDGRID_KEY = sendGridInput.value;
+    if (sendGridSelect.value === "yes") serverObj.SENDGRID_EMAIL = sendGridInputEmail.value
+    serverObj.DB_TYPE = dbSelect.value;    
     serverObj.REMOTE_URL = clientInput.value;
+    serverObj.PASSWORD_ACCESS = accessTokenInput.value;
+    serverObj.PASSWORD_REFRESH = refreshTokenInput.value;
+    serverObj.PASSWORD_COOKIE = cookieInput.value;
 
     if (dbSelect.value === "s3") {
         
         serverObj.S3_ID = s3IDInput.value;
         serverObj.S3_KEY = s3KeyInput.value;
         serverObj.S3_BUCKET = s3BucketInput.value;
-        clientObj.DISABLE_STORAGE = true;
 
     } else if (dbSelect.value === "fs") {
         
         serverObj.FS_DIRECTORY = fsInput.value;
         serverObj.ROOT = fsInput.value;
-    }  else {
-        clientObj.DISABLE_STORAGE = true;
-    }
+    } 
 
     const data = {
         clientObj,
         serverObj
     }
+
+    console.log("data", data);
+    return;
 
     axios.post("/submit", data).then((result) => {
         console.log("Submitted");

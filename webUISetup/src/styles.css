@@ -129,6 +129,22 @@ html {
     width: 286px;
 }
 
+.input-invalid {
+    border: 1px solid red;
+    outline: 1px solid red;
+}
+
+.invalid-input-text {
+    text-align: center;
+    font-size: 17px;
+    margin-top: 5px;
+    color: red;
+}
+
+.invalid-input-text-hidden {
+    display: none;
+}
+
 .encryption-key-input {
     border: 1px solid #f1f3f4;
     /* height: 50px; */

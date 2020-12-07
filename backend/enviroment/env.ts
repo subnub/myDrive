@@ -18,7 +18,8 @@ export default {
     sendgridKey: process.env.SENDGRID_KEY,
     sendgridEmail: process.env.SENDGRID_EMAIL,
     remoteURL: process.env.REMOTE_URL,
-    disableEmailVerification: process.env.DISABLE_EMAIL_VERIFICATION
+    disableEmailVerification: process.env.DISABLE_EMAIL_VERIFICATION,
+    secureCookies: process.env.SECURE_COOKIES
 }
 
 module.exports = {
@@ -41,5 +42,6 @@ module.exports = {
     sendgridKey: process.env.SENDGRID_KEY,
     sendgridEmail: process.env.SENDGRID_EMAIL,
     remoteURL: process.env.REMOTE_URL,
-    disableEmailVerification: process.env.DISABLE_EMAIL_VERIFICATION
+    disableEmailVerification: process.env.DISABLE_EMAIL_VERIFICATION,
+    secureCookies: process.env.SECURE_COOKIES
 }
