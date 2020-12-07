@@ -249,8 +249,11 @@ class S3Service implements ChunkInterface {
         // All browsers took many days, tears, and some of my sanity. 
         // Shoutout to Tyzoid for helping me with the decryption
         // And and helping me understand how the IVs work.
-        // Also fuck you Apple, Safari is turning into 
-        // Internet explorer at this point. 
+        
+        // P.S I hate safari >:(
+        // Why do yall have to be weird with video streaming
+        // 90% of the issues with this are only in Safari
+        // Is safari going to be the next internet explorer?
 
         const userID = user._id;
         const currentFile: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);

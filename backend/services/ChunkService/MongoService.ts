@@ -278,12 +278,19 @@ class MongoService implements ChunkInterface {
 
     streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => {
         
+        // THIS ISN'T WORKING FULLY WHEN USING MONGODB AND SAFARI, 
+        // OTHER DATABASES SHOULD WORK, BUT I AM NOT SURE WHY
+        // IT WILL NOT WORK ON SAFARI SOMETIMES
+
         // To get this all working correctly with encryption and across
         // All browsers took many days, tears, and some of my sanity. 
         // Shoutout to Tyzoid for helping me with the decryption
         // And and helping me understand how the IVs work.
-        // Also fuck you Apple, Safari is turning into 
-        // Internet explorer at this point. 
+        
+        // P.S I hate safari >:(
+        // Why do yall have to be weird with video streaming
+        // 90% of the issues with this are only in Safari
+        // Is safari going to be the next internet explorer?
 
         const userID = user._id;
         const currentFile = await dbUtilsFile.getFileInfo(fileID, userID);
@@ -323,7 +330,11 @@ class MongoService implements ChunkInterface {
             // 16 bytes.
 
             fixedStart = 0;
-            fixedEnd = 15;    
+            fixedEnd = 16;    
+
+            // I am not sure why this needs to be 16 for mongoDB, on the other routes 15 works
+            // Fine, and I thought the start and end were inclusive, but I am really not sure
+            // At this point
 
         } else {
 
@@ -363,7 +374,6 @@ class MongoService implements ChunkInterface {
         }
         
         const bucket = new mongoose.mongo.GridFSBucket(conn.db, {
-            chunkSizeBytes: 1024
         });
         
         const readStream = bucket.openDownloadStream(new ObjectID(fileID), {
@@ -371,19 +381,19 @@ class MongoService implements ChunkInterface {
             end: fixedEnd,
         });
 
-        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()
+
+        res.writeHead(206, head);
 
         const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, currentIV);
         decipher.setAutoPadding(false);
-
-        res.writeHead(206, head);
 
         const allStreamsToErrorCatch = [readStream, decipher];
 
         readStream.pipe(decipher);
 
         await awaitStreamVideo(start, end, differenceStart, decipher, res, req, allStreamsToErrorCatch, readStream);
-        
+
         readStream.destroy();
     }
 

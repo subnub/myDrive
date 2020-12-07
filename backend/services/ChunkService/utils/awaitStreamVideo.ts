@@ -38,7 +38,7 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
 
         if (+start === 0 && +end === 1) {
          
-            // This is for Safri/iOS, for whatever reason they ask for the
+            // This is for Safari/iOS, for whatever reason they ask for the
             // First byte, but if I actually try to return the first byte
             // It will not work ???, but if I return the first 4 bytes it seems
             // To work fine. 
@@ -52,6 +52,8 @@ const awaitStreamVideo = (start: number, end:number, differenceStart: number,
                 const dataBack = Buffer.from(neededData, "hex");
 
                 res.write(dataBack);
+
+                resolve();
             })
            
         } else {
