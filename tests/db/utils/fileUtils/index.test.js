@@ -2,6 +2,7 @@ import User from "../../../../dist/models/user";
 import mongoose from "../../../../dist/db/mongoose";
 const conn = mongoose.connection;
 const createUser = require("../../../fixtures/createUser");
+const createUser2 = require("../../../fixtures/createUser2");
 const path = require("path");
 const createFile = require("../../../fixtures/createFile");
 import UtilsFile from "../../../../dist/db/utils/fileUtils/index";
@@ -14,45 +15,45 @@ let file;
 
 process.env.KEY = "1234";
 
+
+const waitForDatabase = () => {
+
+    return new Promise((resolve, reject) => {
+
+        if (conn.readyState !== 1) {
+
+            conn.once("open", () => {
+                
+                resolve();
+    
+            })
+
+        } else {
+
+            resolve();
+        }
+    
+    })
+}
+
 beforeEach(async(done) => {
 
-    if (conn.readyState === 0) {
+    await waitForDatabase();
 
-        conn.once("open", async() => {
-            
-            //user = await createUser();
-            const {user: gotUser} = await createUser();
-            user = gotUser;
-            
-            const filename = "bunny.mp4";
-            const filepath = path.join(__dirname, "../../../fixtures/media/check.svg")
-            const metadata = {
-                owner: user._id,
-                parent: "/",
-                parentList: "/"
-            }
-            
-            file = await createFile(filename, filepath, metadata, user);
+    const {user: gotUser} = await createUser();
+    user = gotUser;
     
-            done();
-        })
-    } else {
-            // user = await createUser();
-            const {user: gotUser} = await createUser();
-            user = gotUser;
-            
-            const filename = "bunny.mp4";
-            const filepath = path.join(__dirname, "../../../fixtures/media/check.svg")
-            const metadata = {
-                owner: user._id,
-                parent: "/",
-                parentList: "/"
-            }
-            
-            file = await createFile(filename, filepath, metadata, user);
+    const filename = "bunny.mp4";
+    const filepath = path.join(__dirname, "../../../fixtures/media/check.svg")
+    const metadata = {
+        owner: user._id,
+        parent: "/",
+        parentList: "/"
+    }
     
-            done();
-    }  
+    file = await createFile(filename, filepath, metadata, user);
+
+    done();
 })
 
 afterEach( async(done) => {
@@ -761,36 +762,36 @@ test("When giving start at with ascending data, should return filtered list", as
     expect(recievedList[0]._id).toEqual(fileThree._id);
 })
 
-test("When giving user and temp token, should remove temp token", async() => {
+// test("When giving user and temp token, should remove temp token", async() => {
 
-    const token = jwt.sign({_id: user._id}, process.env.PASSWORD, {expiresIn: 2});
-    user.tempTokens = user.tempTokens.concat({token})
-    await user.save();
-
-
-    const recievedUser = await utilsFile.removeTempToken(user, token);
-    await recievedUser.save();
-    const updatedUser = await User.findById(user._id);
+//     const token = jwt.sign({_id: user._id}, process.env.PASSWORD, {expiresIn: 2});
+//     user.tempTokens = user.tempTokens.concat({token})
+//     await user.save();
 
 
-    expect(updatedUser.tempTokens.length).toBe(0);
-})
-
-test("When giving the wrong temp token, should not remove temp token", async() => {
-
-    const token = jwt.sign({_id: user._id}, process.env.PASSWORD, {expiresIn: 2});
-    user.tempTokens = user.tempTokens.concat({token})
-    await user.save();
+//     const recievedUser = await utilsFile.removeTempToken(user, token);
+//     await recievedUser.save();
+//     const updatedUser = await User.findById(user._id);
 
 
-    const recievedUser = await utilsFile.removeTempToken(user, "1234");
-    await recievedUser.save();
-    const updatedUser = await User.findById(user._id);
+//     expect(updatedUser.tempTokens.length).toBe(0);
+// })
+
+// test("When giving the wrong temp token, should not remove temp token", async() => {
+
+//     const token = jwt.sign({_id: user._id}, process.env.PASSWORD, {expiresIn: 2});
+//     user.tempTokens = user.tempTokens.concat({token})
+//     await user.save();
 
 
-    expect(updatedUser.tempTokens.length).toBe(1);
-    expect(updatedUser.tempTokens[0].token._id).toBe(token._id)
-})
+//     const recievedUser = await utilsFile.removeTempToken(user, "1234");
+//     await recievedUser.save();
+//     const updatedUser = await User.findById(user._id);
+
+
+//     expect(updatedUser.tempTokens.length).toBe(1);
+//     expect(updatedUser.tempTokens[0].token._id).toBe(token._id)
+// })
 
 // test("When giving fileID and userID, should remove transcoded video", async() => {
 
@@ -1026,6 +1027,8 @@ test("When giving the wrong userID, should not return file list by parent", asyn
 test("When giving the userID, should return file list by owner", async() => {
 
     const userID = user._id;
+
+    const {user: user2} = await createUser2();
    
     const filepath = path.join(__dirname, "../../../fixtures/media/check.svg")
     const metadata = {
@@ -1041,7 +1044,7 @@ test("When giving the userID, should return file list by owner", async() => {
     }
 
     const metadataDifferentOwner = {
-        owner: "1234", 
+        owner: user2._id, 
         parent: "/",
         parentList:"/,1234"
     }
