@@ -20,6 +20,8 @@ const removeOldTokens = async(userID: string, ipAddress: string | undefined, old
 
     try {
 
+        console.log("removing token with IP address", ipAddress);
+
         const minusTime = oldTime - (1000 * 60 * 60);
 
         ipAddress = ipAddress ? ipAddress : "";
@@ -64,6 +66,11 @@ const authRefresh = async(req: RequestType, res: Response, next: NextFunction) =
                 removeOldTokens(user._id, req.clientIp, time);
                 break;
             }
+        }
+
+        if (!tokenFound) {
+            console.log("token not found", encryptedToken);
+            console.log("token list", user.tokens);
         }
 
         if (!tokenFound) throw new Error("Refresh Token Not Found");
