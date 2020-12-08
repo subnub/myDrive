@@ -26,6 +26,8 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
+        console.log("auth up address", req.clientIp);
+
         const accessToken = req.cookies["access-token"];
 
         if (!accessToken) throw new Error("No Access Token");
