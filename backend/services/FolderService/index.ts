@@ -171,8 +171,6 @@ class FolderService {
 
             if (rootID === currentID) break;
 
-            console.log("finding ID", currentID)
-            
             const currentFolder = await this.getFolderInfo(userID, currentID);
             const currentSubFolders = await this.getFolderList(user, {parent: currentFolder._id});
 

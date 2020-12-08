@@ -17,8 +17,6 @@ class DataFormContainer extends React.Component {
 
     changeListViewMode = () => {
 
-        console.log("changing list view", this.props.listView);
-
         if (!this.props.listView) {
             this.props.dispatch(enableListView())
         } else {
@@ -54,10 +52,6 @@ class DataFormContainer extends React.Component {
     }
 
     loadMoreItems = () => {
-
-        // return;
-
-        console.log("load more items dataform");
 
         let limit = window.localStorage.getItem("list-size") || 50
         limit = parseInt(limit)

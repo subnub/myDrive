@@ -251,7 +251,6 @@ userSchema.statics.findByCreds = async(email: string, password: string) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-        console.log("incorrect password")
         throw new Error("Incorrect password");
     }
 
@@ -596,7 +595,6 @@ userSchema.methods.decryptS3Data = async function() {
 
 userSchema.methods.generatePasswordResetToken = async function() {
 
-    console.log("generating reset password token")
     const iv = crypto.randomBytes(16);
 
     const user = this as UserInterface; 

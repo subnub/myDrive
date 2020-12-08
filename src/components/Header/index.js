@@ -52,9 +52,6 @@ class HeaderContainer extends React.Component {
         const value = e.target.value;
         this.searchValue = value;
 
-        console.log("search on change", value);
-
-
         this.props.dispatch(setSearch(value))
         this.searchSuggested()
     }

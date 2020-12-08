@@ -24,7 +24,6 @@ const sendShareEmail = async (file: any, respient: string) => {
     }
 
     await sgMail.send(msg);
-    console.log("Share email sent");
 }
 
 export default sendShareEmail

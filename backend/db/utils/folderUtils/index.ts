@@ -56,8 +56,6 @@ class DbUtil {
         //     query = {...query, "personalFolder": null}
         // }
 
-        console.log("folder query", query);
-
         const folderList = await Folder.find(query)
         .sort(sortBy) as FolderInterface[];
 
@@ -71,7 +69,6 @@ class DbUtil {
         if (type) {
             if (type === "mongo") {
                 query = {...query, "personalFolder": null}
-                console.log("mongo query", query)
             } else  {
                 query = {...query, "personalFolder": true}
             }

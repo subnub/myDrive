@@ -404,7 +404,6 @@ class FileSystemService implements ChunkInterface {
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
 
         if (file.metadata.linkType === "one") {
-            console.log("removing public link");
             await dbUtilsFile.removeOneTimePublicLink(fileID);
         }
     }
@@ -467,8 +466,6 @@ class FileSystemService implements ChunkInterface {
     }
 
     deleteAll = async(userID: string) => {
-
-        console.log("remove all request")
 
         await Folder.deleteMany({"owner": userID});
 

@@ -67,8 +67,6 @@ export const startSetFileAndFolderItems = (historyKey, parent="/", sortby="DEFAU
         if (search && search !== "") {
 
             //fileURL = 
-            console.log("Searching");
-
             // if (storageType === "stripe") {
 
             //     console.log("Pied Search")
@@ -190,8 +188,6 @@ export const startSetAllItems = (clearCache, parent="/", sortby="DEFAULT", searc
     
         const quickItemsURL = !env.googleDriveEnabled ? `/file-service/quick-list` : `/file-service-google-mongo/quick-list`;
 
-        console.log("google drive enabled", env.googleDriveEnabled);
-    
         dispatch(setFiles([]))
         dispatch(setFolders([]))
         dispatch(setQuickFiles([]))
@@ -235,11 +231,7 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
         dispatch(setFiles([]))
         dispatch(setLoading(true))
 
-        console.log("Fetching file list");
-
         if (env.googleDriveEnabled) {
-
-            console.log("is google")
 
             axios.get(`/file-service-google/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
                 
@@ -258,8 +250,6 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
                 console.log(err)
             })
         } else if (env.googleDriveEnabled && parent === "/") {
-
-            console.log("is not google")
 
             // Temp Google Drive API
             axios.get(`/file-service-google-mongo/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
@@ -282,9 +272,6 @@ export const startSetFiles = (parent="/", sortby="DEFAULT", search="", isGoogle=
                 console.log(err)
             })
         } else {
-
-            console.log("is not google")
-
 
             axios.get(`/file-service/list?parent=${parent}&sortby=${sortby}&search=${search}&limit=${limit}&storageType=${storageType}`).then((results) => {
    
@@ -316,18 +303,12 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
 
     return (dispatch) => {
 
-        console.log("search", search)
-
-        //dispatch(setLoading(true))
-
         dispatch(setLoadingMoreItems(true));
 
         let limit = window.localStorage.getItem("list-size") || 50
         limit = parseInt(limit)
 
         if (isGoogle) {
-
-            console.log("is google")
 
              // Temp Google Drive API
             axios.get(`/file-service-google/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}&pageToken=${pageToken}`).then((results) => {
@@ -350,8 +331,6 @@ export const startLoadMoreFiles = (parent="/", sortby="DEFAULT", search="", star
             })
 
         } else {
-
-            console.log("is not google")
 
             axios.get(`/file-service/list?limit=${limit}&parent=${parent}&sortby=${sortby}&search=${search}&startAt=${true}&startAtDate=${startAtDate}&startAtName=${startAtName}`).then((results) => {
             

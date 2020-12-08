@@ -64,9 +64,6 @@ const createQuery = (owner: string, parent: string, sortBy: string, startAt: num
     //     query = {...query, "metadata.personalFile": true}
     // }
 
-    console.log("storage type", storageType)
-    console.log("query", query);
-
     return query;
 
 }

@@ -1,7 +1,5 @@
 import axios from "axios";
 
-console.log("Hello, there", process.env.PORT);
-
 const formElement = document.getElementById("form-submit")
 const inputElement = document.getElementById("input-password");
 const mainDiv = document.getElementById("main-div")

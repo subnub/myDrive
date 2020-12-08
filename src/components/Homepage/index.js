@@ -48,7 +48,6 @@ class HomePageContainer extends React.Component {
                 this.props.dispatch(startResetParentList());
 
             } else if (pathname.includes("/search")) {
-                console.log("login check set search")
                 this.setSearchItems();
                 return;
 
@@ -188,8 +187,6 @@ class HomePageContainer extends React.Component {
         const parent = url.searchParams.get("parent") || undefined;
         const storageType = url.searchParams.get("storageType") || undefined;
         const folderSearch = url.searchParams.get("folder_search") || undefined;
-
-        console.log("Search", value, parent, storageType, folderSearch);
 
         this.props.dispatch(startResetCache())
         this.props.dispatch(setCurrentRouteType("search"))

@@ -147,8 +147,6 @@ class FileController {
     
             const id = req.params.id;
             const userID = req.user._id;
-
-            console.log("remove link", id);
     
             await fileService.removeLink(userID, id)
     
@@ -547,8 +545,6 @@ class FileController {
             const fileID = req.body.id;
             const userID = req.user._id;
             const parentID = req.body.parent;
-    
-            console.log(fileID, userID, parentID);
 
             await fileService.moveFile(userID, fileID, parentID);
 

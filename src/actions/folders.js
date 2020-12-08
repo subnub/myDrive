@@ -112,8 +112,6 @@ export const startRemoveFolder = (id, parentList, isGoogle=false, parent, person
 
         const url = isGoogle ? `/folder-service-google/remove` : personalFolder ? `/folder-service-personal/remove` : `/folder-service/remove`;
 
-        console.log("personal folder", personalFolder);
-
         axios.delete(url, {
             data
         }).then((response) => {

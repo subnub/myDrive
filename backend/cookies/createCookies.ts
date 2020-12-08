@@ -7,8 +7,6 @@ const maxAgeStreamVideo = 60 * 1000 * 60 * 24;
 
 const secureCookies = env.secureCookies ? env.secureCookies === "true" ? true : false : false;
 
-console.log("Secure Cookies", secureCookies);
-
 export const createLoginCookie = (res: Response, accessToken: string, refreshToken: string) => {
 
     res.cookie("access-token",accessToken, {

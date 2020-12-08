@@ -82,13 +82,9 @@ class UserController {
 
         try {
 
-            console.log("\nCreating New Refresh Token...")
-
             const user = req.user;
 
             if (!user) throw new NotFoundError("User Not Found");
-
-            console.log("tokens", user.tokens.length);
 
             const {accessToken, refreshToken} = await user.generateAuthToken(req.clientIp);
 
@@ -97,8 +93,6 @@ class UserController {
             createLoginCookie(res, accessToken, refreshToken);
 
             res.status(201).send();
-
-            console.log("New Refresh Token And Access Token Sent");
 
         } catch (e) {
 

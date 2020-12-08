@@ -203,8 +203,6 @@ class S3Service implements ChunkInterface {
 
         const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
 
-        console.log("download personal file", currentFile.filename);
-
         res.set('Content-Type', 'binary/octet-stream');
         res.set('Content-Disposition', 'attachment; filename="' + currentFile.filename + '"');
         res.set('Content-Length', currentFile.metadata.size.toString()); 
@@ -466,7 +464,6 @@ class S3Service implements ChunkInterface {
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
 
         if (file.metadata.linkType === "one") {
-            console.log("removing public link");
             await dbUtilsFile.removeOneTimePublicLink(fileID);
         }
     }
@@ -537,8 +534,6 @@ class S3Service implements ChunkInterface {
     }
 
     deleteAll = async(userID: string) => {
-
-        console.log("remove all request")
 
         await Folder.deleteMany({"owner": userID});
 

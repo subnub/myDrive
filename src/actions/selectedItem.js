@@ -25,8 +25,6 @@ export const startSetSelectedItem = (id, file, fromQuickItems, isGoogleDrive) =>
 
                 axios.get(`/file-service-google/info/${id}`).then((results) => {
 
-                    console.log("file info google", results.data, results.data.id);
-
                     const data = results.data;
 
                     const {filename: name, length: size, uploadDate: date, parentName: location, metadata, _id: id} = results.data;

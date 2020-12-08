@@ -70,8 +70,6 @@ class SettingsPageContainer extends React.Component {
             env.emailAddress = response.data.email
             this.props.dispatch(setParent(uuid.v4()))
 
-            console.log("user detailed", response.data)
-
             this.setState(() => {
                 return {
                     ...this.state,

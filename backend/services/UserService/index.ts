@@ -70,7 +70,6 @@ class UserService {
     
                 if (currentEncryptedToken === encryptedToken) {
 
-                    console.log("Refresh Token Found Logout!");
                     user.tokens.splice(i, 1);
                     await user.save();
                     break;

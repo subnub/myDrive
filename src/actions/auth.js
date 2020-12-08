@@ -35,8 +35,6 @@ export const startLogin = (email, password, currentRoute) => {
 
             //window.localStorage.setItem("token", token);
 
-            console.log("USER SERVICE LOGIN RESPONSE", response.data.user);
-
             if (emailVerified) {
 
                 dispatch(setLoginFailed(false))
@@ -115,8 +113,6 @@ export const startLoginCheck = (currentRoute) => {
     return (dispatch) => {
 
         axios.get("/user-service/user").then((response) => {
-
-            console.log("USER SERVICE LOGIN CHECK RESPONSE", response.data);
     
             const emailVerified = response.data.emailVerified;
 

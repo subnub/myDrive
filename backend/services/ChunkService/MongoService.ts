@@ -271,7 +271,6 @@ class MongoService implements ChunkInterface {
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
 
         if (file.metadata.linkType === "one") {
-            console.log("removing public link");
             await dbUtilsFile.removeOneTimePublicLink(fileID);
         }
     }
@@ -453,8 +452,6 @@ class MongoService implements ChunkInterface {
     }
 
     deleteAll = async(userID: string) => {
-
-        console.log("remove all request")
 
         let bucket = new mongoose.mongo.GridFSBucket(conn.db, {
             chunkSizeBytes: 1024 * 255
