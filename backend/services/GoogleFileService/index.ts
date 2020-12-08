@@ -2,7 +2,6 @@ import { UserInterface } from "../../models/user";
 import getGoogleAuth from "../../db/googleAuth";
 import {google} from "googleapis";
 import convertDriveListToMongoList from "../../utils/convertDriveListToMongoList";
-import createQueryGoogle from "../../utils/createQueryGoogle";
 import FileService from "../FileService";
 import sortGoogleMongoList from "../../utils/sortGoogleMongoList";
 import convertDriveToMongo from "../../utils/convertDriveToMongo";

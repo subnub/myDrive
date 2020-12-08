@@ -14,7 +14,6 @@ import getFileSize from "./utils/getFileSize";
 import DbUtilFile from "../../db/utils/fileUtils/index";
 import awaitStream from "./utils/awaitStream";
 import createThumbnailAny from "./utils/createThumbailAny";
-import createThumbnailFS from "./utils/createThumbnailFS";
 import imageChecker from "../../utils/imageChecker";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import streamToBuffer from "../../utils/streamToBuffer";
@@ -29,7 +28,6 @@ import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
 import ForbiddenError from "../../utils/ForbiddenError";
 import { ObjectID } from "mongodb";
-const StreamSkip = require("stream-skip");
 
 const dbUtilsFile = new DbUtilFile();
 

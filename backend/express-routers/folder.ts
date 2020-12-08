@@ -44,7 +44,7 @@ router.patch("/folder-service/move", auth, folderController.moveFolder);
 
 router.get("/folder-service/subfolder-list-full", auth, folderController.getSubfolderFullList);
 
-// Personal Files
+// Personal Folder
 
 router.delete("/folder-service-personal/remove", auth, folderController.deletePersonalFolder);
 

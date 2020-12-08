@@ -93,18 +93,6 @@ const userSchema = new mongoose.Schema({
         token: {
             type: String
         }
-        // accessToken: {
-        //     type: String
-        // },
-        // refreshToken: {
-        //     type: String
-        // },
-        // tokenType: {
-        //     type: String
-        // },
-        // expiryDate: {
-        //     type: String
-        // }
     },
     s3Enabled: {
         type: Boolean
@@ -165,10 +153,6 @@ export interface UserInterface extends Document {
         id?: string,
         key?: string,
         iv?: Buffer,
-        // accessToken?: string,
-        // refreshToken?: string,
-        // tokenType?: string,
-        // expiryDate?: string,
         token?: string,
     },
     s3Enabled?: boolean,
@@ -200,27 +184,22 @@ export interface UserInterface extends Document {
     lastSubscriptionStatus?: boolean,
 
     getEncryptionKey: () => Buffer | undefined;
-    generateTempAuthToken: () => any;
-    // generateTempAuthTokenVideo: (cookie: string) => any;
+    generateTempAuthToken: () => Promise<any>;
     encryptToken: (tempToken: any, key: any, publicKey: any) => any;
     decryptToken: (encryptedToken: any, key: any, publicKey: any) => any;
-    findByCreds: (email: string, password: string) => UserInterface;
+    findByCreds: (email: string, password: string) => Promise<UserInterface>;
     generateAuthToken: (ipAddress: string | undefined) => Promise<{accessToken: string, refreshToken: string}>
     generateAuthTokenStreamVideo: (ipAddress: string | undefined) => Promise<string>
     generateEncryptionKeys: () => Promise<void>;
-    changeEncryptionKey: (randomKey: Buffer) => void; 
-    generateEmailVerifyToken: () => string;
-    generatePasswordResetToken: () => string;
+    changeEncryptionKey: (randomKey: Buffer) => Promise<void>; 
+    generateEmailVerifyToken: () => Promise<string>;
+    generatePasswordResetToken: () => Promise<string>;
     encryptDriveIDandKey: (ID:string, key: string) => Promise<void>; 
-    decryptDriveIDandKey: () => {clientID: string, clientKey: string};
-    encryptDriveTokenData: (token: Object) => void;
-    decryptDriveTokenData: () => any;
-    encryptS3Data: (id: string, key: string, bucket: string) => void;
-    decryptS3Data: () => {
-        id: string,
-        key: string,
-        bucket: string
-    }
+    decryptDriveIDandKey: () => Promise<{clientID: string, clientKey: string}>;
+    encryptDriveTokenData: (token: Object) => Promise<void>;
+    decryptDriveTokenData: () => Promise<any>;
+    encryptS3Data: (id: string, key: string, bucket: string) => Promise<void>;
+    decryptS3Data: () => Promise<{id: string, key: string, bucket: string}>
 }
 
 const maxAgeAccess =  60 * 1000 * 20 + (1000 * 60);

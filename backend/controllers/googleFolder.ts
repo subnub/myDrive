@@ -5,25 +5,8 @@ import { googleQueryType } from "../utils/createQueryGoogle";
 
 const googleFolderService = new GoogleFolderService();
 
-type userAccessType = {
-    _id: string,
-    emailVerified: boolean,
-    email: string,
-    s3Enabled: boolean,
-}
-
-interface RequestTypeRefresh extends Request {
-    user?: UserInterface,
-    encryptedToken?: string
-}
-
 interface RequestTypeFullUser extends Request {
     user?: UserInterface,
-    encryptedToken?: string
-}
-
-interface RequestType extends Request {
-    user?: userAccessType,
     encryptedToken?: string
 }
 

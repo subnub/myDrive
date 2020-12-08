@@ -9,11 +9,6 @@ type userAccessType = {
     s3Enabled: boolean,
 }
 
-interface RequestTypeRefresh extends Request {
-    user?: UserInterface,
-    encryptedToken?: string
-}
-
 interface RequestTypeFullUser extends Request {
     user?: UserInterface,
     encryptedToken?: string

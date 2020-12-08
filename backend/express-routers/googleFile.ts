@@ -1,5 +1,4 @@
 import {Router} from "express";
-import auth from "../middleware/auth";
 import GoogleFileController from "../controllers/googleFile";
 import authFullUser from "../middleware/authFullUser";
 import authStreamVideo from "../middleware/authStreamVideo";

@@ -1,5 +1,4 @@
 import { Router } from "express";
-import auth from "../middleware/auth";
 import UserGoogleController from "../controllers/userGoogle";
 import authFullUser from "../middleware/authFullUser";
 

@@ -1,8 +1,7 @@
 import {UserInterface} from "../../../models/user";
-import env from "../../../enviroment/env";
 import { google } from "googleapis";
 import getGoogleAuth from "../../../db/googleAuth";
-import createQueryGoogle, {googleQueryType} from "../../../utils/createQueryGoogle";
+import {googleQueryType} from "../../../utils/createQueryGoogle";
 import createQueryGoogleFolder from "../../../utils/createQueryGoogleFolder";
 
 const fields = 'id, name, createdTime, parents, mimeType'

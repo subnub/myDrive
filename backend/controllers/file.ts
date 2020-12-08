@@ -4,10 +4,8 @@ import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 import User, {UserInterface} from "../models/user";
-import tempStorage from "../tempStorage/tempStorage";
 import sendShareEmail from "../utils/sendShareEmail";
 import { createStreamVideoCookie, removeStreamVideoCookie } from "../cookies/createCookies";
-import { ObjectID } from "mongodb";
 
 const fileService = new FileService()
 
@@ -16,11 +14,6 @@ type userAccessType = {
     emailVerified: boolean,
     email: string,
     s3Enabled: boolean,
-}
-
-interface RequestTypeRefresh extends Request {
-    user?: UserInterface,
-    encryptedToken?: string
 }
 
 interface RequestTypeFullUser extends Request {
@@ -365,6 +358,8 @@ class FileController {
             res.status(code).send();
         }
     }
+
+    // No longer needed, left for reference
 
     // getDownloadTokenVideo = async(req: RequestTypeFullUser, res: Response) => {
 

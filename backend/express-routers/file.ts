@@ -49,19 +49,11 @@ router.get("/file-service/quick-list", auth, fileController.getQuickList);
 
 router.get("/file-service/list", auth, fileController.getList);
 
-//router.get("/file-service/download/get-token", authFullUser, fileController.getDownloadToken);
-
-//router.get("/file-service/download/get-token-video", auth, fileController.getDownloadTokenVideo);
-
 router.get("/file-service/download/access-token-stream-video", authFullUser, fileController.getAccessTokenStreamVideo)
 
 router.get("/file-service/stream-video/:id", authStreamVideo, fileController.streamVideo);
 
 router.delete("/file-service/remove-stream-video-token", authStreamVideo, fileController.removeStreamVideoAccessToken);
-
-//router.get("/file-service/stream-video/:id/:tempToken/:uuid", auth, fileController.streamVideo);
-
-//router.get("/file-service/stream-video/:id", auth, fileController.streamVideo);
 
 router.get("/file-service/download/:id", authFullUser, fileController.downloadFile);
 
@@ -77,29 +69,18 @@ router.patch("/file-service/move", auth, fileController.moveFile);
 
 router.delete("/file-service/remove-link/:id", auth, fileController.removeLink);
 
-//router.delete("/file-service/remove/token-video/:tempToken/:uuid", auth, fileController.removeTempToken);
-
 router.delete("/file-service/remove/token-video/:id", auth, fileController.removeTempToken);
 
 router.delete("/file-service/remove", auth, fileController.deleteFile);
 
 router.post("/file-service/send-share-email", auth, fileController.sendEmailShare);
 
-// Moving File Accross Databases
-
-// router.patch("/file-service/move-db", auth, async(req: RequestType, res) => {
-
-//     const user = req.user!
-//     const fileID = req.body.id;
-//     const parentFolderID = req.body.parentID;
-
-//     const readStream = chunkService.getFileReadStream(user, fileID);
-
-//     const parentFolder = await Folder.findById(parentFolderID);
-
-//     if (parentFolder?.personalFolder) {
-        
-//     }
-// })
-
 export default router;
+
+// NO longer needed left for reference
+
+//router.delete("/file-service/remove/token-video/:tempToken/:uuid", auth, fileController.removeTempToken);
+//router.get("/file-service/stream-video/:id/:tempToken/:uuid", auth, fileController.streamVideo);
+//router.get("/file-service/stream-video/:id", auth, fileController.streamVideo);
+//router.get("/file-service/download/get-token", authFullUser, fileController.getDownloadToken);
+//router.get("/file-service/download/get-token-video", auth, fileController.getDownloadTokenVideo);

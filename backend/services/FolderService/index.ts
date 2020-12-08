@@ -184,8 +184,6 @@ class FolderService {
             currentID = currentFolder.parent;
         }
 
-        // console.log("SENDING FOLDER LIST FULL MONGO", folderList)
-
         return folderList;
     }
 

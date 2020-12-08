@@ -42,6 +42,7 @@ class PopupWindow extends React.Component {
                         </video>}
                     <div>
                         <div>
+                            <p className="popup-file-details-title">Location: {this.props.popupFile.metadata.drive ? "Google Drive" : this.props.popupFile.metadata.personalFile ? "Amazon S3" : "myDrive"}</p>
                             <p className="popup-file-details-title">File Size: {bytes(+this.props.popupFile.metadata.size)}</p>
                             <p className="popup-file-details-title">Created: {moment(this.props.popupFile.uploadDate).format("L")}</p>
                             <div className="popup-window-button-wrapper">

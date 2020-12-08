@@ -78,9 +78,6 @@ class DbUtil {
 
         let query: any = {"metadata.owner": new ObjectID(userID)}
 
-        // if (s3Enabled) {
-        //     query = {...query, "metadata.personalFile": true}
-        // } else 
         if (!s3Enabled){
             query = {...query, "metadata.personalFile": null}
         }

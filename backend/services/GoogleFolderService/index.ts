@@ -2,11 +2,10 @@ import { UserInterface } from "../../models/user";
 import getGoogleAuth from "../../db/googleAuth";
 import {google} from "googleapis";
 import convertDriveFoldersToMongoFolders from "../../utils/convertDriveFoldersToMongoFolders";
-import createQueryGoogleFolder from "../../utils/createQueryGoogleFolder";
 import FolderService from "../FolderService";
 import sortGoogleMongoFolderList from "../../utils/sortGoogleMongoFolderList";
 import convertDriveFolderToMongoFolder from "../../utils/convertDriveFolderToMongoFolder";
-import createQueryGoogle, {googleQueryType} from "../../utils/createQueryGoogle";
+import {googleQueryType} from "../../utils/createQueryGoogle";
 import GoogleDbFolderUtils from "../../db/utils/googleFolderUtils";
 
 const googleDbFolderUtils = new GoogleDbFolderUtils();

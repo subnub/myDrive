@@ -2,7 +2,6 @@ import User, {UserInterface} from "../../models/user";
 import bcrypt from "bcrypt";
 import NotFoundError from "../../utils/NotFoundError";
 import InternalServerError from "../../utils/InternalServerError";
-import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import sendEmailVerification from "../../utils/sendVerificationEmail";
 import File from "../../models/file";
 import env from "../../enviroment/env";
@@ -48,7 +47,6 @@ class UserService {
         const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
 
         if (!accessToken || !refreshToken) throw new NotFoundError("Login User Not Found Error");
-        //if (!user.emailVerified) throw new NotEmailVertifiedError("Email Address Not Verified")
 
         return {user, accessToken, refreshToken}
     }
@@ -78,12 +76,6 @@ class UserService {
         }
 
         await user.save();
-
-        // user.tokens = user.tokens.filter((token) => {
-        //     return token.token !== userToken;
-        // })
-
-        // await user.save();
     }
 
     logoutAll = async(userID: string) => {
@@ -96,11 +88,6 @@ class UserService {
         user.tempTokens = [];
 
         await user.save();
-
-        // user.tokens = []
-        // user.tempTokens = [];
-
-        // await user.save();
     }
 
     create = async(userData: any, ipAddress: string | undefined) => {
@@ -141,25 +128,6 @@ class UserService {
         user.tokens = [];
         user.tempTokens = [];
         user.passwordLastModified = date.getTime();
-        
-        // if (oldRefreshToken) {
-        //     const decoded = jwt.verify(oldRefreshToken, env.passwordRefresh!) as jwtType;  
-        //     const encrpytionKey = user.getEncryptionKey();
-        //     const encryptedToken = user.encryptToken(oldRefreshToken, encrpytionKey, decoded.iv);
-
-        //     for (let i = 0; i < user.tokens.length; i++) {
-
-        //         const currentEncryptedToken = user.tokens[i].token;
-    
-        //         if (currentEncryptedToken === encryptedToken) {
-
-        //             console.log("Refresh Token Found Logout!");
-        //             user.tokens.splice(i, 1);
-        //             await user.save();
-        //             break;
-        //         }
-        //     }
-        // }
 
         await user.save();
         await user.changeEncryptionKey(encryptionKey!);
@@ -167,27 +135,6 @@ class UserService {
         const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
 
         return {accessToken, refreshToken};
-
-        // const date = new Date();
-
-        // const isMatch = await bcrypt.compare(oldPassword, user.password);
-
-        // if (!isMatch) throw new NotAuthorizedError("Change Passwords Do Not Match Error");
-
-        // const encryptionKey = user.getEncryptionKey();
-        
-        // user.password = newPassword;
-
-        // user.tokens = [];
-        // user.tempTokens = [];
-        // user.passwordLastModified = date.getTime();
-        
-        // await user.save();
-        // await user.changeEncryptionKey(encryptionKey!);
-        
-        // const newToken = await user.generateAuthToken();
-
-        // return newToken;
     }
 
     refreshStorageSize = async(userID: string) => {

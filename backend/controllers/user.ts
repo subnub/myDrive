@@ -59,14 +59,7 @@ class UserController {
 
             const {user, accessToken, refreshToken} = await UserProvider.login(body, ipAddress);
 
-            // await user.save();
-
             createLoginCookie(res, accessToken, refreshToken);
-
-            // user.tokens = [];
-            // user.tempTokens = []
-            // user.privateKey = undefined;
-            // user.publicKey = undefined;
 
             res.status(200).send({user});
     

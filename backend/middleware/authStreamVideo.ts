@@ -11,24 +11,10 @@ interface RequestType extends Request {
     accessTokenStreamVideo?: string
 }
 
-// type jwtType = {
-//     iv: Buffer,
-//     user: userAccessType
-// }
-
 type jwtType = {
     iv: Buffer,
     _id: string,
     time: number
-}
-
-type userAccessType = {
-    _id: string,
-    emailVerified: boolean,
-    email: string,
-    admin: boolean,
-    botChecked: boolean,
-    username: string,
 }
 
 const removeOldTokens = async(userID: string, ipAddress: string | undefined, oldTime: number) => {

@@ -1,6 +1,5 @@
 import FolderService from "../services/FolderService";
 import { Request, Response } from "express";
-import {UserInterface} from "../models/user";
 import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
@@ -12,16 +11,6 @@ type userAccessType = {
     emailVerified: boolean,
     email: string,
     s3Enabled: boolean,
-}
-
-interface RequestTypeRefresh extends Request {
-    user?: UserInterface,
-    encryptedToken?: string
-}
-
-interface RequestTypeFullUser extends Request {
-    user?: UserInterface,
-    encryptedToken?: string
 }
 
 interface RequestType extends Request {

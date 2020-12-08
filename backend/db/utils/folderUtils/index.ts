@@ -27,12 +27,6 @@ class DbUtil {
 
         let query: any = {"owner": userID, "parent": parent};
 
-        // if (s3Enabled) {
-        //     query = {...query, "personalFolder": true}
-        // } else if (!s3Enabled) {
-        //     query = {...query, "personalFolder": null}
-        // }
-
         if (!s3Enabled) {
             query = {...query, "personalFolder": null}
         }
@@ -49,12 +43,6 @@ class DbUtil {
             if (itemType === "personal") query = {...query, "personalFolder": true}
             if (itemType === "nonpersonal") query = {...query, "personalFolder": null}
         }
-
-        // if (storageType === "s3") {
-        //     query = {...query, "personalFolder": true}
-        // } else {
-        //     query = {...query, "personalFolder": null}
-        // }
 
         const folderList = await Folder.find(query)
         .sort(sortBy) as FolderInterface[];

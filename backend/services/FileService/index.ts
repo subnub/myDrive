@@ -161,9 +161,7 @@ class MongoFileService {
         return tempToken;
     }
 
-    getAccessTokenStreamVideo = async() => {
-        
-    }
+    // No longer needed left for reference
 
     // getDownloadTokenVideo = async(user: UserInterface, cookie: string) => {
 
