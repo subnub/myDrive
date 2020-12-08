@@ -27,11 +27,18 @@ const sendGridSelect = document.getElementById("sendgrid-select")
 const sendGridWrapper = document.getElementById("sendgrid-wrapper");
 const sendGridWrapper2 = document.getElementById("sendgrid-wrapper2");
 const clientInvalidInputText = document.getElementById("client-input-invalid-text");
+const clientInvalidInputText2 = document.getElementById("client-input-invalid-text2");
 
 const accessTokenInput = document.getElementById("access-token-input");
 const refreshTokenInput = document.getElementById("refresh-token-input")
 const cookieInput = document.getElementById("cookie-input");
 const secureCookieSelect = document.getElementById("secure-cookie-select");
+const mongoDefaultButton = document.getElementById("mongo-default-button");
+const portsSelect = document.getElementById("port-select");
+const httpPortInput = document.getElementById("http-port-input");
+const httpsPortInput = document.getElementById("https-port-input");
+const portsWrappers = document.getElementById("ports-wrapper");
+const customPortsWrapper = document.getElementById("section-wrapper-ports");
 //const stripeInputEmail = document.getElementById('stripe-input-email');
 
 dockerSelection.addEventListener("change", (e) => {
@@ -40,11 +47,14 @@ dockerSelection.addEventListener("change", (e) => {
 
     if (docker) {
         dockerHidden.className = "section-wrapper"
-        mainMongoURLWrapper.className = "docker-hidden"
+        mainMongoURLWrapper.className = "docker-hidden";
+        customPortsWrapper.className = "docker-hidden"
+        portsWrappers.className = "docker-hidden";
     } else {
         dockerHidden.className = "docker-hidden"
         mainMongoURLWrapper.className = "section-wrapper"
         dockerHiddenMongoURL.className = "docker-hidden"
+        customPortsWrapper.className = "section-wrapper";
     }
 })
 
@@ -117,12 +127,10 @@ sendGridSelect.addEventListener("change", () => {
 clientInput.addEventListener("input", () => {
 
     const value = clientInput.value;
-    console.log("value", value)
     
     if (value && value.length !== 0) {
 
         const lastCharacter = value[value.length - 1];
-        console.log("last character", lastCharacter)
 
         if (lastCharacter === "/") {
             
@@ -140,6 +148,34 @@ clientInput.addEventListener("input", () => {
         clientInvalidInputText.className = "invalid-input-text-hidden"
     }
     
+    if (value && value.length >= 8 || value && value.length >= 7) {
+
+        const firstChactersHttp = value.substring(0, 7);
+        const firstChactersHttps = value.substring(0, 8);
+
+        if (firstChactersHttps !== "https://" && firstChactersHttp !== "http://") {
+            clientInput.className = "mongo-input input-invalid"
+            clientInvalidInputText2.className = "invalid-input-text"
+        } else {
+            clientInvalidInputText2.className = "invalid-input-text-hidden"
+        }
+    }
+})
+
+mongoDefaultButton.addEventListener("click", () => {
+
+    mongoURLInput.value = "mongodb://localhost:27017/mydrive-db"
+})
+
+portsSelect.addEventListener("change", () => {
+
+    const value = portsSelect.value === "no";
+
+    if (value) {
+        portsWrappers.className = "section-wrapper"
+    } else {
+        portsWrappers.className = "docker-hidden";
+    }
 })
 
 saveButton.addEventListener("click", () => {
@@ -153,8 +189,11 @@ saveButton.addEventListener("click", () => {
     //if (dbSelect.value !== "fs") clientObj.DISABLE_STORAGE = true;
 
     // Server
-    serverObj.HTTP_PORT = 3000;
-    serverObj.HTTPS_PORT = 8080;
+
+    portsSelect.value === "no" ? serverObj.HTTP_PORT = httpPortInput.value : serverObj.HTTP_PORT = 3000;
+    portsSelect.value === "no" ? serverObj.HTTPS_PORT = httpsPortInput.value : serverObj.HTTPS_PORT = 8080;
+    if (dockerSelection.value === "yes") serverObj.HTTP_PORT = 3000;
+    if (dockerSelection.value === "yes") serverObj.HTTPS_PORT = 8080;
     serverObj.NODE_ENV = "production";
     serverObj.MONGODB_URL = dockerSelection.value !== "yes" ? mongoURLInput.value : 
     dockerSelectionMongoURL.value !== "yes" ? mongoURLInputDocker.value : "mongodb://mongo:27017/mydrive"
@@ -187,9 +226,6 @@ saveButton.addEventListener("click", () => {
         clientObj,
         serverObj
     }
-
-    console.log("data", data);
-    return;
 
     axios.post("/submit", data).then((result) => {
         console.log("Submitted");

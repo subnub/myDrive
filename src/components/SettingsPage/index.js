@@ -85,7 +85,29 @@ class SettingsPageContainer extends React.Component {
 
             })
         }).catch((err) => {
-            console.log("Loading user details error", err);
+
+          console.log("Loading user details error", err);
+
+          Swal.fire({
+            title: 'Error loading user account',
+            text: 'There was an error loading your account, would you like to logout?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, logout',
+            cancelButtonText: 'No'
+          }).then((result) => {
+
+            if (result.value) {
+              console.log("Confirm logout");
+
+              axios.post("/user-service/logout").then(() => {
+                window.location.assign(env.url);
+              }).catch((e) => {
+                window.location.assign(env.url);
+              })
+            }
+          
+          })
         })
         
     }

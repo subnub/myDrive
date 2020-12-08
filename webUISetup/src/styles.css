@@ -87,7 +87,7 @@ html {
     /* width: 77%; */
     /* max-width: 50vw; */
     font-weight: 300;
-    text-transform: capitalize;
+    /* text-transform: capitalize; */
     font-size: 17px;
     text-align: center;
     max-width: 78%;
@@ -198,11 +198,33 @@ html {
     margin: 30px;
 }
 
+.button-wrapper-mongo {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 30px;
+    margin-bottom: 0px;
+}
+
 .button {
     color: #fff;
     background: #3c85ed;
     font-size: 1.8rem;
     padding: 1.2rem;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+}
+
+.button-mongo {
+    color: #fff;
+    background: #3c85ed;
+    font-size: 16px;
+    padding: 9px;
     border: none;
     display: inline-block;
     text-decoration: none;
