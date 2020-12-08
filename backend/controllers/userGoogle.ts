@@ -49,9 +49,10 @@ class UserGoogleController {
 
             const user = req.user;
             const code = req.body.code;
-            const ipAddress = req.clientIp;
+            
+            const currentUUID = req.headers.uuid as string;
 
-            const {accessToken, refreshToken} = await UserProviderGoogle.addGoogleStorage(user, code, ipAddress);
+            const {accessToken, refreshToken} = await UserProviderGoogle.addGoogleStorage(user, code, currentUUID);
 
             createLoginCookie(res, accessToken, refreshToken);
 
@@ -74,9 +75,10 @@ class UserGoogleController {
         try {
 
             const user = req.user
-            const ipAddress = req.clientIp;
 
-            const {accessToken, refreshToken} = await UserProviderGoogle.removeGoogleStorage(user, ipAddress);
+            const currentUUID = req.headers.uuid as string;
+
+            const {accessToken, refreshToken} = await UserProviderGoogle.removeGoogleStorage(user, currentUUID);
 
             createLoginCookie(res, accessToken, refreshToken);
 

@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
             type: String, 
             required: true
         },
-        ipAddress: {
+        uuid: {
             type: String,
             required: true,
         },
@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema({
             type: String, 
             required: true
         },
-        ipAddress: {
+        uuid: {
             type: String,
             required: true,
         },
@@ -188,8 +188,8 @@ export interface UserInterface extends Document {
     encryptToken: (tempToken: any, key: any, publicKey: any) => any;
     decryptToken: (encryptedToken: any, key: any, publicKey: any) => any;
     findByCreds: (email: string, password: string) => Promise<UserInterface>;
-    generateAuthToken: (ipAddress: string | undefined) => Promise<{accessToken: string, refreshToken: string}>
-    generateAuthTokenStreamVideo: (ipAddress: string | undefined) => Promise<string>
+    generateAuthToken: (uuid: string | undefined) => Promise<{accessToken: string, refreshToken: string}>
+    generateAuthTokenStreamVideo: (uuid: string | undefined) => Promise<string>
     generateEncryptionKeys: () => Promise<void>;
     changeEncryptionKey: (randomKey: Buffer) => Promise<void>; 
     generateEmailVerifyToken: () => Promise<string>;
@@ -251,7 +251,7 @@ userSchema.methods.toJSON = function() {
     return userObject;
 }
 
-userSchema.methods.generateAuthTokenStreamVideo = async function(ipAddress: string | undefined) {
+userSchema.methods.generateAuthTokenStreamVideo = async function(uuid: string | undefined) {
 
     const iv = crypto.randomBytes(16);
 
@@ -266,14 +266,14 @@ userSchema.methods.generateAuthTokenStreamVideo = async function(ipAddress: stri
 
     const encryptedToken = user.encryptToken(accessTokenStreamVideo, encryptionKey, iv);
 
-    ipAddress = ipAddress ? ipAddress : "";
+    uuid = uuid ? uuid : "unknown";
 
-    await User.updateOne({_id: user._id}, {$push: {"tempTokens": {token: encryptedToken, ipAddress, time}}});
+    await User.updateOne({_id: user._id}, {$push: {"tempTokens": {token: encryptedToken, uuid, time}}});
 
     return accessTokenStreamVideo;
 }
 
-userSchema.methods.generateAuthToken = async function(ipAddress: string | undefined) {
+userSchema.methods.generateAuthToken = async function(uuid: string | undefined) {
 
     const iv = crypto.randomBytes(16);
 
@@ -293,9 +293,9 @@ userSchema.methods.generateAuthToken = async function(ipAddress: string | undefi
 
     //user.tokens = user.tokens.concat({token: encryptedToken});
 
-    ipAddress = ipAddress ? ipAddress : "";
+    uuid = uuid ? uuid : "unknown";
 
-    await User.updateOne({_id: user._id}, {$push: {"tokens": {token: encryptedToken, ipAddress, time}}})
+    await User.updateOne({_id: user._id}, {$push: {"tokens": {token: encryptedToken, uuid, time}}})
 
     // console.log("saving user")
     // console.log("user saved")

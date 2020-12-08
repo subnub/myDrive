@@ -26,7 +26,7 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
-        console.log("auth up address", req.clientIp, req.ip);
+        console.log("auth uuid", req.headers.uuid);
 
         // console.log(req.headers);
 

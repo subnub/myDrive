@@ -1,4 +1,4 @@
-const getEnvVariables = require("./getEnvVaribables");
+const getEnvVariables = require("../dist/enviroment/getEnvVariables");
 getEnvVariables();
 const mongoose = require("./mongoServerUtil");
 const conn = mongoose.connection;

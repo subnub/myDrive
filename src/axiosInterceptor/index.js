@@ -1,4 +1,5 @@
 import axios from 'axios';
+import uuid from "uuid";
 
 const sleep = () => {
   return new Promise((resolve, reject) => {
@@ -11,6 +12,30 @@ const sleep = () => {
 const axiosRetry = axios.create();
 const axiosNoRetry = axios.create();
 const axios3 = axios.create();
+
+axiosRetry.interceptors.request.use((config) => {
+
+  console.time("uuid-test")
+  let browserIDCheck = localStorage.getItem("browser-id");
+
+  if (!browserIDCheck) {
+    console.log("creating new UUID")
+    browserIDCheck = uuid.v4();
+    localStorage.setItem("browser-id", browserIDCheck);
+  };
+
+  console.log("request interceptor")
+  config.headers.uuid = browserIDCheck;
+
+  console.timeEnd("uuid-test")
+
+  return config;
+
+}, (error) => {
+
+  return Promise.reject(error);
+
+})
 
 axiosRetry.interceptors.response.use((response) => {
   //console.log("axios interceptor successful")
@@ -37,8 +62,18 @@ axiosRetry.interceptors.response.use((response) => {
           //console.log("error url equal to refresh token route")
           return reject();
     }
+
+    let browserIDCheck = localStorage.getItem("browser-id");
+
+    if (!browserIDCheck) {
+      console.log("creating new UUID")
+      browserIDCheck = uuid.v4();
+      localStorage.setItem("browser-id", browserIDCheck);
+    };
     
-    axiosNoRetry.post("/user-service/get-token").then((cookieResponse) => {
+    axiosNoRetry.post("/user-service/get-token", {}, {headers: {
+      "uuid" : browserIDCheck 
+    }}).then((cookieResponse) => {
       
       return sleep("sleepy boi");
 

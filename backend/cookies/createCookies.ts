@@ -2,7 +2,9 @@ import {Response } from "express";
 import env from "../enviroment/env";
 
 const maxAgeAccess =  60 * 1000 * 20;
+//const maxAgeAccess =  1000;
 const maxAgeRefresh = 60 * 1000 * 60 * 24 * 30;
+//const maxAgeRefresh = 1000;
 const maxAgeStreamVideo = 60 * 1000 * 60 * 24;
 
 const secureCookies = env.secureCookies ? env.secureCookies === "true" ? true : false : false;

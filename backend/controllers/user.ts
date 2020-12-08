@@ -55,9 +55,10 @@ class UserController {
         try {
 
             const body = req.body;
-            const ipAddress = req.clientIp;
+            
+            const currentUUID = req.headers.uuid as string;
 
-            const {user, accessToken, refreshToken} = await UserProvider.login(body, ipAddress);
+            const {user, accessToken, refreshToken} = await UserProvider.login(body, currentUUID);
 
             createLoginCookie(res, accessToken, refreshToken);
 
@@ -79,7 +80,9 @@ class UserController {
 
             if (!user) throw new NotFoundError("User Not Found");
 
-            const {accessToken, refreshToken} = await user.generateAuthToken(req.clientIp);
+            const currentUUID = req.headers.uuid as string;
+
+            const {accessToken, refreshToken} = await user.generateAuthToken(currentUUID);
 
             if (!accessToken || !refreshToken) throw new InternalServerError("User/Access/Refresh Token Missing");
 
@@ -153,9 +156,9 @@ class UserController {
         
         try {
     
-            const ipAddress = req.clientIp;
+            const currentUUID = req.headers.uuid as string;
 
-            const {user, accessToken, refreshToken} = await UserProvider.create(req.body, ipAddress);
+            const {user, accessToken, refreshToken} = await UserProvider.create(req.body, currentUUID);
 
             createLoginCookie(res, accessToken, refreshToken);
     
@@ -182,9 +185,10 @@ class UserController {
             const oldPassword = req.body.oldPassword;
             const newPassword = req.body.newPassword;
             const oldRefreshToken = req.cookies["refresh-token"];
-            const ipAddress = req.clientIp;
+            
+            const currentUUID = req.headers.uuid as string;
 
-            const {accessToken, refreshToken} = await UserProvider.changePassword(userID, oldPassword, newPassword, oldRefreshToken, ipAddress);
+            const {accessToken, refreshToken} = await UserProvider.changePassword(userID, oldPassword, newPassword, oldRefreshToken, currentUUID);
             
             createLoginCookie(res, accessToken, refreshToken);
 
@@ -247,11 +251,12 @@ class UserController {
         try {
 
             const verifyToken = req.body.emailToken;
-            const ipAddress = req.clientIp;
+            
+            const currentUUID = req.headers.uuid as string;
 
             const user = await UserProvider.verifyEmail(verifyToken);
 
-            const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+            const {accessToken, refreshToken} = await user.generateAuthToken(currentUUID);
 
             createLoginCookie(res, accessToken, refreshToken);
 

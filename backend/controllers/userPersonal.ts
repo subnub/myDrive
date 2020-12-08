@@ -38,9 +38,10 @@ class UserPersonalController {
 
             const user = req.user;
             const s3Data = req.body;
-            const ipAddress = req.clientIp;
+            
+            const currentUUID = req.headers.uuid as string;
 
-            const {accessToken, refreshToken} = await UserProviderPersonal.addS3Storage(user, s3Data, ipAddress);
+            const {accessToken, refreshToken} = await UserProviderPersonal.addS3Storage(user, s3Data, currentUUID);
 
             createLoginCookie(res, accessToken, refreshToken);
 
@@ -63,9 +64,9 @@ class UserPersonalController {
         try {
 
             const user = req.user;
-            const ipAddress = req.clientIp;
+            const currentUUID = req.headers.uuid as string;
 
-            const {accessToken, refreshToken} = await UserProviderPersonal.removeS3Storage(user, ipAddress);
+            const {accessToken, refreshToken} = await UserProviderPersonal.removeS3Storage(user, currentUUID);
 
             createLoginCookie(res, accessToken, refreshToken);
 

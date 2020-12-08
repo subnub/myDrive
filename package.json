@@ -28,7 +28,9 @@
     "heroku-postbuild": "npm run build",
     "setup": "node dist/webUI/startSetupServer.js",
     "remove-old-subscription-data": "node serverUtils/removeOldSubscriptionData.js",
-    "remove-old-personal-data": "node serverUtils/removeOldPersonalData.js"
+    "remove-old-personal-data": "node serverUtils/removeOldPersonalData.js",
+    "remove-tokens": "node serverUtils/removeTokens.js --env production",
+    "remove-tokens:dev": "NODE_ENV=development node serverUtils/removeTokens.js"
   },
   "dependencies": {
     "@babel/core": "^7.8.4",

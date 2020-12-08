@@ -318,9 +318,9 @@ class FileController {
 
             const user = req.user;
 
-            const ipAddress = req.clientIp;
+            const currentUUID = req.headers.uuid as string;
 
-            const streamVideoAccessToken = await user.generateAuthTokenStreamVideo(ipAddress);
+            const streamVideoAccessToken = await user.generateAuthTokenStreamVideo(currentUUID);
 
             createStreamVideoCookie(res, streamVideoAccessToken);
 

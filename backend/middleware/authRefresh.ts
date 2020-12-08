@@ -16,19 +16,20 @@ type jwtType = {
     time: number
 }
 
-const removeOldTokens = async(userID: string, ipAddress: string | undefined, oldTime: number) => {
+const removeOldTokens = async(userID: string, uuid: string | undefined, oldTime: number) => {
 
     try {
 
-        console.log("removing token with IP address", ipAddress);
+        console.log("removing token with uuid address", uuid);
 
         const minusTime = oldTime - (1000 * 60 * 60);
+        //const minusTime = oldTime - (1000);
 
-        ipAddress = ipAddress ? ipAddress : "";
+        uuid = uuid ? uuid : "unknown";
 
-        if (ipAddress === "") return;
+        if (uuid === "unknown") return;
 
-        await User.updateOne({_id: userID}, {$pull: {tokens: {ipAddress, time: {$lt: minusTime}}}})
+        await User.updateOne({_id: userID}, {$pull: {tokens: {uuid, time: {$lt: minusTime}}}})
 
     } catch (e) {
         console.log("cannot remove old tokens", e);
@@ -40,6 +41,7 @@ const authRefresh = async(req: RequestType, res: Response, next: NextFunction) =
     try {
 
         const refreshToken = req.cookies["refresh-token"];
+        const currentUUID = req.headers.uuid as string;
 
         if (!refreshToken) throw new Error("No Refresh Token");
 
@@ -63,7 +65,7 @@ const authRefresh = async(req: RequestType, res: Response, next: NextFunction) =
             if (currentEncryptedToken === encryptedToken) {
 
                 tokenFound = true;
-                removeOldTokens(user._id, req.clientIp, time);
+                removeOldTokens(user._id, currentUUID, time);
                 break;
             }
         }

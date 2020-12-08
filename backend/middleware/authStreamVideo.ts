@@ -17,17 +17,17 @@ type jwtType = {
     time: number
 }
 
-const removeOldTokens = async(userID: string, ipAddress: string | undefined, oldTime: number) => {
+const removeOldTokens = async(userID: string, uuid: string | undefined, oldTime: number) => {
 
     try {
 
         const minusTime = oldTime - (60 * 1000 * 60 * 24);
 
-        ipAddress = ipAddress ? ipAddress : "";
+        uuid = uuid ? uuid : "unknown";
 
-        if (ipAddress === "") return;
+        if (uuid === "unknown") return;
 
-        await User.updateOne({_id: userID}, {$pull: {tempTokens: {ipAddress, time: {$lt: minusTime}}}})
+        await User.updateOne({_id: userID}, {$pull: {tempTokens: {uuid, time: {$lt: minusTime}}}})
 
     } catch (e) {
         console.log("cannot remove old tokens", e);
@@ -40,6 +40,7 @@ const authStreamVideo = async(req: RequestType, res: Response, next: NextFunctio
     try {
 
         const accessTokenStreamVideo = req.cookies["video-access-token"];
+        const currentUUID = req.headers.uuid as string;
 
         if (!accessTokenStreamVideo) throw new Error("No Access Token");
 
@@ -63,7 +64,7 @@ const authStreamVideo = async(req: RequestType, res: Response, next: NextFunctio
             if (currentEncryptedToken === encryptedToken) {
 
                 tokenFound = true;
-                removeOldTokens(user._id, req.clientIp, time);
+                removeOldTokens(user._id, currentUUID, time);
                 break;
             }
         }

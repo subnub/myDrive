@@ -35,7 +35,7 @@ class UserService {
 
     }
 
-    login = async(userData: UserDataType, ipAddress: string | undefined) => {
+    login = async(userData: UserDataType, uuid: string | undefined) => {
 
         const email = userData.email;
         const password = userData.password; 
@@ -44,7 +44,7 @@ class UserService {
 
         if (!user) throw new NotFoundError("Cannot Find User");
 
-        const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+        const {accessToken, refreshToken} = await user.generateAuthToken(uuid);
 
         if (!accessToken || !refreshToken) throw new NotFoundError("Login User Not Found Error");
 
@@ -90,7 +90,7 @@ class UserService {
         await user.save();
     }
 
-    create = async(userData: any, ipAddress: string | undefined) => {
+    create = async(userData: any, uuid: string | undefined) => {
 
         const user = new User({email: userData.email, password: userData.password, emailVerified: env.disableEmailVerification});
         await user.save();
@@ -99,7 +99,7 @@ class UserService {
 
         await user.generateEncryptionKeys();
 
-        const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+        const {accessToken, refreshToken} = await user.generateAuthToken(uuid);
         const emailToken = await user.generateEmailVerifyToken();
 
         if (!env.disableEmailVerification) await sendEmailVerification(user, emailToken);
@@ -109,7 +109,7 @@ class UserService {
         return {user, accessToken, refreshToken}
     }
 
-    changePassword = async(userID: string, oldPassword: string, newPassword: string, oldRefreshToken: string, ipAddress: string | undefined) => {
+    changePassword = async(userID: string, oldPassword: string, newPassword: string, oldRefreshToken: string, uuid: string | undefined) => {
 
         const user = await User.findById(userID);
 
@@ -132,7 +132,7 @@ class UserService {
         await user.save();
         await user.changeEncryptionKey(encryptionKey!);
         
-        const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+        const {accessToken, refreshToken} = await user.generateAuthToken(uuid);
 
         return {accessToken, refreshToken};
     }

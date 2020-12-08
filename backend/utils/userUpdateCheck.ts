@@ -17,7 +17,7 @@ type userAccessType = {
     botChecked: boolean,
 }
 
-const userUpdateCheck = async(res: Response, id: string, ipAddress: string | undefined) => {
+const userUpdateCheck = async(res: Response, id: string, uuid: string | undefined) => {
 
     const updatedUser = await User.findById(id);
 
@@ -25,7 +25,7 @@ const userUpdateCheck = async(res: Response, id: string, ipAddress: string | und
 
     if (updatedUser.emailVerified) {
 
-        const {accessToken, refreshToken} = await updatedUser.generateAuthToken(ipAddress);
+        const {accessToken, refreshToken} = await updatedUser.generateAuthToken(uuid);
         createLoginCookie(res, accessToken, refreshToken);
     }
 

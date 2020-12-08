@@ -27,7 +27,7 @@ class UserGoogleService {
         return url;
     }
 
-    addGoogleStorage = async(user: UserInterface, code: string, ipAddress: string | undefined) => {
+    addGoogleStorage = async(user: UserInterface, code: string, uuid: string | undefined) => {
 
         const redirectURL = env.remoteURL + "/add-google-account";
 
@@ -51,7 +51,7 @@ class UserGoogleService {
     
                     user.encryptDriveTokenData(token);
 
-                    const {accessToken, refreshToken} = await user.generateAuthToken(ipAddress);
+                    const {accessToken, refreshToken} = await user.generateAuthToken(uuid);
 
                     resolve({accessToken, refreshToken});
                     
@@ -62,14 +62,14 @@ class UserGoogleService {
         })
     }
 
-    removeGoogleStorage = async(user: UserInterface, ipAddress: string | undefined) => {
+    removeGoogleStorage = async(user: UserInterface, uuid: string | undefined) => {
 
         user.googleDriveEnabled = undefined;
         user.googleDriveData = undefined;
 
         await user.save();
 
-        return await user.generateAuthToken(ipAddress);
+        return await user.generateAuthToken(uuid);
     }
 }
 
