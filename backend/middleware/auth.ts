@@ -26,7 +26,9 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
-        console.log("auth up address", req.clientIp);
+        console.log("auth up address", req.clientIp, req.ip);
+
+        // console.log(req.headers);
 
         const accessToken = req.cookies["access-token"];
 
