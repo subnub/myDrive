@@ -78,6 +78,8 @@ const authRefresh = async(req: RequestType, res: Response, next: NextFunction) =
         e.message !== "No User" &&
         e.message !== "Refresh Token Not Found") console.log("\nAuthorization Refresh Middleware Error:", e.message);
 
+        console.log("refresh error", e.message);
+
         res.status(401).send("Error Refreshing Token");
     }
 }
