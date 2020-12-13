@@ -66,34 +66,6 @@ export const startSetFileAndFolderItems = (historyKey, parent="/", sortby="DEFAU
 
         if (search && search !== "") {
 
-            //fileURL = 
-            // if (storageType === "stripe") {
-
-            //     console.log("Pied Search")
-
-            //     fileURL = `/file-service/list?search=${search}&storageType=${storageType}`;
-            //     folderURL = `/folder-service/list?search=${search}&storageType=${storageType}`
-            // if (folderSearch) {
-
-            //     console.log("Folder Search")
-
-            //     fileURL = `/file-service/list?search=${search}&folder_search=${true}&parent=${parent}`
-            //     folderURL = `/folder-service/list?search=${search}&folder_search=${true}&parent=${parent}`
-
-            // } else {
-                
-            //     console.log("Everywhere Search")
-
-            //     if (env.googleDriveEnabled) {
-            //         fileURL = `/file-service-google-mongo/list?search=${search}`;
-            //         folderURL = `/folder-service-google-mongo/list?search=${search}`;
-            //     } else {
-            //         fileURL = `/file-service/list?search=${search}`;
-            //         folderURL = `/folder-service/list?search=${search}`;
-            //     }
-            // }
-
-
             if (env.googleDriveEnabled) {
                 fileURL = `/file-service-google-mongo/list?search=${search}`;
                 folderURL = `/folder-service-google-mongo/list?search=${search}`;
@@ -404,7 +376,7 @@ export const startAddFile = (uploadInput, parent, parentList, storageSwitcherTyp
                         dispatch(editUpload(currentID, currentProgress))
                     }
                 },
-                cancelToken: source.token
+                cancelToken: source.token,
             };
 
             dispatch(addUpload({id: currentID, progress: 0, name: currentFile.name, completed: false, source, canceled: false, size: currentFile.size}))

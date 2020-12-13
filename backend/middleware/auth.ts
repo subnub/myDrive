@@ -26,10 +26,6 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
-        console.log("auth uuid", req.headers.uuid);
-
-        // console.log(req.headers);
-
         const accessToken = req.cookies["access-token"];
 
         if (!accessToken) throw new Error("No Access Token");

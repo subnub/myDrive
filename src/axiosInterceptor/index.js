@@ -1,6 +1,8 @@
 import axios from 'axios';
 import uuid from "uuid";
 
+let browserIDCheck = localStorage.getItem("browser-id");
+
 const sleep = () => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -16,7 +18,6 @@ const axios3 = axios.create();
 axiosRetry.interceptors.request.use((config) => {
 
   console.time("uuid-test")
-  let browserIDCheck = localStorage.getItem("browser-id");
 
   if (!browserIDCheck) {
     console.log("creating new UUID")
@@ -62,8 +63,6 @@ axiosRetry.interceptors.response.use((response) => {
           //console.log("error url equal to refresh token route")
           return reject();
     }
-
-    let browserIDCheck = localStorage.getItem("browser-id");
 
     if (!browserIDCheck) {
       console.log("creating new UUID")

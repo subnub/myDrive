@@ -18,7 +18,7 @@ import compression from "compression";
 import http from "http";
 import cookieParser from "cookie-parser";
 import env from "../enviroment/env";
-import requestIp from "request-ip";
+// import requestIp from "request-ip";
 
 const app = express();
 const publicPath = path.join(__dirname, "..", "..", "public");
@@ -53,10 +53,11 @@ app.use(express.json());
 app.use(express.static(publicPath));
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}))
-app.use(requestIp.mw());
+// app.use(requestIp.mw());
 
 app.use(busboy({
-    highWaterMark: 2 * 1024 * 1024, 
+    highWaterMark: 2 * 1024 * 1024,
+    
 }));
 
 app.use(userRouter, fileRouter, folderRouter, storageRouter, googleFileRouter, personalFileRouter, googleFolderRouter, userPersonalRouter, userGoogleRouter);
