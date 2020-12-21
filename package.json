@@ -62,8 +62,6 @@
     "@types/validator": "^13.0.0",
     "aws-sdk": "^2.657.0",
     "axios": "^0.21.0",
-    "axios-auth-refresh": "^3.0.0",
-    "axios-retry": "^3.1.9",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
