@@ -20,8 +20,6 @@ const removeOldTokens = async(userID: string, uuid: string | undefined, oldTime:
 
     try {
 
-        console.log("removing token with uuid address", uuid);
-
         const minusTime = oldTime - (1000 * 60 * 60);
         //const minusTime = oldTime - (1000);
 

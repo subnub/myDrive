@@ -17,18 +17,12 @@ const axios3 = axios.create();
 
 axiosRetry.interceptors.request.use((config) => {
 
-  console.time("uuid-test")
-
   if (!browserIDCheck) {
-    console.log("creating new UUID")
     browserIDCheck = uuid.v4();
     localStorage.setItem("browser-id", browserIDCheck);
   };
 
-  console.log("request interceptor")
   config.headers.uuid = browserIDCheck;
-
-  console.timeEnd("uuid-test")
 
   return config;
 
@@ -65,7 +59,6 @@ axiosRetry.interceptors.response.use((response) => {
     }
 
     if (!browserIDCheck) {
-      console.log("creating new UUID")
       browserIDCheck = uuid.v4();
       localStorage.setItem("browser-id", browserIDCheck);
     };
@@ -74,6 +67,10 @@ axiosRetry.interceptors.response.use((response) => {
       "uuid" : browserIDCheck 
     }}).then((cookieResponse) => {
       
+      // We need to sleep before requesting again, if not I believe 
+      // The old request will still be open and it will not make a 
+      // Brand new request sometimes, so it will log users out
+      // But adding a sleep function seems to fix this.
       return sleep("sleepy boi");
 
     }).then((sleepres) => {
