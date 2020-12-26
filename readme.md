@@ -6,6 +6,8 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 [Main myDrive website](https://mydrive-storage.com/)
 
+Go to the main myDrive website for more infomation, screenshots, and more.
+
 ## Index
 
 * [Features](#features)
@@ -201,12 +203,10 @@ I created a short YouTube video, showing off myDrives design and features: https
 
 ## Demo
 
-Demo: https://mydrive-demo.herokuapp.com/
+Demo: https://mydrive-3.herokuapp.com/
 - Note: The Upload and Download Features, and other core features, are disabled in the demo.
 
 ## Fund
-
-Like myDrive? Perhaps you'd like to contribute by funding me through patreon! MyDrive is made by myself, and only myself. I am a 22 year old developer, who goes to school, and work (A non-programming job) so any amount really helps! I hope to do programming as a full time job one day. 
 
 Patreon: https://www.patreon.com/subnub
 
