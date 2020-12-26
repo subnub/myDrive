@@ -2,7 +2,9 @@
 
 # MyDrive
 
-MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service uses mongoDB to store file/folder metadata, and supports multiple databases to store the file chunks, such as Amazon S3, the Filesystem, or just MongoDB. MyDrive is built using Node.js, and Typescript. The service now even supports Docker images! 
+MyDrive is an Open Source cloud file storage server (Similar To Google Drive). Host myDrive on your own server or trusted platform and then access myDrive through your web browser. MyDrive uses mongoDB to store file/folder metadata, and supports multiple databases to store the file chunks, such as Amazon S3, the Filesystem, or just MongoDB. MyDrive is built using Node.js, and Typescript. The service now even supports Docker images! 
+
+[Main myDrive website](https://mydrive-storage.com/)
 
 ## Index
 
@@ -23,6 +25,8 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 
 * Upload Files
 * Download Files
+* Google Drive Support
+* Personal S3 storage support
 * Share Files
 * Multiple DB Support (MongoDB, S3, Filesystem)
 * Photo Viewer
@@ -34,11 +38,12 @@ MyDrive is an Open Source Cloud Server (Similar To Google Drive), the service us
 * Docker Support
 * Search/Filter Options
 * AES256 Encryption
+* Access/Refresh tokens
 
 ## Installation
 
 Required:
-- Node.js (13+ Recommended)
+- Node.js (15 Recommended)
 - MongoDB (Unless using a service like Atlas)
 
 Windows users will usually need both the microsoft visual build tools, and python 2. These are required to build the sharp module:
@@ -56,12 +61,17 @@ Setup:
 npm install
 ```
 
->Create Environment Variables, Users can use the built in command to easily create the needed Environment files, or view the Environment Variables section to see how to manually create the files. 
+>Run the build command
+``` javascript
+npm run build
+```
+
+>Create Environment Variables: Easily create enviroment variables with the built in command. This command will start a server where you can type in the enviroment variables through a webUI on your browser.
 ``` javascript
 npm run setup
 ```
 
->Run the build command
+>Rebuild the project after entering enviroment variables
 ``` javascript
 npm run build
 ```
@@ -78,7 +88,7 @@ npm run start
 
 ## WebUI For Encryption Key
 
-MyDrive will first host a server on http://localhost:3000 in order to safely get the encryption key, just navigate to this URL in a browser, and enter the encryption key. 
+MyDrive will first host a server on http://localhost:3000 in order to safely get the encryption key, just navigate to this URL in a browser, and enter the encryption key. You can access this URL through your IP address also, but localhost is recommended to avoid man in the middle attacks.
 
 If you're using a service like SSH or a Droplet, you can forward the localhost connection safely like so:
 ```bash
@@ -109,31 +119,36 @@ docker-compose up
 
 ## Screenshots
 
+Modern and colorful design
+![MyDrive Design](github_images/homepage.png)
+
 Upload Files
-![MyDrive Upload](github_images/upload-screenshot.png)
+![MyDrive Upload](github_images/upload.png)
+
+Download Files
+![MyDrive Upload](github_images/download.png)
 
 Image Viewer
-![Image Viewer](github_images/image-screenshot.png)
+![Image Viewer](github_images/image-viewer.png)
 
 Video Viewer
-![Video Viewer](github_images/video-screenshot.png)
+![Video Viewer](github_images/video-viewer.png)
+
+Image Thumbnails
+![Search](github_images/thumbnails.png)
+
+Share Files
+![Share](github_images/share.png)
 
 Search For Files/Folders
-![Search](github_images/search-screenshot.png)
+![Search](github_images/search.png)
 
 Move File/Folders
-![Move](github_images/move-screenshot.png)
+![Move](github_images/move.png)
 
-Share
-![Share](github_images/share-screenshot.png)
+Google Drive Support
+![Move](github_images/drive.png)
 
-Folders
-![Folders](github_images/folder-screenshot.png)
-
-Mobile
-<div>
-<img src="github_images/mobile-screenshot.jpeg" width="150">
-</div>
 
 ## Environment Variables
 
@@ -148,10 +163,14 @@ Server Environment Variables:
 - MONGODB_URL (Required): Sets the MongoDB URL, this should also work with DocumentDB. 
 - HTTP_PORT (Required): Sets the HTTP port number.
 - HTTPS_PORT (Required): Sets the HTTPS port number.
-- PASSWORD (Required): Sets the JWT password. 
+- REMOTE_URL (Required): This is the URL that the client navigates to in their browser in order to access myDrive. This is needed for things like the Google Drive redirect URL, and including the URL when sending email verification/password reset emails.
+- PASSWORD_ACCESS (Required): Sets the JWT secret for access tokens.
+- PASSWORD_REFRESH (Required): Sets the JWT secret for refresh tokens.
+- PASSWORD_COOKIE (Required): Sets the secret for cookies.
 - DB_TYPE (Required): Sets the Database Type, options include s3/mongo/fs.
 - NODE_ENV (Required): Must be set to 'production'.
 - SSL (Optional): Enables SSL, place certificate.crt, certificate.ca-bundle, and certificate.key at the root of the project. Set this to 'true'
+- SECURE_COOKIES (Optional): Makes cookies secure, which means they can only be sent with HTTPS/SSL. Choose this option only if you are using HTTPS.
 - KEY (Optional): Encryption key for data, this is not recommended, please use the built in webUI for setting the key.
 - DOCKER (Optional/Required): Sets the server to use docker, set this to 'true'.
 - FS_DIRECTORY (Optional/Required): Sets the directory for file data on the file system. 
@@ -161,6 +180,9 @@ Server Environment Variables:
 - ROOT (Optional): Uses a filesystem path, is used for storage space.
 - URL (Optional): Allows to specify URL to host on, this is usually not needed. 
 - USE_DOCUMENT_DB (Optional): Enables documentDB, this is experimental, set this to 'true'.
+- DISABLE_EMAIL_VERIFICATION (optional): Disabled email verification when creating an account. Also will not allow users to reset their password with an email.
+- SENDGRID_EMAIL (optional): If you are using email verification it is done through sendgrid, enter the sendgrid email address you would like to use. This is the email address users will see when they need to verify their account, or reset their password.
+- SENDGRID_KEY (optional): This is the sendgrid API key.
 - DOCUMENT_DB_BUNDLE (Optional): Enables SSL with documentDB, set this to 'true'.
 - BLOCK_CREATE_ACCOUNT (Optional): Blocks the ability to create accounts, set this to 'true'.
 
