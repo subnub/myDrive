@@ -1,10 +1,10 @@
 {
   "name": "mydrive",
-  "version": "0.0.1",
+  "version": "3.0.0",
   "main": "index.js",
   "license": "GNU General Public License v3.0",
   "engines": {
-    "node": "13.11.0"
+    "node": "15.4.0"
   },
   "scripts": {
     "server": "live-server public/",
