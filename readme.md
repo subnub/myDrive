@@ -14,6 +14,7 @@ Go to the main myDrive website for more infomation, screenshots, and more.
 * [Installation](#installation)
 * [Guided Installation](https://github.com/subnub/myDrive/wiki/Guided-Installation-Setup)
 * [Guided Installation (Docker)](https://github.com/subnub/myDrive/wiki/Guided-Installation-Setup-(Docker))
+* [Updating from a previous version of myDrive](#updating-from-a-previous-version-of-mydrive)
 * [WebUI For Encryption Key](#webui-for-encryption-key)
 * [Docker](#docker)
 * [Environment Variables](#environment-variables)
@@ -118,6 +119,23 @@ Start the Docker Image:
 ```bash
 docker-compose up
 ```
+
+## Updating from a previous version of myDrive
+
+If you are running a previous version of myDrive such as myDrive 2 you must perform the following steps before you will be able to run myDrive properly. An easy way to tell if you are running a previous version of myDrive is checking if you have the old UI/look of myDrive 2. If your home page looks different than the myDrive 3 design you are most likely running myDrive 2. 
+
+First I recommend creating a new folder for myDrive 3, so just incase you are having difficulties with myDrive 3 you can easily revert to myDrive 2.
+
+After you install the node modules, run setup, and build the project. You can then run the script to clear all the authentication tokens from all the users. This is because the Schema for tokens has changed, this will cause all users to have to log back in.
+
+Run the following command: 
+
+>Remove old tokens
+``` javascript
+npm run remove-tokens
+```
+
+If successful you should see in the terminal the number of users that has their tokens removed, if you run into any errors check your environment variables and make sure the project is built properly.  
 
 ## Screenshots
 
