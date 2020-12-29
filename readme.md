@@ -195,11 +195,13 @@ Client Environment Variables
 
 ## Wiki
 
+(Wiki needs updating, please use the myDrive offical website): https://mydrive-storage.com/
+
 For a more detailed list of myDrive features, including examples with images, visit the wiki here: https://github.com/subnub/myDrive/wiki
 
 ## Video
 
-I created a short YouTube video, showing off myDrives design and features: https://www.youtube.com/watch?v=9tz1f9oDP5I
+I created a short YouTube video, showing off myDrives design and features: https://www.youtube.com/watch?v=_bcADP6hDDI&feature=youtu.be
 
 ## Demo
 
