@@ -11,10 +11,10 @@ const removeChunksFS = (path: string) => {
                 resolve();
             }
 
-            console.log("File Removed");
             resolve();
         })
     })
 }
 
 export default removeChunksFS;
+module.exports = removeChunksFS;

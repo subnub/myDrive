@@ -1,0 +1,36 @@
+.add-storage__wrapper {
+    height: 100vh;
+    width: 100vw;
+    // background: blue;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-storage__box {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.add-storage__body {
+    width: 70vw;
+    height: 60vh;
+    // background: red;
+    display: flex;
+    flex-direction: row;
+    // justify-content: center;
+    align-items: center;
+    overflow-x: scroll;
+    -webkit-box-shadow: 0 11px 8px 0 rgba(0,0,0,.2);
+    box-shadow: 0 11px 8px 0 rgba(0,0,0,.2);
+    border: 2px solid #dadce0;
+    border-radius: 10px;
+}
+
+.add-storage__title {
+    font-size: 32px;
+    margin: 0;
+}

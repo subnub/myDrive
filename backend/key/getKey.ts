@@ -1,4 +1,3 @@
-const prompt = require('password-prompt')
 import env from "../enviroment/env";
 import crypto from "crypto";
 import getWebUIKey from "./getWebUIKey";

@@ -1,9 +1,15 @@
+const gridView = window.localStorage.getItem("grid-mode");
+
+const sortBy = window.localStorage.getItem("name-mode") 
+? window.localStorage.getItem("asc-mode") ? 'alp_asc' : 'alp_desc' : window.localStorage.getItem("asc-mode") ? 'date_asc' : 'date_desc';
+
 const defaultState = {
-    sortBy: "date_desc",
+    sortBy: sortBy,
     limit: 50,
     search: "",
-    listView: false,
+    listView: !gridView,
     currentlySearching: false,
+    isGoogle: false
 }
 
 export default (state = defaultState, action) => {
@@ -72,6 +78,20 @@ export default (state = defaultState, action) => {
             return {
                 ...state,
                 currentlySearching: false
+            }
+
+        case "SET_IS_GOOGLE":
+
+            return {
+                ...state,
+                isGoogle: true
+            }
+
+        case "SET_NOT_GOOGLE":
+
+            return {
+                ...state,
+                isGoogle: false
             }
 
         default:

@@ -1,6 +1,8 @@
-export const setPhotoID = (id) => ({
+export const setPhotoID = (id, isGoogle=false, isPersonal=false) => ({
     type: "SET_PHOTO_ID",
-    id
+    id,
+    isGoogle,
+    isPersonal
 })
 
 export const resetPhotoID = () => ({

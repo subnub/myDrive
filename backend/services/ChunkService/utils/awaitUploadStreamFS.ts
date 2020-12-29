@@ -21,8 +21,6 @@ const awaitUploadStream = <T>(inputSteam: any, outputStream: any, req: Request, 
 
         req.on("aborted", () => {
 
-            console.log("Upload Request Cancelling...");
-
             removeChunksFS(path);
         })
 

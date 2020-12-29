@@ -1,13 +1,17 @@
 import RightSection from "./RightSection";
 import RightSectionDetail from ".././RightSectionDetail"
-import {editFileMetadata} from "../../actions/files"
+import {editFileMetadata, startRemoveFile, startRenameFile} from "../../actions/files"
 import {resetSelectedItem} from "../../actions/selectedItem";
 import env from "../../enviroment/envFrontEnd";
-import axios from "axios";
+import axios from "../../axiosInterceptor";
 import {connect} from "react-redux";
 import React from "react";
-
-const currentURL = env.url;
+import { setRightSectionMode } from "../../actions/main";
+import Swal from "sweetalert2";
+import { startRemoveFolder, startRenameFolder } from "../../actions/folders";
+import { setMoverID } from "../../actions/mover";
+import mobilecheck from "../../utils/mobileCheck";
+import { setMobileContextMenu } from "../../actions/mobileContextMenu";
 
 class RightSectionContainer extends React.Component {
 
@@ -17,10 +21,13 @@ class RightSectionContainer extends React.Component {
         this.state = {
             optimizing: false,
             optimizing_finished: false,
-            optimizing_removed: false
+            optimizing_removed: false,
+            contextSelected: false
         }
 
         this.prevID = ""
+
+        this.rightSectionRef = React.createRef()
     }
 
     getFileExtension = (filename) => {
@@ -54,12 +61,9 @@ class RightSectionContainer extends React.Component {
 
     removeTranscodeVideo = (props, e) => {
 
-        const headers = {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-
         const data = {id: props.selectedItem.id}
 
-        axios.delete(currentURL +'/file-service/transcode-video/remove', {
-            headers,
+        axios.delete('/file-service/transcode-video/remove', {
             data
         }).then(() => {
             
@@ -80,7 +84,6 @@ class RightSectionContainer extends React.Component {
     transcodeVideo = (props, e) => {
 
         const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")},
             file: {_id: props.selectedItem.id}
         };    
 
@@ -92,7 +95,7 @@ class RightSectionContainer extends React.Component {
         }))
     
 
-        axios.post(currentURL +'/file-service/transcode-video', data,config)
+        axios.post('/file-service/transcode-video', data,config)
         .then((response) => {
             
             const data = response.data;
@@ -165,6 +168,136 @@ class RightSectionContainer extends React.Component {
         this.props.dispatch(resetSelectedItem());
     }
 
+    handleClickOutside = (e) => {
+
+        if (this.rightSectionRef && !this.rightSectionRef.current.contains(event.target)) {
+            if (this.props.rightSectionMode === 'open') {
+                this.props.dispatch(setRightSectionMode('close'))
+                this.closeContext();
+            }
+        }
+    }
+
+    componentDidMount = () => {
+        document.addEventListener('mousedown', this.handleClickOutside);
+    }
+
+    componentWillUnmount = () => {
+        document.removeEventListener('mousedown', this.handleClickOutside);
+    }
+
+    openItem = (e) => {
+        
+        if (this.props.selectedItem.file) {
+            this.props.fileClick(this.props.selectedItem.id, this.props.selectedItem.data, false, true)
+        } else {
+            this.props.folderClick(this.props.selectedItem.id, this.props.selectedItem.data, true)
+        }
+    }
+
+    closeContext = () => {
+     
+        this.setState(() => {
+            return {
+                ...this.state,
+                contextSelected: false
+            }
+        })
+    }
+
+    selectContext = (e) => {
+
+        if (e) e.stopPropagation()
+        if (e) e.preventDefault();
+
+        // if (mobilecheck()) {
+
+        //     this.props.dispatch(setMobileContextMenu(this.props.selectedItem.file, this.props.selectedItem.data));
+        //     return;
+        // }
+
+        console.log("right props", this.props.selectedItem)
+
+        this.setState(() => {
+            return {
+                ...this.state,
+                contextSelected: !this.state.contextSelected
+            }
+        })
+    }
+
+    clickStopPropagation = (e) => {
+        if (e) e.stopPropagation()
+    } 
+
+    clickTest = (e) => {
+        console.log("click test")
+    }
+
+    changeEditNameMode = async() => {
+
+        let inputValue = this.props.selectedItem.name;
+    
+        const { value: folderName} = await Swal.fire({
+            title: 'Enter A File Name',
+            input: 'text',
+            inputValue: inputValue,
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return 'Please Enter a Name'
+              }
+            }
+          })
+
+        if (folderName === undefined || folderName === null) {
+
+            return;
+        }
+
+        //this.props.selectedItem.drive
+
+        const parent = this.props.selectedItem.file ? this.props.selectedItem.data.metadata.parent : this.props.selectedItem.data.parent;
+
+        this.props.selectedItem.file ? 
+        this.props.dispatch(startRenameFile(this.props.selectedItem.id, folderName, this.props.selectedItem.drive)) :
+        this.props.dispatch(startRenameFolder(this.props.selectedItem.id, folderName, this.props.selectedItem.drive, parent));
+
+        //this.props.dispatch(startRenameFolder(this.props.selectedItem.data._id, folderName, this.props.selectedItem.data.));
+    }
+
+    startMoveFolder = async() => {
+
+        const parent = this.props.selectedItem.file ? this.props.selectedItem.data.metadata.parent : this.props.selectedItem.data.parent;
+        const isPersonal = this.props.selectedItem.file ? this.props.selectedItem.data.metadata.personalFile : this.props.selectedItem.data.personalFolder;
+
+        this.props.dispatch(setMoverID(this.props.selectedItem.id, parent, this.props.selectedItem.file, this.props.selectedItem.drive, isPersonal));
+    }
+
+    changeDeleteMode = async() => {
+
+        const parent = this.props.selectedItem.file ? this.props.selectedItem.data.metadata.parent : this.props.selectedItem.data.parent;
+
+
+        Swal.fire({
+            title: 'Confirm Deletion',
+            text: "You cannot undo this action",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete'
+          }).then((result) => {
+            if (result.value) {
+
+                this.props.selectedItem.file ? 
+                this.props.dispatch(startRemoveFile(this.props.selectedItem.id, this.props.selectedItem.drive, this.props.selectedItem.data.metadata.personalFile)) :
+                this.props.dispatch(startRemoveFolder(this.props.selectedItem.id, [...this.props.selectedItem.data.parentList, this.props.selectedItem.id], this.props.selectedItem.drive, parent, this.props.selectedItem.data.metadata.personalFolder));
+                
+            }
+        })
+    }
+
     render() {
 
         return <RightSection 
@@ -174,6 +307,15 @@ class RightSectionContainer extends React.Component {
                 getSidebarClassName={this.getSidebarClassName}
                 resetState={this.resetState}
                 resetSelected={this.resetSelected}
+                openItem={this.openItem}
+                rightSectionRef={this.rightSectionRef}
+                clickStopPropagation={this.clickStopPropagation}
+                closeContext={this.closeContext}
+                selectContext={this.selectContext}
+                changeEditNameMode={this.changeEditNameMode}
+                startMoveFolder={this.startMoveFolder}
+                changeDeleteMode={this.changeDeleteMode}
+                clickTest={this.clickTest}
                 state={this.state}
                 {...this.props}
                  />
@@ -183,7 +325,8 @@ class RightSectionContainer extends React.Component {
 const connectPropToState = (state) => ({
     selectedItem: state.selectedItem,
     showSideBar: state.main.showSideBar,
-    selected: state.main.selected
+    selected: state.main.selected,
+    rightSectionMode: state.main.rightSectionMode
 })
 
 export default connect(connectPropToState)(RightSectionContainer)

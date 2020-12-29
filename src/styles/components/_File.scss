@@ -262,3 +262,7 @@
 .file__item__tag__title {
     font-size: 10px;
 }
+
+.file__item-no-thumbnail {
+    object-fit: unset !important;
+}

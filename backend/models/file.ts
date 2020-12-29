@@ -1,5 +1,5 @@
 import mongoose, {Document} from "mongoose";
-import { Binary } from "mongodb";
+import { Binary, ObjectID } from "mongodb";
 
 const fileSchema = new mongoose.Schema({
     
@@ -53,6 +53,7 @@ const fileSchema = new mongoose.Schema({
             link: String,
             filePath: String,
             s3ID: String,
+            personalFile: Boolean,
 
         },
         required: true
@@ -67,7 +68,7 @@ export interface FileInterface extends Document {
     filename: string,
     lastErrorObject: {updatedExisting: any}
     metadata: {
-        owner: string,
+        owner: string | ObjectID,
         parent: string,
         parentList: string,
         hasThumbnail: boolean,
@@ -79,9 +80,11 @@ export interface FileInterface extends Document {
         link?: string,
         filePath?: string,
         s3ID?: string,
+        personalFile? : boolean
     }
 }
 
 const File = mongoose.model<FileInterface>("fs.files", fileSchema);
 
 export default File;
+module.exports = File;

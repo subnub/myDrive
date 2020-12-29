@@ -57,7 +57,6 @@ class UploadItemContainer extends React.Component {
         } else {
             return "/images/close-circle-outline.svg"
         }
-
     }
 
     componentDidUpdate = () => {
@@ -72,6 +71,18 @@ class UploadItemContainer extends React.Component {
             stopUploadButtonStyle: {opacity: 1, visibility: "visible"}
 
             }))
+        }
+
+        if (this.props.canceled && !this.uploadFinished) {
+
+            this.uploadFinished = true;
+            const completed = this.props.completed;
+            const canceled = this.props.canceled;
+
+            this.setState(() => {
+                return {progressBarStyle: {visibility: (completed || canceled) ? "hidden" : "visible"},
+                stopUploadButtonStyle: (completed || canceled) ? {visibility:"visible", opacity: 1} : {visibility: "hidden", opacity: 0}}
+            })
         }
     }
 

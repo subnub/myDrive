@@ -1,7 +1,5 @@
 import React from "react";
 
-const currentURL = process.env.URL
-
 const ShareMenu = React.forwardRef((props, ref) => {
 
     if (props.shareSelected === "") {
@@ -24,7 +22,7 @@ const ShareMenu = React.forwardRef((props, ref) => {
                     <img className="sharemenu__close-button" onClick={props.hide} src="/images/close_icon.png"/>
                     <div className="sharemenu__link__wrapper">
                         <img onClick={props.copyLink} className="sharemenu__image" src="/images/copy.svg"/>
-                        <p onClick={props.copyLink} className="sharemenu__title">{currentURL}/download-page/{props.shareSelected._id}/{props.shareSelected.metadata.link}</p>
+                        <p onClick={props.copyLink} className="sharemenu__title">{props.state.title}</p>
                     </div>
                     <button className="sharemenu__button__public" onClick={props.removeLink}>Remove Link</button>
                 

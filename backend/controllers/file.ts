@@ -3,16 +3,28 @@ import FileService from "../services/FileService";
 import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
-import {UserInterface} from "../models/user";
-import uuid from "uuid";
-import tempStorage from "../tempStorage/tempStorage";
+import User, {UserInterface} from "../models/user";
+import sendShareEmail from "../utils/sendShareEmail";
+import { createStreamVideoCookie, removeStreamVideoCookie } from "../cookies/createCookies";
 
 const fileService = new FileService()
 
-interface RequestType extends Request {
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    s3Enabled: boolean,
+}
+
+interface RequestTypeFullUser extends Request {
     user?: UserInterface,
-    auth?: boolean,
-    busboy: any,
+    encryptedToken?: string,
+    accessTokenStreamVideo?: string
+}
+
+interface RequestType extends Request {
+    user?: userAccessType,
+    encryptedToken?: string
 }
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
@@ -26,8 +38,7 @@ class FileController {
         this.chunkService = chunkService;
     }
 
-    getThumbnail = async(req: RequestType, res: Response) => {
-
+    getThumbnail = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
 
@@ -47,15 +58,14 @@ class FileController {
     
         } catch (e) {
 
-            const code = e.code || 500;
-            
-            console.log(e);
+            console.log("\nGet Thumbnail Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
     }
 
-    getFullThumbnail = async(req: RequestType, res: Response) => {
+    getFullThumbnail = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
             return;
@@ -69,13 +79,14 @@ class FileController {
             await this.chunkService.getFullThumbnail(user, fileID, res);
 
         } catch (e) {
-            const code = e.code || 500;
-            console.log(e.message, e.exception)
-            return res.status(code).send();
+
+            console.log("\nGet Thumbnail Full Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
-    uploadFile = async(req: RequestType, res: Response) => {
+    uploadFile = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
         
@@ -93,12 +104,12 @@ class FileController {
          
             res.send(file);
             
-            console.log("file uploaded");
-    
         } catch (e) {
-            const code = e.code || 500;
-            console.log(e.message, e.exception)
-            return res.status(code).send();
+
+            console.log("\nUploading File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.writeHead(code, {'Connection': 'close'})
+            res.end();
         }
     }
 
@@ -113,10 +124,8 @@ class FileController {
     
         } catch (e) {
     
-            const code = e.code || 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nGet Public Download Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         } 
     }
@@ -138,9 +147,8 @@ class FileController {
     
         } catch (e) {
 
-            const code = e.code || 500;
-
-            console.log(e);
+            console.log("\nRemove Public Link Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
@@ -155,17 +163,16 @@ class FileController {
         try {
 
             const fileID = req.params.id;
-            const user = req.user;
+            const userID = req.user._id;
     
-            const token = await fileService.makePublic(user, fileID);
+            const token = await fileService.makePublic(userID, fileID);
 
             res.send(token);
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
+            console.log("\nMake Public Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
     }
@@ -183,10 +190,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Public Info Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -207,10 +213,9 @@ class FileController {
 
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nMake One Time Public Link Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
 
     }
@@ -232,10 +237,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet File Info Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -247,18 +251,17 @@ class FileController {
     
         try {
     
-            const userID = req.user._id;
+            const user = req.user;
 
-            const quickList = await fileService.getQuickList(userID);
+            const quickList = await fileService.getQuickList(user);
 
             res.send(quickList);
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Quick List Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -270,23 +273,22 @@ class FileController {
     
         try {
 
+            const user = req.user;
             const query = req.query;
-            const userID = req.user._id;
             
-            const fileList = await fileService.getList(userID, query);
+            const fileList = await fileService.getList(user, query);
 
             res.send(fileList);
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet File List Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
-    getDownloadToken = async(req: RequestType, res: Response) => {
+    getDownloadToken = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
             return 
@@ -302,38 +304,88 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Download Token Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
-    getDownloadTokenVideo = async(req: RequestType, res: Response) => {
+    getAccessTokenStreamVideo = async(req: RequestTypeFullUser, res: Response) => {
 
-        if (!req.user) {
-            return 
-        }
-    
+        if (!req.user) return;
+
         try {
-    
+
             const user = req.user;
-            const cookie = req.headers.uuid as string;
-    
-            const tempToken = await fileService.getDownloadTokenVideo(user, cookie);
-    
-            res.send({tempToken});
-    
+
+            const currentUUID = req.headers.uuid as string;
+
+            const streamVideoAccessToken = await user.generateAuthTokenStreamVideo(currentUUID);
+
+            createStreamVideoCookie(res, streamVideoAccessToken);
+
+            res.send();
+
         } catch (e) {
 
-            const code = e.code || 500;
+            console.log("\nGet Access Token Stream Video Fle Route Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
 
-            console.log(e);
-            res.status(code).send()
+    }
+
+    removeStreamVideoAccessToken = async(req: RequestTypeFullUser, res: Response) => {
+
+        if (!req.user) return;
+
+        try {
+
+            const userID = req.user._id;
+
+            const accessTokenStreamVideo = req.accessTokenStreamVideo!;
+
+            await User.updateOne({_id: userID}, {$pull: {tempTokens: {token: accessTokenStreamVideo}}});
+
+            removeStreamVideoCookie(res);
+
+            res.send();
+
+        } catch (e) {
+
+            console.log("\Remove Video Token File Router Error:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
-    removeTempToken = async(req: RequestType, res: Response) => {
+    // No longer needed, left for reference
+
+    // getDownloadTokenVideo = async(req: RequestTypeFullUser, res: Response) => {
+
+    //     if (!req.user) {
+    //         return 
+    //     }
+    
+    //     try {
+    
+    //         const user = req.user;
+    //         const cookie = req.headers.uuid as string;
+    
+    //         const tempToken = await fileService.getDownloadTokenVideo(user, cookie);
+    
+    //         res.send({tempToken});
+    
+    //     } catch (e) {
+
+    //         const code = e.code || 500;
+
+    //         console.log(e);
+    //         res.status(code).send()
+    //     }
+    // }
+
+    removeTempToken = async(req: RequestTypeFullUser, res: Response) => {
 
         if (!req.user) {
             return 
@@ -351,16 +403,15 @@ class FileController {
             
         } catch (e) {
 
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nRemove Temp Token Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
-    streamVideo = async(req: RequestType, res: Response) => {
+    streamVideo = async(req: RequestTypeFullUser, res: Response) => {
 
-        if (!req.auth || !req.user) {
+        if (!req.user) {
             return;
         }
     
@@ -370,43 +421,25 @@ class FileController {
             const fileID = req.params.id;
             const headers = req.headers;
 
-            //tempStorage[req.params.uuid] = uuid.v4();
-            
-            console.log("stream request 2", tempStorage);
-
-            // req.on("close", () => {
-            //     console.log("req closed stream");
-            // })
-
-            // req.on("abort", () => {
-            //     console.log("Aborted");
-            // })
-    
             await this.chunkService.streamVideo(user, fileID, headers, res, req);
-    
-            //console.log("stream finished");
 
         } catch (e) {
 
-            const code = e.code || 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nStream Video Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         }
 
     }
 
-    downloadFile = async(req: RequestType, res: Response) => {
+    downloadFile = async(req: RequestTypeFullUser, res: Response) => {
 
-        if (!req.auth || !req.user) {
+        if (!req.user) {
             return;
         }
     
         try {
     
-            console.log("download request")
-
             const user = req.user;
             const fileID = req.params.id;
 
@@ -414,10 +447,8 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-            const message = e.message || e;
-
-            console.log(message, e);
+            console.log("\nDownload File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
             res.status(code).send();
         } 
     }
@@ -440,10 +471,9 @@ class FileController {
     
         } catch (e) {
     
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nGet Suggested List Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -465,17 +495,41 @@ class FileController {
             
         } catch (e) {
     
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nRename File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     
     }
 
-    moveFile = async(req: RequestType, res: Response) => {
+    sendEmailShare = async(req: RequestType, res: Response) => {
 
-        console.log("move request");
+        if (!req.user) {
+            return;
+        }
+
+        try {
+            
+            const user = req.user!;
+        
+            const fileID = req.body.file._id;
+            const respient = req.body.file.resp;
+        
+            const file = await fileService.getFileInfo(user._id, fileID);
+        
+            await sendShareEmail(file, respient)
+        
+            res.send()
+
+        } catch (e) {
+           
+            console.log("\nSend Share Email Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+
+    moveFile = async(req: RequestType, res: Response) => {
 
         if (!req.user) {
             return;
@@ -486,8 +540,6 @@ class FileController {
             const fileID = req.body.id;
             const userID = req.user._id;
             const parentID = req.body.parent;
-    
-            console.log(fileID, userID, parentID);
 
             await fileService.moveFile(userID, fileID, parentID);
 
@@ -495,10 +547,9 @@ class FileController {
             
         } catch (e) {
     
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nMove File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
 
     }
@@ -520,10 +571,9 @@ class FileController {
     
         } catch (e) {
             
-            const code = e.code || 500;
-
-            console.log(e);
-            res.status(code).send()
+            console.log("\nDelete File Error File Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

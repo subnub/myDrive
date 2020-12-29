@@ -5,6 +5,7 @@ import {startAddFolder} from "../../actions/folders"
 import Swal from "sweetalert2";
 import {connect} from "react-redux";
 import React from "react";
+import { openUploadOverlay, setLeftSectionMode } from "../../actions/main";
 
 class LeftSectionContainer extends React.Component {
 
@@ -13,6 +14,13 @@ class LeftSectionContainer extends React.Component {
 
         this.wrapperRef = React.createRef();
         this.uploadInput = React.createRef();
+
+        this.leftSectionRef = React.createRef()
+
+        this.state = {
+            open: false,
+            hideFolderTree: false,
+        }
     }
 
     createFolder = async(e) => {
@@ -39,19 +47,33 @@ class LeftSectionContainer extends React.Component {
         const parent = this.props.parent;
         const owner = this.props.auth.id;
         const parentList = this.props.parentList;
+        const isGoogle = this.props.isGoogle;
 
-        this.props.dispatch(startAddFolder(folderName, owner, parent, parentList));
+        this.props.dispatch(startAddFolder(folderName, owner, parent, parentList, isGoogle));
+        this.showDropDown();
     }
 
     handleClickOutside = (e) => {
 
-        if (this.wrapperRef && !this.wrapperRef.current.contains(event.target) && this.props.showAddOptions) {
-            this.addButtonEvent();
+        if (this.leftSectionRef && !this.leftSectionRef.current.contains(event.target)) {
+          
+            if (this.props.leftSectionMode === 'open') {
+                this.props.dispatch(setLeftSectionMode('close'))
+            }
         }
     }
 
     componentDidMount = () => {
         document.addEventListener('mousedown', this.handleClickOutside);
+
+        const hideFolderTree = localStorage.getItem("hide-folder-tree");
+
+        if (hideFolderTree) {
+
+            this.setState(() => ({
+                hideFolderTree
+            }))
+        }
     }
 
     componentWillUnmount = () => {
@@ -67,8 +89,24 @@ class LeftSectionContainer extends React.Component {
     handleUpload = (e) => {
         e.preventDefault();
 
-        this.props.dispatch(startAddFile(this.uploadInput.current, this.props.parent, this.props.parentList))
+        this.props.dispatch(startAddFile(this.uploadInput.current, this.props.parent, this.props.parentList, this.props.storageSwitcher))
         this.uploadInput.current.value = ""
+    }
+
+    showDropDown = () => {
+
+        this.setState(() => {
+            return {
+                ...this.state,
+                open: !this.state.open
+            }
+        })
+    }
+
+    showUploadOverlay = () => {
+
+        this.showDropDown();
+        this.props.dispatch(openUploadOverlay());
     }
 
     render() {
@@ -79,6 +117,9 @@ class LeftSectionContainer extends React.Component {
                     uploadInput={this.uploadInput}
                     createFolder={this.createFolder}
                     handleUpload={this.handleUpload}
+                    showDropDown={this.showDropDown}
+                    showUploadOverlay={this.showUploadOverlay}
+                    leftSectionRef={this.leftSectionRef}
                     state={this.state}
                     {...this.props}/>
     }
@@ -89,7 +130,10 @@ const connectPropToState = (state) => ({
     parent: state.parent.parent,
     parentList: state.parent.parentList,
     storage: state.storage,
-    showAddOptions: state.addOptions.showAddOptions
+    showAddOptions: state.addOptions.showAddOptions,
+    isGoogle: state.filter.isGoogle,
+    storageSwitcher: state.storageSwitcher.selected,
+    leftSectionMode: state.main.leftSectionMode
 })
 
 export default connect(connectPropToState)(LeftSectionContainer);

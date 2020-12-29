@@ -10,10 +10,17 @@ import DbUtilFolder from "../../db/utils/folderUtils";
 import { UserInterface } from "../../models/user";
 import { FileInterface } from "../../models/file";
 import tempStorage from "../../tempStorage/tempStorage";
-import uuid from "uuid";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
+
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    s3Enabled: boolean,
+}
+
  
 class MongoFileService {
 
@@ -38,10 +45,9 @@ class MongoFileService {
         if (!file.lastErrorObject.updatedExisting) throw new NotFoundError("Remove Link File Not Found Error")
     }
 
-    makePublic = async(user: UserInterface, fileID: string) => {
+    makePublic = async(userID: string, fileID: string) => {
 
-        const userID = user._id;
-        const token = await jwt.sign({_id: userID.toString()}, env.password!);
+        const token = jwt.sign({_id: userID.toString()}, env.passwordAccess!);
 
         const file = await dbUtilsFile.makePublic(fileID, userID, token);
 
@@ -66,7 +72,7 @@ class MongoFileService {
 
     makeOneTimePublic = async(userID: string, fileID: string) => {
 
-        const token = await jwt.sign({_id: userID.toString()}, env.password!);
+        const token = jwt.sign({_id: userID.toString()}, env.passwordAccess!);
 
         const file = await dbUtilsFile.makeOneTimePublic(fileID, userID, token);
 
@@ -107,16 +113,21 @@ class MongoFileService {
         return {...currentFile, parentName}
     }
 
-    getQuickList = async(userID: string) => {
+    getQuickList = async(user: userAccessType | UserInterface) => {
 
-        const quickList = await dbUtilsFile.getQuickList(userID);
+        const userID = user._id;
+        const s3Enabled = user.s3Enabled ? true : false;
+
+        const quickList = await dbUtilsFile.getQuickList(userID, s3Enabled);
 
         if (!quickList) throw new NotFoundError("Quick List Not Found Error");
             
         return quickList;
     }
 
-    getList = async(userID: string, query: any) => {
+    getList = async(user: userAccessType | UserInterface, query: any) => {
+
+        const userID = user._id;
 
         let searchQuery = query.search || "";
         const parent = query.parent || "/";
@@ -125,11 +136,15 @@ class MongoFileService {
         const startAt = query.startAt || undefined
         const startAtDate = query.startAtDate || "0"
         const startAtName = query.startAtName || ""
+        const storageType = query.storageType || undefined;
+        const folderSearch = query.folder_search || undefined;
         sortBy = sortBySwitch(sortBy)
         limit = parseInt(limit)
+
+        const s3Enabled = user.s3Enabled ? true : false;
     
-        const queryObj = createQuery(userID, parent, query.sortby,startAt, startAtDate, searchQuery, startAtName)
-    
+        const queryObj = createQuery(userID, parent, query.sortby,startAt, startAtDate, searchQuery, s3Enabled ,startAtName, storageType, folderSearch);
+
         const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);
 
         if (!fileList) throw new NotFoundError("File List Not Found");
@@ -146,22 +161,24 @@ class MongoFileService {
         return tempToken;
     }
 
-    getDownloadTokenVideo = async(user: UserInterface, cookie: string) => {
+    // No longer needed left for reference
 
-        if (!cookie) throw new NotAuthorizedError("Get Download Token Video Cookie Not Authorized Error");
+    // getDownloadTokenVideo = async(user: UserInterface, cookie: string) => {
 
-        const tempToken = await user.generateTempAuthTokenVideo(cookie);
+    //     if (!cookie) throw new NotAuthorizedError("Get Download Token Video Cookie Not Authorized Error");
 
-        if (!tempToken) throw new NotAuthorizedError("Get Download Token Video Not Authorized Error");
+    //     const tempToken = await user.generateTempAuthTokenVideo(cookie);
 
-        return tempToken;
-    }
+    //     if (!tempToken) throw new NotAuthorizedError("Get Download Token Video Not Authorized Error");
+
+    //     return tempToken;
+    // }
 
     removeTempToken = async(user: UserInterface, tempToken: any, currentUUID: string) => {
 
         const key = user.getEncryptionKey();
 
-        const decoded = await jwt.verify(tempToken, env.password!) as any;
+        const decoded = await jwt.verify(tempToken, env.passwordAccess!) as any;
 
         const publicKey = decoded.iv;
 

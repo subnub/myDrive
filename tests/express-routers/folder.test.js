@@ -14,86 +14,131 @@ import servers from "../../dist/server/server";
 import Folder from "../../dist/models/folder";
 const temp = require("temp").track();
 const binaryPhraser = require("superagent-binary-parser");
+const session = require("supertest-session");
+const loginUser = require("../fixtures/loginUser");
+const createUserNotEmailVerified = require("../fixtures/createUserNotEmailVerified");
+
 
 const {server, serverHttps} = servers;
 
 const app = server;
 
 let user;
-let userToken;
 let user2;
-let userToken2;
+let userData;
+let userData2;
 let file;
 let folder;
 
 process.env.KEY = "1234";
 env.key = "1234";
 
+const waitForDatabase = () => {
+
+    return new Promise((resolve, reject) => {
+
+        if (conn.readyState !== 1) {
+
+            conn.once("open", () => {
+                
+                resolve();
+    
+            })
+
+        } else {
+
+            resolve();
+        }
+    
+    })
+}
 
 beforeEach(async(done) => {
 
-    if (conn.readyState === 0) {
+    await waitForDatabase();
 
-        conn.on("open", async() => {
-
-            // user = await createUser();
-            // userToken = user.tokens[0].token;
-            
-            // user2 = await createUser2();
-            // userToken2 = user2.tokens[0].token;
-
-            const {user: gotUser, token: gotToken} = await createUser();
-            user = gotUser;
-            userToken = gotToken;
-                
-            const {user: gotUser2, token: gotToken2} = await createUser2();
-            user2 = gotUser2;
-            userToken2 = gotToken2;
-
-            const folderData = {
-                name: "bunny",
-                parent: "/",
-                owner: user._id,
-                parentList: ["/"]
-            }
-    
-            folder = new Folder(folderData);
-            await folder.save();
-
-            done();
-
-        })
-
-    } else {
-
-        // user = await createUser();
-        // userToken = user.tokens[0].token;
+    const {user: gotUser, userData: gotUserData} = await createUser();
+    user = gotUser;
+    userData = gotUserData;
         
-        // user2 = await createUser2();
-        // userToken2 = user2.tokens[0].token;
-        const {user: gotUser, token: gotToken} = await createUser();
-        user = gotUser;
-        userToken = gotToken;
-            
-        const {user: gotUser2, token: gotToken2} = await createUser2();
-        user2 = gotUser2;
-        userToken2 = gotToken2;
+    const {user: gotUser2, userData: gotUserData2} = await createUser2();
+    user2 = gotUser2;
+    userData2 = gotUserData2;
 
-
-        const folderData = {
-            name: "bunny",
-            parent: "/",
-            owner: user._id,
-            parentList: ["/"]
-        }
-
-        folder = new Folder(folderData);
-        await folder.save();
-
-        done();
-
-
+    const folderData = {
+        name: "bunny",
+        parent: "/",
+        owner: user._id,
+        parentList: ["/"]
     }
+
+    folder = new Folder(folderData);
+    await folder.save();
+
+    done();
+
+    // if (conn.readyState === 0) {
+
+    //     conn.on("open", async() => {
+
+    //         // user = await createUser();
+    //         // userToken = user.tokens[0].token;
+            
+    //         // user2 = await createUser2();
+    //         // userToken2 = user2.tokens[0].token;
+
+    //         const {user: gotUser, token: gotToken} = await createUser();
+    //         user = gotUser;
+    //         userToken = gotToken;
+                
+    //         const {user: gotUser2, token: gotToken2} = await createUser2();
+    //         user2 = gotUser2;
+    //         userToken2 = gotToken2;
+
+    //         const folderData = {
+    //             name: "bunny",
+    //             parent: "/",
+    //             owner: user._id,
+    //             parentList: ["/"]
+    //         }
+    
+    //         folder = new Folder(folderData);
+    //         await folder.save();
+
+    //         done();
+
+    //     })
+
+    // } else {
+
+    //     // user = await createUser();
+    //     // userToken = user.tokens[0].token;
+        
+    //     // user2 = await createUser2();
+    //     // userToken2 = user2.tokens[0].token;
+    //     const {user: gotUser, token: gotToken} = await createUser();
+    //     user = gotUser;
+    //     userToken = gotToken;
+            
+    //     const {user: gotUser2, token: gotToken2} = await createUser2();
+    //     user2 = gotUser2;
+    //     userToken2 = gotToken2;
+
+
+    //     const folderData = {
+    //         name: "bunny",
+    //         parent: "/",
+    //         owner: user._id,
+    //         parentList: ["/"]
+    //     }
+
+    //     folder = new Folder(folderData);
+    //     await folder.save();
+
+    //     done();
+
+
+    // }
 })
 
 afterEach(async(done) => {
@@ -116,11 +161,14 @@ afterEach(async(done) => {
 
 test("When giving folderID, should return folder info", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
+
     const folderID = folder._id;
 
-    await request(app)
+    await appSession
     .get(`/folder-service/info/${folderID}`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send()
     .expect(200);
 })
@@ -137,31 +185,40 @@ test("When not authorized for folder info, should return 401 error", async() => 
 
 test("When giving wrong authorization for folder info, should return 404 error", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData2);
+
     const folderID = folder._id;
 
-    await request(app)
+    await appSession
     .get(`/folder-service/info/${folderID}`)
-    .set("Authorization", `Bearer ${userToken2}`)
     .send()
     .expect(404);
 })
 
 test("When giving folderID, should return subfolder list", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
+
     const folderID = folder._id;
 
-    await request(app)
+    await appSession
     .get(`/folder-service/subfolder-list?id=${folderID}`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send()
     .expect(200);
 })
 
 test("When giving no folderID for subfolder list, should return 404 error", async() => {
 
-    await request(app)
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
+
+    await appSession
     .get(`/folder-service/subfolder-list`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send()
     .expect(404);
 })
@@ -178,12 +235,14 @@ test("When giving no authorization for subfolder list, should return 401 error",
 
 test("When giving wrong authorization for subfolder list, should return 404 error", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData2);
 
     const folderID = folder._id;
 
-    await request(app)
+    await appSession
     .get(`/folder-service/subfolder-list?id=${folderID}`)
-    .set("Authorization", `Bearer ${userToken2}`)
     .send()
     .expect(404);
 
@@ -191,11 +250,14 @@ test("When giving wrong authorization for subfolder list, should return 404 erro
 
 test("When giving default query, should return folder list", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
+
     const query = {}
 
-    await request(app)
+    await appSession
     .get(`/folder-service/list?query=${query}`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send()
     .expect(200);
 })
@@ -212,6 +274,10 @@ test("When giving no authorization for folder list, should return 401 error", as
 
 test("When giving ID and parent, should move folder", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
+
     const folderData = {
         name: "bunny",
         parent: "/",
@@ -225,9 +291,8 @@ test("When giving ID and parent, should move folder", async() => {
 
     const folderID = folder._id;
 
-    await request(app)
+    await appSession
     .patch(`/folder-service/move`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send({
         id: folderID,
         parent: parentID
@@ -236,6 +301,10 @@ test("When giving ID and parent, should move folder", async() => {
 })
 
 test("When giving a folder id that does not exist for move folder, should return 500 error", async() => {
+
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
 
     const folderData = {
         name: "bunny",
@@ -248,9 +317,8 @@ test("When giving a folder id that does not exist for move folder, should return
     await folder2.save();
     const parentID = folder2._id;
 
-    await request(app)
+    await appSession
     .patch(`/folder-service/move`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send({
         id: "1234",
         parent: parentID
@@ -261,11 +329,14 @@ test("When giving a folder id that does not exist for move folder, should return
 
 test("When giving parent id that does not exist for move folder, should return 500 error", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
+
     const folderID = folder._id;
 
-    await request(app)
+    await appSession
     .patch(`/folder-service/move`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send({
         id: folderID,
         parent: "1234"
@@ -275,12 +346,15 @@ test("When giving parent id that does not exist for move folder, should return 5
 
 test("When giving folder id and title, should rename folder", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
+
     const folderID = folder._id;
     const title = "new name";
 
-    await request(app)
+    await appSession
     .patch(`/folder-service/rename`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send({
         id: folderID,
         title
@@ -304,13 +378,15 @@ test("When giving not authorization for rename folder, should return 401 error",
 
 test("When giving id for folder that does not exist for rename, should return 404 error", async() => {
 
+    const appSession = session(app);
+
+    await loginUser(appSession, userData);
 
     const wrongFolderID = "123456789012";
     const title = "new name";
 
-    await request(app)
+    await appSession
     .patch(`/folder-service/rename`)
-    .set("Authorization", `Bearer ${userToken}`)
     .send({
         id: wrongFolderID,
         title

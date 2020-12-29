@@ -2,7 +2,7 @@ import ShareMenu from "./ShareMenu";
 import {editFile} from "../../actions/files"
 import {editSelectedItem, setShareSelected, editShareSelected} from "../../actions/selectedItem"
 import env from "../../enviroment/envFrontEnd";
-import axios from "axios";
+import axios from "../../axiosInterceptor";
 import Swal from "sweetalert2"
 import copy from "copy-text-to-clipboard";
 import {connect} from "react-redux";
@@ -45,6 +45,19 @@ class ShareMenuContainer extends React.Component {
         document.addEventListener('mousedown', this.handleClickOutside);
     }
 
+    componentDidUpdate = () => {
+        if (!this.props.shareSelected.metadata) return;
+        const shareURL = this.props.shareSelected.metadata.drive ?  this.props.shareSelected.metadata.link : `/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
+        if (this.props.shareSelected.metadata.link && shareURL !== this.state.title) {
+           
+            this.setState(() => {
+                return {
+                    title: shareURL
+                }
+            })
+        }
+    }
+
     makePublic = () => {
 
         this.showingSwal = true;
@@ -63,11 +76,9 @@ class ShareMenuContainer extends React.Component {
             
             if (result.value) {
 
-                const config = {
-                    headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-                };
+                const url = this.props.shareSelected.metadata.drive ? `/file-service-google/make-public/${this.props.shareSelected._id}` : `/file-service/make-public/${this.props.shareSelected._id}`;
         
-                axios.patch(currentURL +`/file-service/make-public/${this.props.shareSelected._id}`, undefined,config).then((results) => {
+                axios.patch(url, undefined).then((results) => {
                     
                     this.props.dispatch(editFile(this.props.shareSelected._id,{"metadata": {
                         ...this.props.shareSelected.metadata,
@@ -84,6 +95,14 @@ class ShareMenuContainer extends React.Component {
                         link: results.data,
                         linkType: "public"
                     }}))
+
+                    const shareURL = this.props.shareSelected.metadata.drive ? results.data : `${currentURL}/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
+
+                    this.setState(() => {
+                        return {
+                            title: shareURL
+                        }
+                    })
         
                 }).catch((err) => {
                     console.log(err)
@@ -111,12 +130,8 @@ class ShareMenuContainer extends React.Component {
             this.showingSwal = false;
             
             if (result.value) {
-
-                const config = {
-                    headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-                };
         
-                axios.patch(currentURL +`/file-service/make-one/${this.props.shareSelected._id}`, undefined,config).then((results) => {
+                axios.patch(`/file-service/make-one/${this.props.shareSelected._id}`, undefined).then((results) => {
                     
                     this.props.dispatch(editFile(this.props.shareSelected._id,{"metadata": {
                         ...this.props.shareSelected.metadata,
@@ -146,10 +161,9 @@ class ShareMenuContainer extends React.Component {
 
     removeLink = () => {
 
-        const headers = {'Authorization': "Bearer " + window.localStorage.getItem("token")}
+        const url = this.props.shareSelected.metadata.drive ? `/file-service-google/remove-link/${this.props.shareSelected._id}` : `/file-service/remove-link/${this.props.shareSelected._id}`
 
-        axios.delete(currentURL +`/file-service/remove-link/${this.props.shareSelected._id}`, {
-            headers
+        axios.delete(url, {
         }).then(() => {
 
             this.props.dispatch(editFile(this.props.shareSelected._id,{"metadata": {
@@ -174,9 +188,9 @@ class ShareMenuContainer extends React.Component {
 
     copyLink = () => {
 
-        const link = currentURL + "/download-page/" + this.props.shareSelected._id + "/" + this.props.shareSelected.metadata.link;
-
-        copy(link)
+        const shareURL = this.props.shareSelected.metadata.drive ? this.state.title : `${currentURL}/download-page/${this.props.shareSelected._id}/${this.props.shareSelected.metadata.link}`
+       
+        copy(shareURL)
 
         Swal.fire("Link Copied")
     }

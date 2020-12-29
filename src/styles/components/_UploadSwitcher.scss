@@ -1,0 +1,21 @@
+.upload-switcher__select {
+    background: none;
+    border: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    color: #5f6368;
+    font-size: 19px;
+    outline: none;
+    font-weight: 500;
+    padding-left: 3px;
+    padding-right: 4px;
+}
+
+.upload-switcher__wrapper {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 28px;
+}

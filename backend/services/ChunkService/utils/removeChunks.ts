@@ -16,7 +16,6 @@ const removeChunks = async(bucketStream: GridFSBucketWriteStream) => {
         }
 
         await dbUtilsFile.removeChunksByID(uploadID);
-        console.log("Upload Request Cancelled, Chunks Removed");
 
     } catch(e) {
 

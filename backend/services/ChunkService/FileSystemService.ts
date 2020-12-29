@@ -13,7 +13,7 @@ import File, { FileInterface } from "../../models/file";
 import getFileSize from "./utils/getFileSize";
 import DbUtilFile from "../../db/utils/fileUtils/index";
 import awaitStream from "./utils/awaitStream";
-import createThumbnailFS from "./utils/createThumbnailFS";
+import createThumbnailAny from "./utils/createThumbailAny";
 import imageChecker from "../../utils/imageChecker";
 import Thumbnail, {ThumbnailInterface} from "../../models/thumbnail";
 import streamToBuffer from "../../utils/streamToBuffer";
@@ -23,7 +23,11 @@ import removeChunksFS from "./utils/removeChunksFS";
 import getPrevIVFS from "./utils/getPrevIVFS";
 import awaitStreamVideo from "./utils/awaitStreamVideo";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
-import Folder from "../../models/folder";
+import Folder, { FolderInterface } from "../../models/folder";
+import addToStoageSize from "./utils/addToStorageSize";
+import subtractFromStorageSize from "./utils/subtractFromStorageSize";
+import ForbiddenError from "../../utils/ForbiddenError";
+import { ObjectID } from "mongodb";
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -38,8 +42,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey(); 
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
-
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const initVect = crypto.randomBytes(16);
 
@@ -52,10 +55,11 @@ class FileSystemService implements ChunkInterface {
         const parent = formData.get("parent") || "/"
         const parentList = formData.get("parentList") || "/";
         const size = formData.get("size") || ""
+        const personalFile = formData.get("personal-file") ? true : false;
         let hasThumbnail = false;
         let thumbnailID = ""
         const isVideo = videoChecker(filename)
-
+       
         const systemFileName = uuid.v4();
 
         const metadata = {
@@ -88,13 +92,13 @@ class FileSystemService implements ChunkInterface {
 
         await currentFile.save();
 
-        console.log(currentFile);
+        await addToStoageSize(user, size, personalFile);
 
         const imageCheck = imageChecker(currentFile.filename);
  
         if (currentFile.length < 15728640 && imageCheck) {
 
-            const updatedFile = await createThumbnailFS(currentFile, filename, user);
+            const updatedFile = await createThumbnailAny(currentFile, filename, user);
 
             return updatedFile;
            
@@ -105,6 +109,47 @@ class FileSystemService implements ChunkInterface {
         
     }
 
+    getFileWriteStream = async(user: UserInterface, file: FileInterface, parentFolder: FolderInterface) => {
+
+        const password = user.getEncryptionKey(); 
+
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
+
+        const initVect = crypto.randomBytes(16);
+
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+
+        const cipher = crypto.createCipheriv('aes256', CIPHER_KEY, initVect);
+
+        const filename = file.filename
+        const parent = parentFolder._id
+        const parentList = [...parentFolder.parentList, parentFolder._id]
+        const size = file.metadata.size
+        const personalFile = file.metadata.personalFile ? true : false
+        let hasThumbnail = file.metadata.hasThumbnail;
+        let thumbnailID = file.metadata.thumbnailID
+        const isVideo = file.metadata.isVideo
+
+        const systemFileName = uuid.v4();
+
+        const metadata = {
+            owner: user._id,
+            parent,
+            parentList,
+            hasThumbnail,
+            thumbnailID,
+            isVideo,
+            size,
+            IV: file.metadata.IV,
+            filePath: env.fsDirectory + systemFileName
+        }
+
+        const fileWriteStream = fs.createWriteStream(metadata.filePath);
+
+        return fileWriteStream;
+
+    }
+
     downloadFile = async(user: UserInterface, fileID: string, res: Response) => {
 
         const currentFile: FileInterface = await dbUtilsFile.getFileInfo(fileID, user._id);
@@ -113,7 +158,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const filePath = currentFile.metadata.filePath!;
 
@@ -134,17 +179,40 @@ class FileSystemService implements ChunkInterface {
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
     }
 
+    getFileReadStream = async(user: UserInterface, fileID: string) => {
+
+        const currentFile: FileInterface = await dbUtilsFile.getFileInfo(fileID, user._id);
+
+        if (!currentFile) throw new NotFoundError("Download File Not Found");
+
+        const password = user.getEncryptionKey();
+
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
+
+        const filePath = currentFile.metadata.filePath!;
+
+        const IV = currentFile.metadata.IV.buffer as Buffer;
+      
+        const readStream = fs.createReadStream(filePath);
+
+        const CIPHER_KEY = crypto.createHash('sha256').update(password).digest()        
+
+        const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, IV);
+
+        return readStream
+    }
+
     getThumbnail = async(user: UserInterface, id: string) => {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
-        const thumbnail = await Thumbnail.findById(id) as ThumbnailInterface;
+        const thumbnail = await Thumbnail.findById(new ObjectID(id)) as ThumbnailInterface;
     
         if (thumbnail.owner !== user._id.toString()) {
 
-            throw new NotAuthorizedError('Thumbnail Unauthorized Error');
+            throw new ForbiddenError('Thumbnail Unauthorized Error');
         }
 
         const iv = thumbnail.IV!;
@@ -174,7 +242,7 @@ class FileSystemService implements ChunkInterface {
         const password = user.getEncryptionKey();
         const IV = file.metadata.IV.buffer as Buffer;
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const readStream = fs.createReadStream(file.metadata.filePath!);
 
@@ -188,12 +256,20 @@ class FileSystemService implements ChunkInterface {
 
         const allStreamsToErrorCatch = [readStream, decipher];
 
-        console.log("Sending Full Thumbnail...")
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
-        console.log("Full thumbnail sent");
     }
 
     streamVideo = async(user: UserInterface, fileID: string, headers: any, res: Response, req: Request) => {
+
+        // To get this all working correctly with encryption and across
+        // All browsers took many days, tears, and some of my sanity. 
+        // Shoutout to Tyzoid for helping me with the decryption
+        // And and helping me understand how the IVs work.
+        
+        // P.S I hate safari >:(
+        // Why do yall have to be weird with video streaming
+        // 90% of the issues with this are only in Safari
+        // Is safari going to be the next internet explorer?
 
         const userID = user._id;
         const currentFile: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
@@ -202,7 +278,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key")
+        if (!password) throw new ForbiddenError("Invalid Encryption Key")
 
         const fileSize = currentFile.metadata.size;
                     
@@ -223,22 +299,56 @@ class FileSystemService implements ChunkInterface {
 
         let currentIV = IV;
 
-        let fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+        let fixedStart = 0;
+        let fixedEnd = currentFile.length;
+
+        if (start === 0 && end === 1) {
+            
+            // This is for Safari/iOS, Safari will request the first
+            // Byte before actually playing the video. Needs to be 
+            // 16 bytes.
+
+            fixedStart = 0;
+            fixedEnd = 15;    
+
+        } else {
+
+            // If you're a normal browser, or this isn't Safari's first request
+            // We need to make it so start is divisible by 16, since AES256
+            // Has a block size of 16 bytes.
+
+            fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+        }
 
         if (+start === 0) {
-    
+            
+            // This math will not work if the start is 0
+            // So if it is we just change fixed start back
+            // To 0.
+
             fixedStart = 0;
         }
     
-        const fixedEnd = currentFile.length;
-    
+        
+        // We also need to calculate the difference between the start and the 
+        // Fixed start position. Since there will be an offset if the original
+        // Request is not divisible by 16, it will not return the right part
+        // Of the file, you will see how we do this in the awaitStreamVideo
+        // code.
+
         const differenceStart = start - fixedStart;
 
+
         if (fixedStart !== 0 && start !== 0) {
+
+            // If this isn't the first request, the way AES256 works is when you try to
+            // Decrypt a certain part of the file that isn't the start, the IV will 
+            // Actually be the 16 bytes ahead of where you are trying to 
+            // Start the decryption.
     
             currentIV = await getPrevIVFS(fixedStart - 16, currentFile.metadata.filePath!) as Buffer;
         }
-            
+
         const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
             start: fixedStart,
             end: fixedEnd,
@@ -256,15 +366,8 @@ class FileSystemService implements ChunkInterface {
 
         readStream.pipe(decipher);
 
-        // req.on("close", () => {
-        //     // console.log("req closed");
-        //     readStream.destroy();
-        // })
+        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, allStreamsToErrorCatch, readStream);
 
-        const tempUUID = req.params.uuid;
-
-        await awaitStreamVideo(start, end, differenceStart, decipher, res, req, tempUUID, allStreamsToErrorCatch);
-        console.log("Video Stream Finished");
         readStream.destroy();
     }
 
@@ -280,7 +383,7 @@ class FileSystemService implements ChunkInterface {
 
         const password = user.getEncryptionKey();
 
-        if (!password) throw new NotAuthorizedError("Invalid Encryption Key");
+        if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
         const IV = file.metadata.IV.buffer as Buffer;
                    
@@ -299,7 +402,6 @@ class FileSystemService implements ChunkInterface {
         await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
 
         if (file.metadata.linkType === "one") {
-            console.log("removing public link");
             await dbUtilsFile.removeOneTimePublicLink(fileID);
         }
     }
@@ -321,6 +423,7 @@ class FileSystemService implements ChunkInterface {
 
         await removeChunksFS(file.metadata.filePath!);
         await File.deleteOne({_id: file._id});
+        await subtractFromStorageSize(userID, file.length, file.metadata.personalFile!)
     }
 
     deleteFolder = async(userID: string, folderID: string, parentList: string[]) => {
@@ -361,8 +464,6 @@ class FileSystemService implements ChunkInterface {
     }
 
     deleteAll = async(userID: string) => {
-
-        console.log("remove all request")
 
         await Folder.deleteMany({"owner": userID});
 

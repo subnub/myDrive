@@ -1,57 +1,70 @@
-import RightSectionDetail from ".././RightSectionDetail"
-import capitalize from "../../utils/capitalize";
 import bytes from "bytes";
 import moment from "moment";
 import React from "react";
+import NewContextMenu from "../NewContextMenu";
 
-const RightSection = (props) => {
+class RightSection extends React.Component {
 
-    props.resetState();
+    constructor(props) {
+        super(props)
+    }
 
-    props.prevID = props.selectedItem.id;
+    render () {
 
-    return (
+        return (
 
-        <div className={props.getSidebarClassName(props.showSideBar)}>
-            
-            {props.selectedItem.name === "" ? 
-            (
-            <div className="section__none--wrapper">
-                <img className="section__image" src="/images/edit.svg"/>   
-                <h3 className="section__title">Select a file or folder to view its details</h3>             
-            </div>
-            )
-            :
-            (
-            <div className="section-detail-wrapper">
-                <div className="section__title-wrapper">
-                    <h2 className={props.selected === "" ? "section__title-text section__title-text--gone" : "section__title-text"} >{capitalize(props.selectedItem.name)}</h2>
-                    <img className={props.selected === "" ? "section__title-image section__title-image--gone" : "section__title-image"} src="/images/close_icon.png" onClick={props.resetSelected}/>
+            <div onClicks={this.props.closeContext} ref={this.props.rightSectionRef} style={this.props.rightSectionMode === '' ? {} : this.props.rightSectionMode === 'open' ? {right: "0px"} : {right:"-260px"}} class={this.props.selectedItem.name === "" ? "file__details empty__details" : "file__details"}>
+                
+                {this.props.selectedItem.name === "" ? 
+                
+                <div class="file__details--inner">
+                    <span><img src="/assets/filedetailsicon.svg" alt="filedetailsicon"/></span>
+                    <p>Select a file or folder to  view it’s details</p>
                 </div>
     
-                <div className="section-detail__block">
-                    {props.selectedItem.file ? (<RightSectionDetail title="Type" body={props.getFileExtension(props.selectedItem.name)}/>) : (<RightSectionDetail title="Type" body="Folder"/>)}
-                    {props.selectedItem.file ? (<RightSectionDetail first={false} title="Size" body={bytes(props.selectedItem.size)}/>) : undefined}
-                    <RightSectionDetail first={false} title="Created" body={moment(props.selectedItem.date).format("L")}/>
-                    <RightSectionDetail first={false} title="Location" body={props.selectedItem.location} />
-                    {props.selectedItem.isVideo ? 
-                        <RightSectionDetail first={false} title="Optimized" body={(props.selectedItem.transcoded || props.state.optimizing_finished) ? "True" : "False"} /> :
-                        undefined}
-                    
-                    {props.selectedItem.link ? 
-                        props.getPublicStatus()
-                        : undefined}
-                        
-                    {props.getTranscodeButton(props)}
-                
+                :
+    
+                <div class="file__info--wrap">
+                    <img className={this.props.selected === "" ? "section__title-image section__title-image--gone" : "section__title-image"} src="/images/close_icon.png" onClick={this.props.resetSelected}/>
+                   <div class="file__type">
+                        <img src="/assets/typedetailed1.svg" alt="typedetailed1"/>
+                    </div>
+                    <div class="file__name">
+                        <p>{this.props.selectedItem.name}</p>
+                    </div>
+                    <div class="file__information">
+                        <div class="elem__file--info">
+                            <span>Type</span><span>{this.props.selectedItem.size ? this.props.getFileExtension(this.props.selectedItem.name) : "Folder"}</span>
+                        </div>
+                        <div class="elem__file--info" style={!this.props.selectedItem.size ? {display:"none"} : {display:"flex"}}>
+                            <span>Size</span><span>{bytes(this.props.selectedItem.size)}</span>
+                        </div>
+                        <div class="elem__file--info">
+                                <span>Created</span><span>{moment(this.props.selectedItem.date).format("L")}</span>
+                        </div>
+                        <div class="elem__file--info">
+                            <span>Location</span><span>{this.props.selectedItem.drive ? "Google Drive" : this.props.selectedItem.personalFile ? "Amazon S3" : "myDrive"}</span>
+                        </div>
+                        <div class="elem__file--info" style={!this.props.selectedItem.size ? {display:"none"} : {display:"flex"}}>
+                            <span>Privacy</span><span>{this.props.selectedItem.link ? "Public" : "Only you"}</span>
+                        </div>
+                    </div>
+                    <div class="file__control">
+                        <a onClick={this.props.openItem}>{this.props.selectedItem.file ? "Open File" : "Open Folder"}</a>
+                        <div class="file__settings">
+                            <a onClick={this.props.selectContext}><i class="fas fa-ellipsis-h" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                    <div className="context__menu--wrapper" onClick={this.props.clickTest}>
+                        <NewContextMenu gridMode={true} folderMode={!this.props.selectedItem.file} contextSelected={this.props.state.contextSelected} closeContext={this.props.closeContext} downloadFile={this.props.downloadFile} file={this.props.selectedItem.data} changeEditNameMode={this.props.changeEditNameMode} startMovingFile={this.props.startMoveFolder} changeDeleteMode={this.props.changeDeleteMode}/>
+                    </div>
                 </div>
+    
+                }
             </div>
-            )}        
-                            
-        </div>
-    )
-
+        
+        )
+    }
 }
-
 
 export default RightSection;

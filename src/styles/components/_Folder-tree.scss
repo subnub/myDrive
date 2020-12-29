@@ -1,0 +1,193 @@
+.folder-tree__main {
+    height: 327px;
+    width: 100%;
+    margin-top: 4px;
+    // background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.folder-tree__wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.folder-tree__box {
+    width: 95%;
+    height: 85%;
+    overflow: scroll;
+    // -ms-overflow-style: none;  /* IE and Edge */
+    // scrollbar-width: none;
+    // &::-webkit-scrollbar {
+    //     display: none;
+    //     width: 0px;
+    //     background: transparent
+    // }
+    // border: 1px solid #dadce0;
+    // border-radius: 10px;
+}
+
+.folder-tree__box-hide-scroll-bars {
+
+    width: 95%;
+    height: 85%;
+    overflow: scroll;
+
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+        display: none;
+        width: 0px;
+        background: transparent
+    }
+
+}
+
+.folder-tree__storage {
+    // width: 100%;
+    // height: 55px;
+    // background: blue;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.folder-tree-sub__storage {
+    // background: blue;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.folder-tree__storage__box {
+    width: 179px;
+    // background: green;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-left: 46px;
+}
+
+.folder-tree-sub__storage__box {
+    width: 179px;
+    // background: green;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.folder-tree__storage__image-div {
+    display: flex;
+    align-items: center;
+}
+
+.folder-tree-sub__storage__image-div {
+    display: flex;
+    align-items: center;
+    margin-left: 30px;
+}
+
+.folder-tree__storage__image {
+
+    margin-right: 1px;
+    height: 31px;
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-right: -2px;
+        height: 54px;
+    }
+}
+
+.folder-tree-sub__storage__image {
+
+    margin-right: 1px;
+    // height: 21px;
+    width: 6px;
+    height: 10px;
+
+    @media (max-width: $desktop-breakpoint) {
+        margin-right: 1px;
+        width: 11px;
+        height: unset;
+    }
+}
+
+.folder-tree__storage__text {
+    color: #2e2e38;
+    font-size: 16px;
+    font-weight: 400;
+
+    @media (max-width: $desktop-breakpoint) {
+        font-size: 22px;
+    }
+}
+
+.folder-tree__storage__text-div {
+    display: flex;
+    align-items: center;
+}
+
+.folder-tree-sub__storage__text {
+    font-size: 16px;
+    white-space: nowrap;
+    max-width: 117px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 4px;
+    user-select: none;
+    cursor: pointer;
+    color: #2e2e38;
+    font-weight: 400;
+
+    @media (max-width: $desktop-breakpoint) {
+        font-size: 20px;
+    }
+}
+
+.folder-tree-sub__storage__text-div {
+    display: flex;
+    align-items: center;
+}
+
+.folder-tree__storage-subview {
+    // height: 151px;
+    width: 100%;
+    // background: purple;
+}
+
+.folder-tree-sub__storage-subview {
+    // height: 151px;
+    width: 100%;
+    // background: purple;
+}
+
+.folder-tree__storage-subview-box {
+    margin-left: 25px;
+}
+
+.folder-tree-sub__storage-subview-box {
+    margin-left: 25px;
+}
+
+.folder-tree-sub__icon-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.folder-tree-sub__icon {
+    width: 19px;
+    margin-left: 9px;
+    margin-right: 3px;
+
+    @media (max-width: $desktop-breakpoint) {
+        width: 26px;
+        margin-left: 14px;
+        margin-right: 5px;
+    }
+}

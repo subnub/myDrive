@@ -3,8 +3,16 @@ import env from "../enviroment/env";
 import { Request, Response } from "express";
 import { UserInterface } from "../models/user";
 
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    s3Enabled: boolean,
+}
+
 interface RequestType extends Request {
-    user?: UserInterface,
+    user?: userAccessType,
+    encryptedToken?: string
 }
 
 class StorageController {
@@ -32,8 +40,9 @@ class StorageController {
     
         } catch (e) {
     
-            console.log(e);
-            res.status(500).send(e);
+            console.log("\nGet Storage Error Storage Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

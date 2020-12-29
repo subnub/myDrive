@@ -141,3 +141,36 @@
     margin-left: 10px;
     margin-right: 5px;
 }
+
+.spinner-image {
+    border: 3px solid white;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    // margin-left: 50%;
+    text-align: center;
+    animation: spin 2s linear infinite;
+}
+  
+.spinner-image-grey {
+    border: 3px solid lightgray;
+    border-top: 3px solid #3498db;
+}
+
+.share-model-spinner-wrapper {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.share-model-share-buttons-wrapper {
+    margin-top: 12px;
+    margin-bottom: 4px;
+}
+
+.share-button__wrapper {
+    margin-bottom: 11px;
+}

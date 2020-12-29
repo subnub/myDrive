@@ -21,3 +21,4 @@ const getEnvVariables = () => {
 }
 
 export default getEnvVariables;
+module.exports = getEnvVariables

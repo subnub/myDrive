@@ -1,11 +1,8 @@
 import DownloadPage from "./DownloadPage";
 import capitalize from "../../utils/capitalize";
-import env from "../../enviroment/envFrontEnd";
-import axios from "axios";
+import axios from "../../axiosInterceptor";
 import bytes from "bytes";
 import React from "react";
-
-const currentURL = env.url;
 
 class DownloadPageContainer extends React.Component {
 
@@ -18,6 +15,8 @@ class DownloadPageContainer extends React.Component {
                 type: "",
                 size: "",
             }
+
+        this.isPersonalFile = false;
     }
 
     getFileExtension = (filename) => {
@@ -42,17 +41,14 @@ class DownloadPageContainer extends React.Component {
         const _id = this.props.match.params.id;
         const tempToken = this.props.match.params.tempToken
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        };
-
-        axios.get(currentURL +`/file-service/public/info/${_id}/${tempToken}`, config).then((results) => {
+        axios.get(`/file-service/public/info/${_id}/${tempToken}`).then((results) => {
 
            const data = results.data;
 
            const title = capitalize(data.filename);
            const size = bytes(data.length);
            const type = this.getFileExtension(title);
+           this.isPersonalFile = results.data.metadata.personalFile;
 
            this.setState(() => ({
                ...this.state,
@@ -71,7 +67,7 @@ class DownloadPageContainer extends React.Component {
 
         const _id = this.props.match.params.id;
         const tempToken = this.props.match.params.tempToken
-        const finalUrl = currentURL + `/file-service/public/download/${_id}/${tempToken}`
+        const finalUrl = !this.isPersonalFile ? `/file-service/public/download/${_id}/${tempToken}` : `/file-service-personal/public/download/${_id}/${tempToken}`;
    
         const link = document.createElement('a');
         document.body.appendChild(link);

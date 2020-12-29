@@ -19,3 +19,21 @@
   .spinner--small-margin {
     margin-left: 4px;
   }
+
+  .spinner__no-margin {
+    margin: 0;
+    margin-bottom: 108px;
+
+    // @media (max-width: $desktop-breakpoint) {
+    //   margin-bottom: 108px;
+    // }
+  }
+
+  .homepage__spinner__wrapper {
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

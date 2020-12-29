@@ -36,8 +36,7 @@ class UploaderContainer extends React.Component {
     componentDidUpdate = () => {
 
         if (this.props.uploads.length !== this.prevUploadLength) {
-
-            this.uploaderWrapper.current.scrollTop = 0;
+            if (this.uploaderWrapper.current) this.uploaderWrapper.current.scrollTop = 0;
         }
 
         this.prevUploadLength = this.props.uploads.length;

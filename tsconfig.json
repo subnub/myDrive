@@ -71,6 +71,8 @@
     "webpack.config.js",
     "dist",
     "webUI",
-    "webUI.config.js"
+    "webUI.config.js",
+    "webUISetup",
+    "webUISetup.config.js",
   ]
 }

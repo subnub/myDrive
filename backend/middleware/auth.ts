@@ -1,60 +1,53 @@
 import jwt from "jsonwebtoken";
-import User, {UserInterface} from "../models/user";
 import env from "../enviroment/env";
 import {Request, Response, NextFunction} from "express";
 
 interface RequestType extends Request {
-    user?: UserInterface,
+    user?: userAccessType,
     token?: string,
     encryptedToken?: string,
 }
 
 type jwtType = {
     iv: Buffer,
+    user: userAccessType
+}
+
+type userAccessType = {
     _id: string,
+    emailVerified: boolean,
+    email: string,
+    admin: boolean,
+    botChecked: boolean,
+    username: string,
 }
 
 const auth = async(req: RequestType, res: Response, next: NextFunction) => {
 
     try {
 
-        const token = req.header("Authorization")!.replace("Bearer ", "");
+        const accessToken = req.cookies["access-token"];
 
-        const decoded = jwt.verify(token, env.password!) as jwtType;
+        if (!accessToken) throw new Error("No Access Token");
 
-        const iv = decoded.iv;
-        
-        const user = await User.findOne({_id: decoded._id}) as UserInterface;
-        const encrpytionKey = user.getEncryptionKey();
-    
-        const encryptedToken = user.encryptToken(token, encrpytionKey, iv);
+        const decoded = jwt.verify(accessToken, env.passwordAccess!) as jwtType;
 
-        let tokenFound = false;
-        for (let i = 0; i < user.tokens.length; i++) {
+        const user = decoded.user;
 
-            const currentToken = user.tokens[i].token;
+        if (!user) throw new Error("No User");
+        if (!user.emailVerified && !env.disableEmailVerification) throw new Error("Email Not Verified")
 
-            if (currentToken === encryptedToken) {
-                tokenFound = true;
-                break;
-            }
-        }
+        req.user = user;
 
-        if (!user || !tokenFound) {
-
-            throw new Error("User not found")
-
-        } else {
-
-            req.token = token; 
-            req.encryptedToken = encryptedToken
-            req.user = user;
-            next();
-        }
+        next();
 
     } catch (e) {
-        console.log(e);
-        res.status(401).send({error: "Error Authenticating"})
+
+        if (e.message !== "No Access Token" && 
+        e.message !== "No User" &&
+        e.message !== "Email Not Verified") console.log("\nAuthorization Middleware Error:", e.message);
+        
+        res.status(401).send("Error Authenticating");
     }
 }
 

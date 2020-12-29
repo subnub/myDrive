@@ -1,0 +1,164 @@
+.storage-item__wrapper {
+    height: 436px;
+    width: 332px;
+    min-width: 332px;
+    // background: green;
+    margin-right: 10px;
+    margin-left: 10px;
+    border: 1px solid #dadce0;
+    border-radius: 10px;
+    
+}
+
+.storage-item__title-wrapper {
+    border-bottom: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.storage-item__title {
+    font-weight: 600;
+    font-size: 22px;
+    margin: 13px;
+}
+
+.storage-item__image__wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 27px;
+}
+
+.storage-item__image {
+
+    width: 152px;
+}
+
+.storage-item__storage-title__wrapper {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -15px;
+}
+
+.storage-item__storage-title {
+
+    font-size: 19px;
+    font-weight: 500;
+}
+
+.storage-item__button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 36px;
+}
+
+.storage-item__button {
+    color: #fff;
+    font-size: unset;
+    padding: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #3c85ee;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-bottom: 6px;
+    border: none;
+}
+
+.add-storage-card__wrapper {
+    width: 632px;
+    height: 400px;
+    // background: red;
+    position: relative;
+    box-shadow: 0 11px 8px 0 rgba(0,0,0,.2);
+    border: 2px solid #dadce0;
+    border-radius: 6px;
+}
+
+.add-storage-card__title-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+.add-storage-card__title {
+    font-size: 27px;
+}
+
+.add-storage-card__number-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 42px;
+}
+
+.add-storage-card__number {
+    border: 1px solid #cacccd;
+    border-radius: 2px;
+    height: 43px;
+    font-size: 1.8rem;
+    font-weight: 300;
+    padding: 1.2rem;
+    margin: 0 0 1.2rem 0;
+    width: 383px;
+}
+
+.add-storage-card__expiry-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-storage-card__expiry {
+
+    border: 1px solid #cacccd;
+    border-radius: 2px;
+    height: 43px;
+    font-size: 1.8rem;
+    font-weight: 300;
+    padding: 1.2rem;
+    width: 223px;
+    /* margin: 0 0 1.2rem 0; */
+    /* margin-left: 10px; */
+    margin-right: 10px;
+}
+
+.add-storage-card__cvc {
+
+    border: 1px solid #cacccd;
+    border-radius: 2px;
+    height: 43px;
+    font-size: 1.8rem;
+    font-weight: 300;
+    padding: 1.2rem;
+    width: 70px;
+    /* margin: 0 0 1.2rem 0; */
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.add-storage-card__button-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 98px;
+}
+
+.add-storage-card__close-wrapper {
+    position: absolute;
+    right: 0;
+}
+
+.add-storage-card__close {
+    width: 39px;
+    cursor: pointer;
+}

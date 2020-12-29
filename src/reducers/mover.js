@@ -2,6 +2,8 @@ const defaultState = {
     id: "",
     parent: "/",
     isFile: true,
+    isGoogle: false,
+    isPersonal: false
 }
 
 export default (state = defaultState, action) => {
@@ -14,7 +16,9 @@ export default (state = defaultState, action) => {
                 ...state,
                 id: action.id,
                 parent: action.parent,
-                isFile: action.isFile
+                isFile: action.isFile,
+                isGoogle: action.isGoogle,
+                isPersonal: action.isPersonal
             }
 
         case "RESET_MOVER_ID":
@@ -23,7 +27,9 @@ export default (state = defaultState, action) => {
                 ...state,
                 id: "",
                 parent: "/",
-                isFile: action.isFile
+                isFile: action.isFile,
+                isGoogle: false,
+                isPersonal: false,
             }
 
         default: {

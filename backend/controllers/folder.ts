@@ -1,14 +1,21 @@
 import FolderService from "../services/FolderService";
 import { Request, Response } from "express";
-import {UserInterface} from "../models/user";
 import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 
 const folderService = new FolderService();
 
+type userAccessType = {
+    _id: string,
+    emailVerified: boolean,
+    email: string,
+    s3Enabled: boolean,
+}
+
 interface RequestType extends Request {
-    user?: UserInterface,
+    user?: userAccessType,
+    encryptedToken?: string
 }
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
@@ -39,10 +46,9 @@ class FolderController {
     
         } catch (e) {
 
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nUpload Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -65,10 +71,60 @@ class FolderController {
 
         } catch (e) {
             
-            const code = e.code || 500
+            console.log("\nDelete Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
 
-            console.log(e);
-            res.status(code).send(e);
+    getSubfolderFullList = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+            return 
+        }
+
+        try {
+
+
+            const user = req.user;
+            const id: any = req.query.id;
+
+            const subfolderList = await folderService.getSubfolderFullList(user, id);
+
+            res.send(subfolderList);
+
+        } catch (e) {
+           
+            console.log("\nGet Subfolder List Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
+        }
+    }
+
+    deletePersonalFolder = async(req: RequestType, res: Response) => {
+
+        if (!req.user) {
+
+            return 
+        }
+    
+        try {
+    
+            const userID = req.user._id;
+            const folderID = req.body.id; 
+            const parentList = req.body.parentList
+
+            const s3Service = new S3Service();
+
+            await s3Service.deleteFolder(userID, folderID, parentList);
+    
+            res.send();
+
+        } catch (e) {
+            
+            console.log("\nDelete Personal Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -89,10 +145,9 @@ class FolderController {
 
         } catch (e) {
            
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nDelete All Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -113,10 +168,9 @@ class FolderController {
     
         } catch (e) {
 
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nGet Info Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -138,10 +192,9 @@ class FolderController {
     
         } catch (e) {
             
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nGet Subfolder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -154,19 +207,18 @@ class FolderController {
     
         try {
     
-            const userID = req.user._id;
+            const user = req.user;
             const query = req.query;
 
-            const folderList = await folderService.getFolderList(userID, query);
+            const folderList = await folderService.getFolderList(user, query);
 
             res.send(folderList);
 
         } catch (e) {
             
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
+            console.log("\nGet Folder List Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -188,11 +240,9 @@ class FolderController {
 
         } catch (e) {
 
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
-
+            console.log("\nMove Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 
@@ -214,11 +264,9 @@ class FolderController {
             
         } catch (e) {
     
-            const code = e.code || 500
-
-            console.log(e);
-            res.status(code).send(e);
-    
+            console.log("\nRename Folder Error Folder Route:", e.message);
+            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
+            res.status(code).send();
         }
     }
 }

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    
+    <title>myDrive</title>
+    <link rel="icon" href="/images/icon.png">
+    <link rel="shortcut icon" type="image/png" href="/images/icon.png">
+    <link rel="shortcut icon" sizes="192x192" href="/images/icon.png">
+    <link rel="apple-touch-icon" href="/images/icon.png">
+    <link rel="stylesheet" type="text/css" href="./src/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+
+<body>
+
+    <div id="main-div">
+
+        <div id="box-div">
+
+            <div>
+                <p id="title">Setup</p>
+            </div>
+
+            <div class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use Docker With myDrive?</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="docker-select" name="docker" class="docker-select">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="docker-hidden" class="docker-hidden">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Include MongoDB In The Docker Image? (Select No If You're Using MongoDB Atlas)</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="docker-select-mongoURL" name="docker" class="docker-select">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="docker-hidden-mongoURL" class="docker-hidden">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter MongoDB URL</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="mongoURL-input-docker" class="mongo-input" placeholder="MongoDB URL"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="mongoURL-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter MongoDB URL</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="mongoURL-input" class="mongo-input" placeholder="MongoDB URL"/>
+                    </form>
+                </div>
+                <div class="button-wrapper-mongo">
+                    <button id="mongo-default-button" class="button-mongo">Use Local URL</button>
+                </div>
+            </div>
+            
+            <div class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use WebUI For Encryption Key (Recommended, Selecting No Will Require You To Enter An Encryption Key Now, Which Is Less Secure)</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="encryption-select" name="encryption-key" class="docker-select">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="encryption-input" class="encryption-key-input" placeholder="Encryption Key" disabled type="password"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="section-wrapper-ports" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use default ports? (http port: 3000, https port: 8080</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="port-select" name="port" class="docker-select">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="ports-wrapper" class="docker-hidden">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter ports</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="http-port-input" class="mongo-input" placeholder="HTTP port"/>
+                        <input id="https-port-input" class="mongo-input" placeholder="HTTPS port"/>
+                    </form>
+                </div>
+            </div>
+
+            <div class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter The Client URL/IP Address (Must Be A Valid Link and Must Start With "http://" or "https://", Include Port With IP Address If Needed, Do Not End The URL In a Slash "/")</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="client-input" class="mongo-input" placeholder="Client URL"/>
+                    </form>
+                </div>
+                <p id="client-input-invalid-text" class="invalid-input-text-hidden">Error: URL Cannot End In a Slash ("/")</p>
+                <p id="client-input-invalid-text2" class="invalid-input-text-hidden">Error: URL Must Start With "http://" or "https://"</p>
+            </div>
+
+            <div class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Pick A Database To Store File Chunks</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="db-select" name="docker" class="docker-select">
+                        <option value="fs">FileSystem</option>
+                        <option value="s3">Amazon S3</option>
+                        <option value="mongo">MongoDB (Not Recommended)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter The FileSyem Path</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="fs-input" class="mongo-input" placeholder="Path"/>
+                    </form>
+                </div>
+            </div>
+
+
+            <div id="s3-wrapper" class="docker-hidden">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter The S3 ID</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="db-form">
+                        <input id="s3-id-input" class="mongo-input" placeholder="S3 ID"/>
+                    </form>
+                </div>
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter The S3 Key</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="db-form">
+                        <input id="s3-key-input" class="mongo-input" placeholder="S3 Key" type="password"/>
+                    </form>
+                </div>
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter The S3 Bucket</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="db-form">
+                        <input id="s3-bucket-input" class="mongo-input" placeholder="S3 Bucket"/>
+                    </form>
+                </div>
+            </div>
+
+            <!-- <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter JWT Secret</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="jwt-input" class="mongo-input" placeholder="JWT Secret" type="password"/>
+                    </form>
+                </div>
+            </div> -->
+
+            <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter Access Token Secret</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="access-token-input" class="mongo-input" placeholder="Access Token Secret" type="password"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter Refresh Token Secret</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="refresh-token-input" class="mongo-input" placeholder="Refresh Token Secret" type="password"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="filesystem-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter Cookie Secret</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="cookie-input" class="mongo-input" placeholder="Cookie Secret" type="password"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="ssl-select-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use Secure Cookies? (You Can Only Use Secure Cookies If You Are Using HTTPS/SSL, Do Not Select This Option If You Do Not Have HTTPS or else Cookies/Logging in Will Not Work At All. This is Highly Recommended if You Have HTTPS/SSL)</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="secure-cookie-select" name="secure-cookie" class="docker-select">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use SendGrid To Send Emails? (For Account Email Verification And Password Resets)</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="sendgrid-select" name="sendgrid" class="docker-select">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="sendgrid-wrapper" class="docker-hidden">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter A SendGrid API Key</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="sendgrid-input" class="mongo-input" placeholder="Sendgrid API Key" type="password"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="sendgrid-wrapper2" class="docker-hidden">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Enter Email Address, This Will Be The Email Address For Sending Email Verifications, And Password Resets.</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <form id="mongo-form">
+                        <input id="sendgrid-input-email" class="mongo-input" placeholder="Sendgrid Email"/>
+                    </form>
+                </div>
+            </div>
+
+            <div id="ssl-select-wrapper" class="section-wrapper">
+                <div id="docker-text__wrapper">
+                    <p id="docker-text">Use SSL? (Will Require SSL Certificate certificate.crt, certificate.ca-bundle, And certificate.key At Root Of The Project. If You Are Hosting On a Service That Already Provides HTTPS/SSL Select No)</p>
+                </div>
+                <div id="docker-select__wrapper">
+                    <select id="ssl-select" name="docker" class="docker-select">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="button-wrapper">
+                <button id="save-button" class="button">Save</button>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- <script src="/socket.io/socket.io.js"></script> -->
+    <script src="./dist/bundle.js"></script>
+</body>
+
+</html>

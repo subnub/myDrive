@@ -1,0 +1,233 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+#main-div {
+   /* height: 100vh;
+   width: 100vw; */
+   /* background: blue; */
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   margin: 10px;
+}
+
+#box-div {
+    height: 30%;
+    width: 90%;
+    /* background: purple; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    border: .5px;
+    border-style: groove;
+}
+
+@media (min-width:600px) { 
+    #box-div {
+        width: 70%;
+        /* background: purple; */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        border: .5px;
+        border-style: groove;
+        border-radius: 11px;
+        height: fit-content;
+    }
+ }
+
+#input-password {
+    border: 1px solid #cacccd;
+    border-radius: 2px;
+    height: 43px;
+    font-size: 1.8rem;
+    font-weight: 300;
+    padding: 1.2rem;
+    margin: 0 0 1.2rem 0;
+    width: -webkit-fill-available;
+    margin-top: -17px;
+}
+
+#submit-button {
+    color: #fff;
+    background: #3c85ed;
+    font-size: 1.8rem;
+    padding: 1.2rem;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+}
+
+#title {
+    font-size: 58px;
+    font-family: sans-serif;
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+#docker-text {
+    color: #373737;
+    /* margin-right: 2px; */
+    /* margin-top: 25px; */
+    /* margin-left: 4px; */
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
+    /* overflow: hidden; */
+    /* width: 77%; */
+    /* max-width: 50vw; */
+    font-weight: 300;
+    /* text-transform: capitalize; */
+    font-size: 17px;
+    text-align: center;
+    max-width: 78%;
+}
+
+.docker-select {
+    background: none;
+    border: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    color: #5f6368;
+    font-size: 18px;
+    outline: none;
+    font-weight: 500;
+    padding-left: 3px;
+    padding-right: 4px;
+    margin-top: 19px; 
+}
+
+#docker-select__wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.mongo-input {
+    border: 1px solid #f1f3f4;
+    /* height: 50px; */
+    font-size: 15px;
+    font-weight: 300;
+    /* padding: 7px; */
+    /* margin: 10px 0 10px 0; */
+    /* width: 100%; */
+    /* margin: 3px; */
+    height: 32px;
+    padding-left: 8px;
+    border-radius: 3px;
+    background: #f1f3f4;
+    width: 286px;
+}
+
+.input-invalid {
+    border: 1px solid red;
+    outline: 1px solid red;
+}
+
+.invalid-input-text {
+    text-align: center;
+    font-size: 17px;
+    margin-top: 5px;
+    color: red;
+}
+
+.invalid-input-text-hidden {
+    display: none;
+}
+
+.encryption-key-input {
+    border: 1px solid #f1f3f4;
+    /* height: 50px; */
+    font-size: 15px;
+    font-weight: 300;
+    /* padding: 7px; */
+    /* margin: 10px 0 10px 0; */
+    /* width: 100%; */
+    /* margin: 3px; */
+    height: 32px;
+    padding-left: 8px;
+    border-radius: 3px;
+    background: #f1f3f4;
+    width: 286px;
+    opacity: 0.7;
+}
+
+#mongo-form {
+    margin-top: 13px;
+}
+
+#db-form {
+    margin-top: 13px;
+    margin-bottom: 13px; 
+}
+
+.section-wrapper {
+    margin-top: 29px;
+    width: 100%;
+    border-bottom: 1px solid #dadce0;
+    /* margin-bottom: -3px; */
+    padding-bottom: 24px;
+}
+
+#docker-text__wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; 
+    align-items: center;
+}
+
+.docker-hidden {
+    display: none;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 30px;
+}
+
+.button-wrapper-mongo {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 30px;
+    margin-bottom: 0px;
+}
+
+.button {
+    color: #fff;
+    background: #3c85ed;
+    font-size: 1.8rem;
+    padding: 1.2rem;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+}
+
+.button-mongo {
+    color: #fff;
+    background: #3c85ed;
+    font-size: 16px;
+    padding: 9px;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+}

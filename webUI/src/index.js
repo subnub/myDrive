@@ -1,4 +1,3 @@
-console.log("Hello, there", process.env.PORT);
 import axios from "axios";
 
 const formElement = document.getElementById("form-submit")
@@ -16,7 +15,7 @@ formElement.addEventListener("submit", async (e) => {
 
     const data = {password: value}
 
-    axios.post(fullURL + "/submit", data).then(() => {
+    axios.post("/submit", data).then(() => {
 
         inputElement.value = "";
         mainDiv.style.display = "none";

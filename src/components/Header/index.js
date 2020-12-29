@@ -8,7 +8,7 @@ import {startSetFiles} from "../../actions/files";
 import {startSetFolders} from "../../actions/folders";
 import env from "../../enviroment/envFrontEnd";
 import {history} from "../../routers/AppRouter";
-import axios from "axios";
+import axios from "../../axiosInterceptor";
 import {connect} from "react-redux";
 import React from "react";
 
@@ -34,6 +34,8 @@ class HeaderContainer extends React.Component {
         e.preventDefault();
 
         const value = this.props.search;
+
+        // console.log("Search value". value)
         
         const parent = "/"
         this.props.dispatch(setParent(parent))
@@ -46,7 +48,7 @@ class HeaderContainer extends React.Component {
     }
 
     searchOnChange = (e) => {
-
+        
         const value = e.target.value;
         this.searchValue = value;
 
@@ -55,7 +57,7 @@ class HeaderContainer extends React.Component {
     }
 
     showSuggested = () => {
-        
+
         this.setState(() => {
             return {
                 ...this.state,
@@ -74,9 +76,11 @@ class HeaderContainer extends React.Component {
         })
     }
 
-    selectSuggested = (value) => {
+    selectSuggested = () => {
 
-        history.push(`/search/${value}`)
+        history.push(`/search/${this.searchValue}`)
+
+        this.searchValue = ''
 
         this.setState(() => {
             return {
@@ -91,37 +95,35 @@ class HeaderContainer extends React.Component {
 
     searchSuggested = () => {
 
-        const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")}
-        };
-       
+        return;
 
-        if (this.searchValue === "") {
+        // if (this.searchValue === "") {
             
-            return this.setState(() => {
-                return {
-                    ...this.state, 
-                    suggestedList: {
-                        fileList: [],
-                        folderList: []
-                    }
-                }
-            })
-        }
+        //     return this.setState(() => {
+        //         return {
+        //             ...this.state, 
+        //             suggestedList: {
+        //                 fileList: [],
+        //                 folderList: []
+        //             }
+        //         }
+        //     })
+        // }
 
-        axios.get(currentURL +`/file-service/suggested-list?search=${this.searchValue}`, config).then((results) => {
+        // const url = !env.googleDriveEnabled ? currentURL +`/file-service/suggested-list?search=${this.searchValue}` : currentURL +`/file-service-google-mongo/suggested-list?search=${this.searchValue}`
 
-            this.setState(() => {
-                return {
-                    ...this.state, 
-                    suggestedList: results.data
-                }
-            })
-           
+        // axios.get(url).then((results) => {
 
-        }).catch((err) => {
-            console.log(err)
-        })
+        //     this.setState(() => {
+        //         return {
+        //             ...this.state, 
+        //             suggestedList: results.data
+        //         }
+        //     }) 
+
+        // }).catch((err) => {
+        //     console.log(err)
+        // })
     }
 
     showSettings = () => {
@@ -134,6 +136,64 @@ class HeaderContainer extends React.Component {
         this.props.dispatch(startLogout())
     }
 
+    itemClick = () => {
+        console.log("item click")
+    }
+
+    selectSuggestedByParent = () => {
+
+       // const parent = this.props.parent === "/" ? "home" : this.props.parent;
+
+        const parent = this.props.parent;
+
+        history.push(`/search/${this.searchValue}?parent=${parent}&folder_search=true`)
+
+        this.searchValue = ''
+
+        this.setState(() => {
+            return {
+                ...this.state, 
+                suggestedList: {
+                    fileList: [],
+                    folderList: []
+                }
+            }
+        })
+    }
+
+    selectSuggestedByStorageType = () => {
+
+        history.push(`/search/${this.searchValue}?storageType=stripe`)
+
+        this.searchValue = ''
+
+        this.setState(() => {
+            return {
+                ...this.state, 
+                suggestedList: {
+                    fileList: [],
+                    folderList: []
+                }
+            }
+        })
+    }
+
+    goToSettings = () => {
+
+        window.location.assign(env.url+"/settings")
+    }
+
+    getProfilePic = () => {
+
+        if (env.name && env.name.length !== 0) {
+            return env.name.substring(0, 1).toUpperCase();
+        } else if (env.emailAddress && env.emailAddress.length !== 0) {
+            return env.emailAddress.substring(0,1).toUpperCase();
+        } else {
+            return "?"
+        }
+    }
+
     render() {
 
         return <Header 
@@ -143,6 +203,12 @@ class HeaderContainer extends React.Component {
                     showSuggested={this.showSuggested}
                     hideSuggested={this.hideSuggested}
                     showSettings={this.showSettings}
+                    searchValue={this.searchValue}
+                    selectSuggestedByParent={this.selectSuggestedByParent}
+                    selectSuggestedByStorageType={this.selectSuggestedByStorageType}
+                    itemClick={this.itemClick}
+                    goToSettings={this.goToSettings}
+                    getProfilePic={this.getProfilePic}
                     state={this.state}
                     {...this.props}
                     />
@@ -150,7 +216,9 @@ class HeaderContainer extends React.Component {
 }
 
 const connectPropToStore = (state) => ({
-    search: state.filter.search
+    search: state.filter.search,
+    parentNameList: state.parent.parentNameList,
+    parent: state.parent.parent,
 })
 
 export default connect(connectPropToStore)(HeaderContainer);

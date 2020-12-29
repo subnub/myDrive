@@ -2,9 +2,14 @@ import QuickAccessItem from "./QuickAccessItem"
 import {setRightSelected, setLastSelected, setSelected} from "../../actions/selectedItem"
 import mobileCheck from "../../utils/mobileCheck"
 import env from "../../enviroment/envFrontEnd";
-import axios from "axios";
+import axios from "../../axiosInterceptor";
 import {connect} from "react-redux";
 import React from "react";
+import Swal from "sweetalert2";
+import { startRenameFile, startRemoveFile } from "../../actions/files";
+import { setMoverID } from "../../actions/mover";
+import mobilecheck from "../../utils/mobileCheck";
+import { setMobileContextMenu } from "../../actions/mobileContextMenu";
 
 const currentURL = env.url;
 
@@ -19,7 +24,8 @@ class QuickAccessItemContainer extends React.Component {
         this.state = {
             contextMenuPos: {},
             image: "/images/file-svg.svg",
-            imageClassname: "quickaccess__item__image"
+            imageClassname: "noSelect file__item-no-thumbnail",
+            contextSelected: false,
         }
     }
 
@@ -32,23 +38,64 @@ class QuickAccessItemContainer extends React.Component {
         }
     }
 
+    closeContext = () => {
+     
+        this.setState(() => {
+            return {
+                ...this.state,
+                contextSelected: false
+            }
+        })
+    }
+
+    selectContext = (e) => {
+
+        if (e) e.stopPropagation()
+        if (e) e.preventDefault();
+
+        if (mobilecheck()) {
+
+            this.props.dispatch(setMobileContextMenu(true, this.props));
+            return;
+        }
+
+        this.setState(() => {
+            return {
+                ...this.state,
+                contextSelected: !this.state.contextSelected
+            }
+        })
+    }
+
     getThumbnail = async() => {
 
         const thumbnailID = this.props.metadata.thumbnailID;
-        const imageClassname = "quickaccess__item__image quickaccess__item__image--no-opacity"
+        const imageClassname = "noSelect"
+
+        // GOOGLE DRIVE IMAGE
+        if (this.props.metadata.drive) {
+            return await this.setState(() => ({
+                ...this.state,
+                image: this.props.metadata.thumbnailID,
+                imageClassname: imageClassname
+            }))
+        }
 
         const config = {
-            headers: {'Authorization': "Bearer " + window.localStorage.getItem("token")},
             responseType: 'arraybuffer'
         };
 
         await this.setState(() => ({
             ...this.state,
-            iimage: "/images/file-svg.svg",
-            imageClassname: "quickaccess__item__image"
+            image: "/images/file-svg.svg",
+            imageClassname: "noSelect file__item-no-thumbnail"
         }))
+
+        const isPersonal = this.props.metadata.personalFile;
     
-        axios.get(currentURL +`/file-service/thumbnail/${thumbnailID}`, config).then((results) => {
+        const url = !isPersonal ? `/file-service/thumbnail/${thumbnailID}` : `/file-service-personal/thumbnail/${thumbnailID}`;
+
+        axios.get(url, config).then((results) => {
      
             const imgFile = new Blob([results.data]);
             const imgUrl = URL.createObjectURL(imgFile);
@@ -64,8 +111,19 @@ class QuickAccessItemContainer extends React.Component {
         })
     }
 
+    thumbnailOnError = () => {
+
+        console.log("thumbnail on error");
+
+        this.setState(() => ({
+            ...this.state,
+            image: "/images/file-svg.svg",
+            imageClassname: "noSelect file__item-no-thumbnail",
+        }))
+
+    }
+
     onTouchStart = () => {
-        //alert("Touch start");
         const date = new Date();
         this.lastTouch = date.getTime();
     }
@@ -79,19 +137,16 @@ class QuickAccessItemContainer extends React.Component {
 
         if (this.lastTouch === 0) {
 
-            //alert("last touch 0");
             return;
         }
 
         const date = new Date();
         const difference = date - this.lastTouch;
-        //alert("Touch end: " + difference)
-        //alert("touch end: " + difference);
+       
         this.lastTouch = 0;
 
         if (difference > 500) {
-            //alert("Context menu");
-            this.getContextMenu();
+            this.selectContext()
         }
 
     }
@@ -137,7 +192,65 @@ class QuickAccessItemContainer extends React.Component {
         this.props.dispatch(setLastSelected(0));
     }
 
+    changeEditNameMode = async() => {
 
+        let inputValue = this.props.filename;
+    
+        const { value: folderName} = await Swal.fire({
+            title: 'Enter A File Name',
+            input: 'text',
+            inputValue: inputValue,
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return 'Please Enter a Name'
+              }
+            }
+          })
+
+        if (folderName === undefined || folderName === null) {
+
+            return;
+        }
+
+        this.props.dispatch(startRenameFile(this.props._id, folderName, this.props.metadata.drive))
+    }
+
+    closeEditNameMode = () => {
+
+        this.setState(() => {
+
+            return {
+                ...this.state,
+                editNameMode: false
+            }
+        })
+    }
+
+    changeDeleteMode = async() => {
+ 
+        Swal.fire({
+            title: 'Confirm Deletion',
+            text: "You cannot undo this action",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete'
+          }).then((result) => {
+            if (result.value) {
+                this.props.dispatch(startRemoveFile(this.props._id, this.props.metadata.drive, this.props.metadata.personalFile))
+            }
+        })
+    }
+
+    startMovingFile = async() => {
+        this.props.dispatch(setMoverID(this.props._id, this.props.metadata.parent, true, this.props.metadata.drive, this.props.metadata.personalFile));
+    }
+
+    clickStopPropagation = (e) => {
+        e.stopPropagation();
+    }
 
     render() {
 
@@ -146,6 +259,13 @@ class QuickAccessItemContainer extends React.Component {
                 onTouchStart={this.onTouchStart}
                 onTouchMove={this.onTouchMove}
                 onTouchEnd={this.onTouchEnd}
+                closeContext={this.closeContext}
+                selectContext={this.selectContext}
+                changeEditNameMode={this.changeEditNameMode}
+                closeEditNameMode={this.closeEditNameMode}
+                changeDeleteMode={this.changeDeleteMode}
+                startMovingFile={this.startMovingFile}
+                thumbnailOnError={this.thumbnailOnError}
                 state={this.state} 
                 {...this.props}/>
     }

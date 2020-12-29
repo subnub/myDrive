@@ -12,51 +12,89 @@ let folder;
 
 process.env.KEY = "1234";
 
+const waitForDatabase = () => {
+
+    return new Promise((resolve, reject) => {
+
+        if (conn.readyState !== 1) {
+
+            conn.once("open", () => {
+                
+                resolve();
+    
+            })
+
+        } else {
+
+            resolve();
+        }
+    
+    })
+}
+
 beforeEach(async(done) => {
 
-    if (conn.readyState === 0) {
+    await waitForDatabase();
 
-        conn.once("open", async() => {
+    const {user: gotUser} = await createUser();
+    user = gotUser;
 
-            //user = await createUser();
-            const {user: gotUser} = await createUser();
-            user = gotUser;
-
-            const folderData = {
-                name: "bunny",
-                owner: user._id, 
-                parent: "/",
-                parentList: ["/"]
-            }
-            
-    
-            folder = new Folder(folderData);
-            await folder.save();
-    
-            done();
-    
-    
-        })
-
-    } else {
-
-            //user = await createUser();
-            const {user: gotUser} = await createUser();
-            user = gotUser;
-
-            const folderData = {
-                name: "bunny",
-                owner: user._id, 
-                parent: "/",
-                parentList: ["/"]
-            }
-            
-    
-            folder = new Folder(folderData);
-            await folder.save();
-    
-            done();
+    const folderData = {
+        name: "bunny",
+        owner: user._id, 
+        parent: "/",
+        parentList: ["/"]
     }
+    
+
+    folder = new Folder(folderData);
+    await folder.save();
+
+    done();
+
+    // if (conn.readyState === 0) {
+
+    //     conn.once("open", async() => {
+
+    //         //user = await createUser();
+    //         const {user: gotUser} = await createUser();
+    //         user = gotUser;
+
+    //         const folderData = {
+    //             name: "bunny",
+    //             owner: user._id, 
+    //             parent: "/",
+    //             parentList: ["/"]
+    //         }
+            
+    
+    //         folder = new Folder(folderData);
+    //         await folder.save();
+    
+    //         done();
+    
+    
+    //     })
+
+    // } else {
+
+    //         //user = await createUser();
+    //         const {user: gotUser} = await createUser();
+    //         user = gotUser;
+
+    //         const folderData = {
+    //             name: "bunny",
+    //             owner: user._id, 
+    //             parent: "/",
+    //             parentList: ["/"]
+    //         }
+            
+    
+    //         folder = new Folder(folderData);
+    //         await folder.save();
+    
+    //         done();
+    // }
     
 })
 

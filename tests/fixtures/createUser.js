@@ -16,6 +16,8 @@ const createUser = async() => {
         name: "Test User", 
         email: "test2@test.com", 
         password: "12345678",
+        emailVerified: true,
+        tokens: []
     }
 
     let user = new User(userData);
@@ -23,9 +25,9 @@ const createUser = async() => {
 
     await user.generateEncryptionKeys();
 
-    const token = await user.generateAuthToken();
+    await user.generateAuthToken("192.168.0.1");
 
-    return {user, token};
+    return {user, userData};
 }
 
 module.exports = createUser;

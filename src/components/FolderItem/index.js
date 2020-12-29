@@ -3,6 +3,11 @@ import {startSetSelectedItem, setRightSelected, setLastSelected} from "../../act
 import mobileCheck from "../../utils/mobileCheck"
 import {connect} from "react-redux";
 import React from "react";
+import { startRenameFolder, startRemoveFolder } from "../../actions/folders";
+import Swal from "sweetalert2";
+import { setMoverID } from "../../actions/mover";
+import mobilecheck from "../../utils/mobileCheck";
+import { setMobileContextMenu } from "../../actions/mobileContextMenu";
 
 class FolderItemContainer extends React.Component {
 
@@ -10,19 +15,23 @@ class FolderItemContainer extends React.Component {
         super(props)
 
         this.lastTouch = 0;
+
+        this.state = {
+            contextSelected: false
+        }
     }
 
-    shouldComponentUpdate = (nextProp) => {
+    shouldComponentUpdate = (nextProp, nextState) => {
 
         return (nextProp.itemSelected !== this.props.itemSelected 
                 || nextProp.listView !== this.props.listView 
                 || nextProp.rightSelected !== this.props.rightSelected 
                 || nextProp.name !== this.props.name
-                || nextProp.quickFilesLength !== this.props.quickFilesLength)
+                || nextProp.quickFilesLength !== this.props.quickFilesLength
+                || nextState.contextSelected !== this.state.contextSelected)
     }
 
     onTouchStart = () => {
-        //alert("Touch start");
         const date = new Date();
         this.lastTouch = date.getTime();
     }
@@ -35,20 +44,16 @@ class FolderItemContainer extends React.Component {
     onTouchEnd = () => {
 
         if (this.lastTouch === 0) {
-
-            //alert("last touch 0");
             return;
         }
 
         const date = new Date();
         const difference = date - this.lastTouch;
-        //alert("Touch end: " + difference)
-        //alert("touch end: " + difference);
+   
         this.lastTouch = 0;
 
         if (difference > 500) {
-            //alert("Context menu");
-            this.getContextMenu();
+            this.selectContext()
         }
 
     }
@@ -125,6 +130,93 @@ class FolderItemContainer extends React.Component {
         return classname;
     }
 
+    changeEditNameMode = async() => {
+
+        let inputValue = this.props.name;
+    
+        const { value: folderName} = await Swal.fire({
+            title: 'Enter A File Name',
+            input: 'text',
+            inputValue: inputValue,
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return 'Please Enter a Name'
+              }
+            }
+          })
+
+        if (folderName === undefined || folderName === null) {
+
+            return;
+        }
+
+        this.props.dispatch(startRenameFolder(this.props._id, folderName, this.props.drive, this.props.parent));
+    }
+
+    closeEditNameMode = () => {
+
+        this.setState(() => {
+
+            return {
+                ...this.state,
+                editNameMode: false
+            }
+        })
+    }
+
+    changeDeleteMode = async() => {
+
+        Swal.fire({
+            title: 'Confirm Deletion',
+            text: "You cannot undo this action",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete'
+          }).then((result) => {
+            if (result.value) {
+                this.props.dispatch(startRemoveFolder(this.props._id, [...this.props.parentList, this.props._id], this.props.drive, this.props.parent, this.props.personalFolder))
+            }
+        })
+    }
+
+
+    closeContext = () => {
+     
+        this.setState(() => {
+            return {
+                ...this.state,
+                contextSelected: false
+            }
+        })
+    }
+
+    selectContext = (e) => {
+
+        if (e) e.stopPropagation()
+        if (e) e.preventDefault();
+
+        if (mobilecheck()) {
+
+            this.props.dispatch(setMobileContextMenu(false, this.props))
+
+            return;
+        }
+
+        this.setState(() => {
+            return {
+                ...this.state,
+                contextSelected: !this.state.contextSelected
+            }
+        })
+    }
+
+    startMoveFolder = async() => {
+
+        this.props.dispatch(setMoverID(this.props._id, this.props.parent, false, this.props.drive, this.props.personalFolder));
+    }
 
     render() {
 
@@ -134,6 +226,12 @@ class FolderItemContainer extends React.Component {
                 onTouchStart={this.onTouchStart}
                 onTouchMove={this.onTouchMove}
                 onTouchEnd={this.onTouchEnd}
+                closeContext={this.closeContext}
+                selectContext={this.selectContext}
+                changeEditNameMode={this.changeEditNameMode}
+                closeEditNameMode={this.closeEditNameMode}
+                startMoveFolder={this.startMoveFolder}
+                changeDeleteMode={this.changeDeleteMode}
                 state={this.state}
                 {...this.props}/>
     }

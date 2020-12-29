@@ -1,0 +1,39 @@
+.google-account-page__wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.google-account-page__box {
+    background: rgba(255,255,255,.85);
+    border-radius: 3px;
+    text-align: center;
+    width: 35rem;
+    padding: 3.2rem 1.6rem 1.2rem 1.6rem;
+    border: .5px;
+    border-style: groove;
+    display: flex;
+    flex-direction: column;
+}
+
+.google-account-page__button {
+    cursor: pointer;
+    color: #fff;
+    background: #3c85ed;
+    font-size: 1.8rem;
+    padding: 1.2rem;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 2px;
+}
+
+.google-account-page__title {
+    font-size: 19px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
