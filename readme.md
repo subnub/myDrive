@@ -213,9 +213,9 @@ Client Environment Variables
 
 ## Wiki
 
-(Wiki needs updating, please use the myDrive offical website): https://mydrive-storage.com/
+For a more detailed setup guide please visit the main myDrive site: https://mydrive-storage.com/
 
-For a more detailed list of myDrive features, including examples with images, visit the wiki here: https://github.com/subnub/myDrive/wiki
+The wiki includes guided setup: https://github.com/subnub/myDrive/wiki
 
 ## Video
 
