@@ -13,7 +13,7 @@ const getPrevIV = (start: number, key: string, isPersonal: boolean, user: UserIn
 
             const params: any = {Bucket: s3Data.bucket, Key: key, Range: `bytes=${start}-${start + 15}`};
 
-            const s3Storage = s3Auth(s3Data.id, s3Data.key);
+            const s3Storage = s3Auth(s3Data.id, s3Data.key, s3Data.endpoint);
 
             const stream = s3Storage.getObject(params).createReadStream();
 

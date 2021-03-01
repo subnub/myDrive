@@ -107,6 +107,9 @@ const userSchema = new mongoose.Schema({
         bucket: {
             type: String
         },
+        endpoint: {
+            type: String
+        },
         iv: {
             type: Buffer
         }
@@ -160,6 +163,7 @@ export interface UserInterface extends Document {
         id?: string,
         key?: string,
         bucket?: string,
+        endpoint?: string,
         iv?: Buffer,
     },
     storageData?: {
@@ -198,8 +202,8 @@ export interface UserInterface extends Document {
     decryptDriveIDandKey: () => Promise<{clientID: string, clientKey: string}>;
     encryptDriveTokenData: (token: Object) => Promise<void>;
     decryptDriveTokenData: () => Promise<any>;
-    encryptS3Data: (id: string, key: string, bucket: string) => Promise<void>;
-    decryptS3Data: () => Promise<{id: string, key: string, bucket: string}>
+    encryptS3Data: (id: string, key: string, bucket: string, endpoint: string) => Promise<void>;
+    decryptS3Data: () => Promise<{id: string, key: string, bucket: string, endpoint: string}>
 }
 
 const maxAgeAccess =  60 * 1000 * 20 + (1000 * 60);
@@ -524,7 +528,7 @@ userSchema.methods.decryptDriveTokenData = async function() {
    return tokenToObj;
 }
 
-userSchema.methods.encryptS3Data = async function(ID: string, key: string, bucket: string) {
+userSchema.methods.encryptS3Data = async function(ID: string, key: string, bucket: string, endpoint:string) {
 
     const iv = crypto.randomBytes(16);
 
@@ -535,12 +539,14 @@ userSchema.methods.encryptS3Data = async function(ID: string, key: string, bucke
     const encryptedS3ID = user.encryptToken(ID, encryptedKey, iv);
     const encryptedS3Key = user.encryptToken(key, encryptedKey, iv);
     const encryptedS3Bucket = user.encryptToken(bucket, encryptedKey, iv);
+    const encryptedS3Endpoint = user.encryptToken(endpoint, encryptedKey, iv);
     
     if (!user.s3Data) user.s3Data = {};
 
     user.s3Data!.id = encryptedS3ID;
     user.s3Data!.key = encryptedS3Key;
     user.s3Data!.bucket = encryptedS3Bucket;
+    user.s3Data!.endpoint = encryptedS3Endpoint;
     user.s3Data!.iv = iv;
     user.s3Enabled = true;
 
@@ -558,10 +564,12 @@ userSchema.methods.decryptS3Data = async function() {
     const encrytpedS3ID = user.s3Data?.id;
     const encryptedS3Key = user.s3Data?.key;
     const encryptedS3Bucket = user.s3Data?.bucket;
+    const encryptedS3Endpoint = user.s3Data?.endpoint;
 
     const decrytpedS3ID = user.decryptToken(encrytpedS3ID, encryptedKey, iv);
     const decryptedS3Key = user.decryptToken(encryptedS3Key, encryptedKey, iv);
     const decryptedS3Bucket = user.decryptToken(encryptedS3Bucket, encryptedKey, iv);
+    const decryptedS3Endpoint = user.decryptToken(encryptedS3Endpoint, encryptedKey, iv);
 
     //console.log("decrypted keys", decrytpedS3ID, decryptedS3Key, decryptedS3Bucket);
 
@@ -569,6 +577,7 @@ userSchema.methods.decryptS3Data = async function() {
         id: decrytpedS3ID,
         key: decryptedS3Key,
         bucket: decryptedS3Bucket,
+        endpoint: decryptedS3Endpoint,
     }
 }
 

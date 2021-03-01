@@ -36,6 +36,7 @@ class SettingsPageContainer extends React.Component {
             s3ID: "",
             s3Key: "",
             s3Bucket: "",
+            s3Endpoint: "",
             addGoogleAccountOpen: false,
             googleID: "",
             googleSecret: "",
@@ -227,6 +228,18 @@ class SettingsPageContainer extends React.Component {
         })
     }
 
+    onChangeS3Endpoint = (e) => {
+
+        const value = e.target.value;
+
+        this.setState(() => {
+            return {
+                ...this.state,
+                s3Endpoint: value
+            }
+        })
+    }
+
     onChangeGoogleID = (e) => {
 
         const value = e.target.value;
@@ -278,14 +291,15 @@ class SettingsPageContainer extends React.Component {
         const data = {
             id: this.state.s3ID,
             bucket: this.state.s3Bucket,
-            key: this.state.s3Key
+            key: this.state.s3Key,
+            endpoint: this.state.s3Endpoint
         }
 
         axios.post("/user-service/add-s3-storage", data).then((response) => {
 
             Swal.fire(
                 'S3 Account Added',
-                'Amazon S3 Account has been linked with myDrive',
+                'S3 compatible storage Account has been linked with myDrive',
                 'success'
               ).then(() => {
                   //window.location.assign(env.url);
@@ -337,7 +351,7 @@ class SettingsPageContainer extends React.Component {
 
         Swal.fire({
             title: 'Remove S3 Account?',
-            text: "This will unlink your Amazon S3 Account from myDrive.",
+            text: "This will unlink your S3 compatible storage Account from myDrive.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -362,7 +376,7 @@ class SettingsPageContainer extends React.Component {
                 this.showS3Account()
                 Swal.fire(
                     'S3 Account Removed',
-                    'Your Amazon S3 Account has been unlinked from myDrive',
+                    'Your S3 compatible storage Account has been unlinked from myDrive',
                     'success'
                 )
 
@@ -1152,7 +1166,7 @@ class SettingsPageContainer extends React.Component {
           <div class="elem__control--settings">
             <div class="control__title">
               <div class="double__title">
-                <p>Amazon S3</p>
+                <p>S3 compatible storage</p>
                 <span>{!this.state.loaded ? "Loading..." : this.state.userDetails.s3Enabled ? this.state.userDetails.s3Data.bucket : "S3 Not Enabled"}</span>
               </div>
             </div>
@@ -1371,7 +1385,7 @@ class SettingsPageContainer extends React.Component {
             <div class="inner__modal">
                 <div class="password__modal">
                     <div class="head__password">
-                        <h2>{!this.state.loaded ? "Loading..." : this.state.userDetails.s3Enabled ? "Edit Amazon S3 Account" : "Add Amazon S3 Account"}</h2>
+                        <h2>{!this.state.loaded ? "Loading..." : this.state.userDetails.s3Enabled ? "Edit S3 compatible storage Account" : "Add S3 compatible storage Account"}</h2>
                         <div class="close__modal">
                             <a onClick={this.showS3Account}><img src="/assets/close.svg" alt="close"/></a>
                         </div>
@@ -1386,6 +1400,9 @@ class SettingsPageContainer extends React.Component {
                             </div>
                             <div class="group__password" style={!this.state.loaded ? {} : this.state.userDetails.s3Enabled ? {display:"none"} : {display:"block"}}>
                                 <input value={this.state.s3Key} onChange={this.onChangeS3Key} type="password" placeholder="S3 Key"/>
+                            </div>
+                            <div class="group__password" style={!this.state.loaded ? {} : this.state.userDetails.s3Enabled ? {display:"none"} : {display:"block"}}>
+                                <input value={this.state.s3Endpoint} onChange={this.onChangeS3Endpoint} placeholder="S3 endpoint (leave empty for default endpoint)" />
                             </div>
                             <div class="password__submit">
                                 <input type="submit" value={!this.state.loaded ? "Loading..." : this.state.userDetails.s3Enabled ? "Remove Account" : "Add Account"}/>

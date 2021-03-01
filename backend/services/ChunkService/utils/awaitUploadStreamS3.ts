@@ -1,13 +1,13 @@
 import s3 from "../../../db/s3";
 import s3Personal from "../../../db/S3Personal";
 
-const awaitUploadStreamS3 = (params: any, personalFile: boolean, s3Data: {id: string, key: string, bucket: string}) => {
+const awaitUploadStreamS3 = (params: any, personalFile: boolean, s3Data: {id: string, key: string, bucket: string, endpoint:string}) => {
 
     return new Promise((resolve, reject) => {
 
         if (personalFile) {
 
-            const s3PersonalAuth = s3Personal(s3Data.id, s3Data.key);
+            const s3PersonalAuth = s3Personal(s3Data.id, s3Data.key, s3Data.endpoint);
 
             s3PersonalAuth.upload(params, (err: any, data: any) => {
 

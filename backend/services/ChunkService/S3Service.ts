@@ -165,7 +165,7 @@ class S3Service implements ChunkInterface {
 
             const s3Data = await user.decryptS3Data();
             //console.log("s3 data", s3Data)
-            return {s3Storage: s3Auth(s3Data.id, s3Data.key), bucket: s3Data.bucket};
+            return {s3Storage: s3Auth(s3Data.id, s3Data.key, s3Data.endpoint), bucket: s3Data.bucket};
         } else {
         
             return {s3Storage: s3, bucket: env.s3Bucket};
@@ -178,7 +178,7 @@ class S3Service implements ChunkInterface {
 
             const s3Data = await user.decryptS3Data();
             //console.log("s3 data", s3Data)
-            return {s3Storage: s3Auth(s3Data.id, s3Data.key), bucket: s3Data.bucket};
+            return {s3Storage: s3Auth(s3Data.id, s3Data.key, s3Data.endpoint), bucket: s3Data.bucket};
         } else {
         
             return {s3Storage: s3, bucket: env.s3Bucket};

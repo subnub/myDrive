@@ -1,11 +1,16 @@
 import AWS from "aws-sdk";
 
-const s3Auth = (id:string, key:string) => {
+const s3Auth = (id:string, key:string, endpoint:string) => {
 
-    AWS.config.update({
+    const s3Config = {
+        endpoint: endpoint || "https://s3.amazonaws.com",
         accessKeyId: id,
-        secretAccessKey: key
-    });
+        secretAccessKey: key,
+        s3ForcePathStyle: !!endpoint,
+        signatureVersion: 'v4'
+    }
+
+    AWS.config.update(s3Config);
 
     const s3 = new AWS.S3();
 

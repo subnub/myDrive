@@ -20,12 +20,12 @@ class UserPeronsalService {
     
     addS3Storage = async(user: UserInterface, s3Data: any, uuid: string | undefined) => {
 
-        const {id, key, bucket} = s3Data;
+        const {id, key, bucket, endpoint} = s3Data;
 
-        user.storageDataPersonal!.storageSize = await calculateS3Size(id, key, bucket);
+        user.storageDataPersonal!.storageSize = await calculateS3Size(id, key, bucket, endpoint);
         user.personalStorageCanceledDate = undefined;
 
-        await user.encryptS3Data(id, key, bucket);
+        await user.encryptS3Data(id, key, bucket, endpoint);
 
         await user.save();
 

@@ -1,8 +1,8 @@
 import s3Auth from "../../../db/S3Personal";
 
-const calculateS3Size = async(id:string, key:string, bucket:string) => {
+const calculateS3Size = async(id:string, key:string, bucket:string, endpoint:string) => {
 
-    const s3Storage = s3Auth(id, key);
+    const s3Storage = s3Auth(id, key, endpoint);
 
     const params = {
         Bucket: bucket
