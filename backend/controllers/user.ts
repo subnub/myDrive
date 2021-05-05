@@ -62,7 +62,7 @@ class UserController {
 
             createLoginCookie(res, accessToken, refreshToken);
 
-            res.status(200).send({user});
+            res.status(200).send({user, tokens: {accessToken, refreshToken}});
     
         } catch (e) {
     

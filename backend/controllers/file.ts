@@ -440,10 +440,12 @@ class FileController {
     
         try {
     
+            console.log("download file request")
             const user = req.user;
             const fileID = req.params.id;
 
             await this.chunkService.downloadFile(user, fileID, res);
+            console.log("download finished")
     
         } catch (e) {
             

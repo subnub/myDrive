@@ -27,6 +27,7 @@ const auth = async(req: RequestType, res: Response, next: NextFunction) => {
     try {
 
         const accessToken = req.cookies["access-token"];
+        //console.log('headers', req.headers)
 
         if (!accessToken) throw new Error("No Access Token");
 
