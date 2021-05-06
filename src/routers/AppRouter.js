@@ -12,6 +12,7 @@ import ResetPasswordPage from "../components/ResetPasswordPage";
 import GoogleAccountPage from "../components/GoogleAccountPage";
 import AddStoragePage from "../components/AddStoragePage";
 import SettingsPage from "../components/SettingsPage";
+import MobileDownloadPage from "../components/MobileDownloadPage";
 
 export const history = createHistory()
 
@@ -32,6 +33,7 @@ const AppRouter = () => (
         <Route path="/add-google-account" component={GoogleAccountPage}/>
         <Route path="/add-storage" component={AddStoragePage} />
         <Route path="/settings" component={SettingsPage} />
+        <Route path="/mobile-download" component={MobileDownloadPage}/>
     </Switch>
 
     </Router>

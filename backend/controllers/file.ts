@@ -88,6 +88,8 @@ class FileController {
 
     uploadFile = async(req: RequestTypeFullUser, res: Response) => {
 
+        console.log("upload request", !!req.user);
+
         if (!req.user) {
         
             return 

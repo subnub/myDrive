@@ -50,7 +50,9 @@ class FileSystemService implements ChunkInterface {
 
         const cipher = crypto.createCipheriv('aes256', CIPHER_KEY, initVect);
 
+        console.log("getting busboy data")
         const {file, filename, formData} = await getBusboyData(busboy);
+        console.log("got busboy data");
 
         const parent = formData.get("parent") || "/"
         const parentList = formData.get("parentList") || "/";
@@ -78,6 +80,7 @@ class FileSystemService implements ChunkInterface {
 
         const totalStreamsToErrorCatch = [file, cipher, fileWriteStream];
 
+        console.log("uploading to filesystem...")
         await awaitUploadStreamFS(file.pipe(cipher), fileWriteStream, req, metadata.filePath, totalStreamsToErrorCatch);
 
         const date = new Date();

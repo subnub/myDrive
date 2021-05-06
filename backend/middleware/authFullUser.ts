@@ -27,6 +27,8 @@ const authFullUser = async(req: RequestType, res: Response, next: NextFunction) 
 
     try {
 
+        console.log("auth full user")
+
         const accessToken = req.cookies["access-token"];
 
         if (!accessToken) throw new Error("No Access Token");

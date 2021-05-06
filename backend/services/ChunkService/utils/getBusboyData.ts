@@ -14,11 +14,15 @@ const getBusboyData = (busboy: any) => {
 
         busboy.on("field", (field: any, val: any) => {
 
+            console.log("current field", field, val)
+
             formData.set(field, val)
 
         });
 
-        busboy.on("file", async(_: string, file: Stream, filename: string) => {
+        busboy.on("file", (_: string, file: Stream, filename: string) => {
+
+            console.log("current file", file, filename);
 
             resolve({
                 file,
