@@ -14,6 +14,7 @@
     "build:webUI": "webpack --config webUI.config.js",
     "build:dev": "tsc && webpack --env development",
     "build:test": "tsc && webpack --env test",
+    "build:backend": "tsc",
     "build:webUISetup": "webpack --config webUISetup.config.js",
     "dev-server": "webpack-dev-server",
     "test": "NODE_ENV=test env-cmd -f ./config/test.env jest --config=jest.config.json --runInBand",
