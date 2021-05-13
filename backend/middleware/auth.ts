@@ -1,55 +1,71 @@
-import jwt from "jsonwebtoken";
-import env from "../enviroment/env";
-import {Request, Response, NextFunction} from "express";
+import jwt from 'jsonwebtoken';
+import env from '../enviroment/env';
+import { Request, Response, NextFunction } from 'express';
+import User, { UserInterface } from '../models/user';
+import { fileTypes } from '../types/fileTypes';
+
+// interface RequestType extends Request {
+//     user?: userAccessType,
+//     token?: string,
+//     encryptedToken?: string,
+// }
 
 interface RequestType extends Request {
-    user?: userAccessType,
-    token?: string,
-    encryptedToken?: string,
+  user?: UserInterface;
+  token?: string;
+  encryptedToken?: string;
+  fileType?: keyof typeof fileTypes;
 }
 
 type jwtType = {
-    iv: Buffer,
-    user: userAccessType
-}
+  iv: Buffer;
+  user: userAccessType;
+};
 
 type userAccessType = {
-    _id: string,
-    emailVerified: boolean,
-    email: string,
-    admin: boolean,
-    botChecked: boolean,
-    username: string,
-}
+  _id: string;
+  emailVerified: boolean;
+  email: string;
+  admin: boolean;
+  botChecked: boolean;
+  username: string;
+};
 
-const auth = async(req: RequestType, res: Response, next: NextFunction) => {
+const auth = async (req: RequestType, res: Response, next: NextFunction) => {
+  try {
+    const accessToken = req.cookies['access-token'];
+    const fileType =
+      (req.headers.type as keyof typeof fileTypes) || fileTypes.myDrive;
+    console.log('headers', fileType);
 
-    try {
+    if (!accessToken) throw new Error('No Access Token');
 
-        const accessToken = req.cookies["access-token"];
-        //console.log('headers', req.headers)
+    const decoded = jwt.verify(accessToken, env.passwordAccess!) as jwtType;
 
-        if (!accessToken) throw new Error("No Access Token");
+    const user = decoded.user;
 
-        const decoded = jwt.verify(accessToken, env.passwordAccess!) as jwtType;
+    if (!user) throw new Error('No User');
+    if (!user.emailVerified && !env.disableEmailVerification)
+      throw new Error('Email Not Verified');
 
-        const user = decoded.user;
+    const fullUser = await User.findById(user._id);
 
-        if (!user) throw new Error("No User");
-        if (!user.emailVerified && !env.disableEmailVerification) throw new Error("Email Not Verified")
+    if (!fullUser) throw new Error('No User');
 
-        req.user = user;
+    req.user = fullUser;
+    req.fileType = fileType;
 
-        next();
+    next();
+  } catch (e) {
+    if (
+      e.message !== 'No Access Token' &&
+      e.message !== 'No User' &&
+      e.message !== 'Email Not Verified'
+    )
+      console.log('\nAuthorization Middleware Error:', e.message);
 
-    } catch (e) {
-
-        if (e.message !== "No Access Token" && 
-        e.message !== "No User" &&
-        e.message !== "Email Not Verified") console.log("\nAuthorization Middleware Error:", e.message);
-        
-        res.status(401).send("Error Authenticating");
-    }
-}
+    res.status(401).send('Error Authenticating');
+  }
+};
 
 export default auth;
