@@ -94,6 +94,31 @@ class GoogleFileController {
     }
   };
 
+  getGoogleQuickList = async (req: RequestTypeFullUser, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const user = req.user;
+      const googleMongoQuickList = await googleFileService.getGoogleQuickList(
+        user,
+      );
+      res.send(googleMongoQuickList);
+    } catch (e) {
+      console.log(
+        '\nGet Google/Mongo Quicklist Error Google File Route:',
+        e.message,
+      );
+      const code = !e.code
+        ? 500
+        : e.code >= 400 && e.code <= 599
+        ? e.code
+        : 500;
+      res.status(code).send();
+    }
+  };
+
   getGoogleMongoQuickList = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;

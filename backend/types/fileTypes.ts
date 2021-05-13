@@ -25,4 +25,9 @@ export const allFileTypesFromList = [
   (user: UserInterface, query: any) => googleFileService.getList(user, query),
 ];
 
+export const allQuickFileTypesFromList = [
+  (user: UserInterface, query: any) => fileService.getQuickList(user),
+  (user: UserInterface, query: any) =>
+    googleFileService.getGoogleQuickList(user),
+];
 // export const allFileTypes  = {}

@@ -16,6 +16,7 @@ import {
   allFileTypesFromList,
   fileTypes,
   ListOptionsAndFileTypes,
+  allQuickFileTypesFromList,
 } from '../types/fileTypes';
 
 const fileService = new FileService();
@@ -50,6 +51,34 @@ const getFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
       fileService.getList(user, query),
     googleDriveIncluded: (user: UserInterface, query: any) =>
       googleFileService.getList(user, query),
+  } as any;
+  const fileEndpointsList = [];
+  const fileTypeKeys = Object.keys(types);
+
+  for (let i = 0; i < fileTypeKeys.length; i++) {
+    const currentKey = fileTypeKeys[i];
+    if (!currentKey) continue;
+    const currentItem = types[currentKey];
+    if (!currentItem || !endpointFunctions[currentKey]) continue;
+    console.log('current key', currentKey, endpointFunctions[currentKey]);
+    fileEndpointsList.push(endpointFunctions[currentKey]);
+  }
+
+  console.log('current endpoints', fileEndpointsList);
+
+  if (fileEndpointsList.length === 0) {
+    return allFileTypesFromList;
+  }
+
+  return fileEndpointsList;
+};
+
+const getQuickFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
+  if (!types || types.includeAllFileTypes) return allQuickFileTypesFromList;
+  const endpointFunctions = {
+    myDriveIncluded: (user: UserInterface) => fileService.getQuickList(user),
+    googleDriveIncluded: (user: UserInterface) =>
+      googleFileService.getGoogleQuickList(user),
   } as any;
   const fileEndpointsList = [];
   const fileTypeKeys = Object.keys(types);
@@ -337,10 +366,26 @@ class FileController {
 
     try {
       const user = req.user;
+      const query = req.query;
 
-      const quickList = await fileService.getQuickList(user);
+      // const quickList = await fileService.getQuickList(user);
+      const fileListEndpoints = getQuickFileEndpointsByType(query as any);
 
-      res.send(quickList);
+      console.log('quick query', query);
+
+      const arrays = await Promise.all(
+        fileListEndpoints.map((currentfunction) => currentfunction(user)),
+      );
+      const combinedFiles = [];
+      for (let i = 0; i < arrays.length; i++) {
+        const currentArray = arrays[i];
+        combinedFiles.push(...currentArray);
+      }
+      //console.log('list array', arrays);
+
+      res.send(combinedFiles);
+
+      // res.send(quickList);
     } catch (e) {
       console.log('\nGet Quick List Error File Route:', e.message);
       const code = !e.code
@@ -360,7 +405,19 @@ class FileController {
     try {
       const user = req.user;
       const query = req.query;
+      const { type, parent } = query;
       //const listOptionsAndFileTypes = req.headers.listOptionsAndFileTypes;
+
+      if (parent !== '/') {
+        if (type === fileTypes.googleDrive) {
+          const fileList = await googleFileService.getList(user, query as any);
+          res.send(fileList);
+        } else {
+          const fileList = await fileService.getList(user, query);
+          res.send(fileList);
+        }
+        return;
+      }
 
       console.log('query', query);
 
@@ -543,8 +600,14 @@ class FileController {
       const user = req.user;
       const fileID = req.params.id;
       const headers = req.headers;
+      const fileType = req.query.type;
+      const uuid = req.query.uuid as any;
 
-      await this.chunkService.streamVideo(user, fileID, headers, res, req);
+      if (fileType === fileTypes.googleDrive) {
+        await googleFileService.streamVideo(user, fileID, uuid, req, res);
+      } else {
+        await this.chunkService.streamVideo(user, fileID, headers, res, req);
+      }
     } catch (e) {
       console.log('\nStream Video Error File Route:', e.message);
       const code = !e.code

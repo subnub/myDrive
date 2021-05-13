@@ -258,7 +258,7 @@ class FolderController {
     }
   };
 
-  getFolderList = async (req: RequestType, res: Response) => {
+  getFolderList = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
     }
@@ -266,7 +266,21 @@ class FolderController {
     try {
       const user = req.user;
       const query = req.query;
+      const { type, parent } = query;
 
+      if (parent !== '/') {
+        if (type === fileTypes.googleDrive) {
+          const folderList = await googleFolderService.getList(
+            user,
+            query as any,
+          );
+          res.send(folderList);
+        } else {
+          const folderList = await folderService.getFolderList(user, query);
+          res.send(folderList);
+        }
+        return;
+      }
       // const folderList = await folderService.getFolderList(user, query);
       const fileListEndpoints = getFileEndpointsByType(query as any);
 
@@ -280,7 +294,7 @@ class FolderController {
         const currentArray = arrays[i];
         combinedFiles.push(...currentArray);
       }
-      console.log('list array', combinedFiles);
+      //console.log('list array', combinedFiles);
 
       res.send(combinedFiles);
 
