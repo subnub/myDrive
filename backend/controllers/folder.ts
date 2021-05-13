@@ -5,6 +5,7 @@ import FileSystemService from '../services/ChunkService/FileSystemService';
 import S3Service from '../services/ChunkService/S3Service';
 import {
   allFileTypesFromList,
+  fileTypes,
   ListOptionsAndFileTypes,
 } from '../types/fileTypes';
 import { UserInterface } from '../models/user';
@@ -19,11 +20,19 @@ type userAccessType = {
   emailVerified: boolean;
   email: string;
   s3Enabled: boolean;
+  fileType?: keyof typeof fileTypes;
 };
 
 interface RequestType extends Request {
   user?: userAccessType;
   encryptedToken?: string;
+}
+
+interface RequestTypeFullUser extends Request {
+  user?: UserInterface;
+  encryptedToken?: string;
+  accessTokenStreamVideo?: string;
+  fileType?: keyof typeof fileTypes;
 }
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
@@ -64,17 +73,24 @@ class FolderController {
     this.chunkService = chunkService;
   }
 
-  uploadFolder = async (req: RequestType, res: Response) => {
+  uploadFolder = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
     }
 
     try {
+      const user = req.user;
       const data = req.body;
+      const { name, parent } = data;
+      const fileType = req.query.type;
 
-      const folder = await folderService.uploadFolder(data);
-
-      res.send(folder);
+      if (fileType === fileTypes.googleDrive) {
+        const folder = await googleFolderService.upload(user, name, parent);
+        res.send(folder);
+      } else {
+        const folder = await folderService.uploadFolder(data);
+        res.send(folder);
+      }
     } catch (e) {
       console.log('\nUpload Folder Error Folder Route:', e.message);
       const code = !e.code
@@ -86,17 +102,23 @@ class FolderController {
     }
   };
 
-  deleteFolder = async (req: RequestType, res: Response) => {
+  deleteFolder = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
     }
 
     try {
-      const userID = req.user._id;
+      const user = req.user;
+      const userID = user._id;
       const folderID = req.body.id;
       const parentList = req.body.parentList;
+      const fileType = req.query.type;
 
-      await this.chunkService.deleteFolder(userID, folderID, parentList);
+      if (fileType === fileTypes.googleDrive) {
+        await googleFolderService.removeFolder(user, folderID);
+      } else {
+        await this.chunkService.deleteFolder(userID, folderID, parentList);
+      }
 
       res.send();
     } catch (e) {
@@ -181,18 +203,24 @@ class FolderController {
     }
   };
 
-  getInfo = async (req: RequestType, res: Response) => {
+  getInfo = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
     }
 
     try {
-      const userID = req.user._id;
+      const user = req.user;
+      const userID = user._id;
       const folderID = req.params.id;
+      const fileType = req.query.type;
 
-      const folder = await folderService.getFolderInfo(userID, folderID);
-
-      res.send(folder);
+      if (fileType === fileTypes.googleDrive) {
+        const folder = await googleFolderService.getInfo(user, folderID);
+        res.send(folder);
+      } else {
+        const folder = await folderService.getFolderInfo(userID, folderID);
+        res.send(folder);
+      }
     } catch (e) {
       console.log('\nGet Info Error Folder Route:', e.message);
       const code = !e.code
@@ -292,17 +320,23 @@ class FolderController {
     }
   };
 
-  renameFolder = async (req: RequestType, res: Response) => {
+  renameFolder = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
     }
 
     try {
-      const userID = req.user._id;
+      const user = req.user;
+      const userID = user._id;
       const folderID = req.body.id;
       const title = req.body.title;
+      const fileType = req.query.type;
 
-      await folderService.renameFolder(userID, folderID, title);
+      if (fileType === fileTypes.googleDrive) {
+        await googleFolderService.renameFolder(user, folderID, title);
+      } else {
+        await folderService.renameFolder(userID, folderID, title);
+      }
 
       res.send();
     } catch (e) {

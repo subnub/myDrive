@@ -72,6 +72,35 @@ const getFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
   return fileEndpointsList;
 };
 
+// const getSingleFileEndpointByType = (types: ListOptionsAndFileTypes) => {
+//   if (!types || types.includeAllFileTypes) return allFileTypesFromList;
+//   const endpointFunctions = {
+//     myDriveIncluded: (user: UserInterface, query: any) =>
+//       fileService.getList(user, query),
+//     googleDriveIncluded: (user: UserInterface, query: any) =>
+//       googleFileService.getList(user, query),
+//   } as any;
+//   const fileEndpointsList = [];
+//   const fileTypeKeys = Object.keys(types);
+
+//   for (let i = 0; i < fileTypeKeys.length; i++) {
+//     const currentKey = fileTypeKeys[i];
+//     if (!currentKey) continue;
+//     const currentItem = types[currentKey];
+//     if (!currentItem || !endpointFunctions[currentKey]) continue;
+//     console.log('current key', currentKey, endpointFunctions[currentKey]);
+//     fileEndpointsList.push(endpointFunctions[currentKey]);
+//   }
+
+//   console.log('current endpoints', fileEndpointsList);
+
+//   if (fileEndpointsList.length === 0) {
+//     return allFileTypesFromList;
+//   }
+
+//   return fileEndpointsList;
+// }
+
 class FileController {
   chunkService: ChunkServiceType;
 
@@ -110,7 +139,7 @@ class FileController {
     try {
       const user = req.user;
       const fileID = req.params.id;
-      const fileType = req.fileType;
+      const fileType = req.query.type;
 
       console.log('thumbnail get filetype', fileType);
 
@@ -140,12 +169,19 @@ class FileController {
     try {
       const user = req.user;
       const busboy = req.busboy;
+      const fileType = req.query.type;
 
-      req.pipe(busboy);
+      console.log('upload file type', fileType);
 
-      const file = await this.chunkService.uploadFile(user, busboy, req);
-
-      res.send(file);
+      if (fileType === fileTypes.myDrive) {
+        req.pipe(busboy);
+        const file = await this.chunkService.uploadFile(user, busboy, req);
+        res.send(file);
+      } else {
+        req.pipe(busboy);
+        const file = await googleFileService.uploadFile(user, busboy, req, res);
+        res.send(file);
+      }
     } catch (e) {
       console.log('\nUploading File Error File Route:', e.message);
       const code = !e.code
@@ -270,11 +306,11 @@ class FileController {
 
     try {
       const fileID = req.params.id;
-      const fileType = req.fileType;
+      const fileType = req.query.type;
       const user = req.user;
       const userID = user._id;
 
-      console.log('info type', fileType);
+      console.log('info type', req.query);
 
       if (fileType === fileTypes.googleDrive) {
         const file = await googleFileService.getFileInfo(user, fileID);
@@ -575,7 +611,7 @@ class FileController {
     }
   };
 
-  renameFile = async (req: RequestType, res: Response) => {
+  renameFile = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
     }
@@ -583,9 +619,15 @@ class FileController {
     try {
       const fileID = req.body.id;
       const title = req.body.title;
-      const userID = req.user._id;
+      const user = req.user;
+      const userID = user._id;
+      const fileType = req.query.type;
 
-      await fileService.renameFile(userID, fileID, title);
+      if (fileType === fileTypes.googleDrive) {
+        await googleFileService.renameFile(user, fileID, title);
+      } else {
+        await fileService.renameFile(userID, fileID, title);
+      }
 
       res.send();
     } catch (e) {
@@ -650,16 +692,22 @@ class FileController {
     }
   };
 
-  deleteFile = async (req: RequestType, res: Response) => {
+  deleteFile = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
     }
 
     try {
-      const userID = req.user._id;
+      const user = req.user;
+      const userID = user._id;
       const fileID = req.body.id;
+      const fileType = req.query.type;
 
-      await this.chunkService.deleteFile(userID, fileID);
+      if (fileType === fileTypes.googleDrive) {
+        await googleFileService.removeFile(user, fileID);
+      } else {
+        await this.chunkService.deleteFile(userID, fileID);
+      }
 
       res.send();
     } catch (e) {
