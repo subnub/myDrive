@@ -10,6 +10,7 @@ import DbUtilFolder from '../../db/utils/folderUtils';
 import { UserInterface } from '../../models/user';
 import { FileInterface } from '../../models/file';
 import tempStorage from '../../tempStorage/tempStorage';
+import { fileTypes } from '../../types/fileTypes';
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
@@ -115,7 +116,11 @@ class MongoFileService {
     return quickList;
   };
 
-  getList = async (user: userAccessType | UserInterface, query: any) => {
+  getList = async (
+    user: userAccessType | UserInterface,
+    query: any,
+    type?: string,
+  ) => {
     const userID = user._id;
 
     let searchQuery = query.search || '';
@@ -143,6 +148,7 @@ class MongoFileService {
       startAtName,
       storageType,
       folderSearch,
+      fileTypes.myDrive as keyof typeof fileTypes,
     );
 
     const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);

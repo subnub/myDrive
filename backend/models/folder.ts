@@ -1,43 +1,47 @@
-import mongoose, {Document} from "mongoose";
+import mongoose, { Document } from 'mongoose';
+import { fileTypes } from '../types/fileTypes';
 
-const folderSchema = new mongoose.Schema({
-    
+const folderSchema = new mongoose.Schema(
+  {
     name: {
-        type: String, 
-        required: true,
+      type: String,
+      required: true,
     },
-    
+
     parent: {
-        type: String, 
-        required: true,
+      type: String,
+      required: true,
     },
-    
+
     owner: {
-        type: String, 
-        required: true
+      type: String,
+      required: true,
     },
 
     parentList: {
-        type: Array,
-        required:true
+      type: Array,
+      required: true,
     },
-    personalFolder: Boolean
-    
-}, {
-    timestamps: true
-})
+    personalFolder: Boolean,
+    fileType: String,
+  },
+  {
+    timestamps: true,
+  },
+);
 
 export interface FolderInterface extends Document {
-    name: string,
-    parent: string,
-    owner: string,
-    createdAt: Date,
-    updatedAt: Date,
-    parentList: string[],
-    _doc?: any,
-    personalFolder?: boolean
+  name: string;
+  parent: string;
+  owner: string;
+  createdAt: Date;
+  updatedAt: Date;
+  parentList: string[];
+  _doc?: any;
+  personalFolder?: boolean;
+  fileType?: keyof typeof fileTypes;
 }
 
-const Folder = mongoose.model<FolderInterface>("Folder", folderSchema);
+const Folder = mongoose.model<FolderInterface>('Folder', folderSchema);
 
 export default Folder;

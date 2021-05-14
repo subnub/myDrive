@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { query, Request, response, Response } from 'express';
 import FileService from '../services/FileService';
 import MongoService from '../services/ChunkService/MongoService';
 import FileSystemService from '../services/ChunkService/FileSystemService';
@@ -18,9 +18,13 @@ import {
   ListOptionsAndFileTypes,
   allQuickFileTypesFromList,
 } from '../types/fileTypes';
+import PersonalFileController from './personalFile';
+import PersonalFileService from '../services/PersonalFileService';
 
 const fileService = new FileService();
 const googleFileService = new GoogleFileService();
+const personalFileService = new PersonalFileService();
+const s3Service = new S3Service();
 
 type userAccessType = {
   _id: string;
@@ -44,13 +48,18 @@ interface RequestType extends Request {
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
 
-const getFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
+const getFileEndpointsByType = (
+  types: ListOptionsAndFileTypes,
+  type?: string,
+) => {
   if (!types || types.includeAllFileTypes) return allFileTypesFromList;
   const endpointFunctions = {
     myDriveIncluded: (user: UserInterface, query: any) =>
-      fileService.getList(user, query),
+      fileService.getList(user, query, type),
     googleDriveIncluded: (user: UserInterface, query: any) =>
       googleFileService.getList(user, query),
+    personalDriveIncludes: (user: UserInterface, query: any) =>
+      personalFileService.getList(user, query),
   } as any;
   const fileEndpointsList = [];
   const fileTypeKeys = Object.keys(types);
@@ -174,6 +183,8 @@ class FileController {
 
       if (fileType === fileTypes.googleDrive) {
         await googleFileService.getFullThumbnail(user, fileID, res);
+      } else if (fileType === fileTypes.personalDrive) {
+        await s3Service.getFullThumbnail(user, fileID, res);
       } else {
         await this.chunkService.getFullThumbnail(user, fileID, res);
       }
@@ -206,6 +217,15 @@ class FileController {
         req.pipe(busboy);
         const file = await this.chunkService.uploadFile(user, busboy, req);
         res.send(file);
+      } else if (fileType === fileTypes.personalDrive) {
+        req.pipe(busboy);
+        const personalFile = await s3Service.uploadFile(
+          user,
+          busboy,
+          req,
+          fileType,
+        );
+        res.send(personalFile);
       } else {
         req.pipe(busboy);
         const file = await googleFileService.uploadFile(user, busboy, req, res);
@@ -412,6 +432,12 @@ class FileController {
         if (type === fileTypes.googleDrive) {
           const fileList = await googleFileService.getList(user, query as any);
           res.send(fileList);
+        } else if (type === fileTypes.personalDrive) {
+          const personalFileList = await personalFileService.getList(
+            user,
+            query,
+          );
+          res.send(personalFileList);
         } else {
           const fileList = await fileService.getList(user, query);
           res.send(fileList);
@@ -422,6 +448,8 @@ class FileController {
       console.log('query', query);
 
       const fileListEndpoints = getFileEndpointsByType(query as any);
+
+      console.log('file endpoints', fileListEndpoints);
 
       const arrays = await Promise.all(
         fileListEndpoints.map((currentfunction) =>
@@ -605,6 +633,8 @@ class FileController {
 
       if (fileType === fileTypes.googleDrive) {
         await googleFileService.streamVideo(user, fileID, uuid, req, res);
+      } else if (fileType === fileTypes.personalDrive) {
+        await s3Service.streamVideo(user, fileID, headers, res, req);
       } else {
         await this.chunkService.streamVideo(user, fileID, headers, res, req);
       }
@@ -625,13 +655,16 @@ class FileController {
     }
 
     try {
-      console.log('download file request');
       const user = req.user;
       const fileID = req.params.id;
       const fileType = req.fileType;
 
+      console.log('download file request', fileType);
+
       if (fileType === fileTypes.googleDrive) {
         await googleFileService.downloadFile(user, fileID, res);
+      } else if (fileType === fileTypes.personalDrive) {
+        await s3Service.downloadFile(user, fileID, res);
       } else {
         await this.chunkService.downloadFile(user, fileID, res);
       }
@@ -768,6 +801,8 @@ class FileController {
 
       if (fileType === fileTypes.googleDrive) {
         await googleFileService.removeFile(user, fileID);
+      } else if (fileType === fileTypes.personalDrive) {
+        await s3Service.deleteFile(userID, fileID);
       } else {
         await this.chunkService.deleteFile(userID, fileID);
       }

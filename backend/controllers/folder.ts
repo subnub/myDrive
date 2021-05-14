@@ -11,9 +11,11 @@ import {
 import { UserInterface } from '../models/user';
 import GoogleFolderService from '../services/GoogleFolderService';
 import { allFolderTypesFromList } from '../types/folderTypes';
+import PersonalFolderService from '../services/PersonalFolderService';
 
 const folderService = new FolderService();
 const googleFolderService = new GoogleFolderService();
+const personalFolderService = new PersonalFolderService();
 
 type userAccessType = {
   _id: string;
@@ -44,6 +46,8 @@ const getFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
       folderService.getFolderList(user, query),
     googleDriveIncluded: (user: UserInterface, query: any) =>
       googleFolderService.getList(user, query),
+    personalDriveIncludes: (user: UserInterface, query: any) =>
+      personalFolderService.getFolderList(user, query),
   } as any;
   const fileEndpointsList = [];
   const fileTypeKeys = Object.keys(types);
@@ -273,6 +277,12 @@ class FolderController {
           const folderList = await googleFolderService.getList(
             user,
             query as any,
+          );
+          res.send(folderList);
+        } else if (type === fileTypes.personalDrive) {
+          const folderList = await personalFolderService.getFolderList(
+            user,
+            query,
           );
           res.send(folderList);
         } else {

@@ -35,7 +35,12 @@ const dbUtilsFile = new DbUtilFile();
 class S3Service implements ChunkInterface {
   constructor() {}
 
-  uploadFile = async (user: UserInterface, busboy: any, req: Request) => {
+  uploadFile = async (
+    user: UserInterface,
+    busboy: any,
+    req: Request,
+    fileType?: string,
+  ) => {
     const password = user.getEncryptionKey();
 
     if (!password) throw new ForbiddenError('Invalid Encryption Key');
@@ -58,8 +63,19 @@ class S3Service implements ChunkInterface {
 
     const randomS3ID = uuid.v4();
 
-    const s3Data: any = personalFile ? await user.decryptS3Data() : {};
-    const bucketName = personalFile ? s3Data.bucket : env.s3Bucket;
+    console.log(
+      'upload file type',
+      fileType,
+      fileType === fileTypes.personalDrive,
+    );
+
+    console.log('decryping data');
+    const s3Data: any =
+      fileType === fileTypes.personalDrive ? await user.decryptS3Data() : {};
+    const bucketName =
+      fileType === fileTypes.personalDrive ? s3Data.bucket : env.s3Bucket;
+
+    console.log('data decrayyped');
 
     let metadata: any = {
       owner: user._id,
@@ -71,6 +87,7 @@ class S3Service implements ChunkInterface {
       size,
       IV: initVect,
       s3ID: randomS3ID,
+      fileType: fileType || fileTypes.myDrive,
     };
 
     if (personalFile) metadata = { ...metadata, personalFile: true };
@@ -81,11 +98,18 @@ class S3Service implements ChunkInterface {
       Key: randomS3ID,
     };
 
-    await awaitUploadStreamS3(params, personalFile, s3Data);
+    console.log('uploading');
+    await awaitUploadStreamS3(
+      params,
+      fileType === fileTypes.personalDrive,
+      s3Data,
+    );
+    console.log('finished uploading');
 
     const date = new Date();
     const encryptedFileSize = size;
 
+    console.log('saving');
     const currentFile = new File({
       filename,
       uploadDate: date.toISOString(),
@@ -94,6 +118,7 @@ class S3Service implements ChunkInterface {
     });
 
     await currentFile.save();
+    console.log('finished daving');
 
     await addToStoageSize(user, size, personalFile);
 
@@ -173,7 +198,7 @@ class S3Service implements ChunkInterface {
   };
 
   getS3Auth = async (file: FileInterface, user: UserInterface) => {
-    if (file.metadata.personalFile) {
+    if (file.metadata.fileType === fileTypes.personalDrive) {
       const s3Data = await user.decryptS3Data();
       //console.log("s3 data", s3Data)
       return {
