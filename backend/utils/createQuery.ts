@@ -35,6 +35,8 @@ const createQuery = (
 ) => {
   let query: QueryInterface = { 'metadata.owner': new ObjectID(owner) };
 
+  //console.log('start');
+
   if (searchQuery !== '') {
     searchQuery = new RegExp(searchQuery, 'i');
 
@@ -46,6 +48,8 @@ const createQuery = (
   } else {
     query = { ...query, 'metadata.parent': parent };
   }
+
+  //console.log('fnisihed search');
 
   if (startAt) {
     if (sortBy === 'date_desc' || sortBy === 'DEFAULT') {
@@ -59,6 +63,7 @@ const createQuery = (
     }
   }
 
+  //console.log('fnished data');
   // if (s3Enabled) {
   //     query = {...query, "metadata.personalFile": true}
   // } else
@@ -70,9 +75,12 @@ const createQuery = (
     }
   }
 
+  //console.log('finished types');
   // if (storageType === "s3") {
   //     query = {...query, "metadata.personalFile": true}
   // }
+
+  //console.log('finished quqery');
 
   return query;
 };

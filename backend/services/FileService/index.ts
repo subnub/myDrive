@@ -135,6 +135,8 @@ class MongoFileService {
     sortBy = sortBySwitch(sortBy);
     limit = parseInt(limit);
 
+    console.log('TYPE', type);
+
     const s3Enabled = user.s3Enabled ? true : false;
 
     const queryObj = createQuery(
@@ -148,7 +150,7 @@ class MongoFileService {
       startAtName,
       storageType,
       folderSearch,
-      fileTypes.myDrive as keyof typeof fileTypes,
+      type as any,
     );
 
     const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);

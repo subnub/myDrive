@@ -42,12 +42,12 @@ type ChunkServiceType = MongoService | FileSystemService | S3Service;
 const getFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
   if (!types || types.includeAllFileTypes) return allFolderTypesFromList;
   const endpointFunctions = {
-    myDriveIncluded: (user: UserInterface, query: any) =>
-      folderService.getFolderList(user, query),
+    myDriveIncluded: (user: UserInterface, query: any, type?: string) =>
+      folderService.getFolderList(user, query, type),
     googleDriveIncluded: (user: UserInterface, query: any) =>
       googleFolderService.getList(user, query),
-    personalDriveIncludes: (user: UserInterface, query: any) =>
-      personalFolderService.getFolderList(user, query),
+    // personalDriveIncludes: (user: UserInterface, query: any) =>
+    //   personalFolderService.getFolderList(user, query),
   } as any;
   const fileEndpointsList = [];
   const fileTypeKeys = Object.keys(types);
@@ -62,6 +62,12 @@ const getFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
   }
 
   console.log('current endpoints', fileEndpointsList);
+
+  if (types.personalDriveIncludes && !types.myDriveIncluded) {
+    fileEndpointsList.push((user: UserInterface, query: any, type?: string) =>
+      folderService.getFolderList(user, query, type),
+    );
+  }
 
   if (fileEndpointsList.length === 0) {
     return allFolderTypesFromList;
@@ -245,10 +251,8 @@ class FolderController {
       const userID = req.user._id;
       const folderID = req.query.id as string;
 
-      const {
-        folderIDList,
-        folderNameList,
-      } = await folderService.getFolderSublist(userID, folderID);
+      const { folderIDList, folderNameList } =
+        await folderService.getFolderSublist(userID, folderID);
 
       res.send({ folderIDList, folderNameList });
     } catch (e) {
@@ -273,30 +277,52 @@ class FolderController {
       const { type, parent } = query;
 
       if (parent !== '/') {
+        if (!type) {
+          const folderList = await folderService.getFolderList(user, query);
+          res.send(folderList);
+        }
+
         if (type === fileTypes.googleDrive) {
           const folderList = await googleFolderService.getList(
             user,
             query as any,
           );
           res.send(folderList);
-        } else if (type === fileTypes.personalDrive) {
-          const folderList = await personalFolderService.getFolderList(
-            user,
-            query,
-          );
-          res.send(folderList);
-        } else {
+        } else if (
+          type === fileTypes.personalDrive ||
+          type === fileTypes.myDrive
+        ) {
           const folderList = await folderService.getFolderList(user, query);
           res.send(folderList);
+        } else {
+          console.log('UNSUPPORTED FILE TYPE FOLDER', type);
         }
         return;
       }
+
+      const getMyDriveAndPersonalFileFilter = (
+        query: ListOptionsAndFileTypes,
+      ) => {
+        console.log('get mydrive filters', query);
+        let filter = '';
+        if (query.includeAllFileTypes) return filter;
+
+        if (query.myDriveIncluded && query.personalDriveIncludes) return filter;
+
+        if (query.myDriveIncluded) return fileTypes.myDrive;
+        if (query.personalDriveIncludes) return fileTypes.personalDrive;
+        return filter;
+      };
+
+      const myDriveAndPersonalFilterType = getMyDriveAndPersonalFileFilter(
+        query as ListOptionsAndFileTypes,
+      );
       // const folderList = await folderService.getFolderList(user, query);
       const fileListEndpoints = getFileEndpointsByType(query as any);
 
       const arrays = await Promise.all(
         fileListEndpoints.map((currentfunction) =>
-          currentfunction(user, query),
+          currentfunction(user, query, myDriveAndPersonalFilterType),
         ),
       );
       const combinedFiles = [];

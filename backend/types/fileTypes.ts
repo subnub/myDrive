@@ -21,12 +21,14 @@ export interface ListOptionsAndFileTypes extends IQueryObjectKeys {
   includeAllFileTypes?: boolean;
   myDriveIncluded?: boolean;
   googleDriveIncluded?: boolean;
+  personalDriveIncludes?: boolean;
 }
 
 export const allFileTypesFromList = [
-  (user: UserInterface, query: any) => fileService.getList(user, query),
+  (user: UserInterface, query: any, type?: string) =>
+    fileService.getList(user, query, type),
   (user: UserInterface, query: any) => googleFileService.getList(user, query),
-  (user: UserInterface, query: any) => personalFileService.getList(user, query),
+  // (user: UserInterface, query: any) => personalFileService.getList(user, query),
 ];
 
 export const allQuickFileTypesFromList = [

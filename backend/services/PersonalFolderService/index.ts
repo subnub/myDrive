@@ -28,13 +28,13 @@ const utilsFolder = new UtilsFolder();
 class PersonalFolderService {
   constructor() {}
 
-  getFolderList = async (user: UserInterface, query: any) => {
+  getFolderList = async (user: UserInterface, query: any, type?: string) => {
     const userID = user._id;
 
     let searchQuery = query.search || '';
     const parent = query.parent || '/';
     let sortBy = query.sortby || 'DEFAULT';
-    const type = query.type;
+    // const type = query.type;
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
     const itemType = fileTypes.personalDrive;
@@ -42,38 +42,52 @@ class PersonalFolderService {
 
     const s3Enabled = user.s3Enabled ? true : false;
 
-    if (searchQuery.length === 0) {
-      const folderList = await utilsFolder.getFolderListByParent(
-        userID,
-        parent,
-        sortBy,
-        s3Enabled,
-        type,
-        storageType,
-        itemType as keyof typeof fileTypes,
-      );
+    const folderList = await utilsFolder.getFolderListByParent(
+      userID,
+      parent,
+      sortBy,
+      s3Enabled,
+      undefined as any,
+      storageType,
+      searchQuery,
+      type as keyof typeof fileTypes,
+    );
 
-      if (!folderList) throw new NotFoundError('Folder List Not Found Error');
+    if (!folderList) throw new NotFoundError('Folder List Not Found Error');
 
-      return folderList;
-    } else {
-      searchQuery = new RegExp(searchQuery, 'i');
-      const folderList = await utilsFolder.getFolderListBySearch(
-        userID,
-        searchQuery,
-        sortBy,
-        type,
-        parent,
-        storageType,
-        folderSearch,
-        itemType,
-        s3Enabled,
-      );
+    return folderList;
 
-      if (!folderList) throw new NotFoundError('Folder List Not Found Error');
+    // if (searchQuery.length === 0) {
+    //   const folderList = await utilsFolder.getFolderListByParent(
+    //     userID,
+    //     parent,
+    //     sortBy,
+    //     s3Enabled,
+    //     undefined as any,
+    //     storageType,
+    //     searchQuery,
+    //     type as keyof typeof fileTypes,
+    //   );
 
-      return folderList;
-    }
+    //   if (!folderList) throw new NotFoundError('Folder List Not Found Error');
+
+    //   return folderList;
+    // } else {
+    //   searchQuery = new RegExp(searchQuery, 'i');
+    //   const folderList = await utilsFolder.getFolderListBySearch(
+    //     userID,
+    //     searchQuery,
+    //     sortBy,
+    //     undefined as any,
+    //     parent,
+    //     storageType,
+    //     folderSearch,
+    //     itemType,
+    //     s3Enabled,
+
+    if (!folderList) throw new NotFoundError('Folder List Not Found Error');
+
+    return folderList;
   };
 }
 

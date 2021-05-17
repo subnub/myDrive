@@ -31,6 +31,7 @@ class DbUtil {
     s3Enabled: boolean,
     type: string,
     storageType: string,
+    search: string,
     fileType: keyof typeof fileTypes,
   ) => {
     let query: any = { owner: userID, parent: parent };
@@ -40,6 +41,13 @@ class DbUtil {
     }
 
     console.log('get folder by parent', fileType);
+
+    if (search) {
+      query = {
+        ...query,
+        name: search,
+      };
+    }
 
     // if (type) {
     //     if (type === "mongo") {

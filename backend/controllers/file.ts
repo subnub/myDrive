@@ -48,18 +48,18 @@ interface RequestType extends Request {
 
 type ChunkServiceType = MongoService | FileSystemService | S3Service;
 
-const getFileEndpointsByType = (
-  types: ListOptionsAndFileTypes,
-  type?: string,
-) => {
+const getFileEndpointsByType = (types: ListOptionsAndFileTypes) => {
   if (!types || types.includeAllFileTypes) return allFileTypesFromList;
   const endpointFunctions = {
-    myDriveIncluded: (user: UserInterface, query: any) =>
+    myDriveIncluded: (user: UserInterface, query: any, type?: string) =>
       fileService.getList(user, query, type),
     googleDriveIncluded: (user: UserInterface, query: any) =>
       googleFileService.getList(user, query),
-    personalDriveIncludes: (user: UserInterface, query: any) =>
-      personalFileService.getList(user, query),
+    // personalDriveIncludesnope: (
+    //   user: UserInterface,
+    //   query: any,
+    //   type?: string,
+    // ) => personalFileService.getList(user, query, type),
   } as any;
   const fileEndpointsList = [];
   const fileTypeKeys = Object.keys(types);
@@ -71,6 +71,12 @@ const getFileEndpointsByType = (
     if (!currentItem || !endpointFunctions[currentKey]) continue;
     console.log('current key', currentKey, endpointFunctions[currentKey]);
     fileEndpointsList.push(endpointFunctions[currentKey]);
+  }
+
+  if (types.personalDriveIncludes && !types.myDriveIncluded) {
+    fileEndpointsList.push((user: UserInterface, query: any, type?: string) =>
+      fileService.getList(user, query, type),
+    );
   }
 
   console.log('current endpoints', fileEndpointsList);
@@ -429,23 +435,49 @@ class FileController {
       //const listOptionsAndFileTypes = req.headers.listOptionsAndFileTypes;
 
       if (parent !== '/') {
+        if (!type) {
+          const fileList = await fileService.getList(user, query);
+          res.send(fileList);
+        }
+
         if (type === fileTypes.googleDrive) {
           const fileList = await googleFileService.getList(user, query as any);
           res.send(fileList);
-        } else if (type === fileTypes.personalDrive) {
-          const personalFileList = await personalFileService.getList(
-            user,
-            query,
-          );
-          res.send(personalFileList);
-        } else {
-          const fileList = await fileService.getList(user, query);
+        } else if (
+          type === fileTypes.personalDrive ||
+          type === fileTypes.myDrive
+        ) {
+          const fileList = await fileService.getList(user, query, type);
           res.send(fileList);
+        } else {
+          console.log('UNSUPPORTED FILE TYPE');
         }
         return;
       }
 
       console.log('query', query);
+
+      const getMyDriveAndPersonalFileFilter = (
+        query: ListOptionsAndFileTypes,
+      ) => {
+        console.log('get mydrive filters', query);
+        let filter = '';
+        if (query.includeAllFileTypes) return filter;
+
+        if (query.myDriveIncluded && query.personalDriveIncludes) return filter;
+
+        if (query.myDriveIncluded) return fileTypes.myDrive;
+        if (query.personalDriveIncludes) return fileTypes.personalDrive;
+        return filter;
+      };
+
+      const myDriveAndPersonalFilterType = getMyDriveAndPersonalFileFilter(
+        query as ListOptionsAndFileTypes,
+      );
+
+      console.log('get mydrive filters', myDriveAndPersonalFilterType);
+
+      //const myDriveAndPersonalFileFilter = (query as ListOptionsAndFileTypes).includeAllFileTypes ? undefined : (query as ListOptionsAndFileTypes).
 
       const fileListEndpoints = getFileEndpointsByType(query as any);
 
@@ -453,7 +485,7 @@ class FileController {
 
       const arrays = await Promise.all(
         fileListEndpoints.map((currentfunction) =>
-          currentfunction(user, query),
+          currentfunction(user, query, myDriveAndPersonalFilterType),
         ),
       );
       const combinedFiles = [];
