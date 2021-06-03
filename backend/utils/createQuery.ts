@@ -52,11 +52,13 @@ const createQuery = (
   //console.log('fnisihed search');
 
   if (startAt) {
+    console.log('start at setting query', sortBy);
     if (sortBy === 'date_desc' || sortBy === 'DEFAULT') {
       query = { ...query, uploadDate: { $lt: new Date(startAtDate) } };
     } else if (sortBy === 'date_asc') {
       query = { ...query, uploadDate: { $gt: new Date(startAtDate) } };
     } else if (sortBy === 'alp_desc') {
+      console.log('sortby alp desc');
       query = { ...query, filename: { $lt: startAtName } };
     } else {
       query = { ...query, filename: { $gt: startAtName } };

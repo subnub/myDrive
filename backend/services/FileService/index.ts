@@ -126,7 +126,7 @@ class MongoFileService {
     let searchQuery = query.search || '';
     const parent = query.parent || '/';
     let limit = query.limit || 50;
-    let sortBy = query.sortby || 'DEFAULT';
+    let sortBy = query.sortBy || 'DEFAULT';
     const startAt = query.startAt || undefined;
     const startAtDate = query.startAtDate || '0';
     const startAtName = query.startAtName || '';
@@ -136,13 +136,15 @@ class MongoFileService {
     limit = parseInt(limit);
 
     console.log('TYPE', type);
+    console.log('SORT BY', sortBy);
+    console.log('query sort', query.sortBy);
 
     const s3Enabled = user.s3Enabled ? true : false;
 
     const queryObj = createQuery(
       userID,
       parent,
-      query.sortby,
+      query.sortBy,
       startAt,
       startAtDate,
       searchQuery,
@@ -154,6 +156,10 @@ class MongoFileService {
     );
 
     const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);
+
+    //console.log('file list', fileList);
+
+    console.log('query-test', queryObj);
 
     if (!fileList) throw new NotFoundError('File List Not Found');
 

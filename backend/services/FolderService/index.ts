@@ -103,7 +103,7 @@ class FolderService {
 
     let searchQuery = query.search || '';
     const parent = query.parent || '/';
-    let sortBy = query.sortby || 'DEFAULT';
+    let sortBy = query.sortBy || 'DEFAULT';
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
     const itemType = fileTypes.myDrive;
@@ -237,8 +237,9 @@ class FolderService {
         folderID.toString(),
       );
 
-      currentFolderChildParentList =
-        currentFolderChildParentList.splice(indexOfFolderID);
+      currentFolderChildParentList = currentFolderChildParentList.splice(
+        indexOfFolderID,
+      );
 
       currentFolderChildParentList = [
         ...parentList,
@@ -265,8 +266,9 @@ class FolderService {
         folderID.toString(),
       );
 
-      currentFileChildParentList =
-        currentFileChildParentList.splice(indexOfFolderID);
+      currentFileChildParentList = currentFileChildParentList.splice(
+        indexOfFolderID,
+      );
 
       currentFileChildParentList = [
         ...parentList,
