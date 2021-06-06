@@ -36,7 +36,7 @@ const auth = async (req: RequestType, res: Response, next: NextFunction) => {
     const accessToken = req.cookies['access-token'];
     const fileType =
       (req.headers.type as keyof typeof fileTypes) || fileTypes.myDrive;
-    console.log('headers', fileType);
+    //console.log('headers', fileType);
 
     if (!accessToken) throw new Error('No Access Token');
 

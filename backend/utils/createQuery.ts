@@ -18,6 +18,7 @@ export interface QueryInterface {
   };
   'metadata.personalFile'?: boolean | null;
   'metadata.fileType'?: keyof typeof fileTypes;
+  'metadata.previewID'?: any;
 }
 
 const createQuery = (
@@ -32,6 +33,7 @@ const createQuery = (
   storageType: string,
   folderSearch: boolean,
   fileType?: keyof typeof fileTypes,
+  filterByItemType?: string,
 ) => {
   let query: QueryInterface = { 'metadata.owner': new ObjectID(owner) };
 
@@ -75,6 +77,13 @@ const createQuery = (
     } else {
       query = { ...query, 'metadata.fileType': null } as any;
     }
+  }
+
+  if (filterByItemType === 'photos') {
+    const photoQuery = { ...query, 'metadata.previewID': { $ne: null } };
+    delete photoQuery['metadata.parent'];
+    query = photoQuery;
+    console.log('image list query', query);
   }
 
   //console.log('finished types');

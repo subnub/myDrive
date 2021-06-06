@@ -26,8 +26,9 @@ const createThumbnailS3 = (
   file: FileInterface,
   filename: string,
   user: UserInterface,
+  size = 300,
 ) => {
-  return new Promise<FileInterface>(async (resolve, reject) => {
+  return new Promise<string>(async (resolve, reject) => {
     const password = user.getEncryptionKey();
 
     let CIPHER_KEY = crypto.createHash('sha256').update(password!).digest();
@@ -50,12 +51,14 @@ const createThumbnailS3 = (
 
     readStream.on('error', (e: Error) => {
       console.log('File service upload thumbnail error', e);
-      resolve(file);
+      //resolve(file);
+      reject(e);
     });
 
     decipher.on('error', (e: Error) => {
       console.log('File service upload thumbnail decipher error', e);
-      resolve(file);
+      //resolve(file);
+      reject(e);
     });
 
     try {
@@ -67,10 +70,10 @@ const createThumbnailS3 = (
       );
 
       const imageResize = sharp()
-        .resize(300)
+        .resize(size)
         .on('error', (e: Error) => {
           console.log('resize error', e);
-          resolve(file);
+          reject(e);
         });
 
       const paramsWrite: any = {
@@ -95,34 +98,35 @@ const createThumbnailS3 = (
 
         await thumbnailModel.save();
 
-        const getUpdatedFile = await conn.db
-          .collection('fs.files')
-          .findOneAndUpdate(
-            { _id: file._id },
-            {
-              $set: {
-                'metadata.hasThumbnail': true,
-                'metadata.thumbnailID': thumbnailModel._id,
-              },
-            },
-          );
+        // const updateData = preview
+        //   ? { 'metadata.previewID': thumbnailModel._id }
+        //   : { 'metadata.thumbnailID': thumbnailModel._id };
 
-        let updatedFile: FileInterface = getUpdatedFile.value;
+        // const getUpdatedFile = await conn.db
+        //   .collection('fs.files')
+        //   .findOneAndUpdate(
+        //     { _id: file._id },
+        //     {
+        //       $set: updateData,
+        //     },
+        //   );
 
-        updatedFile = {
-          ...updatedFile,
-          metadata: {
-            ...updatedFile.metadata,
-            hasThumbnail: true,
-            thumbnailID: thumbnailModel._id,
-          },
-        } as FileInterface;
+        // let updatedFile: FileInterface = getUpdatedFile.value;
 
-        resolve(updatedFile);
+        // updatedFile = {
+        //   ...updatedFile,
+        //   metadata: {
+        //     ...updatedFile.metadata,
+        //     hasThumbnail: true,
+        //     thumbnailID: thumbnailModel._id,
+        //   },
+        // } as FileInterface;
+
+        resolve(thumbnailModel._id);
       });
     } catch (e) {
       console.log('Thumbnail error', e);
-      resolve(file);
+      reject(e);
     }
   });
 };

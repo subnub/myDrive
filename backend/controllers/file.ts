@@ -160,6 +160,17 @@ class FileController {
     try {
       const user = req.user;
       const id = req.params.id;
+      const fileType = req.query.type;
+
+      if (fileType === fileTypes.googleDrive) {
+        return await googleFileService.getThumbnail(user, id, res);
+      } else if (fileType === fileTypes.personalDrive) {
+        const thumbnail = await s3Service.getThumbnail(user, id);
+        return res.send(thumbnail);
+      } else {
+        const thumbnail = await this.chunkService.getThumbnail(user, id);
+        return res.send(thumbnail);
+      }
 
       const decryptedThumbnail = await this.chunkService.getThumbnail(user, id);
 

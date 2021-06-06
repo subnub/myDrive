@@ -31,14 +31,14 @@ const authFullUser = async (
   next: NextFunction,
 ) => {
   try {
-    console.log('auth full user');
+    //console.log('auth full user');
 
     const accessToken = req.cookies['access-token'];
     if (!accessToken) throw new Error('No Access Token');
 
     const fileType =
       (req.headers.type as keyof typeof fileTypes) || fileTypes.myDrive;
-    console.log('full headers', fileType);
+    //console.log('full headers', fileType);
 
     const decoded = jwt.verify(accessToken, env.passwordAccess!) as jwtType;
 

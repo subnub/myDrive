@@ -132,6 +132,7 @@ class MongoFileService {
     const startAtName = query.startAtName || '';
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
+    const filterByItemType = query.filterByItemType || undefined;
     sortBy = sortBySwitch(sortBy);
     limit = parseInt(limit);
 
@@ -153,6 +154,7 @@ class MongoFileService {
       storageType,
       folderSearch,
       type as any,
+      filterByItemType,
     );
 
     const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);

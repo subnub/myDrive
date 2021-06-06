@@ -41,6 +41,7 @@ const fileSchema = new mongoose.Schema({
         required: true,
       },
       thumbnailID: String,
+      previewID: String,
       size: {
         type: Number,
         required: true,
@@ -73,6 +74,7 @@ export interface FileInterface extends Document {
     hasThumbnail: boolean;
     isVideo: boolean;
     thumbnailID?: string;
+    previewID?: string;
     size: number;
     IV: Buffer;
     linkType?: 'one' | 'public';

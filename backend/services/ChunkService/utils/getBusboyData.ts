@@ -1,37 +1,31 @@
-import { Stream } from "stream";
+import { Stream } from 'stream';
 
 const getBusboyData = (busboy: any) => {
+  type dataType = {
+    file: Stream;
+    filename: string;
+    formData: Map<any, any>;
+  };
 
-    type dataType = {
-        file: Stream,
-        filename: string,
-        formData: Map<any, any>
-    }
+  return new Promise<dataType>((resolve, reject) => {
+    const formData = new Map();
 
-    return new Promise<dataType>((resolve, reject) => {
+    busboy.on('field', (field: any, val: any) => {
+      //console.log("current field", field, val)
 
-        const formData = new Map();
+      formData.set(field, val);
+    });
 
-        busboy.on("field", (field: any, val: any) => {
+    busboy.on('file', (_: string, file: Stream, filename: string) => {
+      //console.log("current file", file, filename);
 
-            console.log("current field", field, val)
-
-            formData.set(field, val)
-
-        });
-
-        busboy.on("file", (_: string, file: Stream, filename: string) => {
-
-            console.log("current file", file, filename);
-
-            resolve({
-                file,
-                filename,
-                formData
-            })
-        })
-
-    })
-}
+      resolve({
+        file,
+        filename,
+        formData,
+      });
+    });
+  });
+};
 
 export default getBusboyData;
