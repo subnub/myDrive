@@ -50,12 +50,10 @@ class DbUtil {
   };
 
   getPublicInfo = async (fileID: string, tempToken: string) => {
-    const file = (await conn.db
-      .collection('fs.files')
-      .findOne({
-        '_id': new ObjectID(fileID),
-        'metadata.link': tempToken,
-      })) as FileInterface;
+    const file = (await conn.db.collection('fs.files').findOne({
+      '_id': new ObjectID(fileID),
+      'metadata.link': tempToken,
+    })) as FileInterface;
 
     return file;
   };
@@ -72,12 +70,10 @@ class DbUtil {
   };
 
   getFileInfo = async (fileID: string, userID: string) => {
-    const file = (await conn.db
-      .collection('fs.files')
-      .findOne({
-        'metadata.owner': new ObjectID(userID),
-        '_id': new ObjectID(fileID),
-      })) as FileInterface;
+    const file = (await conn.db.collection('fs.files').findOne({
+      'metadata.owner': new ObjectID(userID),
+      '_id': new ObjectID(fileID),
+    })) as FileInterface;
 
     return file;
   };
@@ -99,7 +95,7 @@ class DbUtil {
     return fileList;
   };
 
-  getList = async (queryObj: QueryInterface, sortBy: string, limit: number) => {
+  getList = async (queryObj: QueryInterface, sortBy: any, limit: number) => {
     const fileList = (await conn.db
       .collection('fs.files')
       .find(queryObj)
@@ -150,17 +146,15 @@ class DbUtil {
     parent: string,
     parentList: string,
   ) => {
-    const file = await conn.db
-      .collection('fs.files')
-      .findOneAndUpdate(
-        { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
-        {
-          $set: {
-            'metadata.parent': parent,
-            'metadata.parentList': parentList,
-          },
+    const file = await conn.db.collection('fs.files').findOneAndUpdate(
+      { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
+      {
+        $set: {
+          'metadata.parent': parent,
+          'metadata.parentList': parentList,
         },
-      );
+      },
+    );
 
     return file;
   };

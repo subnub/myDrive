@@ -64,7 +64,20 @@ const createThumnailAny = async (
 
     return updatedFile;
   } else if (env.dbType === 'mongo') {
-    return await createThumbnailMongo(currentFile, filename, user);
+    const thumbnailID = await createThumbnailMongo(currentFile, filename, user);
+    const previewID = await createThumbnailMongo(
+      currentFile,
+      filename,
+      user,
+      1080,
+    );
+    const updatedFile = await addThumbnailAndPreviewID(
+      currentFile,
+      thumbnailID,
+      previewID,
+    );
+
+    return updatedFile;
   } else {
     const thumbnailID = await createThumbnailFilesystem(
       currentFile,

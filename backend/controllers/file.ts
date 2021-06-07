@@ -443,6 +443,8 @@ class FileController {
       const user = req.user;
       const query = req.query;
       const { type, parent } = query;
+
+      console.log('query-start', query);
       //const listOptionsAndFileTypes = req.headers.listOptionsAndFileTypes;
 
       if (parent !== '/') {

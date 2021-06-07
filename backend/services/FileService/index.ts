@@ -126,26 +126,27 @@ class MongoFileService {
     let searchQuery = query.search || '';
     const parent = query.parent || '/';
     let limit = query.limit || 50;
-    let sortBy = query.sortBy || 'DEFAULT';
+    const sortBy = query.sortBy || 'DEFAULT';
+    // let sortBy = query.sortBy || 'DEFAULT';
     const startAt = query.startAt || undefined;
     const startAtDate = query.startAtDate || '0';
     const startAtName = query.startAtName || '';
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
     const filterByItemType = query.filterByItemType || undefined;
-    sortBy = sortBySwitch(sortBy);
+    const sortByObject = sortBySwitch(sortBy);
     limit = parseInt(limit);
 
     console.log('TYPE', type);
     console.log('SORT BY', sortBy);
-    console.log('query sort', query.sortBy);
+    console.log('query sort', sortByObject);
 
     const s3Enabled = user.s3Enabled ? true : false;
 
     const queryObj = createQuery(
       userID,
       parent,
-      query.sortBy,
+      sortBy,
       startAt,
       startAtDate,
       searchQuery,
@@ -157,7 +158,7 @@ class MongoFileService {
       filterByItemType,
     );
 
-    const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);
+    const fileList = await dbUtilsFile.getList(queryObj, sortByObject, limit);
 
     //console.log('file list', fileList);
 

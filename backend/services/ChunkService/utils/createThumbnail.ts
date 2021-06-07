@@ -14,9 +14,8 @@ const createThumbnail = (
   filename: string,
   user: UserInterface,
   size = 300,
-  preview = false,
 ) => {
-  return new Promise<FileInterface>((resolve) => {
+  return new Promise<string>((resolve, reject) => {
     const password = user.getEncryptionKey();
 
     let CIPHER_KEY = crypto.createHash('sha256').update(password!).digest();
@@ -29,7 +28,7 @@ const createThumbnail = (
 
     readStream.on('error', (e: Error) => {
       console.log('File service upload thumbnail error', e);
-      resolve(file);
+      reject(e);
     });
 
     const decipher = crypto.createDecipheriv(
@@ -40,7 +39,7 @@ const createThumbnail = (
 
     decipher.on('error', (e: Error) => {
       console.log('File service upload thumbnail decipher error', e);
-      resolve(file);
+      reject(e);
     });
 
     try {
@@ -67,50 +66,23 @@ const createThumbnail = (
 
         await thumbnailModel.save();
 
-        const getUpdatedFile = await conn.db
-          .collection('fs.files')
-          .findOneAndUpdate(
-            { _id: new ObjectID(file._id) },
-            {
-              $set: {
-                'metadata.hasThumbnail': true,
-                'metadata.thumbnailID': thumbnailModel._id,
-              },
-            },
-          );
-
-        let updatedFile: FileInterface = getUpdatedFile.value;
-
-        const updateData = preview
-          ? { 'metadata.previewID': thumbnailModel._id }
-          : { 'metadata.thumbnailID': thumbnailModel._id };
-
-        updatedFile = {
-          ...updatedFile,
-          metadata: {
-            ...updatedFile.metadata,
-            hasThumbnail: true,
-            thumbnailID: thumbnailModel._id,
-          },
-        } as FileInterface;
-
-        resolve(updatedFile);
+        resolve(thumbnailModel._id);
       }).on('error', (e: Error) => {
         console.log('File service upload concat stream error', e);
-        resolve(file);
+        reject(e);
       });
 
       const imageResize = sharp()
         .resize(size)
         .on('error', (e: Error) => {
           console.log('resize error', e);
-          resolve(file);
+          reject(e);
         });
 
       readStream.pipe(decipher).pipe(imageResize).pipe(concatStream);
     } catch (e) {
       console.log(e);
-      resolve(file);
+      reject(e);
     }
   });
 };

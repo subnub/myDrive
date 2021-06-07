@@ -24,6 +24,7 @@ import addToStoageSize from './utils/addToStorageSize';
 import subtractFromStorageSize from './utils/subtractFromStorageSize';
 import ForbiddenError from '../../utils/ForbiddenError';
 import { fileTypes } from '../../types/fileTypes';
+import audioChecker from '../../utils/audioChecker';
 
 const conn = mongoose.connection;
 
@@ -54,6 +55,7 @@ class MongoService implements ChunkInterface {
     let hasThumbnail = false;
     let thumbnailID = '';
     const isVideo = videoChecker(filename);
+    const isAudio = audioChecker(filename);
 
     const metadata = {
       owner: user._id,
@@ -62,6 +64,7 @@ class MongoService implements ChunkInterface {
       hasThumbnail,
       thumbnailID,
       isVideo,
+      isAudio,
       size,
       IV: initVect,
     };
@@ -119,6 +122,7 @@ class MongoService implements ChunkInterface {
     let hasThumbnail = file.metadata.hasThumbnail;
     let thumbnailID = file.metadata.thumbnailID;
     const isVideo = file.metadata.isVideo;
+    const isAudio = audioChecker(filename);
 
     const metadata = {
       owner: user._id,
@@ -127,6 +131,7 @@ class MongoService implements ChunkInterface {
       hasThumbnail,
       thumbnailID,
       isVideo,
+      isAudio,
       size,
       IV: file.metadata.IV,
     };

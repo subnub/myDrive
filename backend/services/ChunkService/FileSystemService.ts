@@ -29,6 +29,7 @@ import subtractFromStorageSize from './utils/subtractFromStorageSize';
 import ForbiddenError from '../../utils/ForbiddenError';
 import { ObjectID } from 'mongodb';
 import { fileTypes } from '../../types/fileTypes';
+import audioChecker from '../../utils/audioChecker';
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -57,6 +58,7 @@ class FileSystemService implements ChunkInterface {
     let hasThumbnail = false;
     let thumbnailID = '';
     const isVideo = videoChecker(filename);
+    const isAudio = audioChecker(filename);
 
     const systemFileName = uuid.v4();
 
@@ -66,6 +68,7 @@ class FileSystemService implements ChunkInterface {
       parentList,
       hasThumbnail,
       thumbnailID,
+      isAudio,
       isVideo,
       size,
       IV: initVect,

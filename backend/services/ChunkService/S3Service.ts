@@ -29,6 +29,7 @@ import subtractFromStorageSize from './utils/subtractFromStorageSize';
 import ForbiddenError from '../../utils/ForbiddenError';
 import { ObjectID } from 'mongodb';
 import { fileTypes } from '../../types/fileTypes';
+import audioChecker from '../../utils/audioChecker';
 
 const dbUtilsFile = new DbUtilFile();
 
@@ -60,6 +61,7 @@ class S3Service implements ChunkInterface {
     let hasThumbnail = false;
     let thumbnailID = '';
     const isVideo = videoChecker(filename);
+    const isAudio = audioChecker(filename);
 
     const randomS3ID = uuid.v4();
 
@@ -84,6 +86,7 @@ class S3Service implements ChunkInterface {
       hasThumbnail,
       thumbnailID,
       isVideo,
+      isAudio,
       size,
       IV: initVect,
       s3ID: randomS3ID,

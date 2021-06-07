@@ -40,6 +40,10 @@ const fileSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
       },
+      isAudio: {
+        type: Boolean,
+        required: true,
+      },
       thumbnailID: String,
       previewID: String,
       size: {
@@ -73,6 +77,7 @@ export interface FileInterface extends Document {
     parentList: string;
     hasThumbnail: boolean;
     isVideo: boolean;
+    isAudio: boolean;
     thumbnailID?: string;
     previewID?: string;
     size: number;
