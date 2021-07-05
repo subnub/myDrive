@@ -145,7 +145,7 @@ class DbUtil {
       .collection('fs.files')
       .findOneAndUpdate(
         { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
-        { $set: { 'metadata.trash': null } },
+        { $set: { 'metadata.trash': undefined } },
       )) as FileInterface;
 
     return file;

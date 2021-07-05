@@ -33,6 +33,7 @@ class DbUtil {
     storageType: string,
     search: string,
     fileType: keyof typeof fileTypes,
+    trash?: boolean,
   ) => {
     let query: any = { owner: userID, parent: parent };
 
@@ -68,6 +69,12 @@ class DbUtil {
       } else {
         query = { ...query, fileType: null } as any;
       }
+    }
+
+    if (trash) {
+      query = { ...query, trash: true };
+    } else {
+      query = { ...query, trash: undefined };
     }
 
     const folderList = (await Folder.find(query).sort(
@@ -141,6 +148,24 @@ class DbUtil {
     const folder = (await Folder.findOneAndUpdate(
       { _id: new ObjectID(folderID), owner: userID },
       { $set: { name: title } },
+    )) as FolderInterface;
+
+    return folder;
+  };
+
+  restoreFolderFromTrash = async (folderID: string, userID: string) => {
+    const folder = (await Folder.findOneAndUpdate(
+      { _id: new ObjectID(folderID), owner: userID },
+      { $set: { trash: undefined } },
+    )) as FolderInterface;
+
+    return folder;
+  };
+
+  addFolderToTrash = async (folderID: string, userID: string) => {
+    const folder = (await Folder.findOneAndUpdate(
+      { _id: new ObjectID(folderID), owner: userID },
+      { $set: { trash: true } },
     )) as FolderInterface;
 
     return folder;

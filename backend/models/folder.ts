@@ -24,6 +24,7 @@ const folderSchema = new mongoose.Schema(
     },
     personalFolder: Boolean,
     fileType: String,
+    trash: Boolean,
   },
   {
     timestamps: true,
@@ -40,6 +41,7 @@ export interface FolderInterface extends Document {
   _doc?: any;
   personalFolder?: boolean;
   fileType?: keyof typeof fileTypes;
+  trash?: Boolean;
 }
 
 const Folder = mongoose.model<FolderInterface>('Folder', folderSchema);

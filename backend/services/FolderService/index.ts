@@ -107,6 +107,7 @@ class FolderService {
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
     const itemType = fileTypes.myDrive;
+    const trash = query.trash;
     sortBy = sortBySwitch(sortBy);
 
     const s3Enabled = user.s3Enabled ? true : false;
@@ -121,6 +122,7 @@ class FolderService {
       storageType,
       searchQuery,
       type as keyof typeof fileTypes,
+      trash,
     );
 
     if (!folderList) throw new NotFoundError('Folder List Not Found Error');
@@ -158,6 +160,22 @@ class FolderService {
     // if (!folderList) throw new NotFoundError('Folder List Not Found Error');
 
     // return folderList;
+  };
+
+  restoreFolderFromTrash = async (userID: string, folderID: string) => {
+    const folder = await utilsFolder.restoreFolderFromTrash(folderID, userID);
+
+    if (!folder) throw new NotFoundError('Restore Folder Not Found');
+
+    return folder;
+  };
+
+  addFolderToTrash = async (userID: string, folderID: string) => {
+    const folder = await utilsFolder.addFolderToTrash(folderID, userID);
+
+    if (!folder) throw new NotFoundError('Trash Folder Not Found');
+
+    return folder;
   };
 
   renameFolder = async (userID: string, folderID: string, title: string) => {
@@ -237,9 +255,8 @@ class FolderService {
         folderID.toString(),
       );
 
-      currentFolderChildParentList = currentFolderChildParentList.splice(
-        indexOfFolderID,
-      );
+      currentFolderChildParentList =
+        currentFolderChildParentList.splice(indexOfFolderID);
 
       currentFolderChildParentList = [
         ...parentList,
@@ -266,9 +283,8 @@ class FolderService {
         folderID.toString(),
       );
 
-      currentFileChildParentList = currentFileChildParentList.splice(
-        indexOfFolderID,
-      );
+      currentFileChildParentList =
+        currentFileChildParentList.splice(indexOfFolderID);
 
       currentFileChildParentList = [
         ...parentList,

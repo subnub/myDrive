@@ -112,6 +112,52 @@ class FolderController {
     }
   };
 
+  restoreFolderFromTrash = async (req: RequestTypeFullUser, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const folderID = req.body.id;
+      const { _id: userID } = req.user;
+      // TODO ADD THIS FOR GOOGLE DRIVE TOO
+      await folderService.restoreFolderFromTrash(userID, folderID);
+
+      res.send();
+    } catch (e) {
+      console.log('\nAdd To Trash File Error Folder Route:', e.message);
+      const code = !e.code
+        ? 500
+        : e.code >= 400 && e.code <= 599
+        ? e.code
+        : 500;
+      res.status(code).send();
+    }
+  };
+
+  addFolderToTrash = async (req: RequestTypeFullUser, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const folderID = req.body.id;
+      const { _id: userID } = req.user;
+      // TODO ADD THIS FOR GOOGLE DRIVE TOO
+      await folderService.addFolderToTrash(userID, folderID);
+
+      res.send();
+    } catch (e) {
+      console.log('\nAdd To Trash File Error Folder Route:', e.message);
+      const code = !e.code
+        ? 500
+        : e.code >= 400 && e.code <= 599
+        ? e.code
+        : 500;
+      res.status(code).send();
+    }
+  };
+
   deleteFolder = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
