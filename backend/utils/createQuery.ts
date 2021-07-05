@@ -19,6 +19,7 @@ export interface QueryInterface {
   'metadata.personalFile'?: boolean | null;
   'metadata.fileType'?: keyof typeof fileTypes;
   'metadata.previewID'?: any;
+  'metadata.trash'?: boolean;
 }
 
 const createQuery = (
@@ -34,6 +35,7 @@ const createQuery = (
   folderSearch: boolean,
   fileType?: keyof typeof fileTypes,
   filterByItemType?: string,
+  trash?: boolean,
 ) => {
   let query: QueryInterface = { 'metadata.owner': new ObjectID(owner) };
 
@@ -84,6 +86,15 @@ const createQuery = (
     delete photoQuery['metadata.parent'];
     query = photoQuery;
     console.log('image list query', query);
+  }
+
+  if (trash) {
+    query = {
+      ...query,
+      'metadata.trash': true,
+    };
+  } else {
+    query = { ...query, 'metadata.trash': null } as any;
   }
 
   //console.log('finished types');

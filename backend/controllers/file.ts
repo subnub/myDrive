@@ -694,6 +694,36 @@ class FileController {
     }
   };
 
+  streamAudio = async (req: RequestTypeFullUser, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const user = req.user;
+      const fileID = req.params.id;
+      const headers = req.headers;
+      const fileType = req.query.type;
+      const uuid = req.query.uuid as any;
+
+      if (fileType === fileTypes.googleDrive) {
+        await googleFileService.streamVideo(user, fileID, uuid, req, res);
+      } else if (fileType === fileTypes.personalDrive) {
+        await s3Service.streamAudio(user, fileID, headers, res, req);
+      } else {
+        await this.chunkService.streamAudio(user, fileID, headers, res, req);
+      }
+    } catch (e) {
+      console.log('\nStream Video Error File Route:', e.message);
+      const code = !e.code
+        ? 500
+        : e.code >= 400 && e.code <= 599
+        ? e.code
+        : 500;
+      res.status(code).send();
+    }
+  };
+
   downloadFile = async (req: RequestTypeFullUser, res: Response) => {
     if (!req.user) {
       return;
@@ -743,6 +773,52 @@ class FileController {
       return res.send({ folderList, fileList });
     } catch (e) {
       console.log('\nGet Suggested List Error File Route:', e.message);
+      const code = !e.code
+        ? 500
+        : e.code >= 400 && e.code <= 599
+        ? e.code
+        : 500;
+      res.status(code).send();
+    }
+  };
+
+  restoreFileFromTrash = async (req: RequestTypeFullUser, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const fileID = req.body.id;
+      const { _id: userID } = req.user;
+      // TODO ADD THIS FOR GOOGLE DRIVE TOO
+      await fileService.restoreFileFromTrash(userID, fileID);
+
+      res.send();
+    } catch (e) {
+      console.log('\nAdd To Trash File Error File Route:', e.message);
+      const code = !e.code
+        ? 500
+        : e.code >= 400 && e.code <= 599
+        ? e.code
+        : 500;
+      res.status(code).send();
+    }
+  };
+
+  addToTrash = async (req: RequestTypeFullUser, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const fileID = req.body.id;
+      const { _id: userID } = req.user;
+      // TODO ADD THIS FOR GOOGLE DRIVE TOO
+      await fileService.addFileToTrash(userID, fileID);
+
+      res.send();
+    } catch (e) {
+      console.log('\nAdd To Trash File Error File Route:', e.message);
       const code = !e.code
         ? 500
         : e.code >= 400 && e.code <= 599

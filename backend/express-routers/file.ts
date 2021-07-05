@@ -70,6 +70,12 @@ router.get(
   fileController.streamVideo,
 );
 
+router.get(
+  '/file-service/stream-audio/:id',
+  authStreamVideo,
+  fileController.streamAudio,
+);
+
 router.delete(
   '/file-service/remove-stream-video-token',
   authStreamVideo,
@@ -103,6 +109,14 @@ router.patch(
 router.patch('/file-service/rename', auth, fileController.renameFile);
 
 router.patch('/file-service/move', auth, fileController.moveFile);
+
+router.patch('/file-service/trash', auth, fileController.addToTrash);
+
+router.patch(
+  '/file-service/restore',
+  auth,
+  fileController.restoreFileFromTrash,
+);
 
 router.delete('/file-service/remove-link/:id', auth, fileController.removeLink);
 

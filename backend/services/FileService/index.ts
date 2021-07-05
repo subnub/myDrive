@@ -135,11 +135,13 @@ class MongoFileService {
     const folderSearch = query.folder_search || undefined;
     const filterByItemType = query.filterByItemType || undefined;
     const sortByObject = sortBySwitch(sortBy);
+    const trash = query.trash || undefined;
     limit = parseInt(limit);
 
     console.log('TYPE', type);
     console.log('SORT BY', sortBy);
     console.log('query sort', sortByObject);
+    console.log('trash', trash);
 
     const s3Enabled = user.s3Enabled ? true : false;
 
@@ -156,6 +158,7 @@ class MongoFileService {
       folderSearch,
       type as any,
       filterByItemType,
+      trash,
     );
 
     const fileList = await dbUtilsFile.getList(queryObj, sortByObject, limit);
@@ -233,6 +236,24 @@ class MongoFileService {
       fileList,
       folderList,
     };
+  };
+
+  restoreFileFromTrash = async (userID: string, fileID: string) => {
+    const file = await dbUtilsFile.restoreFileFromTrash(fileID, userID);
+
+    if (!file.lastErrorObject.updatedExisting)
+      throw new NotFoundError('Add File To Trash File Not Found Error');
+
+    return file;
+  };
+
+  addFileToTrash = async (userID: string, fileID: string) => {
+    const file = await dbUtilsFile.addFileToTrash(fileID, userID);
+
+    if (!file.lastErrorObject.updatedExisting)
+      throw new NotFoundError('Add File To Trash File Not Found Error');
+
+    return file;
   };
 
   renameFile = async (userID: string, fileID: string, title: string) => {

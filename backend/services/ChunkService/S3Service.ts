@@ -91,6 +91,7 @@ class S3Service implements ChunkInterface {
       IV: initVect,
       s3ID: randomS3ID,
       fileType: fileType || fileTypes.myDrive,
+      trash: false,
     };
 
     if (personalFile) metadata = { ...metadata, personalFile: true };
@@ -277,6 +278,149 @@ class S3Service implements ChunkInterface {
   };
 
   streamVideo = async (
+    user: UserInterface,
+    fileID: string,
+    headers: any,
+    res: Response,
+    req: Request,
+  ) => {
+    // To get this all working correctly with encryption and across
+    // All browsers took many days, tears, and some of my sanity.
+    // Shoutout to Tyzoid for helping me with the decryption
+    // And and helping me understand how the IVs work.
+
+    // P.S I hate safari >:(
+    // Why do yall have to be weird with video streaming
+    // 90% of the issues with this are only in Safari
+    // Is safari going to be the next internet explorer?
+
+    const userID = user._id;
+    const currentFile: FileInterface = await dbUtilsFile.getFileInfo(
+      fileID,
+      userID,
+    );
+
+    if (!currentFile) throw new NotFoundError('Video File Not Found');
+
+    const password = user.getEncryptionKey();
+
+    if (!password) throw new ForbiddenError('Invalid Encryption Key');
+
+    const fileSize = currentFile.metadata.size;
+
+    const isPersonal = currentFile.metadata.personalFile!;
+
+    const range = headers.range;
+    const parts = range.replace(/bytes=/, '').split('-');
+    let start = parseInt(parts[0], 10);
+    let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunksize = end - start + 1;
+    const IV = currentFile.metadata.IV.buffer as Buffer;
+
+    let head = {
+      'Content-Range': 'bytes ' + start + '-' + end + '/' + fileSize,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunksize,
+      'Content-Type': 'video/mp4',
+    };
+
+    let currentIV = IV;
+
+    let fixedStart = 0;
+    let fixedEnd = currentFile.length;
+
+    if (start === 0 && end === 1) {
+      // This is for Safari/iOS, Safari will request the first
+      // Byte before actually playing the video. Needs to be
+      // 16 bytes.
+
+      fixedStart = 0;
+      fixedEnd = 15;
+    } else {
+      // If you're a normal browser, or this isn't Safari's first request
+      // We need to make it so start is divisible by 16, since AES256
+      // Has a block size of 16 bytes.
+
+      fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+
+      // I goofed up and forgot to add the encrypted file size to S3 data,
+      // It just used the normal file size :(
+      // So you'll notice only on the S3 route do i need to fix the end length
+      // To, this is because the other 2 routes use the encrypted file size
+      // Which is always a multiple of 16. I cannot change this now
+      // Since previous versions will still have the issue, but
+      // This is a simple fix luckily.
+
+      fixedEnd = fixedEnd % 16 === 0 ? fixedEnd : fixEndChunkLength(fixedEnd);
+    }
+
+    if (+start === 0) {
+      // This math will not work if the start is 0
+      // So if it is we just change fixed start back
+      // To 0.
+
+      fixedStart = 0;
+    }
+
+    // We also need to calculate the difference between the start and the
+    // Fixed start position. Since there will be an offset if the original
+    // Request is not divisible by 16, it will not return the right part
+    // Of the file, you will see how we do this in the awaitStreamVideo
+    // code.
+
+    const differenceStart = start - fixedStart;
+
+    if (fixedStart !== 0 && start !== 0) {
+      // If this isn't the first request, the way AES256 works is when you try to
+      // Decrypt a certain part of the file that isn't the start, the IV will
+      // Actually be the 16 bytes ahead of where you are trying to
+      // Start the decryption.
+
+      currentIV = (await getPrevIVS3(
+        fixedStart - 16,
+        currentFile.metadata.s3ID!,
+        isPersonal,
+        user,
+      )) as Buffer;
+    }
+
+    const { s3Storage, bucket } = await this.getS3Auth(currentFile, user);
+
+    const params: any = {
+      Bucket: bucket,
+      Key: currentFile.metadata.s3ID!,
+      Range: `bytes=${fixedStart}-${fixedEnd}`,
+    };
+
+    const s3ReadStream = s3Storage.getObject(params).createReadStream();
+
+    const CIPHER_KEY = crypto.createHash('sha256').update(password).digest();
+
+    const decipher = crypto.createDecipheriv('aes256', CIPHER_KEY, currentIV);
+
+    decipher.setAutoPadding(false);
+
+    res.writeHead(206, head);
+
+    const allStreamsToErrorCatch = [s3ReadStream, decipher];
+
+    s3ReadStream.pipe(decipher);
+
+    await awaitStreamVideo(
+      start,
+      end,
+      differenceStart,
+      decipher,
+      res,
+      req,
+      allStreamsToErrorCatch,
+      s3ReadStream,
+    );
+
+    s3ReadStream.destroy();
+  };
+
+  streamAudio = async (
     user: UserInterface,
     fileID: string,
     headers: any,

@@ -24,6 +24,7 @@ const fileSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      trash: Boolean,
       parent: {
         type: String,
         required: true,
@@ -88,6 +89,7 @@ export interface FileInterface extends Document {
     s3ID?: string;
     personalFile?: boolean;
     fileType?: keyof typeof fileTypes;
+    trash?: boolean;
   };
 }
 

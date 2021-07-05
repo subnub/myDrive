@@ -140,6 +140,28 @@ class DbUtil {
     return file;
   };
 
+  restoreFileFromTrash = async (fileID: string, userID: string) => {
+    const file = (await conn.db
+      .collection('fs.files')
+      .findOneAndUpdate(
+        { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
+        { $set: { 'metadata.trash': null } },
+      )) as FileInterface;
+
+    return file;
+  };
+
+  addFileToTrash = async (fileID: string, userID: string) => {
+    const file = (await conn.db
+      .collection('fs.files')
+      .findOneAndUpdate(
+        { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
+        { $set: { 'metadata.trash': true } },
+      )) as FileInterface;
+
+    return file;
+  };
+
   moveFile = async (
     fileID: string,
     userID: string,

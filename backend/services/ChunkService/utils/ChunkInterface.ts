@@ -24,6 +24,13 @@ interface ChunkInterface {
     res: Response,
     req: Request,
   ) => void;
+  streamAudio: (
+    user: UserInterface,
+    fileID: string,
+    headers: any,
+    res: Response,
+    req: Request,
+  ) => void;
   getFileReadStream: (user: UserInterface, fileID: string) => any;
 }
 
