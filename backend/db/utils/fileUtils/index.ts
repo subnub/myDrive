@@ -79,7 +79,10 @@ class DbUtil {
   };
 
   getQuickList = async (userID: string, s3Enabled: boolean) => {
-    let query: any = { 'metadata.owner': new ObjectID(userID) };
+    let query: any = {
+      'metadata.owner': new ObjectID(userID),
+      'metadata.trash': false,
+    };
 
     if (!s3Enabled) {
       query = { ...query, 'metadata.personalFile': null };
@@ -141,23 +144,30 @@ class DbUtil {
   };
 
   restoreFileFromTrash = async (fileID: string, userID: string) => {
-    const file = (await conn.db
-      .collection('fs.files')
-      .findOneAndUpdate(
-        { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
-        { $set: { 'metadata.trash': undefined } },
-      )) as FileInterface;
+    const file = (await conn.db.collection('fs.files').findOneAndUpdate(
+      { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
+      {
+        $set: {
+          'metadata.trash': false,
+          'metadata.trashedTime': 0,
+        },
+      },
+    )) as FileInterface;
 
     return file;
   };
 
-  addFileToTrash = async (fileID: string, userID: string) => {
-    const file = (await conn.db
-      .collection('fs.files')
-      .findOneAndUpdate(
-        { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
-        { $set: { 'metadata.trash': true } },
-      )) as FileInterface;
+  addFileToTrash = async (
+    fileID: string,
+    trashedTime: number,
+    userID: string,
+  ) => {
+    const file = (await conn.db.collection('fs.files').findOneAndUpdate(
+      { '_id': new ObjectID(fileID), 'metadata.owner': new ObjectID(userID) },
+      {
+        $set: { 'metadata.trash': true, 'metadata.trashedTime': trashedTime },
+      },
+    )) as FileInterface;
 
     return file;
   };

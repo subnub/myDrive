@@ -248,7 +248,10 @@ class MongoFileService {
   };
 
   addFileToTrash = async (userID: string, fileID: string) => {
-    const file = await dbUtilsFile.addFileToTrash(fileID, userID);
+    const date = new Date();
+    const trashedTime = date.getTime();
+
+    const file = await dbUtilsFile.addFileToTrash(fileID, trashedTime, userID);
 
     if (!file.lastErrorObject.updatedExisting)
       throw new NotFoundError('Add File To Trash File Not Found Error');

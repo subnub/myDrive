@@ -24,7 +24,14 @@ const fileSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      trash: Boolean,
+      trash: {
+        type: Boolean,
+        required: true,
+      },
+      trashedTime: {
+        type: Number,
+        required: true,
+      },
       parent: {
         type: String,
         required: true,
@@ -79,6 +86,8 @@ export interface FileInterface extends Document {
     hasThumbnail: boolean;
     isVideo: boolean;
     isAudio: boolean;
+    trash: boolean;
+    trashedTime: Number;
     thumbnailID?: string;
     previewID?: string;
     size: number;
@@ -89,7 +98,6 @@ export interface FileInterface extends Document {
     s3ID?: string;
     personalFile?: boolean;
     fileType?: keyof typeof fileTypes;
-    trash?: boolean;
   };
 }
 

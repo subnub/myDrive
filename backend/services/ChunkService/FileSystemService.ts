@@ -74,6 +74,7 @@ class FileSystemService implements ChunkInterface {
       IV: initVect,
       filePath: env.fsDirectory + systemFileName,
       trash: false,
+      trashedTime: 0,
     };
 
     const fileWriteStream = fs.createWriteStream(metadata.filePath);

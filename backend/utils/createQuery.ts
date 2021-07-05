@@ -94,7 +94,7 @@ const createQuery = (
       'metadata.trash': true,
     };
   } else {
-    query = { ...query, 'metadata.trash': null } as any;
+    query = { ...query, 'metadata.trash': false } as any;
   }
 
   //console.log('finished types');

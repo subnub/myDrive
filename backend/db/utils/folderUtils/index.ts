@@ -74,7 +74,7 @@ class DbUtil {
     if (trash) {
       query = { ...query, trash: true };
     } else {
-      query = { ...query, trash: undefined };
+      query = { ...query, trash: false };
     }
 
     const folderList = (await Folder.find(query).sort(
@@ -156,16 +156,20 @@ class DbUtil {
   restoreFolderFromTrash = async (folderID: string, userID: string) => {
     const folder = (await Folder.findOneAndUpdate(
       { _id: new ObjectID(folderID), owner: userID },
-      { $set: { trash: undefined } },
+      { $set: { trash: false, trashedTime: 0 } },
     )) as FolderInterface;
 
     return folder;
   };
 
-  addFolderToTrash = async (folderID: string, userID: string) => {
+  addFolderToTrash = async (
+    folderID: string,
+    trashedTime: number,
+    userID: string,
+  ) => {
     const folder = (await Folder.findOneAndUpdate(
       { _id: new ObjectID(folderID), owner: userID },
-      { $set: { trash: true } },
+      { $set: { trash: true, trashedTime } },
     )) as FolderInterface;
 
     return folder;

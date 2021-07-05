@@ -171,7 +171,13 @@ class FolderService {
   };
 
   addFolderToTrash = async (userID: string, folderID: string) => {
-    const folder = await utilsFolder.addFolderToTrash(folderID, userID);
+    const date = new Date();
+    const trashedTime = date.getTime();
+    const folder = await utilsFolder.addFolderToTrash(
+      folderID,
+      trashedTime,
+      userID,
+    );
 
     if (!folder) throw new NotFoundError('Trash Folder Not Found');
 

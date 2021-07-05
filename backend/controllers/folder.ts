@@ -90,7 +90,7 @@ class FolderController {
 
     try {
       const user = req.user;
-      const data = req.body;
+      const data = { ...req.body, trash: false, trashedTime: 0 };
       const { name, parent } = data;
       const fileType = req.query.type;
 
