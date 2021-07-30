@@ -81,7 +81,6 @@
     "googleapis": "^52.1.0",
     "helmet": "^3.21.2",
     "history": "^4.10.1",
-    "i": "^0.3.6",
     "jsonwebtoken": "^8.5.1",
     "mini-css-extract-plugin": "^0.8.2",
     "moment": "^2.24.0",
