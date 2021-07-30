@@ -57,7 +57,7 @@
     "@types/redis": "^2.8.26",
     "@types/request": "^2.48.5",
     "@types/request-ip": "0.0.35",
-    "@types/sharp": "^0.25.0",
+    "@types/sharp": "^0.28.3",
     "@types/uuid": "^7.0.2",
     "@types/validator": "^13.0.0",
     "aws-sdk": "^2.657.0",
