@@ -2,6 +2,7 @@ import GoogleFileService from '../services/GoogleFileService';
 import FileService from '../services/FileService';
 import { UserInterface } from '../models/user';
 import PersonalFileService from '../services/PersonalFileService';
+import { FileInterface } from '../models/file';
 
 const fileService = new FileService();
 const googleFileService = new GoogleFileService();
@@ -37,3 +38,26 @@ export const allQuickFileTypesFromList = [
     googleFileService.getGoogleQuickList(user),
 ];
 // export const allFileTypes  = {}
+
+export type sortByType =
+  | 'alp_desc'
+  | 'alp_asc'
+  | 'date_desc'
+  | 'date_asc'
+  | 'default';
+
+export type fileListQueryType = {
+  userID: string;
+  parent: string;
+  sortBy?: sortByType;
+  startAt?: number;
+  startAtDate?: string;
+  searchQuery?: string | RegExp;
+  startAtName?: string;
+  folderSearch?: boolean;
+  fileType?: keyof typeof fileTypes;
+  filterByItemType?: string;
+  trash?: boolean;
+  pageToken?: string;
+  pageTokenDocument?: FileInterface | undefined;
+};

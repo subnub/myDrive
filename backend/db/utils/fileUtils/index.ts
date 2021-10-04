@@ -102,6 +102,7 @@ class DbUtil {
     const fileList = (await conn.db
       .collection('fs.files')
       .find(queryObj)
+      .collation({ locale: 'en' })
       .sort(sortBy)
       .limit(limit)
       .toArray()) as FileInterface[];

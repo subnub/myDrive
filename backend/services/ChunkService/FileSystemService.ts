@@ -40,7 +40,9 @@ class FileSystemService implements ChunkInterface {
     const password = user.getEncryptionKey();
 
     if (!password) throw new ForbiddenError('Invalid Encryption Key');
-
+    const _date = new Date();
+    const date = _date.toISOString();
+    const _id = new ObjectID();
     const initVect = crypto.randomBytes(16);
 
     const CIPHER_KEY = crypto.createHash('sha256').update(password).digest();
@@ -62,6 +64,8 @@ class FileSystemService implements ChunkInterface {
 
     const systemFileName = uuid.v4();
 
+    const uniqueFileName = filename + '-' + uuid.v4();
+
     const metadata = {
       owner: user._id,
       parent,
@@ -75,6 +79,7 @@ class FileSystemService implements ChunkInterface {
       filePath: env.fsDirectory + systemFileName,
       trash: false,
       trashedTime: 0,
+      uniqueFileName,
     };
 
     const fileWriteStream = fs.createWriteStream(metadata.filePath);
@@ -90,12 +95,13 @@ class FileSystemService implements ChunkInterface {
       totalStreamsToErrorCatch,
     );
 
-    const date = new Date();
     const encryptedFileSize = await getFileSize(metadata.filePath);
 
+    console.log('new id', _id);
     const currentFile = new File({
+      _id,
       filename,
-      uploadDate: date.toISOString(),
+      uploadDate: date,
       length: encryptedFileSize,
       metadata,
     });

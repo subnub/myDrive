@@ -11,6 +11,7 @@ import { UserInterface } from '../../models/user';
 import { FileInterface } from '../../models/file';
 import tempStorage from '../../tempStorage/tempStorage';
 import { fileTypes } from '../../types/fileTypes';
+import { ObjectID } from 'mongodb';
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
@@ -126,7 +127,7 @@ class MongoFileService {
     let searchQuery = query.search || '';
     const parent = query.parent || '/';
     let limit = query.limit || 50;
-    const sortBy = query.sortBy || 'DEFAULT';
+    const sortBy = query.sortBy || 'default';
     // let sortBy = query.sortBy || 'DEFAULT';
     const startAt = query.startAt || undefined;
     const startAtDate = query.startAtDate || '0';
@@ -136,7 +137,12 @@ class MongoFileService {
     const filterByItemType = query.filterByItemType || undefined;
     const sortByObject = sortBySwitch(sortBy);
     const trash = query.trash || undefined;
+    const pageToken = query.pageToken || undefined;
     limit = parseInt(limit);
+
+    const pageTokenDocument = pageToken
+      ? await dbUtilsFile.getFileInfo(pageToken, userID)
+      : undefined;
 
     console.log('TYPE', type);
     console.log('SORT BY', sortBy);
@@ -145,23 +151,31 @@ class MongoFileService {
 
     const s3Enabled = user.s3Enabled ? true : false;
 
-    const queryObj = createQuery(
+    const queryObj = createQuery({
       userID,
       parent,
       sortBy,
       startAt,
       startAtDate,
       searchQuery,
-      s3Enabled,
       startAtName,
-      storageType,
       folderSearch,
-      type as any,
       filterByItemType,
       trash,
-    );
+      pageToken,
+      pageTokenDocument,
+    });
 
     const fileList = await dbUtilsFile.getList(queryObj, sortByObject, limit);
+    // console.log('file list first item', fileList[0]);
+    // console.log('file list last item', fileList[fileList.length - 1]);
+
+    for (const file of fileList) {
+      console.log('searching', file._id);
+      if (file._id.toString() === '60e66847715cd2f8b6a160f9') {
+        console.log('F9-FILEID-FOUND');
+      }
+    }
 
     //console.log('file list', fileList);
 

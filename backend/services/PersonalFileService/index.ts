@@ -25,6 +25,7 @@ type userAccessType = {
 class PersonalFileService {
   constructor() {}
 
+  //TODO: This might not be needed, try to remove as much of these as possible
   getList = async (
     user: userAccessType | UserInterface,
     query: any,
@@ -46,19 +47,16 @@ class PersonalFileService {
 
     const s3Enabled = user.s3Enabled ? true : false;
 
-    const queryObj = createQuery(
+    const queryObj = createQuery({
       userID,
       parent,
-      query.sortby,
+      sortBy,
       startAt,
       startAtDate,
       searchQuery,
-      s3Enabled,
       startAtName,
-      storageType,
       folderSearch,
-      fileTypes.personalDrive as keyof typeof fileTypes,
-    );
+    });
 
     const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);
 

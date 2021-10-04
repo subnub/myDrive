@@ -20,6 +20,10 @@ const fileSchema = new mongoose.Schema({
   },
   metadata: {
     type: {
+      uniqueFileName: {
+        type: String,
+        required: true,
+      },
       owner: {
         type: String,
         required: true,
@@ -80,6 +84,7 @@ export interface FileInterface extends Document {
   filename: string;
   lastErrorObject: { updatedExisting: any };
   metadata: {
+    uniqueFileName: string;
     owner: string | ObjectID;
     parent: string;
     parentList: string;
