@@ -93,6 +93,7 @@ class S3Service implements ChunkInterface {
       fileType: fileType || fileTypes.myDrive,
       trash: false,
       trashedTime: 0,
+      itemType: 'file',
     };
 
     if (personalFile) metadata = { ...metadata, personalFile: true };

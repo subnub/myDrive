@@ -18,6 +18,7 @@ const fileSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  itemType: String,
   metadata: {
     type: {
       uniqueFileName: {

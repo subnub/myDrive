@@ -32,6 +32,7 @@ const folderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    itemType: String,
   },
   {
     timestamps: true,

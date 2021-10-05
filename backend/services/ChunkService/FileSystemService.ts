@@ -80,6 +80,7 @@ class FileSystemService implements ChunkInterface {
       trash: false,
       trashedTime: 0,
       uniqueFileName,
+      itemType: 'file',
     };
 
     const fileWriteStream = fs.createWriteStream(metadata.filePath);

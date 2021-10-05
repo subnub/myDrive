@@ -382,7 +382,7 @@ class FolderController {
 
       //res.send(folderList);
     } catch (e) {
-      console.log('\nGet Folder List Error Folder Route:', e.message);
+      console.log('\nGet Folder List Error Folder Route:', e);
       const code = !e.code
         ? 500
         : e.code >= 400 && e.code <= 599

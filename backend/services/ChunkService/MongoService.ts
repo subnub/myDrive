@@ -69,6 +69,7 @@ class MongoService implements ChunkInterface {
       IV: initVect,
       trash: false,
       trashedTime: 0,
+      itemType: 'file',
     };
 
     let bucket = new mongoose.mongo.GridFSBucket(conn.db);
