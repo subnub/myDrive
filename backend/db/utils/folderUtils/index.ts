@@ -63,19 +63,21 @@ class DbUtil {
     //     if (itemType === "nonpersonal") query = {...query, "personalFolder": null}
     // }
 
-    if (fileType) {
-      if (fileType === fileTypes.personalDrive) {
-        query = { ...query, fileType: fileTypes.personalDrive };
-      } else {
-        query = { ...query, fileType: null } as any;
-      }
-    }
+    // if (fileType) {
+    //   if (fileType === fileTypes.personalDrive) {
+    //     query = { ...query, fileType: fileTypes.personalDrive };
+    //   } else {
+    //     query = { ...query, fileType: null } as any;
+    //   }
+    // }
 
-    if (trash) {
-      query = { ...query, trash: true };
-    } else {
-      query = { ...query, trash: false };
-    }
+    // if (trash) {
+    //   query = { ...query, trash: true };
+    // } else {
+    //   query = { ...query, trash: false };
+    // }
+
+    console.log('folder list query', query);
 
     const folderList = (await Folder.find(query).sort(
       sortBy,
