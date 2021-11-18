@@ -56,6 +56,7 @@ app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:500
 // app.use(requestIp.mw());
 
 app.use(busboy({
+    headers : { 'content-type': 'test' }
     highWaterMark: 2 * 1024 * 1024,
     
 }));
