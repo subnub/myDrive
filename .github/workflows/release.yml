@@ -15,8 +15,20 @@ on:
       - 'main'
 
 jobs:
-  docker:
+  Test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build image
+        run: docker-compose build
+      - name: Booting up MongoDB
+        run: docker-compose up -d mongodb
+      - name: Running indexes creation
+        run: docker-compose run mydrive create-indexes-database
+
+  Release:
+    runs-on: ubuntu-latest
+    needs: Test
     steps:
       -
         name: Checkout
