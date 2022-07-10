@@ -48,7 +48,7 @@ jobs:
       - name: Create Mongo Volume
         run: docker volume create mongodb_data_volume
       - name: Booting up MongoDB
-        run: docker-compose up -d mongodb
+        run: docker-compose up -d mongo
       - name: Running indexes creation
         run: docker-compose run mydrive create-indexes-database
 
