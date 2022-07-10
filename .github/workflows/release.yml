@@ -32,7 +32,7 @@ jobs:
           MONGODB_URL=mongodb://mongo:27017/personal-drive
           KEY=super-secrete-server-encryption-key
           REMOTE_URL=http://localhost:3000/
-          DB_TYPE=fs
+          DB_TYPE=mongo
           FS_DIRECTORY=/store
           PASSWORD=super-secrete-password
           SSL=false
@@ -50,7 +50,7 @@ jobs:
       - name: Booting up MongoDB
         run: docker-compose up -d mongo
       - name: Running indexes creation
-        run: docker-compose run mydrive create-indexes-database
+        run: docker-compose run app npm run create-indexes-database
 
   Release:
     runs-on: ubuntu-latest
