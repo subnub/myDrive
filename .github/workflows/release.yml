@@ -23,6 +23,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Text ENVVARS
+        run: |
+          echo """
+          MONGODB_URL=mongodb://mongo:27017/personal-drive
+          KEY=super-secrete-server-encryption-key
+          REMOTE_URL=http://localhost:3000/
+          DB_TYPE=fs
+          FS_DIRECTORY=/store
+          PASSWORD=super-secrete-password
+          SSL=false
+          DISABLE_STORAGE=true
+          DOCKER=true
+          NODE_ENV=production
+          PORT=3000
+          HTTP_PORT=3000
+          HTTPS_PORT=8080""" > ./docker-variables.env
       - name: Build image
         run: docker-compose build
       - name: Booting up MongoDB
