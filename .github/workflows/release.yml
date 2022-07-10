@@ -21,6 +21,7 @@ on:
 jobs:
   Test:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v3
       - name: Create Test ENVVARS
@@ -51,6 +52,7 @@ jobs:
   Release:
     runs-on: ubuntu-latest
     needs: Test
+    if: always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure'))
     steps:
       -
         name: Checkout
