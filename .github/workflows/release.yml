@@ -2,6 +2,10 @@ name: ci
 
 # https://github.com/docker/build-push-action/blob/master/docs/advanced/tags-labels.md
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   schedule:
     - cron: '0 10 * * *'
