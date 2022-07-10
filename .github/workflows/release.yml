@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Text ENVVARS
+      - name: Create Test ENVVARS
         run: |
           echo """
           MONGODB_URL=mongodb://mongo:27017/personal-drive
@@ -41,6 +41,8 @@ jobs:
           HTTPS_PORT=8080""" > ./docker-variables.env
       - name: Build image
         run: docker-compose build
+      - name: Create Mongo Volume
+        run: docker volume create mongodb_data_volume
       - name: Booting up MongoDB
         run: docker-compose up -d mongodb
       - name: Running indexes creation
