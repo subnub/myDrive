@@ -62,7 +62,7 @@ jobs:
     # Always run : but only if
     # Test Job was skipped,
     # Test Job ran and succeeded
-    if: always() && contains(needs.*.result, 'success') && !(contains(needs.*.result, 'failure'))
+    if: always() && !(contains(needs.*.result, 'failure'))
     steps:
       - name: Checkout
         uses: actions/checkout@v3
