@@ -85,7 +85,7 @@
     "jsonwebtoken": "^8.5.1",
     "mini-css-extract-plugin": "^0.8.2",
     "moment": "^2.24.0",
-    "mongodb": "3.6.3",
+    "mongodb": "3.6.10",
     "mongoose": "5.10.13",
     "normalize.css": "^8.0.1",
     "npm": "^7.3.0",
