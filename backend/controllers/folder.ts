@@ -1,274 +1,244 @@
 import FolderService from "../services/FolderService";
 import { Request, Response } from "express";
-import MongoService from "../services/ChunkService/MongoService";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 
 const folderService = new FolderService();
 
 type userAccessType = {
-    _id: string,
-    emailVerified: boolean,
-    email: string,
-    s3Enabled: boolean,
-}
+  _id: string;
+  emailVerified: boolean;
+  email: string;
+  s3Enabled: boolean;
+};
 
 interface RequestType extends Request {
-    user?: userAccessType,
-    encryptedToken?: string
+  user?: userAccessType;
+  encryptedToken?: string;
 }
 
-type ChunkServiceType = MongoService | FileSystemService | S3Service;
+type ChunkServiceType = FileSystemService | S3Service;
 
 class FolderController {
+  chunkService: ChunkServiceType;
 
-    chunkService: ChunkServiceType;
+  constructor(chunkService: ChunkServiceType) {
+    this.chunkService = chunkService;
+  }
 
-    constructor(chunkService: ChunkServiceType) {
-
-        this.chunkService = chunkService;
+  uploadFolder = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    uploadFolder = async(req: RequestType, res: Response) => {
+    try {
+      const data = req.body;
 
-        if (!req.user) {
+      const folder = await folderService.uploadFolder(data);
 
-            return 
-        }
-    
-        try {
+      res.send(folder);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nUpload Folder Error Folder Route:", e.message);
+      }
+      res.status(500).send("Server error creating folder");
+    }
+  };
 
-            const data = req.body;
-
-            const folder = await folderService.uploadFolder(data);
-
-            res.send(folder);
-    
-        } catch (e) {
-
-            console.log("\nUpload Folder Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+  deleteFolder = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    deleteFolder = async(req: RequestType, res: Response) => {
+    try {
+      const userID = req.user._id;
+      const folderID = req.body.id;
+      const parentList = req.body.parentList;
 
-        if (!req.user) {
+      await this.chunkService.deleteFolder(userID, folderID, parentList);
 
-            return 
-        }
-    
-        try {
-    
-            const userID = req.user._id;
-            const folderID = req.body.id; 
-            const parentList = req.body.parentList
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nDelete Folder Error Folder Route:", e.message);
+      }
 
-            await this.chunkService.deleteFolder(userID, folderID, parentList);
-    
-            res.send();
+      res.status(500).send("Server error deleting folder");
+    }
+  };
 
-        } catch (e) {
-            
-            console.log("\nDelete Folder Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+  getSubfolderFullList = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    getSubfolderFullList = async(req: RequestType, res: Response) => {
+    try {
+      const user = req.user;
+      const id: any = req.query.id;
 
-        if (!req.user) {
-            return 
-        }
+      const subfolderList = await folderService.getSubfolderFullList(user, id);
 
-        try {
+      res.send(subfolderList);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nGet Subfolder List Error Folder Route:", e.message);
+      }
 
+      res.status(500).send("Server error getting subfolder full list");
+    }
+  };
 
-            const user = req.user;
-            const id: any = req.query.id;
-
-            const subfolderList = await folderService.getSubfolderFullList(user, id);
-
-            res.send(subfolderList);
-
-        } catch (e) {
-           
-            console.log("\nGet Subfolder List Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+  deletePersonalFolder = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    deletePersonalFolder = async(req: RequestType, res: Response) => {
+    try {
+      const userID = req.user._id;
+      const folderID = req.body.id;
+      const parentList = req.body.parentList;
 
-        if (!req.user) {
+      const s3Service = new S3Service();
 
-            return 
-        }
-    
-        try {
-    
-            const userID = req.user._id;
-            const folderID = req.body.id; 
-            const parentList = req.body.parentList
+      await s3Service.deleteFolder(userID, folderID, parentList);
 
-            const s3Service = new S3Service();
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nDelete Personal Folder Error Folder Route:", e.message);
+      }
 
-            await s3Service.deleteFolder(userID, folderID, parentList);
-    
-            res.send();
+      res.status(500).send("Server error deleting personal folder");
+    }
+  };
 
-        } catch (e) {
-            
-            console.log("\nDelete Personal Folder Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+  deleteAll = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    deleteAll = async(req: RequestType, res: Response) => {
+    try {
+      const userID = req.user._id;
 
-        if (!req.user) {
+      await this.chunkService.deleteAll(userID);
 
-            return 
-        }
-    
-        try {
-    
-            const userID = req.user._id;
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nDelete All Error Folder Route:", e.message);
+      }
 
-            await this.chunkService.deleteAll(userID);
+      res.status(500).send("Server error deleting all");
+    }
+  };
 
-            res.send();
-
-        } catch (e) {
-           
-            console.log("\nDelete All Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+  getInfo = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    getInfo = async(req: RequestType, res: Response) => {
+    try {
+      const userID = req.user._id;
+      const folderID = req.params.id;
 
-        if (!req.user) {
-            return;
-        }
-    
-        try {
-    
-            const userID = req.user._id;
-            const folderID = req.params.id;
-    
-            const folder = await folderService.getFolderInfo(userID, folderID);
-    
-            res.send(folder);
-    
-        } catch (e) {
+      const folder = await folderService.getFolderInfo(userID, folderID);
 
-            console.log("\nGet Info Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+      res.send(folder);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nGet Info Error Folder Route:", e.message);
+      }
+
+      res.status(500).send("Server error getting user info");
+    }
+  };
+
+  getSubfolderList = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    getSubfolderList = async(req: RequestType, res: Response) => {
+    try {
+      const userID = req.user._id;
+      const folderID = req.query.id as string;
 
-        if (!req.user) {
+      const { folderIDList, folderNameList } =
+        await folderService.getFolderSublist(userID, folderID);
 
-            return
-        } 
-    
-        try {
-    
-            const userID = req.user._id;
-            const folderID = req.query.id as string;
-            
-            const {folderIDList, folderNameList} = await folderService.getFolderSublist(userID, folderID);
-            
-            res.send({folderIDList, folderNameList})    
-    
-        } catch (e) {
-            
-            console.log("\nGet Subfolder Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+      res.send({ folderIDList, folderNameList });
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nServer error getting subfolder list", e.message);
+      }
+
+      res.status(500).send("");
+    }
+  };
+
+  getFolderList = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    getFolderList = async(req: RequestType, res: Response) => {
+    try {
+      const user = req.user;
+      const query = req.query;
 
-        if (!req.user) {
+      const folderList = await folderService.getFolderList(user, query);
 
-            return 
-        }
-    
-        try {
-    
-            const user = req.user;
-            const query = req.query;
+      res.send(folderList);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nGet Folder List Error Folder Route:", e.message);
+      }
 
-            const folderList = await folderService.getFolderList(user, query);
+      res.status(500).send("Server error getting folder list");
+    }
+  };
 
-            res.send(folderList);
-
-        } catch (e) {
-            
-            console.log("\nGet Folder List Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+  moveFolder = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    moveFolder = async(req: RequestType, res: Response) => {
+    try {
+      const userID = req.user._id;
+      const folderID = req.body.id;
+      const parent = req.body.parent;
 
-        if (!req.user) {
-            return;
-        }
+      await folderService.moveFolder(userID, folderID, parent);
 
-        try {
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nMove Folder Error Folder Route:", e.message);
+      }
 
-            const userID = req.user._id;
-            const folderID = req.body.id;
-            const parent = req.body.parent;
+      res.status(500).send("Server error moving folder");
+    }
+  };
 
-            await folderService.moveFolder(userID, folderID, parent);
-
-            res.send();
-
-        } catch (e) {
-
-            console.log("\nMove Folder Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+  renameFolder = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    renameFolder = async(req: RequestType, res: Response) => {
+    try {
+      const userID = req.user._id;
+      const folderID = req.body.id;
+      const title = req.body.title;
 
-        if (!req.user) {
-            return;
-        }
-    
-        try {
-    
-            const userID = req.user._id;
-            const folderID = req.body.id;
-            const title = req.body.title
-    
-            await folderService.renameFolder(userID, folderID, title);
-    
-            res.send()
-            
-        } catch (e) {
-    
-            console.log("\nRename Folder Error Folder Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+      await folderService.renameFolder(userID, folderID, title);
+
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nRename Folder Error Folder Route:", e.message);
+      }
+
+      res.status(500).send("Server error renaming folder");
     }
+  };
 }
 
 export default FolderController;

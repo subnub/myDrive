@@ -7,236 +7,263 @@ import sortBySwitch from "../../utils/sortBySwitchFolder";
 import { UserInterface } from "../../models/user";
 
 type userAccessType = {
-    _id: string,
-    emailVerified: boolean,
-    email: string,
-    s3Enabled: boolean,
-}
+  _id: string;
+  emailVerified: boolean;
+  email: string;
+  s3Enabled: boolean;
+};
 
 const utilsFile = new UtilsFile();
 const utilsFolder = new UtilsFolder();
 
 class FolderService {
+  uploadFolder = async (data: any) => {
+    const folder = new Folder(data);
 
-    uploadFolder = async(data: any) => {
+    await folder.save();
 
-        const folder = new Folder(data);
-    
-        await folder.save();
+    if (!folder) throw new InternalServerError("Upload Folder Error");
 
-        if (!folder) throw new InternalServerError("Upload Folder Error");
+    return folder;
+  };
 
-        return folder;
+  getFolderInfo = async (userID: string, folderID: string) => {
+    let currentFolder = await utilsFolder.getFolderInfo(folderID, userID);
+
+    if (!currentFolder) throw new NotFoundError("Folder Info Not Found Error");
+
+    const parentID = currentFolder.parent;
+
+    let parentName = "";
+
+    if (parentID === "/") {
+      parentName = "Home";
+    } else {
+      const parentFolder = await utilsFolder.getFolderInfo(parentID, userID);
+
+      if (parentFolder) {
+        parentName = parentFolder.name;
+      } else {
+        parentName = "Unknown";
+      }
     }
 
-    getFolderInfo = async(userID: string, folderID: string) => {
+    const folderName = currentFolder.name;
 
-        let currentFolder = await utilsFolder.getFolderInfo(folderID, userID);
-    
-        if (!currentFolder) throw new NotFoundError("Folder Info Not Found Error");
-    
-        const parentID = currentFolder.parent;
-    
-        let parentName = ""; 
-    
-        if (parentID === "/") {
-    
-            parentName = "Home"
-    
-        } else {
-    
-            const parentFolder = await utilsFolder.getFolderInfo(parentID, userID);
-                
-            if (parentFolder) {
-    
-                parentName = parentFolder.name;
-    
-            } else {
-    
-                parentName = "Unknown"
-            }
-    
-        }
-    
-        const folderName = currentFolder.name
-    
-        currentFolder = {...currentFolder._doc, parentName, folderName}
-        // Must Use ._doc here, or the destucturing/spreading 
-        // Will add a bunch of unneeded variables to the object.
+    currentFolder = { ...currentFolder._doc, parentName, folderName };
+    // Must Use ._doc here, or the destucturing/spreading
+    // Will add a bunch of unneeded variables to the object.
 
-        return currentFolder;
+    return currentFolder;
+  };
+
+  getFolderSublist = async (userID: string, folderID: string) => {
+    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+
+    if (!folder) throw new NotFoundError("Folder Sublist Not Found Error");
+
+    const subfolderList = folder.parentList;
+
+    let folderIDList = [];
+    let folderNameList = [];
+
+    for (let i = 0; i < subfolderList.length; i++) {
+      const currentSubFolderID = subfolderList[i];
+
+      if (currentSubFolderID === "/") {
+        folderIDList.push("/");
+        folderNameList.push("Home");
+      } else {
+        const currentFolder = await utilsFolder.getFolderInfo(
+          currentSubFolderID,
+          userID
+        );
+
+        folderIDList.push(currentFolder._id);
+        folderNameList.push(currentFolder.name);
+      }
     }
 
-    getFolderSublist = async(userID: string, folderID: string) => {
+    folderIDList.push(folderID);
+    folderNameList.push(folder.name);
 
-        const folder = await utilsFolder.getFolderInfo(folderID, userID);
+    return {
+      folderIDList,
+      folderNameList,
+    };
+  };
 
-        if (!folder) throw new NotFoundError("Folder Sublist Not Found Error");
-    
-        const subfolderList = folder.parentList;
+  getFolderList = async (user: userAccessType | UserInterface, query: any) => {
+    const userID = user._id;
 
-        let folderIDList = [];
-        let folderNameList = [];
+    let searchQuery = query.search || "";
+    const parent = query.parent || "/";
+    let sortBy = query.sortby || "DEFAULT";
+    const type = query.type;
+    const storageType = query.storageType || undefined;
+    const folderSearch = query.folder_search || undefined;
+    const itemType = query.itemType || undefined;
+    sortBy = sortBySwitch(sortBy);
 
-        for (let i = 0; i < subfolderList.length; i++) {
+    const s3Enabled = user.s3Enabled ? true : false;
 
-            const currentSubFolderID = subfolderList[i];
+    if (searchQuery.length === 0) {
+      const folderList = await utilsFolder.getFolderListByParent(
+        userID,
+        parent,
+        sortBy,
+        s3Enabled,
+        type,
+        storageType,
+        itemType
+      );
 
-            if (currentSubFolderID === "/") {
+      if (!folderList) throw new NotFoundError("Folder List Not Found Error");
 
-                folderIDList.push("/");
-                folderNameList.push("Home")
+      return folderList;
+    } else {
+      searchQuery = new RegExp(searchQuery, "i");
+      const folderList = await utilsFolder.getFolderListBySearch(
+        userID,
+        searchQuery,
+        sortBy,
+        type,
+        parent,
+        storageType,
+        folderSearch,
+        itemType,
+        s3Enabled
+      );
 
-            } else {
+      if (!folderList) throw new NotFoundError("Folder List Not Found Error");
 
-                const currentFolder = await utilsFolder.getFolderInfo(currentSubFolderID, userID);
+      return folderList;
+    }
+  };
 
-                folderIDList.push(currentFolder._id);
-                folderNameList.push(currentFolder.name)
-            }   
-        }
+  renameFolder = async (userID: string, folderID: string, title: string) => {
+    const folder = await utilsFolder.renameFolder(folderID, userID, title);
 
-        folderIDList.push(folderID);
-        folderNameList.push(folder.name)
+    if (!folder) throw new NotFoundError("Rename Folder Not Found");
+  };
 
-        return {
-            folderIDList, 
-            folderNameList
-        }
+  getSubfolderFullList = async (user: userAccessType, id: string) => {
+    const userID = user._id;
+
+    const folder = await utilsFolder.getFolderInfo(id, userID);
+
+    const subFolders = await this.getFolderList(user, { parent: id }); //folderService.getFolderList(user._id, {parent: id})
+
+    let folderList: any[] = [];
+
+    const rootID = "/";
+
+    let currentID = folder.parent;
+
+    folderList.push({
+      _id: folder._id,
+      parent: folder._id,
+      name: folder.name,
+      subFolders: subFolders,
+    });
+
+    while (true) {
+      if (rootID === currentID) break;
+
+      const currentFolder = await this.getFolderInfo(userID, currentID);
+      const currentSubFolders = await this.getFolderList(user, {
+        parent: currentFolder._id,
+      });
+
+      folderList.splice(0, 0, {
+        _id: currentFolder._id,
+        parent: currentFolder._id,
+        name: currentFolder.name,
+        subFolders: currentSubFolders,
+      });
+
+      currentID = currentFolder.parent;
     }
 
-    getFolderList = async(user: userAccessType | UserInterface, query: any) => {
+    return folderList;
+  };
 
-        const userID = user._id;
+  moveFolder = async (userID: string, folderID: string, parentID: string) => {
+    let parentList = ["/"];
 
-        let searchQuery = query.search || "";
-        const parent = query.parent || "/";
-        let sortBy = query.sortby || "DEFAULT"
-        const type = query.type;
-        const storageType = query.storageType || undefined;
-        const folderSearch = query.folder_search || undefined;
-        const itemType = query.itemType || undefined;
-        sortBy = sortBySwitch(sortBy);
-
-        const s3Enabled = user.s3Enabled ? true : false;
-
-        if (searchQuery.length === 0) {
-
-            const folderList = await utilsFolder.getFolderListByParent(userID, parent, sortBy, s3Enabled, type, storageType, itemType);
-
-            if (!folderList) throw new NotFoundError("Folder List Not Found Error");
-
-            return folderList;
-
-        } else {
-
-            searchQuery = new RegExp(searchQuery, 'i')
-            const folderList = await utilsFolder.getFolderListBySearch(userID, searchQuery, sortBy, type, parent, storageType, folderSearch, itemType, s3Enabled);
-
-            if (!folderList) throw new NotFoundError("Folder List Not Found Error");
-
-            return folderList;
-        }
+    if (parentID.length !== 1) {
+      const parentFile = await utilsFolder.getFolderInfo(parentID, userID);
+      parentList = parentFile.parentList;
+      parentList.push(parentID);
     }
 
-    renameFolder = async(userID: string, folderID: string, title: string) => {
+    const folder = await utilsFolder.moveFolder(
+      folderID,
+      userID,
+      parentID,
+      parentList
+    );
 
-        const folder = await utilsFolder.renameFolder(folderID, userID, title);
+    if (!folder) throw new NotFoundError("Move Folder Not Found");
 
-        if (!folder) throw new NotFoundError("Rename Folder Not Found");
-    }
+    const folderChilden = await utilsFolder.findAllFoldersByParent(
+      folderID.toString(),
+      userID
+    );
 
-    getSubfolderFullList = async(user: userAccessType, id: string) => {
+    folderChilden.map(async (currentFolderChild) => {
+      let currentFolderChildParentList = currentFolderChild.parentList;
 
-        const userID = user._id;
+      const indexOfFolderID = currentFolderChildParentList.indexOf(
+        folderID.toString()
+      );
 
-        const folder = await utilsFolder.getFolderInfo(id, userID)
+      currentFolderChildParentList =
+        currentFolderChildParentList.splice(indexOfFolderID);
 
-        const subFolders = await this.getFolderList(user, {parent: id}) //folderService.getFolderList(user._id, {parent: id})
+      currentFolderChildParentList = [
+        ...parentList,
+        ...currentFolderChildParentList,
+      ];
 
-        let folderList: any[] = [];
+      currentFolderChild.parentList = currentFolderChildParentList;
 
-        const rootID = "/"
+      await currentFolderChild.save();
+    });
 
-        let currentID = folder.parent;
+    const fileChildren = await utilsFile.getFileListByParent(
+      userID,
+      folderID.toString()
+    );
 
-        folderList.push({
-            _id: folder._id,
-            parent: folder._id,
-            name: folder.name,
-            subFolders: subFolders
-        })
+    fileChildren.map(async (currentFileChild) => {
+      let currentFileChildParentList: string | string[] =
+        currentFileChild.metadata.parentList;
 
-        while (true) {
+      currentFileChildParentList = currentFileChildParentList.split(",");
 
-            if (rootID === currentID) break;
+      const indexOfFolderID = currentFileChildParentList.indexOf(
+        folderID.toString()
+      );
 
-            const currentFolder = await this.getFolderInfo(userID, currentID);
-            const currentSubFolders = await this.getFolderList(user, {parent: currentFolder._id});
+      currentFileChildParentList =
+        currentFileChildParentList.splice(indexOfFolderID);
 
-            folderList.splice(0, 0, {
-                _id: currentFolder._id,
-                parent: currentFolder._id,
-                name: currentFolder.name,
-                subFolders: currentSubFolders
-            })
-            
-            currentID = currentFolder.parent;
-        }
+      currentFileChildParentList = [
+        ...parentList,
+        ...currentFileChildParentList,
+      ];
 
-        return folderList;
-    }
-
-    moveFolder = async(userID: string, folderID: string, parentID: string) => {
-
-        let parentList = ["/"];
-
-        if (parentID.length !== 1) {
-
-            const parentFile = await utilsFolder.getFolderInfo(parentID, userID);
-            parentList = parentFile.parentList;
-            parentList.push(parentID);
-        }
-
-        const folder = await utilsFolder.moveFolder(folderID, userID, parentID, parentList);
-
-        if (!folder) throw new NotFoundError("Move Folder Not Found")
-
-        const folderChilden = await utilsFolder.findAllFoldersByParent(folderID.toString(), userID);
-
-        folderChilden.map( async(currentFolderChild) => {
-
-            let currentFolderChildParentList = currentFolderChild.parentList;
-
-            const indexOfFolderID = currentFolderChildParentList.indexOf(folderID.toString());
-
-            currentFolderChildParentList = currentFolderChildParentList.splice(indexOfFolderID);
-
-            currentFolderChildParentList = [...parentList, ...currentFolderChildParentList];
-
-            currentFolderChild.parentList = currentFolderChildParentList;
-
-            await currentFolderChild.save()
-        })
-
-        const fileChildren = await utilsFile.getFileListByParent(userID, folderID.toString());
-
-        fileChildren.map( async(currentFileChild) => {
-
-            let currentFileChildParentList: string | string[] = currentFileChild.metadata.parentList;
-
-            currentFileChildParentList = currentFileChildParentList.split(",");
-
-            const indexOfFolderID = currentFileChildParentList.indexOf(folderID.toString());
-
-            currentFileChildParentList = currentFileChildParentList.splice(indexOfFolderID);
-
-            currentFileChildParentList = [...parentList, ...currentFileChildParentList];
-
-            await utilsFile.moveFile(currentFileChild._id, userID, currentFileChild.metadata.parent, currentFileChildParentList.toString())
-
-        })
-    }
+      if (currentFileChild._id) {
+        await utilsFile.moveFile(
+          currentFileChild._id,
+          userID,
+          currentFileChild.metadata.parent,
+          currentFileChildParentList.toString()
+        );
+      }
+    });
+  };
 }
 
 export default FolderService;

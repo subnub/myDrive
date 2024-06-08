@@ -4,47 +4,40 @@ import { Request, Response } from "express";
 import { UserInterface } from "../models/user";
 
 type userAccessType = {
-    _id: string,
-    emailVerified: boolean,
-    email: string,
-    s3Enabled: boolean,
-}
+  _id: string;
+  emailVerified: boolean;
+  email: string;
+  s3Enabled: boolean;
+};
 
 interface RequestType extends Request {
-    user?: userAccessType,
-    encryptedToken?: string
+  user?: userAccessType;
+  encryptedToken?: string;
 }
 
 class StorageController {
+  constructor() {}
 
-    constructor() {
-
+  getStorageInfo = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
     }
 
-    getStorageInfo = async(req: RequestType, res: Response) => {
+    try {
+      if (!env.root || env.root.length === 0) {
+        return;
+      }
 
-        if (!req.user) {
+      const info = await disk.check(env.root!);
 
-            return;
-        }
-    
-        try {
-
-            if (!env.root || env.root.length === 0) {
-                return;
-            }
-    
-            const info = await disk.check(env.root!);
-        
-            res.send(info)
-    
-        } catch (e) {
-    
-            console.log("\nGet Storage Error Storage Route:", e.message);
-            const code = !e.code ? 500 : e.code >= 400 && e.code <= 599 ? e.code : 500;
-            res.status(code).send();
-        }
+      res.send(info);
+    } catch (e) {
+      if (e instanceof Error) {
+        console.log("\nGet Storage Error Storage Route:", e.message);
+      }
+      res.status(500).send("Server error getting storage info");
     }
+  };
 }
 
 export default StorageController;
