@@ -109,7 +109,7 @@ class FolderService {
 
     if (searchQuery.length === 0) {
       const folderList = await utilsFolder.getFolderListByParent(
-        userID,
+        userID.toString(),
         parent,
         sortBy,
         s3Enabled,
@@ -124,7 +124,7 @@ class FolderService {
     } else {
       searchQuery = new RegExp(searchQuery, "i");
       const folderList = await utilsFolder.getFolderListBySearch(
-        userID,
+        userID.toString(),
         searchQuery,
         sortBy,
         type,

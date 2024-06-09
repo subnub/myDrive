@@ -59,14 +59,14 @@ const fileSchema = new mongoose.Schema({
 });
 
 export interface FileInterface
-  extends mongoose.Document<string | mongoose.Types.ObjectId> {
+  extends mongoose.Document<mongoose.Types.ObjectId> {
   length: number;
   chunkSize: number;
   uploadDate: string;
   filename: string;
   lastErrorObject: { updatedExisting: any };
   metadata: {
-    owner: string | ObjectId;
+    owner: string;
     parent: string;
     parentList: string;
     hasThumbnail: boolean;

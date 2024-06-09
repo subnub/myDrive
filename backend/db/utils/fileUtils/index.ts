@@ -1,6 +1,6 @@
 import mongoose from "../../mongoose";
 import { ObjectId } from "mongodb";
-import { FileInterface } from "../../../models/file";
+import File, { FileInterface } from "../../../models/file";
 import { UserInterface } from "../../../models/user";
 import { QueryInterface } from "../../../utils/createQuery";
 const conn = mongoose.connection;
@@ -19,6 +19,7 @@ class DbUtil {
   removeOneTimePublicLink = async (
     fileID: string | mongoose.Types.ObjectId
   ) => {
+    mongoose;
     const file = (await conn.db.collection("fs.files").findOneAndUpdate(
       { _id: new ObjectId(fileID) },
       {
@@ -33,7 +34,7 @@ class DbUtil {
     const file = (await conn.db
       .collection("fs.files")
       .findOneAndUpdate(
-        { _id: new ObjectId(fileID), "metadata.owner": new ObjectId(userID) },
+        { _id: new ObjectId(fileID), "metadata.owner": userID },
         { $unset: { "metadata.linkType": "", "metadata.link": "" } }
       )) as FileInterface;
 
@@ -44,7 +45,7 @@ class DbUtil {
     const file = (await conn.db
       .collection("fs.files")
       .findOneAndUpdate(
-        { _id: new ObjectId(fileID), "metadata.owner": new ObjectId(userID) },
+        { _id: new ObjectId(fileID), "metadata.owner": userID },
         { $set: { "metadata.linkType": "public", "metadata.link": token } }
       )) as FileInterface;
 
@@ -64,7 +65,7 @@ class DbUtil {
     const file = (await conn.db
       .collection("fs.files")
       .findOneAndUpdate(
-        { _id: new ObjectId(fileID), "metadata.owner": new ObjectId(userID) },
+        { _id: new ObjectId(fileID), "metadata.owner": userID },
         { $set: { "metadata.linkType": "one", "metadata.link": token } }
       )) as FileInterface;
 
@@ -72,16 +73,17 @@ class DbUtil {
   };
 
   getFileInfo = async (fileID: string, userID: string) => {
-    const file = (await conn.db.collection("fs.files").findOne({
-      "metadata.owner": new ObjectId(userID),
+    console.log("info diff", userID.toString());
+    const file = await File.findOne({
+      "metadata.owner": userID,
       _id: new ObjectId(fileID),
-    })) as FileInterface;
+    });
 
     return file;
   };
 
   getQuickList = async (userID: string, s3Enabled: boolean) => {
-    let query: any = { "metadata.owner": new ObjectId(userID) };
+    let query: any = { "metadata.owner": userID };
 
     if (!s3Enabled) {
       query = { ...query, "metadata.personalFile": null };
@@ -118,7 +120,7 @@ class DbUtil {
 
   getFileSearchList = async (userID: string, searchQuery: RegExp) => {
     let query: any = {
-      "metadata.owner": new ObjectId(userID),
+      "metadata.owner": userID,
       filename: searchQuery,
     };
 
@@ -132,14 +134,11 @@ class DbUtil {
   };
 
   renameFile = async (fileID: string, userID: string, title: string) => {
-    const file = (await conn.db
-      .collection("fs.files")
-      .findOneAndUpdate(
-        { _id: new ObjectId(fileID), "metadata.owner": new ObjectId(userID) },
-        { $set: { filename: title } }
-      )) as FileInterface;
-
-    return file;
+    const updateFileResponse = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      { $set: { filename: title } }
+    );
+    return updateFileResponse;
   };
 
   moveFile = async (
@@ -149,7 +148,7 @@ class DbUtil {
     parentList: string
   ) => {
     const file = await conn.db.collection("fs.files").findOneAndUpdate(
-      { _id: new ObjectId(fileID), "metadata.owner": new ObjectId(userID) },
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
       {
         $set: {
           "metadata.parent": parent,
@@ -168,7 +167,7 @@ class DbUtil {
     const fileList = (await conn.db
       .collection("fs.files")
       .find({
-        "metadata.owner": new ObjectId(userID),
+        "metadata.owner": userID,
         "metadata.parentList": { $regex: `.*${parentListString}.*` },
       })
       .toArray()) as FileInterface[];
@@ -179,7 +178,7 @@ class DbUtil {
   getFileListByOwner = async (userID: string) => {
     const fileList = (await conn.db
       .collection("fs.files")
-      .find({ "metadata.owner": new ObjectId(userID) })
+      .find({ "metadata.owner": userID })
       .toArray()) as FileInterface[];
 
     return fileList;

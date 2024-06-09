@@ -3,6 +3,7 @@ import User, { UserInterface } from "../models/user";
 import env from "../enviroment/env";
 import { Request, Response, NextFunction } from "express";
 import userUpdateCheck from "../utils/userUpdateCheck";
+import mongoose from "mongoose";
 
 interface RequestType extends Request {
   user?: userAccessType;
@@ -16,7 +17,7 @@ type jwtType = {
 };
 
 type userAccessType = {
-  _id: string;
+  _id: mongoose.Types.ObjectId;
   emailVerified: boolean;
   email: string;
   botChecked: boolean;

@@ -44,7 +44,8 @@ class S3Service implements ChunkInterface {
 
     const cipher = crypto.createCipheriv("aes256", CIPHER_KEY, initVect);
 
-    const { file, filename, formData } = await getBusboyData(busboy);
+    const { file, filename: fileInfo, formData } = await getBusboyData(busboy);
+    const filename = fileInfo.filename;
 
     const parent = formData.get("parent") || "/";
     const parentList = formData.get("parentList") || "/";
@@ -166,9 +167,9 @@ class S3Service implements ChunkInterface {
   };
 
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {
-    const currentFile: FileInterface = await dbUtilsFile.getFileInfo(
+    const currentFile = await dbUtilsFile.getFileInfo(
       fileID,
-      user._id
+      user._id.toString()
     );
 
     if (!currentFile) throw new NotFoundError("Download File Not Found");
@@ -202,9 +203,9 @@ class S3Service implements ChunkInterface {
   };
 
   getFileReadStream = async (user: UserInterface, fileID: string) => {
-    const currentFile: FileInterface = await dbUtilsFile.getFileInfo(
+    const currentFile = await dbUtilsFile.getFileInfo(
       fileID,
-      user._id
+      user._id.toString()
     );
 
     if (!currentFile) throw new NotFoundError("Download File Not Found");
@@ -246,9 +247,9 @@ class S3Service implements ChunkInterface {
     // Is safari going to be the next internet explorer?
 
     const userID = user._id;
-    const currentFile: FileInterface = await dbUtilsFile.getFileInfo(
+    const currentFile = await dbUtilsFile.getFileInfo(
       fileID,
-      userID
+      userID.toString()
     );
 
     if (!currentFile) throw new NotFoundError("Video File Not Found");
@@ -416,7 +417,7 @@ class S3Service implements ChunkInterface {
   ) => {
     const userID = user._id;
 
-    const file: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
+    const file = await dbUtilsFile.getFileInfo(fileID, userID.toString());
 
     if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
@@ -489,7 +490,7 @@ class S3Service implements ChunkInterface {
   };
 
   deleteFile = async (userID: string, fileID: string) => {
-    const file: FileInterface = await dbUtilsFile.getFileInfo(fileID, userID);
+    const file = await dbUtilsFile.getFileInfo(fileID, userID);
 
     if (!file) throw new NotFoundError("Delete File Not Found Error");
 

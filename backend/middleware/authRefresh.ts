@@ -3,6 +3,7 @@ import User, { UserInterface } from "../models/user";
 import env from "../enviroment/env";
 import { Request, Response, NextFunction } from "express";
 import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 
 interface RequestType extends Request {
   user?: UserInterface;
@@ -17,7 +18,7 @@ type jwtType = {
 };
 
 const removeOldTokens = async (
-  userID: string,
+  userID: mongoose.Types.ObjectId,
   uuid: string | undefined,
   oldTime: number
 ) => {

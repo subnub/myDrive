@@ -2,7 +2,7 @@ import s3 from "../db/s3";
 import { ObjectId } from "mongodb";
 
 export interface QueryInterface {
-  "metadata.owner": ObjectId;
+  "metadata.owner": ObjectId | string;
   "metadata.parent"?: string;
   filename?:
     | string
@@ -30,7 +30,7 @@ const createQuery = (
   storageType: string,
   folderSearch: boolean
 ) => {
-  let query: QueryInterface = { "metadata.owner": new ObjectId(owner) };
+  let query: QueryInterface = { "metadata.owner": owner };
 
   if (searchQuery !== "") {
     searchQuery = new RegExp(searchQuery, "i");

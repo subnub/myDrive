@@ -106,7 +106,10 @@ class MongoFileService {
     const userID = user._id;
     const s3Enabled = user.s3Enabled ? true : false;
 
-    const quickList = await dbUtilsFile.getQuickList(userID, s3Enabled);
+    const quickList = await dbUtilsFile.getQuickList(
+      userID.toString(),
+      s3Enabled
+    );
 
     if (!quickList) throw new NotFoundError("Quick List Not Found Error");
 
@@ -131,7 +134,7 @@ class MongoFileService {
     const s3Enabled = user.s3Enabled ? true : false;
 
     const queryObj = createQuery(
-      userID,
+      userID.toString(),
       parent,
       query.sortby,
       startAt,
@@ -219,8 +222,7 @@ class MongoFileService {
   renameFile = async (userID: string, fileID: string, title: string) => {
     const file = await dbUtilsFile.renameFile(fileID, userID, title);
 
-    if (!file.lastErrorObject.updatedExisting)
-      throw new NotFoundError("Rename File Not Found Error");
+    if (!file) throw new NotFoundError("Rename File Not Found Error");
 
     return file;
   };
