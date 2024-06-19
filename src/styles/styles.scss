@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "./base/settings";
 @import "./base/base";
 @import "./components/content-container";
@@ -35,4 +39,4 @@
 @import "./components/UploadSwitcher";
 @import "./components/main.scss";
 @import "./components/settings.scss";
-@import "./components/MobileContextMenu"
+@import "./components/MobileContextMenu";

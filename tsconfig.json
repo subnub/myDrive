@@ -78,6 +78,8 @@
     "webUI.config.js",
     "webUISetup",
     "webUISetup.config.js",
-    "vite.config.js"
+    "vite.config.js",
+    "tailwind.config.js",
+    "postcss.config.js"
   ]
 }

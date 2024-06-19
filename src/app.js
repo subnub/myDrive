@@ -9,14 +9,18 @@ import "core-js/stable";
 import "regenerator-runtime/runtime";
 import "react-circular-progressbar/dist/styles.css";
 import { AuthProvider } from "./providers/AuthProvider";
+import { QueryClient, QueryClientProvider } from "react-query";
 // import '../node_modules/@fortawesome/fontawesome-free/css/all.css';
 // import '../node_modules/@fortawesome/fontawesome-free/js/all.js';
 
 const store = configStore();
+const queryClient = new QueryClient();
 
 const jsxWrapper = (
   <Provider store={store}>
-    <AppRouter />
+    <QueryClientProvider client={queryClient}>
+      <AppRouter />
+    </QueryClientProvider>
   </Provider>
 );
 

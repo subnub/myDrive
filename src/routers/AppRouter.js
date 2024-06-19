@@ -17,6 +17,7 @@ import ResetPasswordPage from "../components/ResetPasswordPage";
 import GoogleAccountPage from "../components/GoogleAccountPage";
 import AddStoragePage from "../components/AddStoragePage";
 import SettingsPage from "../components/SettingsPage";
+import Homepage2 from "../components/Homepage/Homepage2";
 
 // export const history = createHistory();
 
@@ -30,7 +31,7 @@ const AppRouter = () => {
           path="/home"
           element={
             <PrivateRoute>
-              <HomePage />
+              <Homepage2 />
             </PrivateRoute>
           }
         />
@@ -38,8 +39,24 @@ const AppRouter = () => {
           path="/download-page/:id/:tempToken"
           element={<DownloadPage />}
         />
-        <Route key={1} path="/folder/:id" element={<HomePage />} />
-        <Route key={1} path="/search/:id" element={<HomePage />} />
+        <Route
+          key={1}
+          path="/folder/:id"
+          element={
+            <PrivateRoute>
+              <Homepage2 />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          key={1}
+          path="/search/:id"
+          element={
+            <PrivateRoute>
+              <Homepage2 />
+            </PrivateRoute>
+          }
+        />
         <Route path="/verify-email/:id" element={<VerifyEmailPage />} />
         <Route path="/reset-password/:id" element={<ResetPasswordPage />} />
         <Route path="/settings" element={<SettingsPage />} />
