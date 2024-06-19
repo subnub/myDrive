@@ -9,45 +9,13 @@ import { useParams } from "react-router-dom";
 import { useInfiniteQuery, useQuery } from "react-query";
 import { getFilesList } from "../../api/filesAPI";
 import { getFoldersList } from "../../api/foldersAPI";
+import { useFiles } from "../../hooks/files";
+import { useFolders } from "../../hooks/folders";
 
 const DataForm = (props) => {
   const params = useParams();
-  const { data: files, fetchNextPage: filesFetchNextPage } = useInfiniteQuery({
-    queryKey: [
-      "files",
-      {
-        parent: params.id || "/",
-        search: "",
-        sortBy: undefined,
-        limit: undefined,
-      },
-    ],
-    queryFn: getFilesList,
-    initialPageParam: {
-      startAtDate: undefined,
-      startAtName: undefined,
-    },
-    getNextPageParam: (lastPage, pages) => {
-      console.log("last page", lastPage);
-      return {
-        startAtDate: "test",
-        startAtName: "tes2",
-      };
-    },
-  });
-  const { data: folders } = useQuery(
-    [
-      "folders",
-      {
-        parent: params.id || "/",
-        search: "",
-        sortBy: undefined,
-        limit: undefined,
-      },
-    ],
-    getFoldersList
-  );
-  console.log(" files", files, folders);
+  const { data: files, fetchNextPage: filesFetchNextPage } = useFiles();
+  const { data: folders } = useFolders();
 
   return (
     <div

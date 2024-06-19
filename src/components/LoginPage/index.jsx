@@ -35,7 +35,6 @@ class LoginPageContainer extends React.Component {
     const loginSuccessful = await this.props.dispatch(startLoginCheck());
     const loginRedirectRoute =
       this.props.location.state?.from?.pathname || this.props.currentRoute;
-    console.log("login check", loginRedirectRoute);
     if (loginSuccessful) {
       this.props.navigate(loginRedirectRoute);
     }

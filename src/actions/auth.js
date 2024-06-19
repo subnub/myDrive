@@ -114,8 +114,6 @@ export const startLoginCheck = (currentRoute) => {
       env.emailAddress = response.data.email;
       env.name = response.data.name || "";
 
-      console.log("login checked");
-
       if (emailVerified) {
         dispatch(setLoginFailed(false));
         dispatch(login(id));

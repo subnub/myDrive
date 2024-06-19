@@ -5,7 +5,6 @@ import { Route, Navigate, useLocation } from "react-router-dom";
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = useSelector((state) => !!state.auth.id);
   const location = useLocation();
-  console.log("auth", isAuthenticated);
   if (!isAuthenticated) {
     return <Navigate to="/" state={{ from: location }} />;
   }

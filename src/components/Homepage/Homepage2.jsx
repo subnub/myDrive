@@ -20,41 +20,7 @@ const Homepage2 = () => {
   const location = useLocation();
   const params = useParams();
   const photoID = useSelector((state) => state.photoViewer.id);
-  useInfiniteQuery({
-    queryKey: [
-      "files",
-      {
-        parent: params.id || "/",
-        search: "",
-        sortBy: undefined,
-        limit: undefined,
-      },
-    ],
-    queryFn: getFilesList,
-    initialPageParam: {
-      startAtDate: undefined,
-      startAtName: undefined,
-    },
-    getNextPageParam: (lastPage, pages) => {
-      console.log("last page", lastPage);
-      return {
-        startAtDate: "test",
-        startAtName: "tes2",
-      };
-    },
-  });
-  useQuery(
-    [
-      "folders",
-      {
-        parent: params.id || "/",
-        search: "",
-        sortBy: undefined,
-        limit: undefined,
-      },
-    ],
-    getFoldersList
-  );
+  useFiles();
 
   const goHome = () => {
     navigate("/home");

@@ -122,7 +122,7 @@ class MongoFileService {
     let searchQuery = query.search || "";
     const parent = query.parent || "/";
     let limit = query.limit || 50;
-    let sortBy = query.sortby || "DEFAULT";
+    let sortBy = query.soryBy || "DEFAULT";
     const startAt = query.startAt || undefined;
     const startAtDate = query.startAtDate || "0";
     const startAtName = query.startAtName || "";
@@ -136,7 +136,7 @@ class MongoFileService {
     const queryObj = createQuery(
       userID.toString(),
       parent,
-      query.sortby,
+      query.sortBy,
       startAt,
       startAtDate,
       searchQuery,
