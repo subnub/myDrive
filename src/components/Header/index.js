@@ -7,10 +7,10 @@ import { setParent, resetParentList } from "../../actions/parent";
 import { startSetFiles } from "../../actions/files";
 import { startSetFolders } from "../../actions/folders";
 import env from "../../enviroment/envFrontEnd";
-import { history } from "../../routers/AppRouter";
 import axios from "../../axiosInterceptor";
 import { connect } from "react-redux";
 import React from "react";
+import withNavigate from "../HocComponent";
 
 const currentURL = env.url;
 
@@ -71,7 +71,7 @@ class HeaderContainer extends React.Component {
   };
 
   selectSuggested = () => {
-    history.push(`/search/${this.searchValue}`);
+    this.props.navigate(`/search/${this.searchValue}`);
 
     this.searchValue = "";
 
@@ -135,7 +135,7 @@ class HeaderContainer extends React.Component {
 
     const parent = this.props.parent;
 
-    history.push(
+    this.props.navigate(
       `/search/${this.searchValue}?parent=${parent}&folder_search=true`
     );
 
@@ -153,7 +153,7 @@ class HeaderContainer extends React.Component {
   };
 
   selectSuggestedByStorageType = () => {
-    history.push(`/search/${this.searchValue}?storageType=stripe`);
+    this.props.navigate(`/search/${this.searchValue}?storageType=stripe`);
 
     this.searchValue = "";
 
@@ -169,7 +169,7 @@ class HeaderContainer extends React.Component {
   };
 
   goToSettings = () => {
-    history.push("/settings");
+    this.props.navigate("/settings");
   };
 
   getProfilePic = () => {
@@ -210,4 +210,4 @@ const connectPropToStore = (state) => ({
   parent: state.parent.parent,
 });
 
-export default connect(connectPropToStore)(HeaderContainer);
+export default connect(connectPropToStore)(withNavigate(HeaderContainer));

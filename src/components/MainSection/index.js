@@ -14,9 +14,10 @@ import MainSection from "./MainSection";
 import env from "../../enviroment/envFrontEnd";
 import axios from "../../axiosInterceptor";
 import { connect } from "react-redux";
-import { history } from "../../routers/AppRouter";
+// import { history } from "../../routers/AppRouter";
 import React from "react";
 import { getUpdateSettingsID } from "../../utils/updateSettings";
+import withNavigate from "../HocComponent";
 
 class MainSectionContainer extends React.Component {
   constructor(props) {
@@ -39,12 +40,7 @@ class MainSectionContainer extends React.Component {
       (mobile && !doubleClickMobile) ||
       bypass
     ) {
-      const folderPush = folder.drive
-        ? `/folder-google/${id}`
-        : folder.personalFolder
-        ? `/folder-personal/${id}`
-        : `/folder/${id}`;
-      history.push(folderPush);
+      this.props.navigate(`/folder/${id}`);
     } else {
       const isGoogleDrive = folder.drive;
 
@@ -309,4 +305,4 @@ const connectPropToState = (state) => ({
   // resetSettingsMain: state.main.resetSettingsMain
 });
 
-export default connect(connectPropToState)(MainSectionContainer);
+export default connect(connectPropToState)(withNavigate(MainSectionContainer));

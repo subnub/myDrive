@@ -1,5 +1,5 @@
 import { setLoginFailed } from "./main";
-import { history } from "../routers/AppRouter";
+// import { // history } from "../routers/AppRouter";
 import { resetUpload } from "./uploads";
 import axios from "../axiosInterceptor";
 import env from "../enviroment/envFrontEnd";
@@ -15,40 +15,41 @@ export const logout = () => ({
 });
 
 export const startLogin = (email, password, currentRoute) => {
-  return (dispatch) => {
+  return async (dispatch) => {
     const dt = { email, password };
 
-    axios
-      .post("/user-service/login", dt)
-      .then((response) => {
-        // console.log("USER SERVICE LOGIN RESPONSE")
+    try {
+      const response = await axios.post("/user-service/login", dt);
+      // console.log("USER SERVICE LOGIN RESPONSE")
 
-        const id = response.data.user._id;
-        const emailVerified = response.data.user.emailVerified;
+      const id = response.data.user._id;
+      const emailVerified = response.data.user.emailVerified;
 
-        env.googleDriveEnabled = response.data.user.googleDriveEnabled;
-        env.s3Enabled = response.data.user.s3Enabled;
-        env.activeSubscription = response.data.user.activeSubscription;
-        env.emailAddress = response.data.user.email;
-        env.name = response.data.user.name || "";
+      env.googleDriveEnabled = response.data.user.googleDriveEnabled;
+      env.s3Enabled = response.data.user.s3Enabled;
+      env.activeSubscription = response.data.user.activeSubscription;
+      env.emailAddress = response.data.user.email;
+      env.name = response.data.user.name || "";
 
-        //window.localStorage.setItem("token", token);
+      //window.localStorage.setItem("token", token);
 
-        if (emailVerified) {
-          dispatch(setLoginFailed(false));
-          dispatch(login(id));
-          history.push(currentRoute);
-        } else {
-          console.log("Email Not Verified");
-          dispatch(setLoginFailed("Unverified Email", 404));
-        }
-      })
-      .catch((err) => {
-        console.log("USER SERVICE LOGIN ERROR", err);
-        const code = err.response?.status;
-        dispatch(setLoginFailed("Incorrect Email or Password", code));
-        console.log(err);
-      });
+      if (emailVerified) {
+        dispatch(setLoginFailed(false));
+        dispatch(login(id));
+        // history.push(currentRoute);
+        return true;
+      } else {
+        console.log("Email Not Verified");
+        dispatch(setLoginFailed("Unverified Email", 404));
+        return false;
+      }
+    } catch (err) {
+      console.log("USER SERVICE LOGIN ERROR", err);
+      const code = err.response?.status;
+      dispatch(setLoginFailed("Incorrect Email or Password", code));
+      console.log(err);
+      return false;
+    }
   };
 };
 
@@ -67,7 +68,7 @@ export const startCreateAccount = (email, password) => {
         if (emailVerified) {
           dispatch(setLoginFailed(false));
           dispatch(login(id));
-          history.push("/home");
+          // history.push("/home");
         } else {
           console.log("Email Not Verified");
           dispatch(setLoginFailed("Unverified Email", 404));
@@ -99,43 +100,45 @@ const reload = () => {
 };
 
 export const startLoginCheck = (currentRoute) => {
-  return (dispatch) => {
-    axios
-      .get("/user-service/user")
-      .then((response) => {
-        const emailVerified = response.data.emailVerified;
+  return async (dispatch) => {
+    try {
+      const response = await axios.get("/user-service/user");
 
-        const id = response.data._id;
+      const emailVerified = response.data.emailVerified;
 
-        env.googleDriveEnabled = response.data.googleDriveEnabled;
-        env.s3Enabled = response.data.s3Enabled;
-        env.activeSubscription = response.data.activeSubscription;
-        env.emailAddress = response.data.email;
-        env.name = response.data.name || "";
+      const id = response.data._id;
 
-        if (emailVerified) {
-          dispatch(setLoginFailed(false));
-          dispatch(login(id));
-          history.push(currentRoute);
-        } else {
-          console.log("Email Not Verified");
-          dispatch(setLoginFailed("Unverified Email", 404));
-        }
+      env.googleDriveEnabled = response.data.googleDriveEnabled;
+      env.s3Enabled = response.data.s3Enabled;
+      env.activeSubscription = response.data.activeSubscription;
+      env.emailAddress = response.data.email;
+      env.name = response.data.name || "";
 
-        //reload();
-      })
-      .catch((err) => {
-        console.log(
-          "login check error",
-          err,
-          err.response?.data,
-          err.data,
-          err.response
-        );
-        // window.localStorage.removeItem("token")
-        dispatch(setLoginFailed("Login Expired"));
-        // history.push("/login")
-      });
+      console.log("login checked");
+
+      if (emailVerified) {
+        dispatch(setLoginFailed(false));
+        dispatch(login(id));
+        // history.push(currentRoute);
+        return true;
+      } else {
+        console.log("Email Not Verified");
+        dispatch(setLoginFailed("Unverified Email", 404));
+        return false;
+      }
+    } catch (err) {
+      console.log(
+        "login check error",
+        err,
+        err.response?.data,
+        err.data,
+        err.response
+      );
+      // window.localStorage.removeItem("token")
+      dispatch(setLoginFailed("Login Expired"));
+      return false;
+      // // history.push("/login")
+    }
   };
 };
 
@@ -150,7 +153,7 @@ export const startLogoutAll = () => {
         dispatch(setLoginFailed(false));
         dispatch(logout());
 
-        history.push("/");
+        // history.push("/");
       })
       .catch((err) => {
         console.log(err);
@@ -169,7 +172,7 @@ export const startLogout = () => {
         dispatch(setLoginFailed(false));
         dispatch(logout());
 
-        history.push("/");
+        // history.push("/");
       })
       .catch((err) => {
         console.log(err);

@@ -1,40 +1,50 @@
 import React from "react";
-import {connect} from "react-redux"
+import { connect } from "react-redux";
 import env from "../../enviroment/envFrontEnd";
-import {history} from "../../routers/AppRouter"
+// import { history } from "../../routers/AppRouter";
 import ParentBar from "./ParentBar";
+import withNavigate from "../HocComponent";
 
 class ParentBarContainer extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-    constructor(props) {
-        super(props)
-    }
+  onFolderClick = () => {
+    const id =
+      this.props.parentList.length !== 0
+        ? this.props.parentList[this.props.parentList.length - 1]
+        : "";
+    const url =
+      env.uploadMode === "drive"
+        ? `/folder-google/${id}`
+        : env.uploadMode === "s3"
+        ? `/folder-personal/${id}`
+        : `/folder/${id}`;
 
-    onFolderClick = () => {
+    if (id.length === 0) return;
 
-        const id = this.props.parentList.length !== 0 ? this.props.parentList[this.props.parentList.length - 1] : "";
-        const url = env.uploadMode === "drive" ? `/folder-google/${id}` : env.uploadMode === "s3" ? `/folder-personal/${id}` : `/folder/${id}`;
+    this.props.navigate(url);
+  };
 
-        if (id.length === 0) return;
+  homeClick = () => {
+    this.props.navigate("/home");
+  };
 
-        history.push(url)
-    }
-
-    homeClick = () => {
-        history.push("/home")
-    }
-
-    render() {
-        return <ParentBar 
-                    homeClick={this.homeClick}
-                    onFolderClick={this.onFolderClick}
-                    {...this.props}/>
-    }
+  render() {
+    return (
+      <ParentBar
+        homeClick={this.homeClick}
+        onFolderClick={this.onFolderClick}
+        {...this.props}
+      />
+    );
+  }
 }
 
 const connectStoreToProp = (state) => ({
-    parentNameList: state.parent.parentNameList,
-    parentList: state.parent.parentList
-})
+  parentNameList: state.parent.parentNameList,
+  parentList: state.parent.parentList,
+});
 
-export default connect(connectStoreToProp)(ParentBarContainer);
+export default connect(connectStoreToProp)(withNavigate(ParentBarContainer));

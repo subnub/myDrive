@@ -19,7 +19,7 @@ import InvoiceItem from "../InvoiceItem";
 import { setUpdateSettingsID } from "../../utils/updateSettings";
 import HomepageSpinner from "../HomepageSpinner";
 import { setLoading } from "../../actions/main";
-import { history } from "../../routers/AppRouter";
+import withNavigate from "../HocComponent";
 // import {updateSettingsID} from "../MainSection"
 // import { resetSettingsMain } from "../../actions/main";
 
@@ -483,7 +483,7 @@ class SettingsPageContainer extends React.Component {
   };
 
   goHome = () => {
-    history.push("/");
+    this.props.navigate("/");
   };
 
   onChangeOldPassword = (e) => {
@@ -644,7 +644,7 @@ class SettingsPageContainer extends React.Component {
   };
 
   goHome = () => {
-    history.push("/");
+    this.props.navigate("/");
   };
 
   downloadPersonalFileList = (e) => {
@@ -1483,7 +1483,7 @@ class SettingsPageContainer extends React.Component {
                     <div class="head__settings">
                       <h2>History</h2>
                     </div>
-                    <div class="history__table">
+                    <div class="history.__table">
                       <table>
                         <tr>
                           <th class="date__history">DATE</th>
@@ -1975,4 +1975,4 @@ const connectStoreToProp = (state) => ({
   loading: state.main.loading,
 });
 
-export default connect(connectStoreToProp)(SettingsPageContainer);
+export default connect(connectStoreToProp)(withNavigate(SettingsPageContainer));
