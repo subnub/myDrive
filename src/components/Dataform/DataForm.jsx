@@ -1,5 +1,5 @@
-import FileItem from ".././FileItem";
-import FolderItem from ".././FolderItem";
+import FileItem from "../FileItem";
+import FolderItem from "../FolderItem";
 import React from "react";
 import QuickAccess from "../QuickAccess";
 import ParentBar from "../ParentBar";

@@ -1,4 +1,4 @@
-import SpinnerLogin from ".././SpinnerLogin";
+import SpinnerLogin from "../SpinnerLogin";
 import React from "react";
 import env from "../../enviroment/envFrontEnd";
 

@@ -33,8 +33,7 @@
     "remove-tokens:dev": "NODE_ENV=development node serverUtils/removeTokens.js",
     "vite-test": "vite",
     "dev-test": "concurrently \"vite\" \"nodemon server.js\"",
-    "watch:backend": "tsc -w",
-    "dev-hot": "concurrently \"vite\" \"tsc -w\" \"npm run dev:backend\"",
+    "dev-hot": "concurrently \"vite\" \"tsc -w -p ./backend/tsconfig.json\" \"npm run dev:backend\"",
     "dev:backend": "nodemon dist/server/serverStart.js"
   },
   "dependencies": {
@@ -57,6 +56,8 @@
     "@types/helmet": "0.0.45",
     "@types/jsonwebtoken": "^8.3.9",
     "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/request": "^2.48.5",
     "@types/request-ip": "0.0.35",
     "@types/sharp": "^0.25.0",

@@ -13,7 +13,7 @@ import {
 } from "../../actions/folderTree";
 // import { history } from "../../routers/AppRouter";
 import { connect } from "react-redux";
-import FolderTreeStorageSub2 from ".././FolderTreeStorageSub";
+import FolderTreeStorageSub2 from ".";
 import FolderTreeStorageSub from "./FolderTreeStorageSub";
 
 class FolderTreeStorageSubContainer extends React.Component {

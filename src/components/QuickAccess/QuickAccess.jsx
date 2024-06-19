@@ -1,4 +1,4 @@
-import QuickAccessItem from ".././QuickAccessItem";
+import QuickAccessItem from "../QuickAccessItem";
 import React from "react";
 
 const QuickAccess = (props) => (
