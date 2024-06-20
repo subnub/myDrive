@@ -14,7 +14,7 @@ class LeftSection extends React.Component {
   render() {
     return (
       <div
-        className="menu__block"
+        className="menu__block p-6"
         ref={this.props.leftSectionRef}
         style={
           this.props.leftSectionMode === ""

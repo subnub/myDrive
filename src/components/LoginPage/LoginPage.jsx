@@ -119,9 +119,6 @@ const LoginPage = (props) => {
                           placeholder="Verify Password"
                           onChange={props.verifyPasswordOnChange}
                           value={props.state.verifyPassword}
-                          ref={(ref) => {
-                            props.passwordInput = ref;
-                          }}
                         />
                       </div>
                     )}

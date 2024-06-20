@@ -32,8 +32,7 @@ const Homepage2 = () => {
 
       <div className="">
         <Header goHome={goHome} />
-        <div className="flex space-between mt-20">
-          <LeftSection goHome={goHome} />
+        <div className="flex space-between">
           <MainSection />
           <Uploader />
           {/* {photoID.length === 0 ? undefined : <PhotoViewer />} */}

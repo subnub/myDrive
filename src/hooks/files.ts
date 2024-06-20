@@ -1,6 +1,6 @@
-import { useInfiniteQuery } from "react-query";
+import { useInfiniteQuery, useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { getFilesList } from "../api/filesAPI";
+import { getFilesList, getQuickFilesList } from "../api/filesAPI";
 
 export const useFiles = () => {
   const params = useParams();
@@ -32,4 +32,10 @@ export const useFiles = () => {
   };
 
   return { ...filesReactQuery, testFunction };
+};
+
+export const useQuickFiles = () => {
+  const quickFilesQuery = useQuery("quickFiles", getQuickFilesList);
+
+  return quickFilesQuery;
 };

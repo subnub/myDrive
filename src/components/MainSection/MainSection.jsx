@@ -3,6 +3,7 @@ import RightSection from "../RightSection";
 import MoverMenu from "../MoverMenu";
 import PopupWindow from "../PopupWindow";
 import React from "react";
+import LeftSection from "../LeftSection";
 
 const MainSection = React.forwardRef((props, ref) => {
   return (
@@ -97,17 +98,21 @@ const MainSection = React.forwardRef((props, ref) => {
 
         {props.moverID.length === 0 ? undefined : <MoverMenu />}
 
-        <DataForm
-          folderClick={props.folderClick}
-          fileClick={props.fileClick}
-          downloadFile={props.downloadFile}
-        />
+        <div className="flex flex-row h-screen w-screen pt-16">
+          <LeftSection goHome={() => {}} />
 
-        <RightSection
-          folderClick={props.folderClick}
-          fileClick={props.fileClick}
-          downloadFile={props.downloadFile}
-        />
+          <DataForm
+            folderClick={props.folderClick}
+            fileClick={props.fileClick}
+            downloadFile={props.downloadFile}
+          />
+
+          <RightSection
+            folderClick={props.folderClick}
+            fileClick={props.fileClick}
+            downloadFile={props.downloadFile}
+          />
+        </div>
       </div>
     </div>
   );

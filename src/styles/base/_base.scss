@@ -1,31 +1,34 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html {
-    // font-size: 62.5%;
-    // --webkit-touch-callout: default;
+  // font-size: 62.5%;
+  // --webkit-touch-callout: default;
 }
 
-input[type=text],
-input[type=email],
-input[type=password],
+input[type="text"],
+input[type="email"],
+input[type="password"],
 textarea {
-    -webkit-appearance: none;
+  -webkit-appearance: none;
 }
 
 body {
-    // color: $dark-grey;
-    // font-family: Helvetica, Arial, sans-serif;
-    // font-size: $m-size;
-    // background-color: white;
-    // line-height: 1.6;
+  // color: $dark-grey;
+  // font-family: Helvetica, Arial, sans-serif;
+  // font-size: $m-size;
+  // background-color: white;
+  // line-height: 1.6;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 button {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 button:disabled {
-    cursor: default;
+  cursor: default;
 }

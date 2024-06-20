@@ -38,3 +38,8 @@ export const getFilesList = async ({
   });
   return response.data;
 };
+
+export const getQuickFilesList = async () => {
+  const response = await axios.get(`/file-service/quick-list`);
+  return response.data;
+};
