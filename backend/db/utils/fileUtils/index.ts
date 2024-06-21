@@ -82,18 +82,14 @@ class DbUtil {
     return file;
   };
 
-  getQuickList = async (userID: string, s3Enabled: boolean) => {
+  getQuickList = async (userID: string, limit: number) => {
     let query: any = { "metadata.owner": userID };
-
-    if (!s3Enabled) {
-      query = { ...query, "metadata.personalFile": null };
-    }
 
     const fileList = (await conn.db
       .collection("fs.files")
       .find(query)
       .sort({ uploadDate: -1 })
-      .limit(10)
+      .limit(limit)
       .toArray()) as FileInterface[];
 
     return fileList;

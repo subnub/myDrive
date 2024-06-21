@@ -71,8 +71,11 @@ const QuickAccessItem = (props) => {
   return (
     <div
       className={classNames(
-        "border border-[#ebe9f9] rounded-md o transition-all duration-400 ease-in-out cursor-pointer w-48 flex items-center justify-center flex-col overflow-hidden h-[150px]",
-        { "border-[#3c85ee]": elementSelected }
+        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer w-48 flex items-center justify-center flex-col h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
+        {
+          "border-[#3c85ee]": elementSelected,
+          "border-[#ebe9f9]": !elementSelected,
+        }
       )}
       onClick={() => {
         props.fileClick(props._id, props, true);
@@ -134,28 +137,22 @@ const QuickAccessItem = (props) => {
       </div>
       <div
         className={classNames(
-          "p-3 overflow-hidden text-ellipsis block w-full",
-          {
-            "bg-[#3c85ee]": elementSelected,
-          }
+          "p-3 overflow-hidden text-ellipsis block w-full animate",
+          elementSelected ? "bg-[#3c85ee]" : "bg-white"
         )}
       >
         <p
           className={classNames(
-            "m-0 text-[#212b36] text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap",
-            {
-              "text-white": elementSelected,
-            }
+            "m-0 text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
+            elementSelected ? "text-white" : "text-[#212b36]"
           )}
         >
           {capitalize(props.filename)}
         </p>
         <span
           className={classNames(
-            "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs",
-            {
-              "text-white": elementSelected,
-            }
+            "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate",
+            elementSelected ? "text-white" : "text-[#637381]"
           )}
         >
           Created {moment(props.uploadDate).calendar()}

@@ -802,16 +802,11 @@
   & .settings__drop {
     display: none;
     position: absolute;
-    // left:-60%;
-    // right:50%;
-    //bottom:auto;
     min-width: 215px;
     background: #ffffff;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15), inset 0px 1px 0px #f5f7fa;
     border-radius: 4px;
-    //top: -100%;
     margin-top: -5px;
-    transform: translate(0%, -80%);
     z-index: 2;
     // @media (max-width: $desktop-breakpoint) {
     // 	transform: translate(-6%,-80%) !important;

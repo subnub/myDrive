@@ -63,7 +63,10 @@ class QuickAccessItemContainer extends React.Component {
     this.setState(() => {
       return {
         ...this.state,
-        contextSelected: !this.state.contextSelected,
+        contextSelected: {
+          width: e.clientX,
+          height: e.clientY,
+        },
       };
     });
   };

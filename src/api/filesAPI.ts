@@ -40,6 +40,10 @@ export const getFilesList = async ({
 };
 
 export const getQuickFilesList = async () => {
-  const response = await axios.get(`/file-service/quick-list`);
+  const response = await axios.get(`/file-service/quick-list`, {
+    params: {
+      limit: 12,
+    },
+  });
   return response.data;
 };

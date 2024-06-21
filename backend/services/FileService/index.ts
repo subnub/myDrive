@@ -102,14 +102,13 @@ class MongoFileService {
     return { ...currentFile, parentName };
   };
 
-  getQuickList = async (user: userAccessType | UserInterface) => {
+  getQuickList = async (
+    user: userAccessType | UserInterface,
+    limit: number | string = 12
+  ) => {
     const userID = user._id;
-    const s3Enabled = user.s3Enabled ? true : false;
 
-    const quickList = await dbUtilsFile.getQuickList(
-      userID.toString(),
-      s3Enabled
-    );
+    const quickList = await dbUtilsFile.getQuickList(userID.toString(), +limit);
 
     if (!quickList) throw new NotFoundError("Quick List Not Found Error");
 

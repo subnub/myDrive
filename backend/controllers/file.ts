@@ -219,8 +219,9 @@ class FileController {
 
     try {
       const user = req.user;
+      const limit = req.query.limit?.toString();
 
-      const quickList = await fileService.getQuickList(user);
+      const quickList = await fileService.getQuickList(user, limit);
 
       res.send(quickList);
     } catch (e: unknown) {

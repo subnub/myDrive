@@ -40,3 +40,15 @@
 @import "./components/main.scss";
 @import "./components/settings.scss";
 @import "./components/MobileContextMenu";
+
+.animate {
+  transition: 0.3s ease all;
+}
+
+.animate-medium {
+  transition: 0.6s ease all;
+}
+
+.animate-very-long {
+  transition: 6s ease all;
+}

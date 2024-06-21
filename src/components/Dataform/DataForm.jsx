@@ -142,15 +142,19 @@ const DataForm = (props) => {
 
           {!props.listView ? (
             <div className="main__access">
-              {files?.pages.map((file) => (
-                <FileItem
-                  {...file}
-                  key={file._id}
-                  itemSelected={file._id === props.selected}
-                  downloadFile={props.downloadFile}
-                  removeFile={props.removeFile}
-                  fileClick={props.fileClick}
-                />
+              {files?.pages.map((filePage, index) => (
+                <React.Fragment key={index}>
+                  {filePage.map((file) => (
+                    <FileItem
+                      {...file}
+                      key={file._id}
+                      itemSelected={file._id === props.selected}
+                      downloadFile={props.downloadFile}
+                      removeFile={props.removeFile}
+                      fileClick={props.fileClick}
+                    />
+                  ))}
+                </React.Fragment>
               ))}
             </div>
           ) : (
