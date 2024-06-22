@@ -3,12 +3,16 @@ import React, { useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { deleteFile, renameFile, downloadFile } from "../../api/filesAPI";
 import { useFiles, useQuickFiles } from "../../hooks/files";
+import { useFolders } from "../../hooks/folders";
 import { useDispatch } from "react-redux";
 import { setMoverID } from "../../actions/mover";
 import { setShareSelected } from "../../actions/selectedItem";
+import { startRenameFolder } from "../../actions/folders";
+import { deleteFolder, renameFolder } from "../../api/foldersAPI";
 
 const ContextMenu = (props) => {
   const { invalidateFilesCache } = useFiles();
+  const { invalidateFoldersCache } = useFolders();
   const { invalidateQuickFilesCache } = useQuickFiles();
   const dispatch = useDispatch();
   const wrapperRef = useRef();
@@ -17,6 +21,7 @@ const ContextMenu = (props) => {
   const spanClassname = "inline-flex mr-[18px]";
 
   const renameItem = async () => {
+    props.closeContext();
     if (!props.folderMode) {
       const { value: filename } = await Swal.fire({
         title: "Enter A File Name",
@@ -32,10 +37,30 @@ const ContextMenu = (props) => {
       await renameFile(props.file._id, filename);
       invalidateFilesCache();
       invalidateQuickFilesCache();
+    } else {
+      const { value: folderName } = await Swal.fire({
+        title: "Enter A folder Name",
+        input: "text",
+        inputValue: props.folder.name,
+        showCancelButton: true,
+        inputValidator: (value) => {
+          if (!value) {
+            return "Please Enter a Name";
+          }
+        },
+      });
+
+      if (folderName === undefined || folderName === null) {
+        return;
+      }
+
+      await renameFolder(props.folder._id, folderName);
+      invalidateFoldersCache();
     }
   };
 
   const deleteItem = async () => {
+    props.closeContext();
     if (!props.folderMode) {
       const result = await Swal.fire({
         title: "Confirm Deletion",
@@ -52,31 +77,50 @@ const ContextMenu = (props) => {
         invalidateFilesCache();
         invalidateQuickFilesCache();
       }
+    } else {
+      const result = await Swal.fire({
+        title: "Confirm Deletion",
+        text: "You cannot undo this action",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete",
+      });
+      if (result.value) {
+        await deleteFolder(props.folder._id, props.folder.parentList);
+        invalidateFoldersCache();
+      }
     }
   };
 
-  const openMoveFileModal = async () => {
+  const openMoveItemModal = async () => {
+    props.closeContext();
     if (!props.folderMode) {
       dispatch(setMoverID(props.file._id, props.file.metadata.parent, true));
+    } else {
+      dispatch(setMoverID(props.folder._id, props.folder.parent, false));
     }
   };
 
-  const openShareFileModal = () => {
+  const openShareItemModal = () => {
+    props.closeContext();
     dispatch(setShareSelected(props.file));
   };
 
   const downloadItem = () => {
+    props.closeContext();
     downloadFile(props.file._id);
   };
 
   // TODO: Decide if we want it to close right on click or not
   const outOfBoundsClickCheck = (e) => {
-    // if (wrapperRef && !wrapperRef.current.contains(e.target)) {
-    //   props.closeContext();
-    // }
-    setTimeout(() => {
+    if (wrapperRef && !wrapperRef.current.contains(e.target)) {
       props.closeContext();
-    }, 150);
+    }
+    // setTimeout(() => {
+    //   props.closeContext();
+    // }, 150);
   };
 
   useEffect(() => {
@@ -117,7 +161,7 @@ const ContextMenu = (props) => {
           </a>
         </li>
         {!props.folderMode ? (
-          <li onClick={openShareFileModal} className={liClassname}>
+          <li onClick={openShareItemModal} className={liClassname}>
             <a className="flex" data-modal="share__modal">
               <span
                 className="inline-flex mr-[18px]
@@ -139,7 +183,7 @@ const ContextMenu = (props) => {
             </a>
           </li>
         ) : undefined}
-        <li onClick={openMoveFileModal} className={liClassname}>
+        <li onClick={openMoveItemModal} className={liClassname}>
           <a className="flex" data-modal="destination__modal">
             <span className={spanClassname}>
               <img src="/assets/filesetting4.svg" alt="setting" />

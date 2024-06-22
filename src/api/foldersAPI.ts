@@ -8,6 +8,8 @@ interface QueryKeyParams {
   limit?: number;
 }
 
+// GET
+
 export const getFoldersList = async ({
   queryKey,
 }: QueryFunctionContext<[string, QueryKeyParams]>) => {
@@ -18,6 +20,28 @@ export const getFoldersList = async ({
       search,
       sortBy,
       limit,
+    },
+  });
+  return response.data;
+};
+
+// PATCH
+
+export const renameFolder = async (folderID: string, name: string) => {
+  const response = await axios.patch("/folder-service/rename", {
+    id: folderID,
+    title: name,
+  });
+  return response.data;
+};
+
+// DELETE
+
+export const deleteFolder = async (folderID: string, parentList: string[]) => {
+  const response = await axios.delete("/folder-service/remove", {
+    data: {
+      id: folderID,
+      parentList,
     },
   });
   return response.data;

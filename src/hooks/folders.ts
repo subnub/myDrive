@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { getFoldersList } from "../api/foldersAPI";
 
@@ -17,5 +17,21 @@ export const useFolders = () => {
     getFoldersList
   );
 
-  return foldersReactQuery;
+  const filesReactClientQuery = useQueryClient();
+
+  const invalidateFoldersCache = () => {
+    filesReactClientQuery.invalidateQueries({
+      queryKey: [
+        "folders",
+        {
+          parent: params.id || "/",
+          search: "",
+          sortBy: undefined,
+          limit: undefined,
+        },
+      ],
+    });
+  };
+
+  return { ...foldersReactQuery, invalidateFoldersCache };
 };

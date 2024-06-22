@@ -63,12 +63,7 @@ const QuickAccessItem = (props) => {
             quickItemMode={true}
             contextSelected={contextMenuState}
             closeContext={closeContextMenu}
-            downloadFile={props.downloadFile}
             file={props}
-            changeEditNameMode={props.changeEditNameMode}
-            closeEditNameMode={props.closeEditNameMode}
-            changeDeleteMode={props.changeDeleteMode}
-            startMovingFile={props.startMovingFile}
           />
         </div>
       )}

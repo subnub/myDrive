@@ -12,6 +12,7 @@ import awaitUploadStreamFS from "./utils/awaitUploadStreamFS";
 import File, { FileInterface } from "../../models/file";
 import getFileSize from "./utils/getFileSize";
 import DbUtilFile from "../../db/utils/fileUtils/index";
+import DbUtilFolder from "../../db/utils/folderUtils/index";
 import awaitStream from "./utils/awaitStream";
 import createThumbnailAny from "./utils/createThumbailAny";
 import imageChecker from "../../utils/imageChecker";
@@ -30,6 +31,7 @@ import ForbiddenError from "../../utils/ForbiddenError";
 import { ObjectId } from "mongodb";
 
 const dbUtilsFile = new DbUtilFile();
+const dbUtilsFolder = new DbUtilFolder();
 
 class FileSystemService implements ChunkInterface {
   constructor() {}
@@ -468,12 +470,12 @@ class FileSystemService implements ChunkInterface {
     );
   };
 
-  deleteFolder = async (
-    userID: string,
-    folderID: string,
-    parentList: string[]
-  ) => {
-    const parentListString = parentList.toString();
+  deleteFolder = async (userID: string, folderID: string) => {
+    const folder = await dbUtilsFolder.getFolderInfo(folderID, userID);
+
+    if (!folder) throw new NotFoundError("Delete Folder Not Found Error");
+
+    const parentList = [...folder.parentList, folder._id];
 
     await Folder.deleteMany({
       owner: userID,
@@ -483,7 +485,7 @@ class FileSystemService implements ChunkInterface {
 
     const fileList = await dbUtilsFile.getFileListByParent(
       userID,
-      parentListString
+      parentList.toString()
     );
 
     if (!fileList) throw new NotFoundError("Delete File List Not Found");
