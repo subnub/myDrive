@@ -1,152 +1,134 @@
-import QuickAccessItem from "./QuickAccessItem";
-import {
-  setRightSelected,
-  setLastSelected,
-  setSelected,
-} from "../../actions/selectedItem";
-import mobileCheck from "../../utils/mobileCheck";
-import env from "../../enviroment/envFrontEnd";
-import axios from "../../axiosInterceptor";
-import { connect } from "react-redux";
-import React from "react";
-import Swal from "sweetalert2";
-import { startRenameFile, startRemoveFile } from "../../actions/files";
-import { setMoverID } from "../../actions/mover";
-import mobilecheck from "../../utils/mobileCheck";
-import { setMobileContextMenu } from "../../actions/mobileContextMenu";
+import capitalize from "../../utils/capitalize";
+import moment from "moment";
+import React, { useMemo, useState } from "react";
+import NewContextMenu from "../NewContextMenu";
+import classNames from "classnames";
+import { getFileColor, getFileExtension } from "../../utils/files";
+import { useThumbnail } from "../../hooks/files";
+import { useContextMenu } from "../../hooks/contextMenu";
 
-const currentURL = env.url;
+const QuickAccessItem = (props) => {
+  const { image, hasThumbnail, imageOnError } = useThumbnail(
+    props.metadata.hasThumbnail,
+    props.metadata.thumbnailID
+  );
 
-class QuickAccessItemContainer extends React.Component {
-  constructor(props) {
-    super(props);
+  const {
+    onContextMenu,
+    closeContextMenu,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+    clickStopPropagation,
+    ...contextMenuState
+  } = useContextMenu();
 
-    this.failedToLoad = false;
-    this.lastTouch = 0;
+  const fileExtension = useMemo(
+    () => getFileExtension(props.filename),
+    [props.filename]
+  );
 
-    this.state = {
-      image: "/images/file-svg.svg",
-      imageClassname: "noSelect file__item-no-thumbnail",
-      contextSelected: false,
-      hasThumbnail: false,
-    };
-  }
+  const imageColor = useMemo(
+    () => getFileColor(props.filename),
+    [props.filename]
+  );
 
-  onTouchStart = () => {
-    const date = new Date();
-    this.lastTouch = date.getTime();
-  };
+  const elementSelected = useMemo(
+    () => `quick-${props._id}` === props.selected,
+    [props._id, props.selected]
+  );
 
-  onTouchMove = () => {
-    this.lastTouch = 0;
-  };
+  return (
+    <div
+      className={classNames(
+        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer w-48 flex items-center justify-center flex-col h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
+        elementSelected ? "border-[#3c85ee]" : "border-[#ebe9f9]"
+      )}
+      onClick={() => {
+        props.fileClick(props._id, props, true);
+      }}
+      onContextMenu={onContextMenu}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      {contextMenuState.selected && (
+        <div onClick={clickStopPropagation}>
+          <NewContextMenu
+            gridMode={true}
+            quickItemMode={true}
+            contextSelected={contextMenuState}
+            closeContext={closeContextMenu}
+            downloadFile={props.downloadFile}
+            file={props}
+            changeEditNameMode={props.changeEditNameMode}
+            closeEditNameMode={props.closeEditNameMode}
+            changeDeleteMode={props.changeDeleteMode}
+            startMovingFile={props.startMovingFile}
+          />
+        </div>
+      )}
+      <div
+        className={classNames(
+          "inline-flex items-center w-full bg-white relative",
+          {
+            "mt-2": !hasThumbnail,
+          }
+        )}
+      >
+        {hasThumbnail ? (
+          <img
+            className="w-full min-h-[88px] max-h-[88px] h-full flex object-cover"
+            src={image}
+            onError={imageOnError}
+          />
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            version="1.1"
+            width="150"
+            height="150"
+            viewBox="0 0 24 24"
+            className="w-full min-h-[80px] max-h-[80px] h-full flex"
+          >
+            <path
+              d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"
+              fill={imageColor}
+            />
+          </svg>
+        )}
+        {!hasThumbnail && (
+          <div className="w-full h-full absolute flex justify-center items-center text-white mt-3">
+            <p className="text-sm">{fileExtension}</p>
+          </div>
+        )}
+      </div>
+      <div
+        className={classNames(
+          "p-3 overflow-hidden text-ellipsis block w-full animate",
+          elementSelected ? "bg-[#3c85ee]" : "bg-white"
+        )}
+      >
+        <p
+          className={classNames(
+            "m-0 text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
+            elementSelected ? "text-white" : "text-[#212b36]"
+          )}
+        >
+          {capitalize(props.filename)}
+        </p>
+        <span
+          className={classNames(
+            "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate",
+            elementSelected ? "text-white" : "text-[#637381]"
+          )}
+        >
+          Created {moment(props.uploadDate).calendar()}
+        </span>
+      </div>
+    </div>
+  );
+};
 
-  onTouchEnd = () => {
-    if (this.lastTouch === 0) {
-      return;
-    }
-
-    const date = new Date();
-    const difference = date - this.lastTouch;
-
-    this.lastTouch = 0;
-
-    if (difference > 500) {
-      // this.selectContext();
-    }
-  };
-
-  changeEditNameMode = async () => {
-    let inputValue = this.props.filename;
-
-    const { value: folderName } = await Swal.fire({
-      title: "Enter A File Name",
-      input: "text",
-      inputValue: inputValue,
-      showCancelButton: true,
-      inputValidator: (value) => {
-        if (!value) {
-          return "Please Enter a Name";
-        }
-      },
-    });
-
-    if (folderName === undefined || folderName === null) {
-      return;
-    }
-
-    this.props.dispatch(
-      startRenameFile(this.props._id, folderName, this.props.metadata.drive)
-    );
-  };
-
-  closeEditNameMode = () => {
-    this.setState(() => {
-      return {
-        ...this.state,
-        editNameMode: false,
-      };
-    });
-  };
-
-  changeDeleteMode = async () => {
-    Swal.fire({
-      title: "Confirm Deletion",
-      text: "You cannot undo this action",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete",
-    }).then((result) => {
-      if (result.value) {
-        this.props.dispatch(
-          startRemoveFile(
-            this.props._id,
-            this.props.metadata.drive,
-            this.props.metadata.personalFile
-          )
-        );
-      }
-    });
-  };
-
-  startMovingFile = async () => {
-    this.props.dispatch(
-      setMoverID(
-        this.props._id,
-        this.props.metadata.parent,
-        true,
-        this.props.metadata.drive,
-        this.props.metadata.personalFile
-      )
-    );
-  };
-
-  clickStopPropagation = (e) => {
-    e.stopPropagation();
-  };
-
-  render() {
-    return (
-      <QuickAccessItem
-        onTouchStart={this.onTouchStart}
-        onTouchMove={this.onTouchMove}
-        onTouchEnd={this.onTouchEnd}
-        changeEditNameMode={this.changeEditNameMode}
-        closeEditNameMode={this.closeEditNameMode}
-        changeDeleteMode={this.changeDeleteMode}
-        startMovingFile={this.startMovingFile}
-        state={this.state}
-        {...this.props}
-      />
-    );
-  }
-}
-
-const connectStateToProp = (state) => ({
-  rightSelected: state.selectedItem.rightSelected,
-  selected: state.selectedItem.selected,
-});
-
-export default connect(connectStateToProp)(QuickAccessItemContainer);
+export default QuickAccessItem;
