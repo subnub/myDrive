@@ -25,106 +25,12 @@ class QuickAccessItemContainer extends React.Component {
     this.lastTouch = 0;
 
     this.state = {
-      contextMenuPos: {},
       image: "/images/file-svg.svg",
       imageClassname: "noSelect file__item-no-thumbnail",
       contextSelected: false,
       hasThumbnail: false,
     };
   }
-
-  componentDidMount = () => {
-    const hasThumbnail = this.props.metadata.hasThumbnail;
-    console.log("has", hasThumbnail);
-
-    if (hasThumbnail && !this.failedToLoad) {
-      this.getThumbnail();
-    }
-  };
-
-  closeContext = () => {
-    this.setState(() => {
-      return {
-        ...this.state,
-        contextSelected: false,
-      };
-    });
-  };
-
-  selectContext = (e) => {
-    if (e) e.stopPropagation();
-    if (e) e.preventDefault();
-
-    if (mobilecheck()) {
-      this.props.dispatch(setMobileContextMenu(true, this.props));
-      return;
-    }
-
-    this.setState(() => {
-      return {
-        ...this.state,
-        contextSelected: {
-          width: e.clientX,
-          height: e.clientY,
-        },
-      };
-    });
-  };
-
-  getThumbnail = async () => {
-    const thumbnailID = this.props.metadata.thumbnailID;
-    const imageClassname = "noSelect";
-
-    // GOOGLE DRIVE IMAGE
-    if (this.props.metadata.drive) {
-      return await this.setState(() => ({
-        ...this.state,
-        image: this.props.metadata.thumbnailID,
-        imageClassname: imageClassname,
-      }));
-    }
-
-    const config = {
-      responseType: "arraybuffer",
-    };
-
-    await this.setState(() => ({
-      ...this.state,
-      image: "/images/file-svg.svg",
-      imageClassname: "noSelect file__item-no-thumbnail",
-    }));
-
-    const url = `http://localhost:5173/api/file-service/thumbnail/${thumbnailID}`;
-
-    axios
-      .get(url, config)
-      .then((results) => {
-        const imgFile = new Blob([results.data]);
-        const imgUrl = URL.createObjectURL(imgFile);
-        console.log("got image");
-
-        this.setState(() => ({
-          ...this.state,
-          image: imgUrl,
-          imageClassname: imageClassname,
-          hasThumbnail: true,
-        }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  thumbnailOnError = (e) => {
-    console.log("thumbnail on error", e);
-
-    this.setState(() => ({
-      ...this.state,
-      image: "/images/file-svg.svg",
-      imageClassname: "noSelect file__item-no-thumbnail",
-      hasThumbnail: false,
-    }));
-  };
 
   onTouchStart = () => {
     const date = new Date();
@@ -146,41 +52,8 @@ class QuickAccessItemContainer extends React.Component {
     this.lastTouch = 0;
 
     if (difference > 500) {
-      this.selectContext();
+      // this.selectContext();
     }
-  };
-
-  getContextMenu = (e) => {
-    if (e) e.preventDefault();
-
-    const isMobile = mobileCheck();
-
-    const windowX = window.innerWidth;
-    const windowY = window.innerHeight;
-
-    let styleObj = { right: 0, left: 0, top: "-3px", bottom: 0 };
-
-    if (isMobile) {
-      styleObj = { bottom: 0, left: "2px" };
-    } else {
-      const clientY = e.nativeEvent.clientY;
-      const clientX = e.nativeEvent.clientX;
-
-      if (clientX > windowX / 2) {
-        styleObj = { ...styleObj, left: "unset", right: 0 };
-      } else {
-        styleObj = { ...styleObj, left: 0, right: "unset" };
-      }
-    }
-
-    this.setState(() => ({
-      ...this.state,
-      contextMenuPos: styleObj,
-    }));
-
-    this.props.dispatch(setSelected("quick-" + this.props._id));
-    this.props.dispatch(setRightSelected("quick-" + this.props._id));
-    this.props.dispatch(setLastSelected(0));
   };
 
   changeEditNameMode = async () => {
@@ -257,17 +130,13 @@ class QuickAccessItemContainer extends React.Component {
   render() {
     return (
       <QuickAccessItem
-        getContextMenu={this.getContextMenu}
         onTouchStart={this.onTouchStart}
         onTouchMove={this.onTouchMove}
         onTouchEnd={this.onTouchEnd}
-        closeContext={this.closeContext}
-        selectContext={this.selectContext}
         changeEditNameMode={this.changeEditNameMode}
         closeEditNameMode={this.closeEditNameMode}
         changeDeleteMode={this.changeDeleteMode}
         startMovingFile={this.startMovingFile}
-        thumbnailOnError={this.thumbnailOnError}
         state={this.state}
         {...this.props}
       />

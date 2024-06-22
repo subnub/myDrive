@@ -172,7 +172,8 @@ class FileSystemService implements ChunkInterface {
 
     const filePath = currentFile.metadata.filePath!;
 
-    const IV = currentFile.metadata.IV.buffer as Buffer;
+    const IV = currentFile.metadata.IV;
+    console.log("iv", IV);
 
     const readStream = fs.createReadStream(filePath);
 
@@ -260,7 +261,7 @@ class FileSystemService implements ChunkInterface {
     if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
     const password = user.getEncryptionKey();
-    const IV = file.metadata.IV.buffer as Buffer;
+    const IV = file.metadata.IV;
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
 

@@ -495,6 +495,8 @@ class FileController {
       const userID = req.user._id;
       const fileID = req.body.id;
 
+      console.log("id", fileID);
+
       await this.chunkService.deleteFile(userID, fileID);
 
       res.send();

@@ -1,117 +1,79 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import NewContextMenu from "../NewContextMenu";
 import classNames from "classnames";
+import { getFileColor, getFileExtension } from "../../utils/files";
+import { useThumbnail } from "../../hooks/files";
+import { useContextMenu } from "../../hooks/contextMenu";
 
 const QuickAccessItem = (props) => {
-  const fileExtension = useMemo(() => {
-    const filenameSplit = props.filename.split(".");
+  const { image, hasThumbnail, imageOnError } = useThumbnail(
+    props.metadata.hasThumbnail,
+    props.metadata.thumbnailID
+  );
 
-    if (filenameSplit.length > 1) {
-      let extension = filenameSplit[filenameSplit.length - 1];
+  const { onContextMenu, closeContextMenu, ...contextMenuState } =
+    useContextMenu();
 
-      if (extension.length > 4)
-        extension =
-          extension.substring(0, 3) +
-          extension.substring(extension.length - 1, extension.length);
+  const fileExtension = useMemo(
+    () => getFileExtension(props.filename),
+    [props.filename]
+  );
 
-      return extension.toUpperCase();
-    } else {
-      return "UNK";
-    }
-  }, [props.filename]);
-
-  const imageColor = useMemo(() => {
-    const letter = fileExtension.substring(0, 1).toUpperCase();
-
-    const colorObj = {
-      A: "#e53935",
-      B: "#d81b60",
-      C: "#8e24aa",
-      D: "#5e35b1",
-      E: "#3949ab",
-      F: "#1e88e5",
-      G: "#039be5",
-      H: "#00acc1",
-      I: "#00897b",
-      J: "#43a047",
-      K: "#fdd835",
-      L: "#ffb300",
-      M: "#fb8c00",
-      N: "#f4511e",
-      O: "#d32f2f",
-      P: "#c2185b",
-      Q: "#7b1fa2",
-      R: "#512da8",
-      S: "#303f9f",
-      T: "#1976d2",
-      U: "#0288d1",
-      V: "#0097a7",
-      W: "#0097a7",
-      X: "#00796b",
-      Y: "#388e3c",
-      Z: "#fbc02d",
-    };
-
-    if (colorObj[letter]) {
-      return colorObj[letter];
-    } else {
-      return "#03a9f4";
-    }
-  }, [props.filename]);
+  const imageColor = useMemo(
+    () => getFileColor(props.filename),
+    [props.filename]
+  );
 
   const elementSelected = useMemo(
     () => `quick-${props._id}` === props.selected,
     [props._id, props.selected]
   );
 
-  console.log("thumbnail", props.state);
-
   return (
     <div
       className={classNames(
         "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer w-48 flex items-center justify-center flex-col h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
-        {
-          "border-[#3c85ee]": elementSelected,
-          "border-[#ebe9f9]": !elementSelected,
-        }
+        elementSelected ? "border-[#3c85ee]" : "border-[#ebe9f9]"
       )}
       onClick={() => {
         props.fileClick(props._id, props, true);
       }}
-      onContextMenu={props.selectContext}
+      onContextMenu={onContextMenu}
       onTouchStart={props.onTouchStart}
       onTouchEnd={props.onTouchEnd}
       onTouchMove={props.onTouchMove}
     >
-      <div onClick={props.clickStopPropagation}>
-        <NewContextMenu
-          gridMode={true}
-          quickItemMode={true}
-          contextSelected={props.state.contextSelected}
-          closeContext={props.closeContext}
-          downloadFile={props.downloadFile}
-          file={props}
-          changeEditNameMode={props.changeEditNameMode}
-          closeEditNameMode={props.closeEditNameMode}
-          changeDeleteMode={props.changeDeleteMode}
-          startMovingFile={props.startMovingFile}
-        />
-      </div>
+      {contextMenuState.selected && (
+        <div onClick={props.clickStopPropagation}>
+          <NewContextMenu
+            gridMode={true}
+            quickItemMode={true}
+            contextSelected={contextMenuState}
+            closeContext={closeContextMenu}
+            downloadFile={props.downloadFile}
+            file={props}
+            changeEditNameMode={props.changeEditNameMode}
+            closeEditNameMode={props.closeEditNameMode}
+            changeDeleteMode={props.changeDeleteMode}
+            startMovingFile={props.startMovingFile}
+          />
+        </div>
+      )}
       <div
         className={classNames(
           "inline-flex items-center w-full bg-white relative",
           {
-            "mt-2": !props.state.hasThumbnail,
+            "mt-2": !hasThumbnail,
           }
         )}
       >
-        {props.state.hasThumbnail ? (
+        {hasThumbnail ? (
           <img
             className="w-full min-h-[88px] max-h-[88px] h-full flex object-cover"
-            src={props.state.image}
-            onError={props.thumbnailOnError}
+            src={image}
+            onError={imageOnError}
           />
         ) : (
           <svg
@@ -129,7 +91,7 @@ const QuickAccessItem = (props) => {
             />
           </svg>
         )}
-        {!props.state.hasThumbnail && (
+        {!hasThumbnail && (
           <div className="w-full h-full absolute flex justify-center items-center text-white mt-3">
             <p className="text-sm">{fileExtension}</p>
           </div>

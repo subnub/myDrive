@@ -13,8 +13,11 @@ import { useFiles } from "../../hooks/files";
 import { useFolders } from "../../hooks/folders";
 
 const DataForm = (props) => {
-  const params = useParams();
-  const { data: files, fetchNextPage: filesFetchNextPage } = useFiles();
+  const {
+    data: files,
+    fetchNextPage: filesFetchNextPage,
+    invalidateFilesCache,
+  } = useFiles();
   const { data: folders } = useFolders();
 
   return (
@@ -38,6 +41,12 @@ const DataForm = (props) => {
         onClick={filesFetchNextPage}
       >
         Next page
+      </button>
+      <button
+        className="p-2 bg-blue-500 rounded-md text-white ml-4"
+        onClick={invalidateFilesCache}
+      >
+        Refresh
       </button>
       <div
         className={

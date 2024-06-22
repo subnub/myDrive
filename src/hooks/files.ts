@@ -1,6 +1,11 @@
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
-import { getFilesList, getQuickFilesList } from "../api/filesAPI";
+import {
+  getFileThumbnail,
+  getFilesList,
+  getQuickFilesList,
+} from "../api/filesAPI";
+import { useCallback, useEffect, useState } from "react";
 
 export const useFiles = () => {
   const params = useParams();
@@ -17,6 +22,7 @@ export const useFiles = () => {
     getFilesList,
     {
       getNextPageParam: (lastPage, pages) => {
+        console.log("pages", pages);
         const lastElement = lastPage[lastPage.length - 1];
         if (!lastElement) return undefined;
         return {
@@ -27,15 +33,79 @@ export const useFiles = () => {
     }
   );
 
+  const filesReactClientQuery = useQueryClient();
+
+  const invalidateFilesCache = () => {
+    filesReactClientQuery.invalidateQueries({
+      queryKey: [
+        "files",
+        {
+          parent: params.id || "/",
+          search: "",
+          sortBy: undefined,
+          limit: undefined,
+        },
+      ],
+    });
+  };
+
   const testFunction = () => {
     console.log("this is a test function");
   };
 
-  return { ...filesReactQuery, testFunction };
+  return { ...filesReactQuery, testFunction, invalidateFilesCache };
 };
 
 export const useQuickFiles = () => {
   const quickFilesQuery = useQuery("quickFiles", getQuickFilesList);
 
-  return quickFilesQuery;
+  const quickFilesReactClientQuery = useQueryClient();
+
+  const invalidateQuickFilesCache = () => {
+    quickFilesReactClientQuery.invalidateQueries({
+      queryKey: "quickFiles",
+    });
+  };
+
+  return { ...quickFilesQuery, invalidateQuickFilesCache };
+};
+
+interface thumbnailState {
+  hasThumbnail: boolean;
+  image: null | string;
+}
+
+export const useThumbnail = (hasThumbnail: boolean, thumbnailID: string) => {
+  const [state, setState] = useState<thumbnailState>({
+    hasThumbnail: false,
+    image: null,
+  });
+
+  const getThumbnail = useCallback(async () => {
+    try {
+      const thumbnailData = await getFileThumbnail(thumbnailID);
+      setState({
+        hasThumbnail: true,
+        image: thumbnailData,
+      });
+    } catch (e) {
+      console.log("error getting thumbnail data", e);
+      imageOnError();
+    }
+  }, [thumbnailID]);
+
+  const imageOnError = () => {
+    setState({
+      hasThumbnail: false,
+      image: null,
+    });
+  };
+
+  useEffect(() => {
+    if (!hasThumbnail) return;
+
+    getThumbnail();
+  }, [hasThumbnail, getThumbnail]);
+
+  return { ...state, imageOnError };
 };
