@@ -1,13 +1,17 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { useMemo, useState } from "react";
-import NewContextMenu from "../NewContextMenu";
+import React, { useMemo } from "react";
+import ContextMenu from "../ContextMenu";
 import classNames from "classnames";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { useThumbnail } from "../../hooks/files";
 import { useContextMenu } from "../../hooks/contextMenu";
+import { useSelector } from "react-redux";
 
 const QuickAccessItem = (props) => {
+  const currentSelectedItem = useSelector(
+    (state) => state.selectedItem.selected
+  );
   const { image, hasThumbnail, imageOnError } = useThumbnail(
     props.metadata.hasThumbnail,
     props.metadata.thumbnailID
@@ -34,8 +38,8 @@ const QuickAccessItem = (props) => {
   );
 
   const elementSelected = useMemo(
-    () => `quick-${props._id}` === props.selected,
-    [props._id, props.selected]
+    () => `quick-${props._id}` === currentSelectedItem,
+    [props._id, currentSelectedItem]
   );
 
   return (
@@ -54,7 +58,7 @@ const QuickAccessItem = (props) => {
     >
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>
-          <NewContextMenu
+          <ContextMenu
             gridMode={true}
             quickItemMode={true}
             contextSelected={contextMenuState}
@@ -124,7 +128,7 @@ const QuickAccessItem = (props) => {
             elementSelected ? "text-white" : "text-[#637381]"
           )}
         >
-          Created {moment(props.uploadDate).calendar()}
+          Created {moment(props.uploadDate).format("MM/DD/YY hh:mma")}
         </span>
       </div>
     </div>

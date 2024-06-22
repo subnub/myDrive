@@ -1,12 +1,10 @@
-export const setMoverID = (id, parent, isFile, isGoogle=false, isPersonal=false) => ({
-    type: "SET_MOVER_ID",
-    id,
-    parent,
-    isFile,
-    isGoogle,
-    isPersonal
-})
+export const setMoverID = (id, parent, isFile) => ({
+  type: "SET_MOVER_ID",
+  id,
+  parent,
+  isFile,
+});
 
 export const resetMoverID = () => ({
-    type: "RESET_MOVER_ID"
-})
+  type: "RESET_MOVER_ID",
+});

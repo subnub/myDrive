@@ -1,5 +1,6 @@
 import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
+import { getUserToken } from "./user";
 
 interface QueryKeyParams {
   parent: string;
@@ -44,10 +45,24 @@ export const getFilesList = async ({
 export const getQuickFilesList = async () => {
   const response = await axios.get(`/file-service/quick-list`, {
     params: {
-      limit: 12,
+      limit: 20,
     },
   });
   return response.data;
+};
+
+export const downloadFile = async (fileID: string) => {
+  await getUserToken();
+
+  // TODO: Change this
+  const url = `http://localhost:5173/api/file-service/download/${fileID}`;
+
+  const link = document.createElement("a");
+  document.body.appendChild(link);
+  link.href = url;
+  link.setAttribute("type", "hidden");
+  link.setAttribute("download", "true");
+  link.click();
 };
 
 export const getFileThumbnail = async (thumbnailID: string) => {

@@ -22,7 +22,6 @@ export const useFiles = () => {
     getFilesList,
     {
       getNextPageParam: (lastPage, pages) => {
-        console.log("pages", pages);
         const lastElement = lastPage[lastPage.length - 1];
         if (!lastElement) return undefined;
         return {

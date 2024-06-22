@@ -1,39 +1,29 @@
 const defaultState = {
-    id: "",
-    parent: "/",
-    isFile: true,
-    isGoogle: false,
-    isPersonal: false
-}
+  id: "",
+  parent: "/",
+  isFile: true,
+};
 
 export default (state = defaultState, action) => {
+  switch (action.type) {
+    case "SET_MOVER_ID":
+      return {
+        ...state,
+        id: action.id,
+        parent: action.parent,
+        isFile: action.isFile,
+      };
 
-    switch(action.type) {
+    case "RESET_MOVER_ID":
+      return {
+        ...state,
+        id: "",
+        parent: "/",
+        isFile: action.isFile,
+      };
 
-        case "SET_MOVER_ID":
-
-            return {
-                ...state,
-                id: action.id,
-                parent: action.parent,
-                isFile: action.isFile,
-                isGoogle: action.isGoogle,
-                isPersonal: action.isPersonal
-            }
-
-        case "RESET_MOVER_ID":
-
-            return {
-                ...state,
-                id: "",
-                parent: "/",
-                isFile: action.isFile,
-                isGoogle: false,
-                isPersonal: false,
-            }
-
-        default: {
-            return state;
-        }
+    default: {
+      return state;
     }
-}
+  }
+};

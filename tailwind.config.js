@@ -7,6 +7,12 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    screens: {
+      quickAccessOne: "1000px",
+      quickAccessTwo: "1210px",
+      quickAccessThree: "1420px",
+      quickAccessFour: "1600px",
+    },
   },
   plugins: [],
 };

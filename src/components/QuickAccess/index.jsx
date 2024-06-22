@@ -11,7 +11,7 @@ const QuickAccess = (props) => {
 
   return (
     <div
-      className="h-26 overflow-hidden"
+      className="overflow-hidden"
       style={
         currentRouteType === "home" ? { display: "block" } : { display: "none" }
       }
@@ -26,7 +26,7 @@ const QuickAccess = (props) => {
           width="35"
           height="35"
           onClick={() => setQuickAccessExpanded(!quickAccessExpanded)}
-          className={classNames("cursor-pointer animate", {
+          className={classNames("cursor-pointer animate-movement", {
             "rotate-180": quickAccessExpanded,
           })}
         >
@@ -38,9 +38,10 @@ const QuickAccess = (props) => {
       </div>
 
       <div
-        className={classNames("grid gap-5 animate", {
+        className={classNames("grid gap-5 animate-movement", {
           "max-h-40": !quickAccessExpanded,
-          "max-h-[740px]": quickAccessExpanded,
+          "max-h-[665px] quickAccessOne:max-h-[1000px] quickAccessTwo:max-h-[660px] quickAccessThree:max-h-[490px]":
+            quickAccessExpanded,
         })}
         style={{
           display: "grid",
