@@ -6,16 +6,19 @@ import {
   getQuickFilesList,
 } from "../api/filesAPI";
 import { useCallback, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export const useFiles = () => {
   const params = useParams();
+  // TODO: Remove any
+  const sortBy = useSelector((state: any) => state.filter.sortBy);
   const filesReactQuery = useInfiniteQuery(
     [
       "files",
       {
         parent: params.id || "/",
         search: "",
-        sortBy: undefined,
+        sortBy: sortBy,
         limit: undefined,
       },
     ],

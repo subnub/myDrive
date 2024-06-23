@@ -121,7 +121,7 @@ class MongoFileService {
     let searchQuery = query.search || "";
     const parent = query.parent || "/";
     let limit = query.limit || 50;
-    let sortBy = query.soryBy || "DEFAULT";
+    let sortBy = query.sortBy || "DEFAULT";
     const startAt = query.startAt || undefined;
     const startAtDate = query.startAtDate || "0";
     const startAtName = query.startAtName || "";
@@ -129,6 +129,7 @@ class MongoFileService {
     const folderSearch = query.folder_search || undefined;
     sortBy = sortBySwitch(sortBy);
     limit = parseInt(limit);
+    console.log("sortBy", sortBy, query.sortBy);
 
     const s3Enabled = user.s3Enabled ? true : false;
 

@@ -2,6 +2,7 @@ import FileItem from "../FileItem";
 import FolderItem from "../FolderItem";
 import React from "react";
 import QuickAccess from "../QuickAccess";
+import Folders from "../Folders";
 import ParentBar from "../ParentBar";
 import Spinner from "../Spinner";
 import SpinnerImage from "../SpinnerImage";
@@ -28,12 +29,7 @@ const DataForm = (props) => {
           : "file__control--panel folder__view"
       }
     >
-      {!props.loading ? (
-        <QuickAccess
-          fileClick={props.fileClick}
-          downloadFile={props.downloadFile}
-        />
-      ) : undefined}
+      {!props.loading ? <QuickAccess /> : undefined}
 
       {/* style={props.folders.length === 0 ? {} : props.parent === "/" ? {marginTop:"50px", display:"block"} : {display:"block"} */}
       <button
@@ -48,40 +44,17 @@ const DataForm = (props) => {
       >
         Refresh
       </button>
-      <div
-        className={
-          props.parent === "/"
-            ? "folders__panel"
-            : "folders__panel folders__panel__folder"
-        }
-        style={props.loading ? { display: "none" } : { display: "block" }}
-      >
-        <div class="head__folders">
-          <h2 className="noSelect">
-            {folders?.length === 0 ? "No Folders" : "Folders"}
-          </h2>
-        </div>
-
-        <div className="inner__folders">
-          {folders?.map((folder) => (
-            <FolderItem
-              folder={folder}
-              key={folder._id}
-              folderClick={props.folderClick}
-            />
-          ))}
-        </div>
-      </div>
+      <Folders />
 
       <div className="file__view noSelect">
-        <div class="recent__table--wrap">
+        <div className="recent__table--wrap">
           {props.parent === "/" ? (
             <div
-              class="head__recent--files noSelect"
+              className="head__recent--files noSelect"
               style={props.loading ? { display: "none" } : {}}
             >
               <h2>{props.search !== "" ? "Files" : "Home Files"}</h2>
-              <div class="view__recent">
+              <div className="view__recent">
                 <ul>
                   <li onClick={props.changeListViewMode}>
                     <a
@@ -91,10 +64,13 @@ const DataForm = (props) => {
                           : { color: "#3c85ee" }
                       }
                     >
-                      <i class="fas fa-th-large"></i>
+                      <i className="fas fa-th-large"></i>
                     </a>
                   </li>
-                  <li onClick={props.changeListViewMode} class="active__view">
+                  <li
+                    onClick={props.changeListViewMode}
+                    className="active__view"
+                  >
                     <a
                       style={
                         !props.listView
@@ -102,7 +78,7 @@ const DataForm = (props) => {
                           : { color: "#3c85ee" }
                       }
                     >
-                      <i class="fas fa-list"></i>
+                      <i className="fas fa-list"></i>
                     </a>
                   </li>
                 </ul>
@@ -110,13 +86,13 @@ const DataForm = (props) => {
             </div>
           ) : (
             <div
-              class="head__recent--files noSelect"
+              className="head__recent--files noSelect"
               style={
                 props.loading ? { display: "none" } : { marginTop: "20px" }
               }
             >
               <ParentBar />
-              <div class="view__recent">
+              <div className="view__recent">
                 <ul>
                   <li>
                     <a
@@ -127,10 +103,10 @@ const DataForm = (props) => {
                       }
                       onClick={props.changeListViewMode}
                     >
-                      <i class="fas fa-th-large"></i>
+                      <i className="fas fa-th-large"></i>
                     </a>
                   </li>
-                  <li class="active__view">
+                  <li className="active__view">
                     <a
                       style={
                         !props.listView
@@ -139,7 +115,7 @@ const DataForm = (props) => {
                       }
                       onClick={props.changeListViewMode}
                     >
-                      <i class="fas fa-list"></i>
+                      <i className="fas fa-list"></i>
                     </a>
                   </li>
                 </ul>
@@ -166,52 +142,62 @@ const DataForm = (props) => {
             </div>
           ) : (
             <table
-              class="recent__table noSelect"
+              className="w-full"
               style={props.loading ? { display: "none" } : {}}
             >
               <tr>
-                <th class="name__row">
-                  <select
-                    className="sorting__select"
-                    onChange={props.onChangeSelect}
-                    value={
-                      props.sortBy === "alp_desc" || props.sortBy === "alp_asc"
-                        ? "name"
-                        : "date"
-                    }
-                  >
-                    <option value="date">Modified</option>
-                    <option value="name">Name</option>
-                  </select>
-                  <a onClick={props.switchSortBy}>
-                    <img
-                      src="/assets/sortarrow.svg"
-                      alt="sortarrow"
-                      style={
-                        props.sortBy === "date_desc" ||
-                        props.sortBy === "alp_desc"
-                          ? { transform: "scaleY(-1)" }
-                          : {}
+                <th>
+                  <div className="flex flex-row items-center mb-2 ml-4">
+                    <p className="text-[#212b36] text-sm font-medium">Name</p>
+                    {/* <select
+                      className="sorting__select"
+                      onChange={props.onChangeSelect}
+                      value={
+                        props.sortBy === "alp_desc" ||
+                        props.sortBy === "alp_asc"
+                          ? "name"
+                          : "date"
                       }
-                    />
-                  </a>
+                    >
+                      <option value="date">Modified</option>
+                      <option value="name">Name</option>
+                    </select> */}
+                    {/* <a className="ml-2" onClick={props.switchSortBy}>
+                      <img
+                        className="w-3 h-3"
+                        src="/assets/sortarrow.svg"
+                        alt="sortarrow"
+                        style={
+                          props.sortBy === "date_desc" ||
+                          props.sortBy === "alp_desc"
+                            ? { transform: "scaleY(-1)" }
+                            : {}
+                        }
+                      />
+                    </a> */}
+                  </div>
                 </th>
-                <th class="location__row">Location</th>
-                <th class="modified__row">Modified</th>
-                <th class="settings__row"></th>
+                <th className="hidden fileListShowDetails:table-cell">
+                  <p className="text-[#212b36] text-sm font-medium mb-2">
+                    Size
+                  </p>
+                </th>
+                <th className="hidden fileListShowDetails:table-cell">
+                  <p className="text-[#212b36] text-sm font-medium mb-2">
+                    Modified
+                  </p>
+                </th>
+                <th>
+                  <p className="text-[#212b36] text-sm font-medium mb-2">
+                    Actions
+                  </p>
+                </th>
               </tr>
 
               {files?.pages.map((filePage, index) => (
                 <React.Fragment key={index}>
                   {filePage.map((file) => (
-                    <FileItem
-                      file={file}
-                      key={file._id}
-                      itemSelected={file._id === props.selected}
-                      downloadFile={props.downloadFile}
-                      removeFile={props.removeFile}
-                      fileClick={props.fileClick}
-                    />
+                    <FileItem file={file} key={file._id} />
                   ))}
                 </React.Fragment>
               ))}

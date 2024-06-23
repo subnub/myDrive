@@ -10,6 +10,7 @@ import { useThumbnail } from "../../hooks/files";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
+import bytes from "bytes";
 
 const FileItem = (props) => {
   const { file } = props;
@@ -65,7 +66,12 @@ const FileItem = (props) => {
   if (listView) {
     return (
       <tr
-        className={!elementSelected ? "" : "active__recent"}
+        className={classNames(
+          "text-[14px] font-normal border-y",
+          !elementSelected
+            ? "text-[#212b36] hover:bg-[#f6f5fd]"
+            : "bg-[#3c85ee] animate text-white"
+        )}
         onClick={fileClick}
         onContextMenu={onContextMenu}
         onTouchStart={onTouchStart}
@@ -73,32 +79,34 @@ const FileItem = (props) => {
         onTouchEnd={onTouchEnd}
       >
         {/* <ContextMenu parent={props.metadata.parent} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/> */}
-        <td class="name__row">
-          <div class="inner__name--row">
-            <span class="extension__wrap noSelect">
+        <td className="p-5">
+          <div className="flex items-center fileTextXL:w-[600px] w-[100px] xxs:w-[200px] xs:w-[300px] fileTextXSM:w-[500px] fileTextLG:w-[500px] fileTextMD:w-[300px] mobileMode:w-[200px]">
+            <span className="inline-flex items-center mr-[15px] max-w-[27px] min-w-[27px] min-h-[27px] max-h-[27px]">
               <div
-                className="no-extension__wrapper"
+                className="h-[27px] w-[27px] bg-red-500 rounded-[3px] flex flex-row justify-center items-center"
                 style={{ background: imageColor }}
               >
-                <span className="no-extension__title">{fileExtension}</span>
+                <span className="font-semibold text-[9.5px] text-white">
+                  {fileExtension}
+                </span>
               </div>
             </span>
-            <p className="name__row-filename noSelect">{props.file.filename}</p>
+            <p className="m-0 max-h-[30px] overflow-hidden whitespace-nowrap text-ellipsis block capitalize">
+              {props.file.filename}
+            </p>
           </div>
         </td>
-        <td class="location__row noSelect">
-          {props.file.metadata.drive
-            ? "Google Drive"
-            : props.file.metadata.personalFile
-            ? "Amazon S3"
-            : "myDrive"}
+        <td className="p-5 hidden fileListShowDetails:table-cell">
+          <p className="text-center">{bytes(props.file.length)}</p>
         </td>
-        <td class="modified__row noSelect">
-          {moment(props.uploadDate).format("L")}
+        <td className="p-5 hidden fileListShowDetails:table-cell">
+          <p className="text-center">
+            {moment(props.file.uploadDate).format("L")}
+          </p>
         </td>
-        <td class="settings__row noSelect">
-          <div class="settings__wrap">
-            <div>
+        <td>
+          <div className="flex justify-center items-center">
+            <div onClick={clickStopPropagation}>
               <ContextMenu
                 gridMode={false}
                 quickItemMode={false}
@@ -109,7 +117,22 @@ const FileItem = (props) => {
             </div>
             {/* <ContextMenu parent={props.metadata.parent} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/> */}
             <a onClick={onContextMenu}>
-              <i class="fas fa-ellipsis-h"></i>
+              <svg
+                class="w-4 h-4 text-[#919eab]"
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="fas"
+                data-icon="ellipsis-h"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                data-fa-i2svg=""
+              >
+                <path
+                  fill="currentColor"
+                  d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"
+                ></path>
+              </svg>
             </a>
           </div>
         </td>

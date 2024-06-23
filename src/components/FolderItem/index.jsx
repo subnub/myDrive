@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { startSetSelectedItem } from "../../actions/selectedItem";
 import mobilecheck from "../../utils/mobileCheck";
+import moment from "moment";
 
 const FolderItem = (props) => {
   const { folder } = props;
@@ -99,6 +100,14 @@ const FolderItem = (props) => {
       >
         <p>{props.folder.name}</p>
       </div>
+      <p
+        className={classNames(
+          "m-0 mt-2 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate",
+          elementSelected ? "text-white" : "text-[#637381]"
+        )}
+      >
+        Created {moment(folder.createdAt).format("MM/DD/YY hh:mma")}
+      </p>
     </div>
   );
 };

@@ -69,7 +69,6 @@ class HomePageContainer extends React.Component {
   };
 
   loginCheck = () => {
-    console.log("props", this.props);
     const pathname = this.props.location.pathname;
 
     if (this.props.isAuthenticated) {

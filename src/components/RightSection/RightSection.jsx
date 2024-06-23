@@ -2,6 +2,7 @@ import bytes from "bytes";
 import moment from "moment";
 import React from "react";
 import ContextMenu from "../ContextMenu";
+import classNames from "classnames";
 
 class RightSection extends React.Component {
   constructor(props) {
@@ -20,21 +21,22 @@ class RightSection extends React.Component {
             ? { right: "0px" }
             : { right: "-260px" }
         }
-        class={
+        className={classNames(
+          "!hidden mobileMode:!flex",
           this.props.selectedItem.name === ""
             ? "file__details empty__details"
             : "file__details"
-        }
+        )}
       >
         {this.props.selectedItem.name === "" ? (
-          <div class="file__details--inner">
+          <div className="file__details--inner">
             <span>
               <img src="/assets/filedetailsicon.svg" alt="filedetailsicon" />
             </span>
             <p>Select a file or folder to view it’s details</p>
           </div>
         ) : (
-          <div class="file__info--wrap">
+          <div className="file__info--wrap">
             <img
               className={
                 this.props.selected === ""
@@ -44,14 +46,14 @@ class RightSection extends React.Component {
               src="/images/close_icon.png"
               onClick={this.props.resetSelected}
             />
-            <div class="file__type">
+            <div className="file__type">
               <img src="/assets/typedetailed1.svg" alt="typedetailed1" />
             </div>
-            <div class="file__name">
+            <div className="file__name">
               <p>{this.props.selectedItem.name}</p>
             </div>
-            <div class="file__information">
-              <div class="elem__file--info">
+            <div className="file__information">
+              <div className="elem__file--info">
                 <span>Type</span>
                 <span>
                   {this.props.selectedItem.size
@@ -60,7 +62,7 @@ class RightSection extends React.Component {
                 </span>
               </div>
               <div
-                class="elem__file--info"
+                className="elem__file--info"
                 style={
                   !this.props.selectedItem.size
                     ? { display: "none" }
@@ -70,11 +72,11 @@ class RightSection extends React.Component {
                 <span>Size</span>
                 <span>{bytes(this.props.selectedItem.size)}</span>
               </div>
-              <div class="elem__file--info">
+              <div className="elem__file--info">
                 <span>Created</span>
                 <span>{moment(this.props.selectedItem.date).format("L")}</span>
               </div>
-              <div class="elem__file--info">
+              <div className="elem__file--info">
                 <span>Location</span>
                 <span>
                   {this.props.selectedItem.drive
@@ -85,7 +87,7 @@ class RightSection extends React.Component {
                 </span>
               </div>
               <div
-                class="elem__file--info"
+                className="elem__file--info"
                 style={
                   !this.props.selectedItem.size
                     ? { display: "none" }
@@ -98,13 +100,13 @@ class RightSection extends React.Component {
                 </span>
               </div>
             </div>
-            <div class="file__control">
+            <div className="file__control">
               <a onClick={this.props.openItem}>
                 {this.props.selectedItem.file ? "Open File" : "Open Folder"}
               </a>
-              <div class="file__settings">
+              <div className="file__settings">
                 <a onClick={this.props.selectContext}>
-                  <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+                  <i className="fas fa-ellipsis-h" aria-hidden="true"></i>
                 </a>
               </div>
             </div>

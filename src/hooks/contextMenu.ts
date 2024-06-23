@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 
 export const useContextMenu = () => {
+  // 215 X 240
   const [contextData, setContextData] = useState({
     selected: false,
     X: 0,
@@ -11,11 +12,27 @@ export const useContextMenu = () => {
   const onContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e) e.stopPropagation();
     if (e) e.preventDefault();
+
+    const contextWidth = 245;
+    const contextHeight = 260;
+
+    const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
+    let X = e.clientX;
+    let Y = e.clientY;
+
+    if (X + contextWidth > windowWidth) {
+      X = windowWidth - contextWidth;
+    }
+
+    if (Y + contextHeight > windowHeight) {
+      Y = windowHeight - contextHeight;
+    }
+
     setContextData({
       ...contextData,
       selected: true,
-      X: e.clientX,
-      Y: e.clientY,
+      X,
+      Y,
     });
   };
 
