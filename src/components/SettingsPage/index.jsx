@@ -830,10 +830,10 @@ class SettingsPageContainer extends React.Component {
 
     return (
       <div>
-        <div class="main__wrapper">
+        <div className="main__wrapper">
           <div
             onClick={this.showSideBar}
-            class="overlay"
+            className="overlay"
             style={
               this.state.sideBarOpen
                 ? { display: "block" }
@@ -844,17 +844,17 @@ class SettingsPageContainer extends React.Component {
           <Header goHome={this.goHome} />
 
           <div
-            class="main__wrapper--container settings__container"
+            className="main__wrapper--container settings__container"
             style={this.props.loading ? { display: "none" } : {}}
           >
             <div
-              class="menu__block"
+              className="menu__block"
               style={
                 this.state.sideBarOpen ? { left: "0px" } : { left: "-250px" }
               }
             >
-              <div class="file__settings">
-                <div class="back__button">
+              <div className="file__settings">
+                <div className="back__button">
                   <a onClick={this.goHome}>
                     <span>
                       <img src="/assets/backarrow.svg" alt="backarrow" />
@@ -862,10 +862,10 @@ class SettingsPageContainer extends React.Component {
                     BACK TO FILES
                   </a>
                 </div>
-                <div class="settings__menu">
+                <div className="settings__menu">
                   <ul>
                     <li
-                      class={
+                      className={
                         this.state.mode === "general" ? "active__settings" : ""
                       }
                       data-settings="general__settings"
@@ -875,7 +875,7 @@ class SettingsPageContainer extends React.Component {
                       </a>
                     </li>
                     <li
-                      class={
+                      className={
                         this.state.mode === "storage" ? "active__settings" : ""
                       }
                       data-settings="storage__accounts"
@@ -890,7 +890,7 @@ class SettingsPageContainer extends React.Component {
                           ? { display: "block" }
                           : { display: "none" }
                       }
-                      class={
+                      className={
                         this.state.mode === "billing" ? "active__settings" : ""
                       }
                       data-settings="billing__settings"
@@ -900,7 +900,7 @@ class SettingsPageContainer extends React.Component {
                       </a>
                     </li>
                     <li
-                      class={
+                      className={
                         this.state.mode === "notifications"
                           ? "active__settings"
                           : ""
@@ -915,9 +915,9 @@ class SettingsPageContainer extends React.Component {
                 </div>
               </div>
             </div>
-            <div class="menu__block">
-              <div class="file__settings">
-                <div class="back__button">
+            <div className="menu__block">
+              <div className="file__settings">
+                <div className="back__button">
                   <a onClick={this.goHome}>
                     <span>
                       <img src="/assets/backarrow.svg" alt="backarrow" />
@@ -925,10 +925,10 @@ class SettingsPageContainer extends React.Component {
                     BACK TO FILES
                   </a>
                 </div>
-                <div class="settings__menu">
+                <div className="settings__menu">
                   <ul>
                     <li
-                      class={
+                      className={
                         this.state.mode === "general" ? "active__settings" : ""
                       }
                       data-settings="general__settings"
@@ -940,7 +940,7 @@ class SettingsPageContainer extends React.Component {
                       </a>
                     </li>
                     <li
-                      class={
+                      className={
                         this.state.mode === "storage" ? "active__settings" : ""
                       }
                       data-settings="storage__accounts"
@@ -957,7 +957,7 @@ class SettingsPageContainer extends React.Component {
                           ? { display: "block" }
                           : { display: "none" }
                       }
-                      class={
+                      className={
                         this.state.mode === "billing" ? "active__settings" : ""
                       }
                       data-settings="billing__settings"
@@ -969,7 +969,7 @@ class SettingsPageContainer extends React.Component {
                       </a>
                     </li>
                     <li
-                      class={
+                      className={
                         this.state.mode === "notifications"
                           ? "active__settings"
                           : ""
@@ -989,34 +989,34 @@ class SettingsPageContainer extends React.Component {
               </div>
             </div>
 
-            <div class="content__block">
-              <div class="small__switcher--content">
-                <a onClick={this.showSideBar} class="menu__button">
-                  <i class="fas fa-bars"></i>
+            <div className="content__block">
+              <div className="small__switcher--content">
+                <a onClick={this.showSideBar} className="menu__button">
+                  <i className="fas fa-bars"></i>
                 </a>
-                {/* <a href="#" class="image__viewer">
-        <i class="fas fa-images"></i>
+                {/* <a href="#" className="image__viewer">
+        <i className="fas fa-images"></i>
       </a> */}
               </div>
-              <div class="main__settings--block">
+              <div className="main__settings--block">
                 <div
-                  class="inner__settings general__settings"
+                  className="inner__settings general__settings"
                   style={
                     this.state.mode === "general"
                       ? { display: "block" }
                       : { display: "none" }
                   }
                 >
-                  <div class="elem__settings">
-                    <div class="head__settings">
+                  <div className="elem__settings">
+                    <div className="head__settings">
                       <h2>Personal info</h2>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Profile picture</p>
                       </div>
-                      <div class="control__value">
-                        <div class="profile__picture">
+                      <div className="control__value">
+                        <div className="profile__picture">
                           <p style={{ backgroundColor: "#3c85ee" }}>
                             <span style={{ color: "#fff" }}>
                               {this.getProfilePicName()}
@@ -1024,15 +1024,15 @@ class SettingsPageContainer extends React.Component {
                           </p>
                         </div>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         {/* <a href="#">Upload</a> */}
                       </div>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Name</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>
                           {this.state.loaded
                             ? this.state.userDetails.name
@@ -1041,47 +1041,47 @@ class SettingsPageContainer extends React.Component {
                             : "Loading..."}
                         </p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a onClick={this.changeShowAddName}>Change</a>
                       </div>
                     </div>
                   </div>
-                  <div class="elem__settings">
-                    <div class="head__settings">
+                  <div className="elem__settings">
+                    <div className="head__settings">
                       <h2>Security</h2>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Logout Account</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p></p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a onClick={this.logout}>Logout</a>
                       </div>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Email</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>
                           {this.state.loaded
                             ? this.state.userDetails.email
                             : "Loading..."}
                         </p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         {/* <a href="#">Change</a> */}
                       </div>
                     </div>
 
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Password</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>
                           {this.state.loaded
                             ? this.state.userDetails.passwordLastModified
@@ -1092,10 +1092,10 @@ class SettingsPageContainer extends React.Component {
                             : "Loading..."}
                         </p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a
                           onClick={this.changeShowChangePassword}
-                          class="modal__button"
+                          className="modal__button"
                           data-modal="password__modal"
                         >
                           Change
@@ -1103,86 +1103,86 @@ class SettingsPageContainer extends React.Component {
                       </div>
                     </div>
 
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Logout All Accounts</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p></p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a onClick={this.logoutAll}>Logout All</a>
                       </div>
                     </div>
-                    {/* <div class="elem__control--settings">
-            <div class="control__title">
+                    {/* <div className="elem__control--settings">
+            <div className="control__title">
               <p>Two factor authentication</p>
             </div>
-            <div class="control__value">
+            <div className="control__value">
               <p>Disabled</p>
             </div>
-            <div class="value__updater">
+            <div className="value__updater">
               <a href="#">Enable</a>
             </div>
           </div> */}
                   </div>
 
-                  <div class="elem__settings" style={{ display: "none" }}>
-                    <div class="head__settings">
+                  <div className="elem__settings" style={{ display: "none" }}>
+                    <div className="head__settings">
                       <h2>Preferences</h2>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Language</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>English</p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a href="#">Change</a>
                       </div>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Date format</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>MM / DD / YYYY</p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a href="#">Change</a>
                       </div>
                     </div>
 
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Date Time zone</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>GMT +7</p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a href="#">Change</a>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div
-                  class="inner__settings storage__accounts"
+                  className="inner__settings storage__accounts"
                   style={
                     this.state.mode === "storage"
                       ? { display: "block" }
                       : { display: "none" }
                   }
                 >
-                  <div class="elem__settings">
-                    <div class="head__settings">
+                  <div className="elem__settings">
+                    <div className="head__settings">
                       <h2>Storage Accounts</h2>
                     </div>
-                    <div class="elem__control--settings storage__control">
-                      <div class="active__storage">
-                        <div class="control__title">
-                          <div class="double__title">
+                    <div className="elem__control--settings storage__control">
+                      <div className="active__storage">
+                        <div className="control__title">
+                          <div className="double__title">
                             <p>
                               {env.commercialMode ? "myDrive" : "Local Storage"}
                             </p>
@@ -1196,10 +1196,10 @@ class SettingsPageContainer extends React.Component {
                             </span>
                           </div>
                         </div>
-                        <div class="control__value">
-                          <div class="available__space--wrap">
+                        <div className="control__value">
+                          <div className="available__space--wrap">
                             <div
-                              class="space__bar"
+                              className="space__bar"
                               style={
                                 !this.state.loaded
                                   ? {}
@@ -1210,7 +1210,7 @@ class SettingsPageContainer extends React.Component {
                               }
                             >
                               <div
-                                class="active__space--bar"
+                                className="active__space--bar"
                                 style={{
                                   backgroundColor: "#3c85ee",
                                   width: !this.state.loaded
@@ -1244,7 +1244,7 @@ class SettingsPageContainer extends React.Component {
                             </span>
                           </div>
                         </div>
-                        <div class="value__updater">
+                        <div className="value__updater">
                           <a
                             onClick={
                               env.commercialMode
@@ -1256,7 +1256,7 @@ class SettingsPageContainer extends React.Component {
                           </a>
                         </div>
                       </div>
-                      <div class="more__space" style={{ display: "none" }}>
+                      <div className="more__space" style={{ display: "none" }}>
                         <p>
                           <img src="/assets/star.svg" alt="star" />{" "}
                           <span>Earn more free space.</span> Get an additional
@@ -1265,9 +1265,9 @@ class SettingsPageContainer extends React.Component {
                         <a href="#">Invite Friends</a>
                       </div>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
-                        <div class="double__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
+                        <div className="double__title">
                           <p>Google Drive</p>
                           <span>
                             {!this.state.loaded
@@ -1278,10 +1278,10 @@ class SettingsPageContainer extends React.Component {
                           </span>
                         </div>
                       </div>
-                      <div class="control__value">
-                        <div class="available__space--wrap">
+                      <div className="control__value">
+                        <div className="available__space--wrap">
                           <div
-                            class="space__bar"
+                            className="space__bar"
                             style={
                               !this.state.loaded
                                 ? {}
@@ -1291,7 +1291,7 @@ class SettingsPageContainer extends React.Component {
                             }
                           >
                             <div
-                              class="active__space--bar"
+                              className="active__space--bar"
                               style={{
                                 backgroundColor: "#3c85ee",
                                 width: !this.state.loaded
@@ -1317,7 +1317,7 @@ class SettingsPageContainer extends React.Component {
                           </span>
                         </div>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a onClick={this.showGoogleAccount}>
                           {!this.state.loaded
                             ? "Loading..."
@@ -1328,9 +1328,9 @@ class SettingsPageContainer extends React.Component {
                       </div>
                     </div>
 
-                    <div class="elem__control--settings">
-                      <div class="control__title">
-                        <div class="double__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
+                        <div className="double__title">
                           <p>Amazon S3</p>
                           <span>
                             {!this.state.loaded
@@ -1342,7 +1342,7 @@ class SettingsPageContainer extends React.Component {
                         </div>
                       </div>
                       <div
-                        class="control__value"
+                        className="control__value"
                         style={
                           !this.state.loaded
                             ? {}
@@ -1351,10 +1351,10 @@ class SettingsPageContainer extends React.Component {
                             : { display: "none" }
                         }
                       >
-                        <div class="available__space--wrap">
-                          <div class="space__bar">
+                        <div className="available__space--wrap">
+                          <div className="space__bar">
                             <div
-                              class="active__space--bar"
+                              className="active__space--bar"
                               style={{
                                 backgroundColor: "#3c85ee",
                                 width: "100%",
@@ -1374,7 +1374,7 @@ class SettingsPageContainer extends React.Component {
                           </span>
                         </div>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a onClick={this.showS3Account}>
                           {!this.state.loaded
                             ? "Loading..."
@@ -1386,10 +1386,10 @@ class SettingsPageContainer extends React.Component {
                     </div>
                   </div>
                   <div
-                    class="elem__settings more__accounts"
+                    className="elem__settings more__accounts"
                     style={{ display: "none" }}
                   >
-                    <div class="head__settings">
+                    <div className="head__settings">
                       <h2>Add more accounts</h2>
                     </div>
                     <div
@@ -1402,27 +1402,27 @@ class SettingsPageContainer extends React.Component {
                     >
                       <p>More Storage Options Coming Soon!</p>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>BackBlaze</p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a href="#">Enable</a>
                       </div>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Sia Network</p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a href="#">Enable</a>
                       </div>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Localhost</p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a href="#">Enable</a>
                       </div>
                     </div>
@@ -1430,22 +1430,22 @@ class SettingsPageContainer extends React.Component {
                 </div>
 
                 <div
-                  class="inner__settings billing__settings"
+                  className="inner__settings billing__settings"
                   style={
                     this.state.mode === "billing"
                       ? { display: "block" }
                       : { display: "none" }
                   }
                 >
-                  <div class="elem__settings">
-                    <div class="head__settings">
+                  <div className="elem__settings">
+                    <div className="head__settings">
                       <h2>Payment</h2>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Payment method</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>
                           {this.state.loaded && this.state.invoicesLoaded
                             ? !this.state.invoiceData.card
@@ -1454,15 +1454,15 @@ class SettingsPageContainer extends React.Component {
                             : "No Payment Method"}
                         </p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a onClick={this.launchStoragePage}>Change</a>
                       </div>
                     </div>
-                    <div class="elem__control--settings">
-                      <div class="control__title">
+                    <div className="elem__control--settings">
+                      <div className="control__title">
                         <p>Billing cycle</p>
                       </div>
-                      <div class="control__value">
+                      <div className="control__value">
                         <p>
                           {this.state.loaded && this.state.invoicesLoaded
                             ? !this.state.invoiceData.subscription
@@ -1474,22 +1474,22 @@ class SettingsPageContainer extends React.Component {
                             : "No Subscription"}
                         </p>
                       </div>
-                      <div class="value__updater">
+                      <div className="value__updater">
                         <a onClick={this.launchStoragePage}>Change</a>
                       </div>
                     </div>
                   </div>
-                  <div class="elem__settings">
-                    <div class="head__settings">
+                  <div className="elem__settings">
+                    <div className="head__settings">
                       <h2>History</h2>
                     </div>
-                    <div class="history.__table">
+                    <div className="history.__table">
                       <table>
                         <tr>
-                          <th class="date__history">DATE</th>
-                          <th class="plan__history">PLAN</th>
-                          <th class="amount__history">AMOUNT</th>
-                          <th class="status__history">STATUS</th>
+                          <th className="date__history">DATE</th>
+                          <th className="plan__history">PLAN</th>
+                          <th className="amount__history">AMOUNT</th>
+                          <th className="status__history">STATUS</th>
                           <th></th>
                         </tr>
 
@@ -1501,28 +1501,28 @@ class SettingsPageContainer extends React.Component {
                               );
                             })}
                         {/* <tr>
-                <td class="date__history">May 1, 2020</td>
-                <td class="plan__history">myDrive Standard Plan</td>
-                <td class="amount__history">$9.99</td>
-                <td class="status__history unpaid">Unpaid</td>
+                <td className="date__history">May 1, 2020</td>
+                <td className="plan__history">myDrive Standard Plan</td>
+                <td className="amount__history">$9.99</td>
+                <td className="status__history unpaid">Unpaid</td>
                 <td>
                   <a href="#">Invoice</a>
                 </td>
               </tr>
               <tr>
-                <td class="date__history">May 1, 2020</td>
-                <td class="plan__history">myDrive Standard Plan</td>
-                <td class="amount__history">$9.99</td>
-                <td class="status__history paid">Paid</td>
+                <td className="date__history">May 1, 2020</td>
+                <td className="plan__history">myDrive Standard Plan</td>
+                <td className="amount__history">$9.99</td>
+                <td className="status__history paid">Paid</td>
                 <td>
                   <a href="#">Receipt</a>
                 </td>
               </tr>
               <tr>
-                <td class="date__history">May 1, 2020</td>
-                <td class="plan__history">myDrive Standard Plan</td>
-                <td class="amount__history">$9.99</td>
-                <td class="status__history paid">Paid</td>
+                <td className="date__history">May 1, 2020</td>
+                <td className="plan__history">myDrive Standard Plan</td>
+                <td className="amount__history">$9.99</td>
+                <td className="status__history paid">Paid</td>
                 <td>
                   <a href="#">Receipt</a>
                 </td>
@@ -1533,18 +1533,18 @@ class SettingsPageContainer extends React.Component {
                 </div>
 
                 <div
-                  class="inner__settings notification__settings"
+                  className="inner__settings notification__settings"
                   style={
                     this.state.mode === "notifications"
                       ? { display: "block" }
                       : { display: "none" }
                   }
                 >
-                  <div class="elem__settings">
-                    <div class="head__settings">
+                  <div className="elem__settings">
+                    <div className="head__settings">
                       <h2>Customization</h2>
                     </div>
-                    <div class="settings__switchers">
+                    <div className="settings__switchers">
                       <span>Set Defaults</span>
                       <p>
                         <input
@@ -1614,11 +1614,11 @@ class SettingsPageContainer extends React.Component {
                     </div>
                   </div>
 
-                  {/* <div class="elem__settings">
-          <div class="head__settings">
+                  {/* <div className="elem__settings">
+          <div className="head__settings">
             <h2>Marketing</h2>
           </div>
-          <div class="settings__switchers">
+          <div className="settings__switchers">
             <span>Email me about</span>
             <p>
               <input type="checkbox" id="test4" />
@@ -1643,16 +1643,16 @@ class SettingsPageContainer extends React.Component {
         </div>
 
         <div
-          class="modal__wrap"
+          className="modal__wrap"
           style={
             this.state.addS3AccountOpen
               ? { display: "block" }
               : { display: "none" }
           }
         >
-          <div class="inner__modal">
-            <div class="password__modal">
-              <div class="head__password">
+          <div className="inner__modal">
+            <div className="password__modal">
+              <div className="head__password">
                 <h2>
                   {!this.state.loaded
                     ? "Loading..."
@@ -1660,13 +1660,13 @@ class SettingsPageContainer extends React.Component {
                     ? "Edit Amazon S3 Account"
                     : "Add Amazon S3 Account"}
                 </h2>
-                <div class="close__modal">
+                <div className="close__modal">
                   <a onClick={this.showS3Account}>
                     <img src="/assets/close.svg" alt="close" />
                   </a>
                 </div>
               </div>
-              <div class="password__content">
+              <div className="password__content">
                 <form
                   onSubmit={
                     !this.state.loaded
@@ -1677,7 +1677,7 @@ class SettingsPageContainer extends React.Component {
                   }
                 >
                   <div
-                    class="group__password"
+                    className="group__password"
                     style={
                       !this.state.loaded
                         ? {}
@@ -1693,7 +1693,7 @@ class SettingsPageContainer extends React.Component {
                     />
                   </div>
                   <div
-                    class="group__password"
+                    className="group__password"
                     style={
                       !this.state.loaded
                         ? {}
@@ -1709,7 +1709,7 @@ class SettingsPageContainer extends React.Component {
                     />
                   </div>
                   <div
-                    class="group__password"
+                    className="group__password"
                     style={
                       !this.state.loaded
                         ? {}
@@ -1725,7 +1725,7 @@ class SettingsPageContainer extends React.Component {
                       placeholder="S3 Key"
                     />
                   </div>
-                  <div class="password__submit">
+                  <div className="password__submit">
                     <input
                       type="submit"
                       value={
@@ -1748,7 +1748,7 @@ class SettingsPageContainer extends React.Component {
                       : { display: "none" }
                   }
                 >
-                  <div class="password__submit">
+                  <div className="password__submit">
                     {/* <input onClick={this.downloadPersonalFileList} value="Download S3 File List"/> */}
                     <button>Download S3 Metadata List</button>
                   </div>
@@ -1762,7 +1762,7 @@ class SettingsPageContainer extends React.Component {
                       : { display: "none" }
                   }
                 >
-                  <div class="password__submit">
+                  <div className="password__submit">
                     <div>
                       <input
                         ref={this.uploadReference}
@@ -1785,7 +1785,7 @@ class SettingsPageContainer extends React.Component {
                       : { display: "none" }
                   }
                 >
-                  <div class="password__submit">
+                  <div className="password__submit">
                     {/* <input onClick={this.downloadPersonalFileList} value="Download S3 File List"/> */}
                     <button>Delete S3 Metadata</button>
                   </div>
@@ -1796,16 +1796,16 @@ class SettingsPageContainer extends React.Component {
         </div>
 
         <div
-          class="modal__wrap"
+          className="modal__wrap"
           style={
             this.state.addGoogleAccountOpen
               ? { display: "block" }
               : { display: "none" }
           }
         >
-          <div class="inner__modal">
-            <div class="password__modal">
-              <div class="head__password">
+          <div className="inner__modal">
+            <div className="password__modal">
+              <div className="head__password">
                 <h2>
                   {!this.state.loaded
                     ? "Loading..."
@@ -1813,13 +1813,13 @@ class SettingsPageContainer extends React.Component {
                     ? "Remove Google Drive Account"
                     : "Add Google Drive Account"}
                 </h2>
-                <div class="close__modal">
+                <div className="close__modal">
                   <a onClick={this.showGoogleAccount}>
                     <img src="/assets/close.svg" alt="close" />
                   </a>
                 </div>
               </div>
-              <div class="password__content">
+              <div className="password__content">
                 <form
                   onSubmit={
                     !this.state.loaded
@@ -1830,7 +1830,7 @@ class SettingsPageContainer extends React.Component {
                   }
                 >
                   <div
-                    class="group__password"
+                    className="group__password"
                     style={
                       !this.state.loaded
                         ? {}
@@ -1846,7 +1846,7 @@ class SettingsPageContainer extends React.Component {
                     />
                   </div>
                   <div
-                    class="group__password"
+                    className="group__password"
                     style={
                       !this.state.loaded
                         ? {}
@@ -1862,7 +1862,7 @@ class SettingsPageContainer extends React.Component {
                       placeholder="Drive Client Secret"
                     />
                   </div>
-                  <div class="password__submit">
+                  <div className="password__submit">
                     <input
                       type="submit"
                       value={
@@ -1881,26 +1881,26 @@ class SettingsPageContainer extends React.Component {
         </div>
 
         <div
-          class="modal__wrap"
+          className="modal__wrap"
           style={
             this.state.showChangePassword
               ? { display: "block" }
               : { display: "none" }
           }
         >
-          <div class="inner__modal">
-            <div class="password__modal">
-              <div class="head__password">
+          <div className="inner__modal">
+            <div className="password__modal">
+              <div className="head__password">
                 <h2>Update password</h2>
-                <div class="close__modal">
+                <div className="close__modal">
                   <a onClick={this.changeShowChangePassword}>
                     <img src="/assets/close.svg" alt="close" />
                   </a>
                 </div>
               </div>
-              <div class="password__content">
+              <div className="password__content">
                 <form onSubmit={this.submitPasswordChange}>
-                  <div class="group__password">
+                  <div className="group__password">
                     <input
                       onChange={this.onChangeOldPassword}
                       value={this.state.oldPassword}
@@ -1908,7 +1908,7 @@ class SettingsPageContainer extends React.Component {
                       placeholder="Old password"
                     />
                   </div>
-                  <div class="group__password">
+                  <div className="group__password">
                     <input
                       onChange={this.onChangeNewPassword}
                       value={this.state.newPassword}
@@ -1916,7 +1916,7 @@ class SettingsPageContainer extends React.Component {
                       placeholder="New password"
                     />
                   </div>
-                  <div class="group__password">
+                  <div className="group__password">
                     <input
                       onChange={this.onChangeVerifyNewPassword}
                       value={this.state.verifyNewPassword}
@@ -1924,7 +1924,7 @@ class SettingsPageContainer extends React.Component {
                       placeholder="Repeat new password"
                     />
                   </div>
-                  <div class="password__submit">
+                  <div className="password__submit">
                     <input type="submit" value="Update Password" />
                   </div>
                 </form>
@@ -1934,31 +1934,31 @@ class SettingsPageContainer extends React.Component {
         </div>
 
         <div
-          class="modal__wrap"
+          className="modal__wrap"
           style={
             this.state.showAddName ? { display: "block" } : { display: "none" }
           }
         >
-          <div class="inner__modal">
-            <div class="password__modal">
-              <div class="head__password">
+          <div className="inner__modal">
+            <div className="password__modal">
+              <div className="head__password">
                 <h2>{"Update Name"}</h2>
-                <div class="close__modal">
+                <div className="close__modal">
                   <a onClick={this.changeShowAddName}>
                     <img src="/assets/close.svg" alt="close" />
                   </a>
                 </div>
               </div>
-              <div class="password__content">
+              <div className="password__content">
                 <form onSubmit={this.submitAddName}>
-                  <div class="group__password">
+                  <div className="group__password">
                     <input
                       value={this.state.name}
                       onChange={this.onChangeAddName}
                       placeholder="Name"
                     />
                   </div>
-                  <div class="password__submit">
+                  <div className="password__submit">
                     <input type="submit" value="Update Name" />
                   </div>
                 </form>

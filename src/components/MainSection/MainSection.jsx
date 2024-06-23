@@ -7,7 +7,7 @@ import LeftSection from "../LeftSection";
 
 const MainSection = React.forwardRef((props, ref) => {
   return (
-    <div class="content__block">
+    <div className="content__block">
       <div
         className="overlay"
         style={
@@ -16,16 +16,16 @@ const MainSection = React.forwardRef((props, ref) => {
             : { display: "none" }
         }
       ></div>
-      <div class="small__switcher--content">
-        <a onClick={props.switchLeftSectionMode} class="menu__button">
-          <i class="fas fa-bars"></i>
+      <div className="small__switcher--content">
+        <a onClick={props.switchLeftSectionMode} className="menu__button">
+          <i className="fas fa-bars"></i>
         </a>
-        <a onClick={props.switchRightSectionMode} class="image__viewer">
-          <i class="fas fa-images"></i>
+        <a onClick={props.switchRightSectionMode} className="image__viewer">
+          <i className="fas fa-images"></i>
         </a>
       </div>
       <div
-        class="file__container"
+        className="file__container"
         style={
           props.routeType === "search"
             ? { flexDirection: "column" }
@@ -33,9 +33,9 @@ const MainSection = React.forwardRef((props, ref) => {
         }
       >
         {true ? undefined : (
-          <div class="file__control--panel empty__control--panel">
-            <div class="file__get--started">
-              <div class="get__started--image">
+          <div className="file__control--panel empty__control--panel">
+            <div className="file__get--started">
+              <div className="get__started--image">
                 <img src="/assets/get_startedfile.svg" alt="get" />
               </div>
               <h6>All your files in one place</h6>
@@ -46,29 +46,31 @@ const MainSection = React.forwardRef((props, ref) => {
 
         {props.routeType === "search" ? (
           <div
-            class="file__control--panel folder__view"
+            className="file__control--panel folder__view"
             style={{ paddingBottom: "0", marginBottom: "-50px" }}
           >
-            <div class="results__files">
+            <div className="results__files">
               <h2>
-                <span class="counter__result">
+                <span className="counter__result">
                   {props.files.length + props.folders.length >= 50
                     ? "50+"
                     : props.files.length + props.folders.length}
                 </span>{" "}
-                <span class="result__word">results</span> for{" "}
-                <span class="result__search--word">{props.cachedSearch}</span>
+                <span className="result__word">results</span> for{" "}
+                <span className="result__search--word">
+                  {props.cachedSearch}
+                </span>
               </h2>
-              <p class="searching__result">
+              <p className="searching__result">
                 You are searching in{" "}
-                <span class="root__parent">
+                <span className="root__parent">
                   {props.parent === "/"
                     ? "Home"
                     : props.parentNameList.length !== 0
                     ? props.parentNameList[props.parentNameList.length - 1]
                     : "Unknown"}
                 </span>{" "}
-                <span class="spacer">
+                <span className="spacer">
                   <img
                     style={{
                       height: "11px",
@@ -79,11 +81,11 @@ const MainSection = React.forwardRef((props, ref) => {
                     alt="spacer"
                   />
                 </span>
-                <span class="current__folder"></span>{" "}
+                <span className="current__folder"></span>{" "}
                 <a
                   href="#"
                   style={{ display: "none" }}
-                  class="search__filter--global"
+                  className="search__filter--global"
                 >
                   Show results from everywhere
                 </a>

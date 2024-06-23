@@ -24,8 +24,8 @@ class LeftSection extends React.Component {
             : { left: "-290px" }
         }
       >
-        <div class="navigation__block">
-          <div class="add__new">
+        <div className="navigation__block">
+          <div className="add__new">
             <a onClick={this.props.showDropDown}>
               <p>ADD NEW</p>
               <span>
@@ -33,7 +33,7 @@ class LeftSection extends React.Component {
               </span>
             </a>
             <div
-              class="dropdown__list"
+              className="dropdown__list"
               style={
                 this.props.state.open
                   ? { display: "block" }
@@ -53,7 +53,7 @@ class LeftSection extends React.Component {
                       />
                       <a
                         onClick={this.props.showUploadOverlay}
-                        class="upload__files"
+                        className="upload__files"
                       >
                         <span>
                           <img src="/assets/uploadicon.svg" alt="upload" />
@@ -64,7 +64,7 @@ class LeftSection extends React.Component {
                   ) : (
                     <a
                       onClick={this.props.showUploadOverlay}
-                      class="upload__files"
+                      className="upload__files"
                     >
                       <span>
                         <img src="/assets/uploadicon.svg" alt="upload" />
@@ -84,9 +84,9 @@ class LeftSection extends React.Component {
               </ul>
             </div>
           </div>
-          <div class="page__navigation">
+          <div className="page__navigation">
             <ul>
-              <li class="active__page">
+              <li className="active__page">
                 <a onClick={this.props.goHome}>
                   <span>
                     <img src="/assets/homea.svg" alt="homeactive" />
@@ -97,11 +97,11 @@ class LeftSection extends React.Component {
             </ul>
           </div>
           <UploadStorageSwitcher />
-          <div class="folder__structure">
+          <div className="folder__structure">
             <FolderTree />
           </div>
           <div
-            class={
+            className={
               this.props.state.hideFolderTree
                 ? "utility__buttons utility__buttons_no_border"
                 : "utility__buttons"

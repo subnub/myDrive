@@ -3,17 +3,17 @@ import React from "react";
 
 const Uploader = React.forwardRef((props, ref) => (
   <div
-    class="upload__status"
+    className="upload__status"
     style={
       props.uploads.length !== 0 ? { display: "block" } : { display: "none" }
     }
   >
-    <div class="head__upload">
+    <div className="head__upload">
       <p>
         Uploading {props.uploads.length}{" "}
         {props.uploads.length === 1 ? "file" : "files"}
       </p>
-      <div class="hide__upload">
+      <div className="hide__upload">
         <a onClick={() => props.minimizeUploader()}>
           <img src="/assets/upload_hide.svg" alt="upload__hide" />
         </a>
@@ -26,7 +26,7 @@ const Uploader = React.forwardRef((props, ref) => (
         </a>
       </div>
     </div>
-    <div class="content__upload">
+    <div className="content__upload">
       {props.uploaderShow
         ? props.uploads.map((upload) => {
             return <UploadItem key={upload.id} {...upload} />;

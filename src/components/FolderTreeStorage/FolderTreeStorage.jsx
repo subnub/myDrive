@@ -38,10 +38,10 @@ const FolderTreeStorage = (props) => (
   </div>
   //return
 
-  // <div class="elem__structure root__element">
-  //     <div class={props.state.open ? "parent__structure active__parent" : "parent__structure"}>
+  // <div className="elem__structure root__element">
+  //     <div className={props.state.open ? "parent__structure active__parent" : "parent__structure"}>
   //         <span onClick={props.arrowClick}><img src="/assets/arrowstructure.svg" alt="arrowstructure"/></span>
-  //         <div class="info__name">
+  //         <div className="info__name">
   //             <p>{props.type === "drive" ? "Google Drive" : props.type === "mongo" ? "myDrive" : "Amazon S3"}</p>
   //         </div>
   //     </div>

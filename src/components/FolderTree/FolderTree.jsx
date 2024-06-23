@@ -21,7 +21,7 @@ const FolderTree = (props) => (
     </div>
   </div>
 
-  // <div class="folder__structure" style={{overflow:"unset", maxHeight:"unset", maxWidth:"unset"}}>
+  // <div className="folder__structure" style={{overflow:"unset", maxHeight:"unset", maxWidth:"unset"}}>
   //     {(env.activeSubscription || !env.commercialMode) ? <FolderTreeStorage type={"mongo"}/> : undefined}
   //     {env.s3Enabled ? <FolderTreeStorage type={"s3"}/> : undefined}
   //     {env.googleDriveEnabled ? <FolderTreeStorage type={"drive"}/> : undefined}

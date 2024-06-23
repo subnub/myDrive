@@ -9,29 +9,36 @@ const UploadItem = (props) => {
 
   if (!completed && !canceled) {
     return (
-      <div class="elem__upload uploading__now">
-        <div class="upload__elem--status">
+      <div className="elem__upload uploading__now">
+        <div className="upload__elem--status">
           <span>
             <img src="/assets/upload_now.svg" alt="upload" />
           </span>
         </div>
-        <div class="upload__info">
-          <div class="top__upload">
-            <div class="upload__text">
+        <div className="upload__info">
+          <div className="top__upload">
+            <div className="upload__text">
               <p>{props.name}</p>
             </div>
-            <div class="upload__size">
-              <div class="stop__download">
+            <div className="upload__size">
+              <div className="stop__download">
                 <span>
-                  <img onClick={props.cancelUploadEvent} src="/assets/cancel.svg" alt="cancel" />
+                  <img
+                    onClick={props.cancelUploadEvent}
+                    src="/assets/cancel.svg"
+                    alt="cancel"
+                  />
                 </span>
               </div>
-                <span>{bytes(props.size)}</span>
+              <span>{bytes(props.size)}</span>
             </div>
           </div>
-          <div class="bottom__upload">
-            <div class="progress__upload">
-              <div class="active__progress" style={{width:`${props.progress}%`}}></div>
+          <div className="bottom__upload">
+            <div className="progress__upload">
+              <div
+                className="active__progress"
+                style={{ width: `${props.progress}%` }}
+              ></div>
             </div>
           </div>
         </div>
@@ -39,24 +46,27 @@ const UploadItem = (props) => {
     );
   } else if (completed) {
     return (
-      <div class="elem__upload uploaded__already">
-        <div class="upload__elem--status">
+      <div className="elem__upload uploaded__already">
+        <div className="upload__elem--status">
           <span>
             <img src="/assets/uploaded__success.svg" alt="upload" />
           </span>
         </div>
-        <div class="upload__info">
-          <div class="top__upload">
-            <div class="upload__text">
+        <div className="upload__info">
+          <div className="top__upload">
+            <div className="upload__text">
               <p>{props.name}</p>
             </div>
-            <div class="upload__size">
-            <span>{bytes(props.size)}</span>
+            <div className="upload__size">
+              <span>{bytes(props.size)}</span>
             </div>
           </div>
-          <div class="bottom__upload">
-            <div class="progress__upload">
-              <div class="active__progress" style={{width:`${props.progress}%`}}></div>
+          <div className="bottom__upload">
+            <div className="progress__upload">
+              <div
+                className="active__progress"
+                style={{ width: `${props.progress}%` }}
+              ></div>
             </div>
           </div>
         </div>
@@ -64,23 +74,23 @@ const UploadItem = (props) => {
     );
   } else {
     return (
-      <div class="elem__upload uploaded__cancelled">
-        <div class="upload__elem--status">
+      <div className="elem__upload uploaded__cancelled">
+        <div className="upload__elem--status">
           <span>
             <img src="/assets/uploaded__failed.svg" alt="upload" />
           </span>
         </div>
-        <div class="upload__info">
-          <div class="top__upload">
-            <div class="upload__text">
+        <div className="upload__info">
+          <div className="top__upload">
+            <div className="upload__text">
               <p>{props.name}</p>
             </div>
-            <div class="retry__download">
+            <div className="retry__download">
               <a href="#">Retry</a>
             </div>
           </div>
-          <div class="bottom__upload">
-            <div class="failed__info">
+          <div className="bottom__upload">
+            <div className="failed__info">
               <span>Upload failed</span>
             </div>
           </div>

@@ -7,50 +7,50 @@ class MoverModel extends React.Component {
 
   render() {
     return (
-      <div class="modal__wrap" style="display:none;">
-        <div class="inner__modal">
-          <div class="destination__modal">
-            <div class="destination__head">
+      <div className="modal__wrap" style="display:none;">
+        <div className="inner__modal">
+          <div className="destination__modal">
+            <div className="destination__head">
               <h2>Choose destination</h2>
-              <div class="close__modal">
+              <div className="close__modal">
                 <a href="#">
                   <img src="/assets/close.svg" alt="close" />
                 </a>
               </div>
             </div>
-            <div class="destination__structure">
-              <div class="folder__structure">
-                <div class="elem__structure">
-                  <div class="parent__structure">
+            <div className="destination__structure">
+              <div className="folder__structure">
+                <div className="elem__structure">
+                  <div className="parent__structure">
                     <span>
-                      <i class="fas fa-caret-right"></i>
+                      <i className="fas fa-caret-right"></i>
                     </span>
-                    <div class="info__name">
+                    <div className="info__name">
                       <p>myDrive</p>
                     </div>
                   </div>
-                  <div class="child__structure" style="display:none;">
-                    <div class="elem__structure">
-                      <div class="parent__structure">
+                  <div className="child__structure" style="display:none;">
+                    <div className="elem__structure">
+                      <div className="parent__structure">
                         <span>
-                          <i class="fas fa-caret-right"></i>
+                          <i className="fas fa-caret-right"></i>
                         </span>
-                        <div class="info__name">
+                        <div className="info__name">
                           <p>
                             <span>
-                              <i class="fas fa-folder"></i>
+                              <i className="fas fa-folder"></i>
                             </span>
                             Images
                           </p>
                         </div>
                       </div>
-                      <div class="child__structure" style="display:none;">
-                        <div class="elem__structure">
-                          <div class="parent__structure last__structure">
-                            <div class="info__name">
+                      <div className="child__structure" style="display:none;">
+                        <div className="elem__structure">
+                          <div className="parent__structure last__structure">
+                            <div className="info__name">
                               <p>
                                 <span>
-                                  <i class="fas fa-folder"></i>
+                                  <i className="fas fa-folder"></i>
                                 </span>
                                 Videos
                               </p>
@@ -60,28 +60,28 @@ class MoverModel extends React.Component {
                       </div>
                     </div>
                   </div>
-                  <div class="child__structure" style="display:none;">
-                    <div class="elem__structure">
-                      <div class="parent__structure">
+                  <div className="child__structure" style="display:none;">
+                    <div className="elem__structure">
+                      <div className="parent__structure">
                         <span>
-                          <i class="fas fa-caret-right"></i>
+                          <i className="fas fa-caret-right"></i>
                         </span>
-                        <div class="info__name">
+                        <div className="info__name">
                           <p>
                             <span>
-                              <i class="fas fa-folder"></i>
+                              <i className="fas fa-folder"></i>
                             </span>
                             Images
                           </p>
                         </div>
                       </div>
-                      <div class="child__structure" style="display:none;">
-                        <div class="elem__structure">
-                          <div class="parent__structure last__structure">
-                            <div class="info__name">
+                      <div className="child__structure" style="display:none;">
+                        <div className="elem__structure">
+                          <div className="parent__structure last__structure">
+                            <div className="info__name">
                               <p>
                                 <span>
-                                  <i class="fas fa-folder"></i>
+                                  <i className="fas fa-folder"></i>
                                 </span>
                                 Videos
                               </p>
@@ -92,29 +92,29 @@ class MoverModel extends React.Component {
                     </div>
                   </div>
                 </div>
-                <div class="elem__structure">
-                  <div class="parent__structure">
+                <div className="elem__structure">
+                  <div className="parent__structure">
                     <span>
-                      <i class="fas fa-caret-right"></i>
+                      <i className="fas fa-caret-right"></i>
                     </span>
-                    <div class="info__name">
+                    <div className="info__name">
                       <p>Amazon S3</p>
                     </div>
                   </div>
                 </div>
-                <div class="elem__structure">
-                  <div class="parent__structure">
+                <div className="elem__structure">
+                  <div className="parent__structure">
                     <span>
-                      <i class="fas fa-caret-right"></i>
+                      <i className="fas fa-caret-right"></i>
                     </span>
-                    <div class="info__name">
+                    <div className="info__name">
                       <p>Google Drive</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="destination__move">
+            <div className="destination__move">
               <a href="#">Move To Folder</a>
             </div>
           </div>

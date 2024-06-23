@@ -2,10 +2,10 @@ import React from "react";
 
 const Header = (props) => (
   <header>
-    <div class="container">
-      <div class="outer__header">
-        <div class="left__header">
-          <div class="logo__wrapper">
+    <div className="container">
+      <div className="outer__header">
+        <div className="left__header">
+          <div className="logo__wrapper">
             <a onClick={props.goHome}>
               <img
                 className="header__icon"
@@ -14,7 +14,7 @@ const Header = (props) => (
               />
             </a>
           </div>
-          <div class="search__wrapper">
+          <div className="search__wrapper">
             <a href="#">
               <img src="/assets/searchicon.svg" alt="search" />
             </a>
@@ -27,7 +27,7 @@ const Header = (props) => (
               onBlur={props.hideSuggested}
             />
             <div
-              class="search__files--dropdown"
+              className="search__files--dropdown"
               style={
                 props.state.focused && props.searchValue.length !== 0
                   ? { display: "block" }
@@ -36,11 +36,12 @@ const Header = (props) => (
             >
               <div
                 onMouseDown={props.selectSuggestedByParent}
-                class="elem__search--files search__filter--local"
+                className="elem__search--files search__filter--local"
               >
                 <a>
-                  Search for <span class="file__name">{props.searchValue}</span>
-                  <span class="spacer">
+                  Search for{" "}
+                  <span className="file__name">{props.searchValue}</span>
+                  <span className="spacer">
                     <img src="/assets/spacer.svg" alt="spacer" />
                   </span>
                 </a>
@@ -48,15 +49,15 @@ const Header = (props) => (
             </div>
           </div>
         </div>
-        <div class="right__header">
-          <div class="profile__info">
-            <div class="settings__button">
+        <div className="right__header">
+          <div className="profile__info">
+            <div className="settings__button">
               <a onClick={props.goToSettings}>
                 <img src="/assets/settings.svg" alt="settings" />
               </a>
             </div>
-            <div class="profile__wrapper">
-              <div class="profile__button">
+            <div className="profile__wrapper">
+              <div className="profile__button">
                 <a style={{ backgroundColor: "#3c85ee" }}>
                   <span style={{ color: "#fff" }}>{props.getProfilePic()}</span>
                 </a>
