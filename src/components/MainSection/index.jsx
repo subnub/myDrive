@@ -61,6 +61,8 @@ class MainSectionContainer extends React.Component {
 
     const isMobile = mobileCheck();
 
+    console.log("file", file);
+
     if (
       (currentDate - this.props.lastSelected < 1500 &&
         selectedFileID === this.props.selected) ||

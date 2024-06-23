@@ -1,13 +1,20 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import classNames from "classnames";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { startSetSelectedItem } from "../../actions/selectedItem";
+import mobilecheck from "../../utils/mobileCheck";
 
 const FolderItem = (props) => {
+  const { folder } = props;
   const currentSelectedItem = useSelector(
     (state) => state.selectedItem.selected
   );
+  const lastSelected = useRef(0);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     onContextMenu,
     closeContextMenu,
@@ -19,9 +26,25 @@ const FolderItem = (props) => {
   } = useContextMenu();
 
   const elementSelected = useMemo(
-    () => props._id === currentSelectedItem,
-    [props._id, currentSelectedItem]
+    () => props.folder._id === currentSelectedItem,
+    [props.folder._id, currentSelectedItem]
   );
+
+  const folderClick = () => {
+    const currentDate = Date.now();
+
+    if (!elementSelected) {
+      dispatch(startSetSelectedItem(folder._id, false, false));
+    }
+
+    const isMobile = mobilecheck();
+
+    if (isMobile || currentDate - lastSelected.current < 1500) {
+      navigate(`/folder/${folder._id}`);
+    }
+
+    lastSelected.current = Date.now();
+  };
 
   return (
     <div
@@ -31,7 +54,7 @@ const FolderItem = (props) => {
           "bg-[#3c85ee]": elementSelected,
         }
       )}
-      onClick={() => props.folderClick(props._id, props)}
+      onClick={folderClick}
       onContextMenu={onContextMenu}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -41,10 +64,10 @@ const FolderItem = (props) => {
         <ContextMenu
           gridMode={true}
           folderMode={true}
-          quickItemMode={props.parent !== "/"}
+          quickItemMode={props.folder.parent !== "/"}
           contextSelected={contextMenuState}
           closeContext={closeContextMenu}
-          folder={props}
+          folder={props.folder}
         />
       </div>
       <div>
@@ -74,7 +97,7 @@ const FolderItem = (props) => {
           elementSelected ? "text-white" : "text-black"
         )}
       >
-        <p>{props.name}</p>
+        <p>{props.folder.name}</p>
       </div>
     </div>
   );

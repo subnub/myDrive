@@ -1,12 +1,12 @@
-export const getFileExtension = (filename: string) => {
+export const getFileExtension = (filename: string, length = 4) => {
   const filenameSplit = filename.split(".");
 
   if (filenameSplit.length > 1) {
     let extension = filenameSplit[filenameSplit.length - 1];
 
-    if (extension.length > 4)
+    if (extension.length > length)
       extension =
-        extension.substring(0, 3) +
+        extension.substring(0, length - 1) +
         extension.substring(extension.length - 1, extension.length);
 
     return extension.toUpperCase();

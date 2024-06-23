@@ -50,12 +50,7 @@ const QuickAccess = (props) => {
         }}
       >
         {quickfilesList?.map((file) => (
-          <QuickAccessItem
-            key={file._id}
-            downloadFile={props.downloadFile}
-            fileClick={props.fileClick}
-            {...file}
-          />
+          <QuickAccessItem key={file._id} file={file} />
         ))}
       </div>
     </div>

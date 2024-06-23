@@ -66,6 +66,7 @@ export const downloadFile = async (fileID: string) => {
 };
 
 export const getFileThumbnail = async (thumbnailID: string) => {
+  // TODO: Change this
   const url = `http://localhost:5173/api/file-service/thumbnail/${thumbnailID}`;
   const config = {
     responseType: "arraybuffer",

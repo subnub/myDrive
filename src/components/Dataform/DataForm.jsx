@@ -65,11 +65,9 @@ const DataForm = (props) => {
         <div className="inner__folders">
           {folders?.map((folder) => (
             <FolderItem
-              {...folder}
+              folder={folder}
               key={folder._id}
-              itemSelected={folder._id === props.selected}
               folderClick={props.folderClick}
-              deleteFolder={props.deleteFolder}
             />
           ))}
         </div>
@@ -155,7 +153,7 @@ const DataForm = (props) => {
                 <React.Fragment key={index}>
                   {filePage.map((file) => (
                     <FileItem
-                      {...file}
+                      file={file}
                       key={file._id}
                       itemSelected={file._id === props.selected}
                       downloadFile={props.downloadFile}
@@ -207,7 +205,7 @@ const DataForm = (props) => {
                 <React.Fragment key={index}>
                   {filePage.map((file) => (
                     <FileItem
-                      {...file}
+                      file={file}
                       key={file._id}
                       itemSelected={file._id === props.selected}
                       downloadFile={props.downloadFile}

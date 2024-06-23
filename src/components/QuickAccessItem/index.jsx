@@ -1,21 +1,27 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import classNames from "classnames";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { useThumbnail } from "../../hooks/files";
 import { useContextMenu } from "../../hooks/contextMenu";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import mobilecheck from "../../utils/mobileCheck";
+import { startSetSelectedItem } from "../../actions/selectedItem";
+import { setPopupFile } from "../../actions/popupFile";
 
 const QuickAccessItem = (props) => {
+  const { file } = props;
   const currentSelectedItem = useSelector(
     (state) => state.selectedItem.selected
   );
   const { image, hasThumbnail, imageOnError } = useThumbnail(
-    props.metadata.hasThumbnail,
-    props.metadata.thumbnailID
+    file.metadata.hasThumbnail,
+    file.metadata.thumbnailID
   );
+  const dispatch = useDispatch();
+  const lastSelected = useRef(0);
 
   const {
     onContextMenu,
@@ -28,19 +34,35 @@ const QuickAccessItem = (props) => {
   } = useContextMenu();
 
   const fileExtension = useMemo(
-    () => getFileExtension(props.filename),
-    [props.filename]
+    () => getFileExtension(file.filename),
+    [file.filename]
   );
 
   const imageColor = useMemo(
-    () => getFileColor(props.filename),
-    [props.filename]
+    () => getFileColor(file.filename),
+    [file.filename]
   );
 
   const elementSelected = useMemo(
-    () => `quick-${props._id}` === currentSelectedItem,
-    [props._id, currentSelectedItem]
+    () => `quick-${file._id}` === currentSelectedItem,
+    [file._id, currentSelectedItem]
   );
+
+  const quickItemClick = () => {
+    const currentDate = Date.now();
+
+    if (!elementSelected) {
+      dispatch(startSetSelectedItem(file._id, true, true));
+    }
+
+    const isMobile = mobilecheck();
+
+    if (isMobile || currentDate - lastSelected.current < 1500) {
+      dispatch(setPopupFile({ showPopup: true, ...file }));
+    }
+
+    lastSelected.current = Date.now();
+  };
 
   return (
     <div
@@ -48,9 +70,7 @@ const QuickAccessItem = (props) => {
         "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer w-48 flex items-center justify-center flex-col h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
         elementSelected ? "border-[#3c85ee]" : "border-[#ebe9f9]"
       )}
-      onClick={() => {
-        props.fileClick(props._id, props, true);
-      }}
+      onClick={quickItemClick}
       onContextMenu={onContextMenu}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -63,7 +83,7 @@ const QuickAccessItem = (props) => {
             quickItemMode={true}
             contextSelected={contextMenuState}
             closeContext={closeContextMenu}
-            file={props}
+            file={file}
           />
         </div>
       )}
@@ -115,7 +135,7 @@ const QuickAccessItem = (props) => {
             elementSelected ? "text-white" : "text-[#212b36]"
           )}
         >
-          {capitalize(props.filename)}
+          {capitalize(file.filename)}
         </p>
         <span
           className={classNames(
@@ -123,7 +143,7 @@ const QuickAccessItem = (props) => {
             elementSelected ? "text-white" : "text-[#637381]"
           )}
         >
-          Created {moment(props.uploadDate).format("MM/DD/YY hh:mma")}
+          Created {moment(file.uploadDate).format("MM/DD/YY hh:mma")}
         </span>
       </div>
     </div>
