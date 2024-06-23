@@ -50,7 +50,7 @@ const FolderItem = (props) => {
   return (
     <div
       className={classNames(
-        "p-[12px] border border-[#ebe9f9] rounded-[4px] overflow-hidden cursor-pointer animate",
+        "p-[12px] border border-[#ebe9f9] rounded-[4px] overflow-hidden w-48 cursor-pointer animate",
         {
           "bg-[#3c85ee]": elementSelected,
         }
@@ -61,16 +61,19 @@ const FolderItem = (props) => {
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div onClick={clickStopPropagation}>
-        <ContextMenu
-          gridMode={true}
-          folderMode={true}
-          quickItemMode={props.folder.parent !== "/"}
-          contextSelected={contextMenuState}
-          closeContext={closeContextMenu}
-          folder={props.folder}
-        />
-      </div>
+      {contextMenuState.selected && (
+        <div onClick={clickStopPropagation}>
+          <ContextMenu
+            gridMode={true}
+            folderMode={true}
+            quickItemMode={props.folder.parent !== "/"}
+            contextSelected={contextMenuState}
+            closeContext={closeContextMenu}
+            folder={props.folder}
+          />
+        </div>
+      )}
+
       <div>
         <svg
           className={classNames(
@@ -102,7 +105,7 @@ const FolderItem = (props) => {
       </div>
       <p
         className={classNames(
-          "m-0 mt-2 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate",
+          "m-0 mt-2 font-normal max-w-full whitespace-nowrap text-xs animate",
           elementSelected ? "text-white" : "text-[#637381]"
         )}
       >

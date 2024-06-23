@@ -2,22 +2,21 @@ import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { deleteFile, renameFile, downloadFile } from "../../api/filesAPI";
-import { useFiles, useQuickFiles } from "../../hooks/files";
-import { useFolders } from "../../hooks/folders";
+import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
+import { useFoldersClient } from "../../hooks/folders";
 import { useDispatch } from "react-redux";
 import { setMoverID } from "../../actions/mover";
 import { setShareSelected } from "../../actions/selectedItem";
-import { startRenameFolder } from "../../actions/folders";
 import { deleteFolder, renameFolder } from "../../api/foldersAPI";
 
 const ContextMenu = (props) => {
-  const { invalidateFilesCache } = useFiles();
-  const { invalidateFoldersCache } = useFolders();
-  const { invalidateQuickFilesCache } = useQuickFiles();
+  const { invalidateFilesCache } = useFilesClient();
+  const { invalidateFoldersCache } = useFoldersClient();
+  const { invalidateQuickFilesCache } = useQuickFilesClient();
   const dispatch = useDispatch();
   const wrapperRef = useRef();
   const liClassname =
-    "flex w-full px-[20px] py-[12px] items-center font-normal justify-start no-underline transition-all duration-400 ease-in-out hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
+    "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline transition-all duration-400 ease-in-out text- hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
   const spanClassname = "inline-flex mr-[18px]";
 
   const renameItem = async () => {

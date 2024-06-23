@@ -98,7 +98,7 @@ class FolderService {
 
     let searchQuery = query.search || "";
     const parent = query.parent || "/";
-    let sortBy = query.sortby || "DEFAULT";
+    let sortBy = query.sortBy || "DEFAULT";
     const type = query.type;
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;

@@ -1,37 +1,48 @@
 import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { getFoldersList } from "../api/foldersAPI";
+import { useSelector } from "react-redux";
 
 export const useFolders = () => {
   const params = useParams();
+  const sortBy = useSelector((state: any) => state.filter.sortBy);
   const foldersReactQuery = useQuery(
     [
       "folders",
       {
         parent: params.id || "/",
         search: "",
-        sortBy: undefined,
+        sortBy,
         limit: undefined,
       },
     ],
     getFoldersList
   );
 
-  const filesReactClientQuery = useQueryClient();
+  return { ...foldersReactQuery };
+};
+
+export const useFoldersClient = () => {
+  const params = useParams();
+  const sortBy = useSelector((state: any) => state.filter.sortBy);
+  const foldersReactClientQuery = useQueryClient();
 
   const invalidateFoldersCache = () => {
-    filesReactClientQuery.invalidateQueries({
+    foldersReactClientQuery.invalidateQueries({
       queryKey: [
         "folders",
         {
           parent: params.id || "/",
           search: "",
-          sortBy: undefined,
+          sortBy,
           limit: undefined,
         },
       ],
     });
   };
 
-  return { ...foldersReactQuery, invalidateFoldersCache };
+  return {
+    ...foldersReactClientQuery,
+    invalidateFoldersCache,
+  };
 };

@@ -18,7 +18,7 @@ export const useFiles = () => {
       {
         parent: params.id || "/",
         search: "",
-        sortBy: sortBy,
+        sortBy,
         limit: undefined,
       },
     ],
@@ -35,6 +35,17 @@ export const useFiles = () => {
     }
   );
 
+  const testFunction = () => {
+    console.log("this is a test function");
+  };
+
+  return { ...filesReactQuery, testFunction };
+};
+
+export const useFilesClient = () => {
+  const params = useParams();
+  // TODO: Remove any
+  const sortBy = useSelector((state: any) => state.filter.sortBy);
   const filesReactClientQuery = useQueryClient();
 
   const invalidateFilesCache = () => {
@@ -44,23 +55,23 @@ export const useFiles = () => {
         {
           parent: params.id || "/",
           search: "",
-          sortBy: undefined,
+          sortBy,
           limit: undefined,
         },
       ],
     });
   };
 
-  const testFunction = () => {
-    console.log("this is a test function");
-  };
-
-  return { ...filesReactQuery, testFunction, invalidateFilesCache };
+  return { ...filesReactClientQuery, invalidateFilesCache };
 };
 
 export const useQuickFiles = () => {
   const quickFilesQuery = useQuery("quickFiles", getQuickFilesList);
 
+  return { ...quickFilesQuery };
+};
+
+export const useQuickFilesClient = () => {
   const quickFilesReactClientQuery = useQueryClient();
 
   const invalidateQuickFilesCache = () => {
@@ -69,7 +80,7 @@ export const useQuickFiles = () => {
     });
   };
 
-  return { ...quickFilesQuery, invalidateQuickFilesCache };
+  return { ...quickFilesReactClientQuery, invalidateQuickFilesCache };
 };
 
 interface thumbnailState {

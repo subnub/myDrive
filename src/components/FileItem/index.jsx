@@ -80,7 +80,7 @@ const FileItem = (props) => {
       >
         {/* <ContextMenu parent={props.metadata.parent} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/> */}
         <td className="p-5">
-          <div className="flex items-center fileTextXL:w-[600px] w-[100px] xxs:w-[200px] xs:w-[300px] fileTextXSM:w-[500px] fileTextLG:w-[500px] fileTextMD:w-[300px] mobileMode:w-[200px]">
+          <div className="flex items-center fileTextXL:w-[560px] w-[60px] xxs:w-[160px] xs:w-[260px] fileTextXSM:w-[460px] fileTextLG:w-[440px] fileTextMD:w-[240px] mobileMode:w-[160px]">
             <span className="inline-flex items-center mr-[15px] max-w-[27px] min-w-[27px] min-h-[27px] max-h-[27px]">
               <div
                 className="h-[27px] w-[27px] bg-red-500 rounded-[3px] flex flex-row justify-center items-center"
@@ -101,24 +101,30 @@ const FileItem = (props) => {
         </td>
         <td className="p-5 hidden fileListShowDetails:table-cell">
           <p className="text-center">
-            {moment(props.file.uploadDate).format("L")}
+            {moment(props.file.uploadDate).format("MM/DD/YY hh:mma")}
           </p>
         </td>
         <td>
           <div className="flex justify-center items-center">
-            <div onClick={clickStopPropagation}>
-              <ContextMenu
-                gridMode={false}
-                quickItemMode={false}
-                contextSelected={contextMenuState}
-                closeContext={closeContextMenu}
-                file={file}
-              />
-            </div>
+            {contextMenuState.selected && (
+              <div onClick={clickStopPropagation}>
+                <ContextMenu
+                  gridMode={false}
+                  quickItemMode={false}
+                  contextSelected={contextMenuState}
+                  closeContext={closeContextMenu}
+                  file={file}
+                />
+              </div>
+            )}
+
             {/* <ContextMenu parent={props.metadata.parent} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/> */}
             <a onClick={onContextMenu}>
               <svg
-                class="w-4 h-4 text-[#919eab]"
+                className={classNames(
+                  "w-4 h-4",
+                  elementSelected ? "text-white" : "text-[#919eab]"
+                )}
                 aria-hidden="true"
                 focusable="false"
                 data-prefix="fas"

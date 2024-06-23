@@ -2,15 +2,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFolders } from "../../hooks/folders";
 import { setSortBy } from "../../actions/filter";
 import FolderItem from "../FolderItem";
+import { useCallback, useEffect } from "react";
 
 const Folder = () => {
   const { data: folders } = useFolders();
   const sortBy = useSelector((state) => state.filter.sortBy);
   const parent = useSelector((state) => state.parent.parent);
   const dispatch = useDispatch();
-  console.log("sortBy", sortBy);
+  console.log("rerenderfolder", sortBy);
 
-  const switchOrderSortBy = () => {
+  const switchOrderSortBy = useCallback(() => {
     let newSortBy = "";
     switch (sortBy) {
       case "date_asc": {
@@ -37,29 +38,32 @@ const Folder = () => {
     console.log("new sortBy", newSortBy);
 
     dispatch(setSortBy(newSortBy));
-  };
+  }, [setSortBy, dispatch]);
 
-  const switchTypeOrderBy = (e) => {
-    const value = e.target.value;
+  const switchTypeOrderBy = useCallback(
+    (e) => {
+      const value = e.target.value;
 
-    let newSortBy = "date_desc";
+      let newSortBy = "date_desc";
 
-    if (value === "date") {
-      if (sortBy.includes("asc")) {
-        newSortBy = "date_asc";
-      } else {
-        newSortBy = "date_desc";
+      if (value === "date") {
+        if (sortBy.includes("asc")) {
+          newSortBy = "date_asc";
+        } else {
+          newSortBy = "date_desc";
+        }
+      } else if (value === "name") {
+        if (sortBy.includes("asc")) {
+          newSortBy = "alp_asc";
+        } else {
+          newSortBy = "alp_desc";
+        }
       }
-    } else if (value === "name") {
-      if (sortBy.includes("asc")) {
-        newSortBy = "alp_asc";
-      } else {
-        newSortBy = "alp_desc";
-      }
-    }
 
-    dispatch(setSortBy(newSortBy));
-  };
+      dispatch(setSortBy(newSortBy));
+    },
+    [setSortBy, dispatch]
+  );
 
   return (
     <div
@@ -73,7 +77,7 @@ const Folder = () => {
         <div className="flex flex-row items-center">
           <a className="mr-2" onClick={switchOrderSortBy}>
             <svg
-              className="h-3 w-3 cursor-pointer"
+              className="h-3 w-3 cursor-pointer animate"
               width="6"
               height="10"
               viewBox="0 0 6 10"

@@ -105,7 +105,7 @@ const Files = () => {
               </th>
               <th className="hidden fileListShowDetails:table-cell">
                 <p className="text-[#212b36] text-sm font-medium mb-2">
-                  Modified
+                  Created
                 </p>
               </th>
               <th>
