@@ -101,11 +101,7 @@ const MainSection = React.forwardRef((props, ref) => {
         <div className="flex flex-row h-screen w-screen pt-16">
           <LeftSection goHome={() => {}} />
 
-          <DataForm
-            folderClick={props.folderClick}
-            fileClick={props.fileClick}
-            downloadFile={props.downloadFile}
-          />
+          <DataForm />
 
           <RightSection
             folderClick={props.folderClick}

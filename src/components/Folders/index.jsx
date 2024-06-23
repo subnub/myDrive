@@ -63,11 +63,7 @@ const Folder = () => {
 
   return (
     <div
-      className={
-        parent === "/"
-          ? "folders__panel"
-          : "folders__panel folders__panel__folder"
-      }
+      className="mt-8"
       //   style={props.loading ? { display: "none" } : { display: "block" }}
     >
       <div className="flex flex-row justify-between text-[#212b36]">
@@ -99,7 +95,7 @@ const Folder = () => {
             </svg>
           </a>
           <select
-            className=" text-sm font-medium"
+            className="text-sm font-medium"
             onChange={switchTypeOrderBy}
             value={
               sortBy === "alp_desc" || sortBy === "alp_asc" ? "name" : "date"
@@ -111,7 +107,7 @@ const Folder = () => {
         </div>
       </div>
 
-      <div className="inner__folders">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px]">
         {folders?.map((folder) => (
           <FolderItem folder={folder} key={folder._id} />
         ))}
