@@ -38,16 +38,14 @@ const QuickAccess = (props) => {
       </div>
 
       <div
-        className={classNames("grid gap-5 animate-movement", {
-          "max-h-40": !quickAccessExpanded,
-          "max-h-[665px] quickAccessOne:max-h-[1000px] quickAccessTwo:max-h-[660px] quickAccessThree:max-h-[490px]":
-            quickAccessExpanded,
-        })}
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(185px, 185px))",
-          gap: "20px",
-        }}
+        className={classNames(
+          "grid animate-movement grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px] justify-center xs:justify-normal",
+          {
+            "max-h-36 sm:max-h-40": !quickAccessExpanded,
+            "max-h-[720px] sm:max-h-[665px] quickAccessOne:max-h-[1000px] quickAccessTwo:max-h-[660px] quickAccessThree:max-h-[490px]":
+              quickAccessExpanded,
+          }
+        )}
       >
         {quickfilesList?.map((file) => (
           <QuickAccessItem key={file._id} file={file} />

@@ -43,11 +43,24 @@ const FileItem = React.memo((props) => {
     [file.filename]
   );
 
-  const fileClick = useCallback(() => {
+  const formattedFilename = useMemo(
+    () => capitalize(file.filename),
+    [file.filename]
+  );
+
+  const formattedCreatedDate = useMemo(
+    () => moment(file.uploadDate).format("MM/DD/YY hh:mma"),
+    [file.uploadDate]
+  );
+
+  // TODO: See if we can memoize this
+  const fileClick = () => {
     const currentDate = Date.now();
 
     if (!elementSelected) {
       dispatch(startSetSelectedItem(file._id, true, false));
+      lastSelected.current = Date.now();
+      return;
     }
 
     const isMobile = mobilecheck();
@@ -57,7 +70,7 @@ const FileItem = React.memo((props) => {
     }
 
     lastSelected.current = Date.now();
-  }, [startSetSelectedItem, dispatch, setPopupFile, mobilecheck, file._id]);
+  };
 
   if (listView) {
     return (
@@ -87,8 +100,8 @@ const FileItem = React.memo((props) => {
                 </span>
               </div>
             </span>
-            <p className="m-0 max-h-[30px] overflow-hidden whitespace-nowrap text-ellipsis block capitalize">
-              {props.file.filename}
+            <p className="m-0 max-h-[30px] overflow-hidden whitespace-nowrap text-ellipsis block">
+              {formattedFilename}
             </p>
           </div>
         </td>
@@ -96,8 +109,8 @@ const FileItem = React.memo((props) => {
           <p className="text-center">{bytes(props.file.length)}</p>
         </td>
         <td className="p-5 hidden fileListShowDetails:table-cell">
-          <p className="text-center">
-            {moment(props.file.uploadDate).format("MM/DD/YY hh:mma")}
+          <p className="text-center whitespace-nowrap">
+            {formattedCreatedDate}
           </p>
         </td>
         <td>
@@ -144,7 +157,7 @@ const FileItem = React.memo((props) => {
     return (
       <div
         className={classNames(
-          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer w-48 flex items-center justify-center flex-col h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
+          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[125px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
           elementSelected ? "border-[#3c85ee]" : "border-[#ebe9f9]"
         )}
         onClick={fileClick}
@@ -203,7 +216,9 @@ const FileItem = React.memo((props) => {
         <div
           className={classNames(
             "p-3 overflow-hidden text-ellipsis block w-full animate",
-            elementSelected ? "bg-[#3c85ee]" : "bg-white"
+            elementSelected
+              ? "bg-[#3c85ee] text-white"
+              : "bg-white text-[#637381]"
           )}
         >
           <p
@@ -212,15 +227,15 @@ const FileItem = React.memo((props) => {
               elementSelected ? "text-white" : "text-[#212b36]"
             )}
           >
-            {capitalize(file.filename)}
+            {formattedFilename}
           </p>
           <span
             className={classNames(
-              "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate",
+              "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
               elementSelected ? "text-white" : "text-[#637381]"
             )}
           >
-            Created {moment(file.uploadDate).format("MM/DD/YY hh:mma")}
+            Created {formattedCreatedDate}
           </span>
         </div>
       </div>

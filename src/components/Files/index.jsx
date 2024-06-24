@@ -26,8 +26,8 @@ const Files = () => {
   return (
     <div className="mt-8">
       <div>
-        <div className="flex justify-between">
-          <h2 className="m-0 mb-[20px] text-[22px] font-medium">
+        <div className="flex justify-between items-center mb-[20px]">
+          <h2 className="m-0 text-[22px] font-medium">
             {search !== "" ? "Files" : "Home Files"}
           </h2>
           <div>
@@ -83,7 +83,7 @@ const Files = () => {
         </div>
 
         {!listView ? (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px]">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px] justify-center xs:justify-normal">
             {files?.pages.map((filePage, index) => (
               <React.Fragment key={index}>
                 {filePage.map((file) => (

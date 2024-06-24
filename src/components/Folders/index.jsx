@@ -36,7 +36,7 @@ const Folder = () => {
     }
 
     dispatch(setSortBy(newSortBy));
-  }, [setSortBy, dispatch]);
+  }, [setSortBy, dispatch, sortBy]);
 
   const switchTypeOrderBy = useCallback(
     (e) => {
@@ -60,7 +60,7 @@ const Folder = () => {
 
       dispatch(setSortBy(newSortBy));
     },
-    [setSortBy, dispatch]
+    [setSortBy, dispatch, sortBy]
   );
 
   return (
@@ -68,8 +68,8 @@ const Folder = () => {
       className="mt-8"
       //   style={props.loading ? { display: "none" } : { display: "block" }}
     >
-      <div className="flex flex-row justify-between text-[#212b36]">
-        <h2 className="m-0 mb-[20px] text-[22px] font-medium">
+      <div className="flex flex-row mb-[20px] justify-between text-[#212b36] items-center">
+        <h2 className="m-0 text-[22px] font-medium">
           {folders?.length === 0 ? "No Folders" : "Folders"}
         </h2>
         <div className="flex flex-row items-center">
@@ -109,7 +109,7 @@ const Folder = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px]">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px] justify-center xs:justify-normal">
         {folders?.map((folder) => (
           <FolderItem folder={folder} key={folder._id} />
         ))}

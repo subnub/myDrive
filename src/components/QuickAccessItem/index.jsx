@@ -43,11 +43,14 @@ const QuickAccessItem = memo((props) => {
     [file.filename]
   );
 
+  // TODO: See if we can memoize this
   const quickItemClick = () => {
     const currentDate = Date.now();
 
     if (!elementSelected) {
       dispatch(startSetSelectedItem(file._id, true, true));
+      lastSelected.current = Date.now();
+      return;
     }
 
     const isMobile = mobilecheck();
@@ -62,7 +65,7 @@ const QuickAccessItem = memo((props) => {
   return (
     <div
       className={classNames(
-        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer w-48 flex items-center justify-center flex-col h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
+        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[125px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
         elementSelected ? "border-[#3c85ee]" : "border-[#ebe9f9]"
       )}
       onClick={quickItemClick}
@@ -121,7 +124,9 @@ const QuickAccessItem = memo((props) => {
       <div
         className={classNames(
           "p-3 overflow-hidden text-ellipsis block w-full animate",
-          elementSelected ? "bg-[#3c85ee]" : "bg-white"
+          elementSelected
+            ? "bg-[#3c85ee] text-white"
+            : "bg-white text-[#637381]"
         )}
       >
         <p
@@ -134,7 +139,7 @@ const QuickAccessItem = memo((props) => {
         </p>
         <span
           className={classNames(
-            "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate",
+            "text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
             elementSelected ? "text-white" : "text-[#637381]"
           )}
         >

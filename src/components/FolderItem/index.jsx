@@ -31,6 +31,8 @@ const FolderItem = React.memo((props) => {
 
     if (!elementSelected) {
       dispatch(startSetSelectedItem(folder._id, false, false));
+      lastSelected.current = Date.now();
+      return;
     }
 
     const isMobile = mobilecheck();
@@ -40,12 +42,19 @@ const FolderItem = React.memo((props) => {
     }
 
     lastSelected.current = Date.now();
-  }, [dispatch, startSetSelectedItem, mobilecheck, navigate, folder._id]);
+  }, [
+    dispatch,
+    startSetSelectedItem,
+    mobilecheck,
+    navigate,
+    folder._id,
+    elementSelected,
+  ]);
 
   return (
     <div
       className={classNames(
-        "p-[12px] border border-[#ebe9f9] rounded-[4px] overflow-hidden w-48 cursor-pointer animate",
+        "p-[12px] border border-[#ebe9f9] rounded-[4px] overflow-hidden cursor-pointer animate ",
         {
           "bg-[#3c85ee]": elementSelected,
         }
@@ -92,20 +101,29 @@ const FolderItem = React.memo((props) => {
       </div>
       <div
         className={classNames(
-          "mt-2",
-          elementSelected ? "text-white" : "text-black"
+          "overflow-hidden text-ellipsis block w-full animate mt-2",
+          elementSelected
+            ? "bg-[#3c85ee] text-white"
+            : "bg-white text-[#637381]"
         )}
       >
-        <p>{props.folder.name}</p>
+        <p
+          className={classNames(
+            "m-0 text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
+            elementSelected ? "text-white" : "text-black"
+          )}
+        >
+          {props.folder.name}
+        </p>
+        <span
+          className={classNames(
+            "m-0 font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
+            elementSelected ? "text-white" : "text-[#637381]"
+          )}
+        >
+          Created {moment(folder.createdAt).format("MM/DD/YY hh:mma")}
+        </span>
       </div>
-      <p
-        className={classNames(
-          "m-0 mt-2 font-normal max-w-full whitespace-nowrap text-xs animate",
-          elementSelected ? "text-white" : "text-[#637381]"
-        )}
-      >
-        Created {moment(folder.createdAt).format("MM/DD/YY hh:mma")}
-      </p>
     </div>
   );
 });

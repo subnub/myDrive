@@ -34,7 +34,8 @@
     "vite-test": "vite",
     "dev-test": "concurrently \"vite\" \"nodemon server.js\"",
     "dev-hot": "concurrently \"vite\" \"tsc -w -p ./backend/tsconfig.json\" \"npm run dev:backend\"",
-    "dev:backend": "nodemon dist/server/serverStart.js"
+    "dev:backend": "nodemon dist/server/serverStart.js",
+    "vite-build": "vite build"
   },
   "dependencies": {
     "@babel/core": "^7.8.4",
