@@ -1,6 +1,6 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import mobilecheck from "../../utils/mobileCheck";
 import { useContextMenu } from "../../hooks/contextMenu";
@@ -12,10 +12,10 @@ import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
 import bytes from "bytes";
 
-const FileItem = (props) => {
+const FileItem = React.memo((props) => {
   const { file } = props;
-  const currentSelectedItem = useSelector(
-    (state) => state.selectedItem.selected
+  const elementSelected = useSelector(
+    (state) => state.selectedItem.selected === file._id
   );
   const listView = useSelector((state) => state.filter.listView);
   const { image, hasThumbnail, imageOnError } = useThumbnail(
@@ -42,12 +42,8 @@ const FileItem = (props) => {
     () => getFileColor(file.filename),
     [file.filename]
   );
-  const elementSelected = useMemo(
-    () => file._id === currentSelectedItem,
-    [file._id, currentSelectedItem]
-  );
 
-  const fileClick = () => {
+  const fileClick = useCallback(() => {
     const currentDate = Date.now();
 
     if (!elementSelected) {
@@ -61,7 +57,7 @@ const FileItem = (props) => {
     }
 
     lastSelected.current = Date.now();
-  };
+  }, [startSetSelectedItem, dispatch, setPopupFile, mobilecheck, file._id]);
 
   if (listView) {
     return (
@@ -185,7 +181,7 @@ const FileItem = (props) => {
           ) : (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
               version="1.1"
               width="150"
               height="150"
@@ -230,6 +226,6 @@ const FileItem = (props) => {
       </div>
     );
   }
-};
+});
 
 export default FileItem;

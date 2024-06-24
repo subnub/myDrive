@@ -94,34 +94,39 @@ const Files = () => {
           </div>
         ) : (
           <table className="w-full" style={loading ? { display: "none" } : {}}>
-            <tr>
-              <th>
-                <div className="flex flex-row items-center mb-2 ml-4">
-                  <p className="text-[#212b36] text-sm font-medium">Name</p>
-                </div>
-              </th>
-              <th className="hidden fileListShowDetails:table-cell">
-                <p className="text-[#212b36] text-sm font-medium mb-2">Size</p>
-              </th>
-              <th className="hidden fileListShowDetails:table-cell">
-                <p className="text-[#212b36] text-sm font-medium mb-2">
-                  Created
-                </p>
-              </th>
-              <th>
-                <p className="text-[#212b36] text-sm font-medium mb-2">
-                  Actions
-                </p>
-              </th>
-            </tr>
-
-            {files?.pages.map((filePage, index) => (
-              <React.Fragment key={index}>
-                {filePage.map((file) => (
-                  <FileItem file={file} key={file._id} />
-                ))}
-              </React.Fragment>
-            ))}
+            <thead>
+              <tr>
+                <th>
+                  <div className="flex flex-row items-center mb-2 ml-4">
+                    <p className="text-[#212b36] text-sm font-medium">Name</p>
+                  </div>
+                </th>
+                <th className="hidden fileListShowDetails:table-cell">
+                  <p className="text-[#212b36] text-sm font-medium mb-2">
+                    Size
+                  </p>
+                </th>
+                <th className="hidden fileListShowDetails:table-cell">
+                  <p className="text-[#212b36] text-sm font-medium mb-2">
+                    Created
+                  </p>
+                </th>
+                <th>
+                  <p className="text-[#212b36] text-sm font-medium mb-2">
+                    Actions
+                  </p>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {files?.pages.map((filePage, index) => (
+                <React.Fragment key={index}>
+                  {filePage.map((file) => (
+                    <FileItem file={file} key={file._id} />
+                  ))}
+                </React.Fragment>
+              ))}
+            </tbody>
           </table>
         )}
 

@@ -73,8 +73,12 @@ class DbUtil {
   };
 
   getFileInfo = async (fileID: string, userID: string) => {
-    console.log("info diff", userID.toString());
-    const file = await File.findOne({
+    //TODO: Using mongoose like this causes the object to be returned in raw form
+    // const file = await File.findOne({
+    //   "metadata.owner": userID,
+    //   _id: new ObjectId(fileID),
+    // });
+    const file = await conn.db.collection("fs.files").findOne({
       "metadata.owner": userID,
       _id: new ObjectId(fileID),
     });

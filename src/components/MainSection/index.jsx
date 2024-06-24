@@ -119,26 +119,18 @@ class MainSectionContainer extends React.Component {
   };
 
   componentDidUpdate = () => {
-    console.log("main updated");
-
     // console.log("update ID main", getUpdateSettingsID());
-
     // if (this.lastSettingsUpdateID !== getUpdateSettingsID()) {
     //     console.log("Settings Update!");
     //     this.getSettings();
     // }
-
     // this.lastSettingsUpdateID = getUpdateSettingsID();
-
     // console.log("update settings id", updateSettingsID);
-
     // console.log("Main Section Updated", this.props.resetSettingsMain);
-
     // if (this.lastSettingsUpdateID !== this.props.resetSettingsMain) {
     //     console.log("Settings Update!");
     //     this.getSettings();
     // }
-
     // this.lastSettingsUpdateID = this.props.resetSettingsMain;
   };
 

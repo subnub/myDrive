@@ -12,7 +12,7 @@ class RightSection extends React.Component {
   render() {
     return (
       <div
-        onClicks={this.props.closeContext}
+        onClick={this.props.closeContext}
         ref={this.props.rightSectionRef}
         style={
           this.props.rightSectionMode === ""

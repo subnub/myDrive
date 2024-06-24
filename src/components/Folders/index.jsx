@@ -9,7 +9,6 @@ const Folder = () => {
   const sortBy = useSelector((state) => state.filter.sortBy);
   const parent = useSelector((state) => state.parent.parent);
   const dispatch = useDispatch();
-  console.log("rerenderfolder", sortBy);
 
   const switchOrderSortBy = useCallback(() => {
     let newSortBy = "";
@@ -35,7 +34,6 @@ const Folder = () => {
         break;
       }
     }
-    console.log("new sortBy", newSortBy);
 
     dispatch(setSortBy(newSortBy));
   }, [setSortBy, dispatch]);

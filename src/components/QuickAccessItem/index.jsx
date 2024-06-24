@@ -1,6 +1,6 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { useMemo, useRef } from "react";
+import React, { memo, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import classNames from "classnames";
 import { getFileColor, getFileExtension } from "../../utils/files";
@@ -11,10 +11,10 @@ import mobilecheck from "../../utils/mobileCheck";
 import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
 
-const QuickAccessItem = (props) => {
+const QuickAccessItem = memo((props) => {
   const { file } = props;
-  const currentSelectedItem = useSelector(
-    (state) => state.selectedItem.selected
+  const elementSelected = useSelector(
+    (state) => state.selectedItem.selected === `quick-${file._id}`
   );
   const { image, hasThumbnail, imageOnError } = useThumbnail(
     file.metadata.hasThumbnail,
@@ -41,11 +41,6 @@ const QuickAccessItem = (props) => {
   const imageColor = useMemo(
     () => getFileColor(file.filename),
     [file.filename]
-  );
-
-  const elementSelected = useMemo(
-    () => `quick-${file._id}` === currentSelectedItem,
-    [file._id, currentSelectedItem]
   );
 
   const quickItemClick = () => {
@@ -104,7 +99,7 @@ const QuickAccessItem = (props) => {
         ) : (
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
             version="1.1"
             width="150"
             height="150"
@@ -148,6 +143,6 @@ const QuickAccessItem = (props) => {
       </div>
     </div>
   );
-};
+});
 
 export default QuickAccessItem;

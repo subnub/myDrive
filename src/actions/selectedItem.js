@@ -13,7 +13,6 @@ export const startSetSelectedItem = (
 ) => {
   return (dispatch) => {
     const currentDate = Date.now();
-    console.log("curr", currentDate);
 
     dispatch(setLastSelected(currentDate));
 

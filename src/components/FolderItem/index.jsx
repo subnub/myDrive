@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import classNames from "classnames";
@@ -8,10 +8,10 @@ import { startSetSelectedItem } from "../../actions/selectedItem";
 import mobilecheck from "../../utils/mobileCheck";
 import moment from "moment";
 
-const FolderItem = (props) => {
+const FolderItem = React.memo((props) => {
   const { folder } = props;
-  const currentSelectedItem = useSelector(
-    (state) => state.selectedItem.selected
+  const elementSelected = useSelector(
+    (state) => state.selectedItem.selected === folder._id
   );
   const lastSelected = useRef(0);
   const navigate = useNavigate();
@@ -26,12 +26,7 @@ const FolderItem = (props) => {
     ...contextMenuState
   } = useContextMenu();
 
-  const elementSelected = useMemo(
-    () => props.folder._id === currentSelectedItem,
-    [props.folder._id, currentSelectedItem]
-  );
-
-  const folderClick = () => {
+  const folderClick = useCallback(() => {
     const currentDate = Date.now();
 
     if (!elementSelected) {
@@ -45,7 +40,7 @@ const FolderItem = (props) => {
     }
 
     lastSelected.current = Date.now();
-  };
+  }, [dispatch, startSetSelectedItem, mobilecheck, navigate, folder._id]);
 
   return (
     <div
@@ -113,6 +108,6 @@ const FolderItem = (props) => {
       </p>
     </div>
   );
-};
+});
 
 export default FolderItem;

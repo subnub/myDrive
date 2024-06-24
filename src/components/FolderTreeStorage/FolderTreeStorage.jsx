@@ -30,7 +30,13 @@ const FolderTreeStorage = (props) => (
       <div className="folder-tree__storage-subview-box">
         {props.state.open && props.state.folders.length !== 0
           ? props.state.folders.map((folder) => {
-              return <FolderTreeStorageSub folder={folder} type={props.type} />;
+              return (
+                <FolderTreeStorageSub
+                  key={folder._id}
+                  folder={folder}
+                  type={props.type}
+                />
+              );
             })
           : undefined}
       </div>
