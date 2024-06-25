@@ -11,18 +11,21 @@ import { getFileColor, getFileExtension } from "../../utils/files";
 import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
 import bytes from "bytes";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
+import { setMainSelect } from "../../reducers/selected";
 
 const FileItem = React.memo((props) => {
   const { file } = props;
-  const elementSelected = useSelector(
-    (state) => state.selectedItem.selected === file._id
-  );
+  const elementSelected = useAppSelector((state) => {
+    if (state.selected.mainSection.type !== "file") return false;
+    return state.selected.mainSection.id === file._id;
+  });
   const listView = useSelector((state) => state.filter.listView);
   const { image, hasThumbnail, imageOnError } = useThumbnail(
     file.metadata.hasThumbnail,
     file.metadata.thumbnailID
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const lastSelected = useRef(0);
   const {
     onContextMenu,
@@ -58,7 +61,9 @@ const FileItem = React.memo((props) => {
     const currentDate = Date.now();
 
     if (!elementSelected) {
-      dispatch(startSetSelectedItem(file._id, true, false));
+      dispatch(
+        setMainSelect({ file, id: file._id, type: "file", folder: null })
+      );
       lastSelected.current = Date.now();
       return;
     }

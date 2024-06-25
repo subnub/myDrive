@@ -10,17 +10,26 @@ import { useDispatch, useSelector } from "react-redux";
 import mobilecheck from "../../utils/mobileCheck";
 import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
+import { FileInterface } from "../../types/file";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
+import { setMainSelect } from "../../reducers/selected";
 
-const QuickAccessItem = memo((props) => {
+interface QuickAccessItemProps {
+  file: FileInterface;
+}
+
+const QuickAccessItem = memo((props: QuickAccessItemProps) => {
   const { file } = props;
-  const elementSelected = useSelector(
-    (state) => state.selectedItem.selected === `quick-${file._id}`
-  );
+  const elementSelected = useAppSelector((state) => {
+    if (state.selected.mainSection.type !== "quick-item") return false;
+    return state.selected.mainSection.id === file._id;
+  });
+  console.log("ele selected 2", elementSelected);
   const { image, hasThumbnail, imageOnError } = useThumbnail(
     file.metadata.hasThumbnail,
     file.metadata.thumbnailID
   );
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const lastSelected = useRef(0);
 
   const {
@@ -48,7 +57,10 @@ const QuickAccessItem = memo((props) => {
     const currentDate = Date.now();
 
     if (!elementSelected) {
-      dispatch(startSetSelectedItem(file._id, true, true));
+      // dispatch(startSetSelectedItem(file._id, true, true));
+      dispatch(
+        setMainSelect({ file, id: file._id, type: "quick-item", folder: null })
+      );
       lastSelected.current = Date.now();
       return;
     }

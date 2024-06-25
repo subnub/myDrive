@@ -5,9 +5,11 @@ import FolderItem from "../FolderItem";
 import { memo, useCallback, useEffect } from "react";
 import ParentBar from "../ParentBar";
 import classNames from "classnames";
+import { useUtils } from "../../hooks/utils";
 
 const Folders = memo(() => {
   const { data: folders } = useFolders();
+  const { isHome } = useUtils();
   const sortBy = useSelector((state) => state.filter.sortBy);
   const dispatch = useDispatch();
 
@@ -67,7 +69,12 @@ const Folders = memo(() => {
   return (
     <div className="mt-8">
       <div className="flex flex-row mb-[20px] justify-between text-[#212b36] items-center">
-        <h2 className="m-0 text-[22px] font-medium">
+        <h2
+          className={classNames(
+            "m-0 text-[22px] font-medium",
+            isHome ? "block" : "invisible"
+          )}
+        >
           {folders?.length === 0 ? "No Folders" : "Folders"}
         </h2>
         <div className="flex flex-row items-center">

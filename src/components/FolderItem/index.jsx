@@ -7,15 +7,18 @@ import { useNavigate } from "react-router-dom";
 import { startSetSelectedItem } from "../../actions/selectedItem";
 import mobilecheck from "../../utils/mobileCheck";
 import moment from "moment";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
+import { setMainSelect } from "../../reducers/selected";
 
 const FolderItem = React.memo((props) => {
   const { folder } = props;
-  const elementSelected = useSelector(
-    (state) => state.selectedItem.selected === folder._id
-  );
+  const elementSelected = useAppSelector((state) => {
+    if (state.selected.mainSection.type !== "folder") return false;
+    return state.selected.mainSection.id === folder._id;
+  });
   const lastSelected = useRef(0);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const {
     onContextMenu,
     closeContextMenu,
@@ -30,7 +33,14 @@ const FolderItem = React.memo((props) => {
     const currentDate = Date.now();
 
     if (!elementSelected) {
-      dispatch(startSetSelectedItem(folder._id, false, false));
+      dispatch(
+        setMainSelect({
+          file: null,
+          id: folder._id,
+          type: "folder",
+          folder: folder,
+        })
+      );
       lastSelected.current = Date.now();
       return;
     }
@@ -113,7 +123,7 @@ const FolderItem = React.memo((props) => {
             elementSelected ? "text-white" : "text-black"
           )}
         >
-          {props.folder.name}
+          {folder.name}
         </p>
         <span
           className={classNames(

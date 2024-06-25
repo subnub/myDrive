@@ -9,15 +9,17 @@ import { getFileExtension } from "../../utils/files";
 import { useContextMenu } from "../../hooks/contextMenu";
 import { setPopupFile } from "../../actions/popupFile";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../hooks/store";
+import { resetSelected } from "../../reducers/selected";
 
 const RightSection = memo(() => {
-  const selectedItem = useSelector((state) => state.selectedItem);
+  const selectedItem = useAppSelector((state) => state.selected.mainSection);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const formattedName = useMemo(() => {
-    if (!selectedItem) return "";
-    const name = selectedItem.name;
+    if (!selectedItem.id) return "";
+    const name = selectedItem.file?.filename || selectedItem.folder?.name || "";
     const maxLength = 66;
     const ellipsis = "...";
     if (name.length <= maxLength) {
@@ -31,22 +33,27 @@ const RightSection = memo(() => {
     const end = name.slice(-endLength);
 
     return `${start}${ellipsis}${end}`;
-  }, [selectedItem?.name, selectedItem?.file]);
+  }, [
+    selectedItem?.id,
+    selectedItem?.file?.filename,
+    selectedItem?.folder?.name,
+  ]);
 
-  const formattedDate = useMemo(
-    () => moment(selectedItem.date).format("L"),
-    [selectedItem?.date, moment]
-  );
+  const formattedDate = useMemo(() => {
+    const date =
+      selectedItem.file?.uploadDate || selectedItem.folder?.createdAt;
+    return moment(date).format("L");
+  }, [selectedItem?.file?.uploadDate, selectedItem.folder?.createdAt, moment]);
 
   const fileSize = useMemo(() => {
-    if (!selectedItem || !selectedItem.size) return 0;
-    return bytes(selectedItem.size);
-  }, [selectedItem?.size, bytes]);
+    if (!selectedItem.file?.length) return 0;
+    return bytes(selectedItem.file.length);
+  }, [selectedItem?.file?.length, bytes]);
 
   const fileExtension = useMemo(() => {
-    if (!selectedItem?.file) return null;
-    return getFileExtension(selectedItem.name);
-  }, [selectedItem?.file, selectedItem?.name, getFileExtension]);
+    if (!selectedItem?.file?.filename) return null;
+    return getFileExtension(selectedItem.file.filename);
+  }, [selectedItem?.file?.filename, getFileExtension]);
 
   const {
     onContextMenu,
@@ -58,24 +65,24 @@ const RightSection = memo(() => {
     ...contextMenuState
   } = useContextMenu();
 
-  const resetSelected = () => {
-    dispatch(resetSelectedItem());
+  const reset = () => {
+    dispatch(resetSelected());
   };
-  const openItem = (e) => {
+  const openItem = () => {
     if (selectedItem.file) {
-      dispatch(setPopupFile({ showPopup: true, ...selectedItem.data }));
+      dispatch(setPopupFile({ showPopup: true, ...selectedItem.file }));
     } else {
-      navigate(`/folder/${selectedItem.data._id}`);
+      navigate(`/folder/${selectedItem.id}`);
     }
   };
   return (
     <div
       className={classNames(
         "!hidden mobileMode:!flex min-w-[260px] max-w-[260px] border-l border-[#e8eef2] p-[25px] bg-white right-0 justify-center relative",
-        selectedItem.name === "" ? "flex justify-center items-center" : ""
+        selectedItem.id === "" ? "flex justify-center items-center" : ""
       )}
     >
-      {selectedItem.name === "" ? (
+      {selectedItem.id === "" ? (
         <div className="flex flex-col justify-center items-center text-center">
           <span>
             <img src="/assets/filedetailsicon.svg" alt="filedetailsicon" />
@@ -97,7 +104,7 @@ const RightSection = memo(() => {
             <img
               className="w-[30px] h-[30px] ml-8 cursor-pointer absolute right-3"
               src="/images/close_icon.png"
-              onClick={resetSelected}
+              onClick={reset}
             />
           </div>
 
@@ -112,13 +119,13 @@ const RightSection = memo(() => {
                 Type
               </span>
               <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-                {selectedItem.size ? fileExtension : "Folder"}
+                {selectedItem.file ? fileExtension : "Folder"}
               </span>
             </div>
             <div
               className="flex mb-[7px] justify-start"
               style={
-                !selectedItem.size ? { display: "none" } : { display: "flex" }
+                !selectedItem.file ? { display: "none" } : { display: "flex" }
               }
             >
               <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
@@ -136,29 +143,17 @@ const RightSection = memo(() => {
                 {formattedDate}
               </span>
             </div>
-            <div className="flex mb-[7px] justify-start">
-              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
-                Location
-              </span>
-              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-                {selectedItem.drive
-                  ? "Google Drive"
-                  : selectedItem.personalFile
-                  ? "Amazon S3"
-                  : "myDrive"}
-              </span>
-            </div>
             <div
               className="flex mb-[7px] justify-start"
               style={
-                !selectedItem.size ? { display: "none" } : { display: "flex" }
+                !selectedItem.file ? { display: "none" } : { display: "flex" }
               }
             >
               <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
-                Privacy
+                Access
               </span>
               <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-                {selectedItem.link ? "Public" : "Only you"}
+                {selectedItem.file?.metadata.link ? "Public" : "Private"}
               </span>
             </div>
           </div>
@@ -172,6 +167,7 @@ const RightSection = memo(() => {
             <div className="ml-[15px] px-[20px]">
               <a
                 className="w-[40px] h-[40px] rounded-[4px] inline-flex items-center justify-center border border-[#919eab] text-[#919eab] no-underline animate"
+                // @ts-ignore
                 onClick={onContextMenu}
               >
                 <i className="fas fa-ellipsis-h" aria-hidden="true"></i>
@@ -185,8 +181,8 @@ const RightSection = memo(() => {
                 contextSelected={contextMenuState}
                 closeContext={closeContextMenu}
                 folderMode={!selectedItem.file}
-                file={selectedItem.data}
-                folder={selectedItem.data}
+                file={selectedItem.file}
+                folder={selectedItem.folder}
               />
             </div>
           )}

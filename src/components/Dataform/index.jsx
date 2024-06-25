@@ -22,10 +22,10 @@ const DataForm = memo(() => {
     } else if (!fileList) {
       return;
     }
-    if (reachedIntersect) {
+    if (reachedIntersect && !isFetchingNextPage) {
       filesFetchNextPage();
     }
-  }, [reachedIntersect, initialLoad]);
+  }, [reachedIntersect, initialLoad, isFetchingNextPage]);
 
   return (
     <div className="w-full p-[65px_40px] overflow-y-scroll">

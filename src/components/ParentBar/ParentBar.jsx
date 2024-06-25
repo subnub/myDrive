@@ -36,7 +36,7 @@ const ParentBar = memo(() => {
           className="text-[#637381] text-[18px] leading-[21px] font-medium m-0 no-underline animate cursor-pointer"
           onClick={goHome}
         >
-          myDrive
+          Home
         </a>
         <span className="inline-flex m-[0px_10px]">
           <img src="/assets/spacer.svg" alt="spacer" />

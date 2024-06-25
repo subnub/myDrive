@@ -85,17 +85,24 @@ export const useQuickFilesClient = () => {
 
 interface thumbnailState {
   hasThumbnail: boolean;
-  image: null | string;
+  image: undefined | string;
 }
 
-export const useThumbnail = (hasThumbnail: boolean, thumbnailID: string) => {
+export const useThumbnail = (hasThumbnail: boolean, thumbnailID?: string) => {
   const [state, setState] = useState<thumbnailState>({
     hasThumbnail: false,
-    image: null,
+    image: undefined,
   });
 
+  const imageOnError = useCallback(() => {
+    setState({
+      hasThumbnail: false,
+      image: undefined,
+    });
+  }, [setState]);
   const getThumbnail = useCallback(async () => {
     try {
+      if (!thumbnailID) return;
       const thumbnailData = await getFileThumbnail(thumbnailID);
       setState({
         hasThumbnail: true,
@@ -105,17 +112,10 @@ export const useThumbnail = (hasThumbnail: boolean, thumbnailID: string) => {
       console.log("error getting thumbnail data", e);
       imageOnError();
     }
-  }, [thumbnailID]);
-
-  const imageOnError = () => {
-    setState({
-      hasThumbnail: false,
-      image: null,
-    });
-  };
+  }, [thumbnailID, getFileThumbnail, setState, imageOnError]);
 
   useEffect(() => {
-    if (!hasThumbnail) return;
+    if (!hasThumbnail || !thumbnailID) return;
 
     getThumbnail();
   }, [hasThumbnail, getThumbnail]);

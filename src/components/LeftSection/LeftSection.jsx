@@ -14,7 +14,7 @@ class LeftSection extends React.Component {
   render() {
     return (
       <div
-        className="menu__block p-6 hidden mobileMode:block border-r"
+        className="menu__block p-6 hidden mobileMode:block border-r w-[270px] min-w-[270px]"
         ref={this.props.leftSectionRef}
         style={
           this.props.leftSectionMode === ""
@@ -95,10 +95,6 @@ class LeftSection extends React.Component {
                 </a>
               </li>
             </ul>
-          </div>
-          <UploadStorageSwitcher />
-          <div className="folder__structure">
-            <FolderTree />
           </div>
           <div
             className={

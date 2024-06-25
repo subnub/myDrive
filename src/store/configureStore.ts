@@ -18,33 +18,36 @@ import moverReducer from "../reducers/mover";
 import folderTreeReducer from "../reducers/folderTree";
 import uploadStorageSwitcherReducer from "../reducers/uploadStorageSwitcher";
 import mobileContextMenuReducer from "../reducers/mobileContextMenu";
+import selectedReducer from "../reducers/selected";
 
 //const composeEnchancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export default () => {
-  const store = configureStore({
-    reducer: {
-      auth: authReducer,
-      main: mainReducer,
-      files: fileReducer,
-      folders: folderReducer,
-      filter: filterReducer,
-      selectedItem: selectedItemReducer,
-      uploads: uploadsReducer,
-      storage: storageReducer,
-      quickFiles: quickFilesReducer,
-      popupFile: popupFilesReducer,
-      settings: settingsReducer,
-      parent: parentReducer,
-      addOptions: addOptionsReducer,
-      photoViewer: photoViewerReducer,
-      routes: routesReducer,
-      mover: moverReducer,
-      folderTree: folderTreeReducer,
-      storageSwitcher: uploadStorageSwitcherReducer,
-      mobileContextMenu: mobileContextMenuReducer,
-    },
-  });
+const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    main: mainReducer,
+    files: fileReducer,
+    folders: folderReducer,
+    filter: filterReducer,
+    selected: selectedReducer,
+    selectedItem: selectedItemReducer,
+    uploads: uploadsReducer,
+    storage: storageReducer,
+    quickFiles: quickFilesReducer,
+    popupFile: popupFilesReducer,
+    settings: settingsReducer,
+    parent: parentReducer,
+    addOptions: addOptionsReducer,
+    photoViewer: photoViewerReducer,
+    routes: routesReducer,
+    mover: moverReducer,
+    folderTree: folderTreeReducer,
+    storageSwitcher: uploadStorageSwitcherReducer,
+    mobileContextMenu: mobileContextMenuReducer,
+  },
+});
 
-  return store;
-};
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+export default store;
