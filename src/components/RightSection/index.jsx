@@ -1,394 +1,199 @@
-import RightSection from "./RightSection";
-import RightSectionDetail from "../RightSectionDetail";
-import {
-  editFileMetadata,
-  startRemoveFile,
-  startRenameFile,
-} from "../../actions/files";
+import bytes from "bytes";
+import moment from "moment";
+import React, { memo, useMemo } from "react";
+import ContextMenu from "../ContextMenu";
+import classNames from "classnames";
+import { useDispatch, useSelector } from "react-redux";
 import { resetSelectedItem } from "../../actions/selectedItem";
-import env from "../../enviroment/envFrontEnd";
-import axios from "../../axiosInterceptor";
-import { connect } from "react-redux";
-import React from "react";
-import { setRightSectionMode } from "../../actions/main";
-import Swal from "sweetalert2";
-import { startRemoveFolder, startRenameFolder } from "../../actions/folders";
-import { setMoverID } from "../../actions/mover";
-import mobilecheck from "../../utils/mobileCheck";
-import { setMobileContextMenu } from "../../actions/mobileContextMenu";
+import { getFileExtension } from "../../utils/files";
+import { useContextMenu } from "../../hooks/contextMenu";
+import { setPopupFile } from "../../actions/popupFile";
+import { useNavigate } from "react-router-dom";
 
-class RightSectionContainer extends React.Component {
-  constructor(props) {
-    super(props);
+const RightSection = memo(() => {
+  const selectedItem = useSelector((state) => state.selectedItem);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    this.state = {
-      optimizing: false,
-      optimizing_finished: false,
-      optimizing_removed: false,
-      contextSelected: false,
-    };
+  const formattedName = useMemo(() => {
+    if (!selectedItem) return "";
+    const name = selectedItem.name;
+    const maxLength = 66;
+    const ellipsis = "...";
+    if (name.length <= maxLength) {
+      return name;
+    }
 
-    this.prevID = "";
+    const startLength = Math.ceil((maxLength - ellipsis.length) / 2);
+    const endLength = Math.floor((maxLength - ellipsis.length) / 2);
 
-    this.rightSectionRef = React.createRef();
-  }
+    const start = name.slice(0, startLength);
+    const end = name.slice(-endLength);
 
-  getFileExtension = (filename) => {
-    const filenameSplit = filename.split(".");
+    return `${start}${ellipsis}${end}`;
+  }, [selectedItem?.name, selectedItem?.file]);
 
-    if (filenameSplit.length > 1) {
-      const extension = filenameSplit[filenameSplit.length - 1];
+  const formattedDate = useMemo(
+    () => moment(selectedItem.date).format("L"),
+    [selectedItem?.date, moment]
+  );
 
-      return extension.toUpperCase();
+  const fileSize = useMemo(() => {
+    if (!selectedItem || !selectedItem.size) return 0;
+    return bytes(selectedItem.size);
+  }, [selectedItem?.size, bytes]);
+
+  const fileExtension = useMemo(() => {
+    if (!selectedItem?.file) return null;
+    return getFileExtension(selectedItem.name);
+  }, [selectedItem?.file, selectedItem?.name, getFileExtension]);
+
+  const {
+    onContextMenu,
+    closeContextMenu,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+    clickStopPropagation,
+    ...contextMenuState
+  } = useContextMenu();
+
+  const resetSelected = () => {
+    dispatch(resetSelectedItem());
+  };
+  const openItem = (e) => {
+    if (selectedItem.file) {
+      dispatch(setPopupFile({ showPopup: true, ...selectedItem.data }));
     } else {
-      return "Unknown";
+      navigate(`/folder/${selectedItem.data._id}`);
     }
   };
-
-  getSidebarClassName = (value) => {
-    if (value === "gone") {
-      return "section section--right section--no-animation";
-    } else if (value) {
-      return "section section--right";
-    } else {
-      return "section section--right section--minimized";
-    }
-  };
-
-  removeTranscodeVideo = (props, e) => {
-    const data = { id: props.selectedItem.id };
-
-    axios
-      .delete("/file-service/transcode-video/remove", {
-        data,
-      })
-      .then(() => {
-        this.props.dispatch(
-          editFileMetadata(props.selectedItem.id, { transcoded: undefined })
-        );
-
-        this.setState(() => ({
-          ...this.state,
-          optimizing: false,
-          optimizing_finished: false,
-          optimizing_removed: true,
-        }));
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  transcodeVideo = (props, e) => {
-    const config = {
-      file: { _id: props.selectedItem.id },
-    };
-
-    const data = { file: { _id: props.selectedItem.id } };
-
-    this.setState(() => ({
-      ...this.state,
-      optimizing: true,
-    }));
-
-    axios
-      .post("/file-service/transcode-video", data, config)
-      .then((response) => {
-        const data = response.data;
-
-        if (data === "Finished") {
-          this.props.dispatch(
-            editFileMetadata(props.selectedItem.id, {
-              isVideo: true,
-              transcoded: true,
-            })
-          );
-
-          this.setState(() => ({
-            ...this.state,
-            optimizing: false,
-            optimizing_finished: true,
-            optimizing_removed: false,
-          }));
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  getTranscodeButton = (props) => {
-    if (!props.selectedItem.isVideo || !env.enableVideoTranscoding) {
-      return undefined;
-    }
-
-    if (this.state.optimizing && !this.state.optimizing_finished) {
-      return (
-        <div>
-          <button disabled className="button--small button--small--disabled">
-            Optimizing
-          </button>
+  return (
+    <div
+      className={classNames(
+        "!hidden mobileMode:!flex min-w-[260px] max-w-[260px] border-l border-[#e8eef2] p-[25px] bg-white right-0 justify-center relative",
+        selectedItem.name === "" ? "flex justify-center items-center" : ""
+      )}
+    >
+      {selectedItem.name === "" ? (
+        <div className="flex flex-col justify-center items-center text-center">
+          <span>
+            <img src="/assets/filedetailsicon.svg" alt="filedetailsicon" />
+          </span>
+          <p className="text-[#637381] text-[16px] leading-[24px] font-normal m-0 mt-[30px]">
+            Select a file or folder to view it’s details
+          </p>
         </div>
-      );
-    } else if (
-      (props.selectedItem.transcoded || this.state.optimizing_finished) &&
-      !this.state.optimizing_removed
-    ) {
-      return (
-        <div>
-          <button
-            onClick={(e) => this.removeTranscodeVideo(props, e)}
-            className="button--small"
-          >
-            Unoptimize Video
-          </button>
+      ) : (
+        <div className="w-[210px]">
+          <div className="flex flex-row">
+            <div>
+              <img
+                className="flex w-auto max-w-full"
+                src="/assets/typedetailed1.svg"
+                alt="typedetailed1"
+              />
+            </div>
+            <img
+              className="w-[30px] h-[30px] ml-8 cursor-pointer absolute right-3"
+              src="/images/close_icon.png"
+              onClick={resetSelected}
+            />
+          </div>
+
+          <div className="m-[20px_0]">
+            <p className="m-0 text-[#212b36] text-[16px] font-bold max-h-[90px] overflow-hidden text-ellipsis block break-all">
+              {formattedName}
+            </p>
+          </div>
+          <div>
+            <div className="flex mb-[7px] justify-start">
+              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                Type
+              </span>
+              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                {selectedItem.size ? fileExtension : "Folder"}
+              </span>
+            </div>
+            <div
+              className="flex mb-[7px] justify-start"
+              style={
+                !selectedItem.size ? { display: "none" } : { display: "flex" }
+              }
+            >
+              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                Size
+              </span>
+              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                {fileSize}
+              </span>
+            </div>
+            <div className="flex mb-[7px] justify-start">
+              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                Created
+              </span>
+              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                {formattedDate}
+              </span>
+            </div>
+            <div className="flex mb-[7px] justify-start">
+              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                Location
+              </span>
+              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                {selectedItem.drive
+                  ? "Google Drive"
+                  : selectedItem.personalFile
+                  ? "Amazon S3"
+                  : "myDrive"}
+              </span>
+            </div>
+            <div
+              className="flex mb-[7px] justify-start"
+              style={
+                !selectedItem.size ? { display: "none" } : { display: "flex" }
+              }
+            >
+              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                Privacy
+              </span>
+              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                {selectedItem.link ? "Public" : "Only you"}
+              </span>
+            </div>
+          </div>
+          <div className="mt-[15px] flex items-center">
+            <a
+              className="w-[80px] h-[40px] inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate"
+              onClick={openItem}
+            >
+              Open
+            </a>
+            <div className="ml-[15px] px-[20px]">
+              <a
+                className="w-[40px] h-[40px] rounded-[4px] inline-flex items-center justify-center border border-[#919eab] text-[#919eab] no-underline animate"
+                onClick={onContextMenu}
+              >
+                <i className="fas fa-ellipsis-h" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+          {contextMenuState.selected && (
+            <div onClick={clickStopPropagation}>
+              <ContextMenu
+                gridMode={true}
+                contextSelected={contextMenuState}
+                closeContext={closeContextMenu}
+                folderMode={!selectedItem.file}
+                file={selectedItem.data}
+                folder={selectedItem.data}
+              />
+            </div>
+          )}
         </div>
-      );
-    } else {
-      return (
-        <div>
-          <button
-            onClick={(e) => this.transcodeVideo(props, e)}
-            className="button--small"
-          >
-            Optimize Video
-          </button>
-        </div>
-      );
-    }
-  };
-
-  getPublicStatus = () => {
-    if (this.props.selectedItem.linkType === "one") {
-      return (
-        <RightSectionDetail first={false} title="One Time Link" body="True" />
-      );
-    } else {
-      return <RightSectionDetail first={false} title="Public" body="True" />;
-    }
-  };
-
-  resetState = () => {
-    if (this.prevID !== "" && this.prevID !== this.props.selectedItem.id) {
-      this.setState(() => ({
-        ...this.state,
-        optimizing: false,
-        optimizing_finished: false,
-      }));
-    }
-  };
-
-  resetSelected = () => {
-    this.props.dispatch(resetSelectedItem());
-  };
-
-  handleClickOutside = (e) => {
-    if (
-      this.rightSectionRef &&
-      !this.rightSectionRef.current.contains(event.target)
-    ) {
-      if (this.props.rightSectionMode === "open") {
-        this.props.dispatch(setRightSectionMode("close"));
-        this.closeContext();
-      }
-    }
-  };
-
-  componentDidMount = () => {
-    document.addEventListener("mousedown", this.handleClickOutside);
-  };
-
-  componentWillUnmount = () => {
-    document.removeEventListener("mousedown", this.handleClickOutside);
-  };
-
-  openItem = (e) => {
-    if (this.props.selectedItem.file) {
-      this.props.fileClick(
-        this.props.selectedItem.id,
-        this.props.selectedItem.data,
-        false,
-        true
-      );
-    } else {
-      this.props.folderClick(
-        this.props.selectedItem.id,
-        this.props.selectedItem.data,
-        true
-      );
-    }
-  };
-
-  closeContext = () => {
-    this.setState(() => {
-      return {
-        ...this.state,
-        contextSelected: false,
-      };
-    });
-  };
-
-  selectContext = (e) => {
-    if (e) e.stopPropagation();
-    if (e) e.preventDefault();
-
-    // if (mobilecheck()) {
-
-    //     this.props.dispatch(setMobileContextMenu(this.props.selectedItem.file, this.props.selectedItem.data));
-    //     return;
-    // }
-
-    console.log("right props", this.props.selectedItem);
-
-    this.setState(() => {
-      return {
-        ...this.state,
-        contextSelected: !this.state.contextSelected,
-      };
-    });
-  };
-
-  clickStopPropagation = (e) => {
-    if (e) e.stopPropagation();
-  };
-
-  clickTest = (e) => {
-    console.log("click test");
-  };
-
-  changeEditNameMode = async () => {
-    let inputValue = this.props.selectedItem.name;
-
-    const { value: folderName } = await Swal.fire({
-      title: "Enter A File Name",
-      input: "text",
-      inputValue: inputValue,
-      showCancelButton: true,
-      inputValidator: (value) => {
-        if (!value) {
-          return "Please Enter a Name";
-        }
-      },
-    });
-
-    if (folderName === undefined || folderName === null) {
-      return;
-    }
-
-    //this.props.selectedItem.drive
-
-    const parent = this.props.selectedItem.file
-      ? this.props.selectedItem.data.metadata.parent
-      : this.props.selectedItem.data.parent;
-
-    this.props.selectedItem.file
-      ? this.props.dispatch(
-          startRenameFile(
-            this.props.selectedItem.id,
-            folderName,
-            this.props.selectedItem.drive
-          )
-        )
-      : this.props.dispatch(
-          startRenameFolder(
-            this.props.selectedItem.id,
-            folderName,
-            this.props.selectedItem.drive,
-            parent
-          )
-        );
-
-    //this.props.dispatch(startRenameFolder(this.props.selectedItem.data._id, folderName, this.props.selectedItem.data.));
-  };
-
-  startMoveFolder = async () => {
-    const parent = this.props.selectedItem.file
-      ? this.props.selectedItem.data.metadata.parent
-      : this.props.selectedItem.data.parent;
-    const isPersonal = this.props.selectedItem.file
-      ? this.props.selectedItem.data.metadata.personalFile
-      : this.props.selectedItem.data.personalFolder;
-
-    this.props.dispatch(
-      setMoverID(
-        this.props.selectedItem.id,
-        parent,
-        this.props.selectedItem.file,
-        this.props.selectedItem.drive,
-        isPersonal
-      )
-    );
-  };
-
-  changeDeleteMode = async () => {
-    const parent = this.props.selectedItem.file
-      ? this.props.selectedItem.data.metadata.parent
-      : this.props.selectedItem.data.parent;
-
-    Swal.fire({
-      title: "Confirm Deletion",
-      text: "You cannot undo this action",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete",
-    }).then((result) => {
-      if (result.value) {
-        this.props.selectedItem.file
-          ? this.props.dispatch(
-              startRemoveFile(
-                this.props.selectedItem.id,
-                this.props.selectedItem.drive,
-                this.props.selectedItem.data.metadata.personalFile
-              )
-            )
-          : this.props.dispatch(
-              startRemoveFolder(
-                this.props.selectedItem.id,
-                [
-                  ...this.props.selectedItem.data.parentList,
-                  this.props.selectedItem.id,
-                ],
-                this.props.selectedItem.drive,
-                parent,
-                this.props.selectedItem.data.metadata.personalFolder
-              )
-            );
-      }
-    });
-  };
-
-  render() {
-    return (
-      <RightSection
-        getPublicStatus={this.getPublicStatus}
-        getTranscodeButton={this.getTranscodeButton}
-        getFileExtension={this.getFileExtension}
-        getSidebarClassName={this.getSidebarClassName}
-        resetState={this.resetState}
-        resetSelected={this.resetSelected}
-        openItem={this.openItem}
-        rightSectionRef={this.rightSectionRef}
-        clickStopPropagation={this.clickStopPropagation}
-        closeContext={this.closeContext}
-        selectContext={this.selectContext}
-        changeEditNameMode={this.changeEditNameMode}
-        startMoveFolder={this.startMoveFolder}
-        changeDeleteMode={this.changeDeleteMode}
-        clickTest={this.clickTest}
-        state={this.state}
-        {...this.props}
-      />
-    );
-  }
-}
-
-const connectPropToState = (state) => ({
-  selectedItem: state.selectedItem,
-  showSideBar: state.main.showSideBar,
-  selected: state.main.selected,
-  rightSectionMode: state.main.rightSectionMode,
+      )}
+    </div>
+  );
 });
 
-export default connect(connectPropToState)(RightSectionContainer);
+export default RightSection;

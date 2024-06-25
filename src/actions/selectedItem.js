@@ -149,6 +149,7 @@ export const startSetSelectedItem = (
                 id,
                 drive,
                 personalFile,
+                data: results.data,
               })
             );
           })

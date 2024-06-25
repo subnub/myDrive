@@ -2,12 +2,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFolders } from "../../hooks/folders";
 import { setSortBy } from "../../actions/filter";
 import FolderItem from "../FolderItem";
-import { useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect } from "react";
+import ParentBar from "../ParentBar";
+import classNames from "classnames";
 
-const Folder = () => {
+const Folders = memo(() => {
   const { data: folders } = useFolders();
   const sortBy = useSelector((state) => state.filter.sortBy);
-  const parent = useSelector((state) => state.parent.parent);
   const dispatch = useDispatch();
 
   const switchOrderSortBy = useCallback(() => {
@@ -64,10 +65,7 @@ const Folder = () => {
   );
 
   return (
-    <div
-      className="mt-8"
-      //   style={props.loading ? { display: "none" } : { display: "block" }}
-    >
+    <div className="mt-8">
       <div className="flex flex-row mb-[20px] justify-between text-[#212b36] items-center">
         <h2 className="m-0 text-[22px] font-medium">
           {folders?.length === 0 ? "No Folders" : "Folders"}
@@ -109,13 +107,20 @@ const Folder = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px] justify-center xs:justify-normal">
+      <div
+        className={classNames(
+          "grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px]",
+          folders?.length > 1
+            ? "justify-center xs:justify-normal"
+            : "justify-normal"
+        )}
+      >
         {folders?.map((folder) => (
           <FolderItem folder={folder} key={folder._id} />
         ))}
       </div>
     </div>
   );
-};
+});
 
-export default Folder;
+export default Folders;

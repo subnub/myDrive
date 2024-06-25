@@ -25,6 +25,15 @@ export const getFoldersList = async ({
   return response.data;
 };
 
+export const getFolderInfo = async ({
+  queryKey,
+}: QueryFunctionContext<[string, { id: string | undefined }]>) => {
+  const [_key, { id }] = queryKey;
+  if (!id) return undefined;
+  const response = await axios.get(`/folder-service/info/${id}`);
+  return response.data;
+};
+
 // PATCH
 
 export const renameFolder = async (folderID: string, name: string) => {

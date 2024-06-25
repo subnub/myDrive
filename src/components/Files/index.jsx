@@ -1,12 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
 import { disableListView, enableListView } from "../../actions/filter";
 import { useFiles } from "../../hooks/files";
+import { useUtils } from "../../hooks/utils";
 import SpinnerImage from "../SpinnerImage";
-import React from "react";
+import React, { memo, useMemo } from "react";
 import FileItem from "../FileItem";
 import ParentBar from "../ParentBar";
+import { useParams } from "react-router-dom";
+import classNames from "classnames";
 
-const Files = () => {
+const Files = memo(() => {
   const { data: files } = useFiles();
   const parent = useSelector((state) => state.parent.parent);
   const listView = useSelector((state) => state.filter.listView);
@@ -14,6 +17,8 @@ const Files = () => {
   const loading = useSelector((state) => state.main.loading);
   const loadingMore = useSelector((state) => state.main.loadingMoreItems);
   const search = useSelector((state) => state.filter.search);
+  const { isHome } = useUtils();
+
   const dispatch = useDispatch();
 
   const changeListViewMode = () => {
@@ -27,9 +32,22 @@ const Files = () => {
     <div className="mt-8">
       <div>
         <div className="flex justify-between items-center mb-[20px]">
-          <h2 className="m-0 text-[22px] font-medium">
-            {search !== "" ? "Files" : "Home Files"}
-          </h2>
+          {isHome && (
+            <h2 className="m-0 text-[22px] font-medium">
+              {search !== "" ? "Files" : "Home Files"}
+            </h2>
+          )}
+          {!isHome && (
+            <React.Fragment>
+              <div className="hidden sm:block">
+                <ParentBar />
+              </div>
+              <h2 className="block sm:hidden m-0 text-[22px] font-medium">
+                Files
+              </h2>
+            </React.Fragment>
+          )}
+
           <div>
             <ul className="flex items-center list-none m-0 p-0">
               <li className="mr-4" onClick={changeListViewMode}>
@@ -83,7 +101,14 @@ const Files = () => {
         </div>
 
         {!listView ? (
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px] justify-center xs:justify-normal">
+          <div
+            className={classNames(
+              "grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fit,minmax(185px,185px))] gap-[20px]",
+              files?.pages[0]?.length > 1
+                ? "justify-center xs:justify-normal"
+                : "justify-normal"
+            )}
+          >
             {files?.pages.map((filePage, index) => (
               <React.Fragment key={index}>
                 {filePage.map((file) => (
@@ -139,6 +164,6 @@ const Files = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Files;

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
-import { getFoldersList } from "../api/foldersAPI";
+import { getFolderInfo, getFoldersList } from "../api/foldersAPI";
 import { useSelector } from "react-redux";
 
 export const useFolders = () => {
@@ -40,9 +40,23 @@ export const useFoldersClient = () => {
       ],
     });
   };
-
   return {
     ...foldersReactClientQuery,
     invalidateFoldersCache,
   };
+};
+
+export const useFolder = () => {
+  const params = useParams();
+  const folderQuery = useQuery(
+    [
+      "folder",
+      {
+        id: params.id,
+      },
+    ],
+    getFolderInfo
+  );
+
+  return { ...folderQuery };
 };

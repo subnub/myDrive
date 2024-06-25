@@ -3,10 +3,10 @@ import Folders from "../Folders";
 import { useFiles } from "../../hooks/files";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 import Files from "../Files";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import SpinnerPage from "../SpinnerPage";
 
-const DataForm = () => {
+const DataForm = memo(() => {
   const {
     fetchNextPage: filesFetchNextPage,
     isFetchingNextPage,
@@ -45,6 +45,6 @@ const DataForm = () => {
       )}
     </div>
   );
-};
+});
 
 export default DataForm;
