@@ -1,9 +1,9 @@
 import { useInfiniteQuery, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import {
-  getFileThumbnail,
-  getFilesList,
-  getQuickFilesList,
+  getFileThumbnailAPI,
+  getFilesListAPI,
+  getQuickFilesListAPI,
 } from "../api/filesAPI";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -22,7 +22,7 @@ export const useFiles = () => {
         limit: undefined,
       },
     ],
-    getFilesList,
+    getFilesListAPI,
     {
       getNextPageParam: (lastPage, pages) => {
         const lastElement = lastPage[lastPage.length - 1];
@@ -66,7 +66,7 @@ export const useFilesClient = () => {
 };
 
 export const useQuickFiles = () => {
-  const quickFilesQuery = useQuery("quickFiles", getQuickFilesList);
+  const quickFilesQuery = useQuery("quickFiles", getQuickFilesListAPI);
 
   return { ...quickFilesQuery };
 };
@@ -99,11 +99,11 @@ export const useThumbnail = (hasThumbnail: boolean, thumbnailID?: string) => {
       hasThumbnail: false,
       image: undefined,
     });
-  }, [setState]);
+  }, []);
   const getThumbnail = useCallback(async () => {
     try {
       if (!thumbnailID) return;
-      const thumbnailData = await getFileThumbnail(thumbnailID);
+      const thumbnailData = await getFileThumbnailAPI(thumbnailID);
       setState({
         hasThumbnail: true,
         image: thumbnailData,
@@ -112,7 +112,7 @@ export const useThumbnail = (hasThumbnail: boolean, thumbnailID?: string) => {
       console.log("error getting thumbnail data", e);
       imageOnError();
     }
-  }, [thumbnailID, getFileThumbnail, setState, imageOnError]);
+  }, [thumbnailID, getFileThumbnailAPI, imageOnError]);
 
   useEffect(() => {
     if (!hasThumbnail || !thumbnailID) return;

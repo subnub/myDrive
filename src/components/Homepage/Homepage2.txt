@@ -11,8 +11,8 @@ import ShareModelWrapper from "../ShareModelWrapper";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useInfiniteQuery, useQuery } from "react-query";
-import { getFilesList } from "../../api/filesAPI";
-import { getFoldersList } from "../../api/foldersAPI";
+import { getFilesListAPI } from "../../api/filesAPI";
+import { getFoldersListAPI } from "../../api/foldersAPI";
 import { useFiles } from "../../hooks/files";
 
 const Homepage2 = () => {
@@ -30,7 +30,7 @@ const Homepage2 = () => {
         limit: undefined,
       },
     ],
-    queryFn: getFilesList,
+    queryFn: getFilesListAPI,
     initialPageParam: {
       startAtDate: undefined,
       startAtName: undefined,
@@ -53,7 +53,7 @@ const Homepage2 = () => {
         limit: undefined,
       },
     ],
-    getFoldersList
+    getFoldersListAPI
   );
 
   const goHome = () => {

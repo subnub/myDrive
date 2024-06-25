@@ -13,9 +13,11 @@ const getBusboyData = (busboy: any) => {
     const formData = new Map();
 
     busboy.on("field", (field: any, val: any) => {
-      console.log("field", field, val);
-
-      formData.set(field, val);
+      console.log("field", field, val, typeof val);
+      // ????? why does it make undefined a string?
+      if (typeof val !== "string" || val !== "undefined") {
+        formData.set(field, val);
+      }
     });
 
     busboy.on(

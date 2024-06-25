@@ -1,20 +1,25 @@
 import classNames from "classnames";
 import React, { useEffect, useRef } from "react";
 import Swal from "sweetalert2";
-import { deleteFile, renameFile, downloadFile } from "../../api/filesAPI";
+import {
+  deleteFileAPI,
+  renameFileAPI,
+  downloadFileAPI,
+} from "../../api/filesAPI";
 import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { useFoldersClient } from "../../hooks/folders";
 import { useDispatch } from "react-redux";
 import { setMoverID } from "../../actions/mover";
 import { setShareSelected } from "../../actions/selectedItem";
 import { deleteFolder, renameFolder } from "../../api/foldersAPI";
+import { useClickOutOfBounds } from "../../hooks/utils";
 
 const ContextMenu = (props) => {
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
+  const { wrapperRef } = useClickOutOfBounds(props.closeContext);
   const dispatch = useDispatch();
-  const wrapperRef = useRef();
   const liClassname =
     "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline transition-all duration-400 ease-in-out text- hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
   const spanClassname = "inline-flex mr-[18px]";
@@ -33,7 +38,7 @@ const ContextMenu = (props) => {
           }
         },
       });
-      await renameFile(props.file._id, filename);
+      await renameFileAPI(props.file._id, filename);
       invalidateFilesCache();
       invalidateQuickFilesCache();
     } else {
@@ -72,7 +77,7 @@ const ContextMenu = (props) => {
       });
 
       if (result.value) {
-        await deleteFile(props.file._id);
+        await deleteFileAPI(props.file._id);
         invalidateFilesCache();
         invalidateQuickFilesCache();
       }
@@ -109,35 +114,15 @@ const ContextMenu = (props) => {
 
   const downloadItem = () => {
     props.closeContext();
-    downloadFile(props.file._id);
+    downloadFileAPI(props.file._id);
   };
-
-  // TODO: Decide if we want it to close right on click or not
-  const outOfBoundsClickCheck = (e) => {
-    if (wrapperRef && !wrapperRef.current.contains(e.target)) {
-      props.closeContext();
-    }
-    // setTimeout(() => {
-    //   props.closeContext();
-    // }, 150);
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", outOfBoundsClickCheck);
-    document.addEventListener("touchstart", outOfBoundsClickCheck);
-
-    return () => {
-      document.removeEventListener("mousedown", outOfBoundsClickCheck);
-      document.removeEventListener("touchstart", outOfBoundsClickCheck);
-    };
-  }, []);
 
   return (
     <div
       onClick={props.stopPropagation}
       ref={wrapperRef}
       className={classNames(
-        "fixed min-w-[215px] bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.15),_inset_0px_1px_0px_#f5f7fa] rounded-[4px] mt-[-5px] z-[2] mobile__context__menu",
+        "fixed min-w-[215px] bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.15),_inset_0px_1px_0px_#f5f7fa] rounded-[4px] mt-[-5px] z-[2] ",
         props.contextSelected.selected ? "opacity-100" : "opacity-0"
       )}
       style={

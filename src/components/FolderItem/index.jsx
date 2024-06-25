@@ -53,7 +53,6 @@ const FolderItem = React.memo((props) => {
 
     lastSelected.current = Date.now();
   }, [
-    dispatch,
     startSetSelectedItem,
     mobilecheck,
     navigate,

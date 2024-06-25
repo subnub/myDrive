@@ -14,7 +14,7 @@ interface QueryKeyParams {
 
 // GET
 
-export const getFilesList = async ({
+export const getFilesListAPI = async ({
   queryKey,
   pageParam,
 }: QueryFunctionContext<[string, QueryKeyParams]>) => {
@@ -42,7 +42,7 @@ export const getFilesList = async ({
   return response.data;
 };
 
-export const getQuickFilesList = async () => {
+export const getQuickFilesListAPI = async () => {
   const response = await axios.get(`/file-service/quick-list`, {
     params: {
       limit: 20,
@@ -51,7 +51,7 @@ export const getQuickFilesList = async () => {
   return response.data;
 };
 
-export const downloadFile = async (fileID: string) => {
+export const downloadFileAPI = async (fileID: string) => {
   await getUserToken();
 
   // TODO: Change this
@@ -65,7 +65,7 @@ export const downloadFile = async (fileID: string) => {
   link.click();
 };
 
-export const getFileThumbnail = async (thumbnailID: string) => {
+export const getFileThumbnailAPI = async (thumbnailID: string) => {
   // TODO: Change this
   const url = `http://localhost:5173/api/file-service/thumbnail/${thumbnailID}`;
   const config = {
@@ -81,7 +81,7 @@ export const getFileThumbnail = async (thumbnailID: string) => {
 };
 
 // PATCH
-export const renameFile = async (fileID: string, name: string) => {
+export const renameFileAPI = async (fileID: string, name: string) => {
   const response = await axios.patch(`/file-service/rename`, {
     id: fileID,
     title: name,
@@ -90,7 +90,7 @@ export const renameFile = async (fileID: string, name: string) => {
 };
 
 // DELETE
-export const deleteFile = async (fileID: string) => {
+export const deleteFileAPI = async (fileID: string) => {
   const response = await axios.delete(`/file-service/remove`, {
     data: {
       id: fileID,

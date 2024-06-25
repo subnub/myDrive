@@ -12,6 +12,7 @@ import { setFolders } from "./folders";
 import reduceQuickItemList from "../utils/reduceQuickItemList";
 import http from "http";
 import https from "https";
+import { addFileUploadCancelToken } from "../utils/cancelTokenManager";
 
 let cachedResults = {};
 
@@ -362,26 +363,8 @@ export const addFile = (file) => ({
   file,
 });
 
-export const startAddFile = (
-  uploadInput,
-  parent,
-  parentList,
-  storageSwitcherType
-) => {
+export const startAddFile = (uploadInput, parent) => {
   return (dispatch, getState) => {
-    if (env.uploadMode === "") {
-      console.log("No Storage Accounts!");
-      Swal.fire({
-        icon: "error",
-        title: "No Storage Accounts Active",
-        text: "Go to settings to add a storage account",
-      });
-      return;
-    }
-
-    // Store the parent, incase it changes.
-    const prevParent = getState().parent.parent;
-
     for (let i = 0; i < uploadInput.files.length; i++) {
       const currentFile = uploadInput.files[i];
       const currentID = uuid();
@@ -406,13 +389,15 @@ export const startAddFile = (
         cancelToken: source.token,
       };
 
+      addFileUploadCancelToken(currentID, source);
+
       dispatch(
         addUpload({
           id: currentID,
           progress: 0,
           name: currentFile.name,
           completed: false,
-          source,
+          // source, // TODO: Fix canceling uploads
           canceled: false,
           size: currentFile.size,
         })
@@ -424,7 +409,6 @@ export const startAddFile = (
 
       data.append("filename", currentFile.name);
       data.append("parent", parent);
-      data.append("parentList", parentList);
       data.append("currentID", currentID);
       data.append("size", currentFile.size);
       if (storageType === "s3") data.append("personal-file", true);
@@ -440,21 +424,16 @@ export const startAddFile = (
       axios
         .post(url, data, config)
         .then(function (response) {
-          const currentParent = getState().parent.parent;
-          // This can change by the time the file uploads
-          if (prevParent === currentParent) {
-            dispatch(addFile(response.data));
-          }
-
-          dispatch(addQuickFile(response.data));
+          console.log("uploaded");
+          // dispatch(addQuickFile(response.data));
           dispatch(editUpload(currentID, 100, true));
-          dispatch(resetSelected());
-          dispatch(startSetStorage());
+          // dispatch(resetSelected());
+          // dispatch(startSetStorage());
 
-          cachedResults = {};
+          // cachedResults = {};
         })
         .catch(function (error) {
-          console.log(error);
+          console.log("uploadError", error);
           dispatch(cancelUpload(currentID));
         });
     }

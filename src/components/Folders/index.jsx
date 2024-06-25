@@ -39,7 +39,7 @@ const Folders = memo(() => {
     }
 
     dispatch(setSortBy(newSortBy));
-  }, [setSortBy, dispatch, sortBy]);
+  }, [sortBy]);
 
   const switchTypeOrderBy = useCallback(
     (e) => {
@@ -63,7 +63,7 @@ const Folders = memo(() => {
 
       dispatch(setSortBy(newSortBy));
     },
-    [setSortBy, dispatch, sortBy]
+    [sortBy]
   );
 
   return (

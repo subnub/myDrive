@@ -1,4 +1,4 @@
-import Folder from "../../models/folder";
+import Folder, { FolderInterface } from "../../models/folder";
 import InternalServerError from "../../utils/InternalServerError";
 import NotFoundError from "../../utils/NotFoundError";
 import UtilsFile from "../../db/utils/fileUtils";
@@ -17,8 +17,27 @@ const utilsFile = new UtilsFile();
 const utilsFolder = new UtilsFolder();
 
 class FolderService {
-  uploadFolder = async (data: any) => {
-    const folder = new Folder(data);
+  createFolder = async (userID: string, name: string, parent: string) => {
+    const newFolderParentList = [];
+    if (parent && parent !== "/") {
+      const parentFolder = (
+        await utilsFolder.getFolderInfo(parent, userID)
+      ).toObject() as FolderInterface | null;
+      if (!parentFolder) throw new Error("Parent not found");
+      newFolderParentList.push(
+        ...parentFolder.parentList,
+        parentFolder._id?.toString()
+      );
+    } else {
+      newFolderParentList.push("/");
+    }
+    const newFolderData = {
+      name,
+      parent: parent || "/",
+      parentList: newFolderParentList,
+      owner: userID,
+    };
+    const folder = new Folder(newFolderData);
 
     await folder.save();
 

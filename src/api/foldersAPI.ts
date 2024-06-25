@@ -10,7 +10,7 @@ interface QueryKeyParams {
 
 // GET
 
-export const getFoldersList = async ({
+export const getFoldersListAPI = async ({
   queryKey,
 }: QueryFunctionContext<[string, QueryKeyParams]>) => {
   const [_key, { parent, search, sortBy, limit }] = queryKey;
@@ -25,12 +25,22 @@ export const getFoldersList = async ({
   return response.data;
 };
 
-export const getFolderInfo = async ({
+export const getFolderInfoAPI = async ({
   queryKey,
 }: QueryFunctionContext<[string, { id: string | undefined }]>) => {
   const [_key, { id }] = queryKey;
   if (!id) return undefined;
   const response = await axios.get(`/folder-service/info/${id}`);
+  return response.data;
+};
+
+// POST
+
+export const createFolderAPI = async (name: string, parent?: string) => {
+  const response = await axios.post("/folder-service/create", {
+    name,
+    parent,
+  });
   return response.data;
 };
 

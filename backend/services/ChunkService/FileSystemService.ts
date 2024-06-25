@@ -37,7 +37,7 @@ class FileSystemService implements ChunkInterface {
   constructor() {}
 
   uploadFile = async (user: UserInterface, busboy: any, req: Request) => {
-    console.log("upeload file");
+    console.log("upeload file2");
     const password = user.getEncryptionKey();
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
@@ -51,23 +51,35 @@ class FileSystemService implements ChunkInterface {
     const { file, filename: fileInfo, formData } = await getBusboyData(busboy);
 
     const filename = fileInfo.filename;
-
-    console.log("1filename", filename);
-
+    console.log("1");
     const parent = formData.get("parent") || "/";
-    const parentList = formData.get("parentList") || "/";
     const size = formData.get("size") || "";
     const personalFile = formData.get("personal-file") ? true : false;
     let hasThumbnail = false;
     let thumbnailID = "";
     const isVideo = videoChecker(filename);
+    console.log("2", parent, typeof parent);
+
+    const parentList = [];
+
+    if (parent !== "/") {
+      const parentFolder = await dbUtilsFolder.getFolderInfo(
+        parent,
+        user._id.toString()
+      );
+      parentList.push(...parentFolder.parentList, parentFolder._id);
+    } else {
+      parentList.push("/");
+    }
+
+    console.log("parent list", parentList);
 
     const systemFileName = uuid.v4();
 
     const metadata = {
       owner: user._id,
       parent,
-      parentList,
+      parentList: parentList.toString(),
       hasThumbnail,
       thumbnailID,
       isVideo,
@@ -174,8 +186,12 @@ class FileSystemService implements ChunkInterface {
 
     const filePath = currentFile.metadata.filePath!;
 
-    const IV = currentFile.metadata.IV;
-    console.log("iv", IV);
+    // TODO: I believe this has to do with using conn.db instead of the mongoose driver
+    // We should switch to the mongoose driver
+    let IV = currentFile.metadata.IV;
+    if (!(IV instanceof Buffer)) {
+      IV = IV.buffer;
+    }
 
     const readStream = fs.createReadStream(filePath);
 
@@ -233,7 +249,11 @@ class FileSystemService implements ChunkInterface {
       throw new ForbiddenError("Thumbnail Unauthorized Error");
     }
 
-    const iv = thumbnail.IV!;
+    // TODO: Fix this type
+    let iv = thumbnail.IV as any;
+    if (!(iv instanceof Buffer)) {
+      iv = iv.buffer;
+    }
 
     const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
 

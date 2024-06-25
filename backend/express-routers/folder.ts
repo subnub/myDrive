@@ -17,7 +17,7 @@ if (env.dbType === "fs") {
 
 const router = Router();
 
-router.post("/folder-service/upload", auth, folderController.uploadFolder);
+router.post("/folder-service/create", auth, folderController.createFolder);
 
 router.delete("/folder-service/remove", auth, folderController.deleteFolder);
 

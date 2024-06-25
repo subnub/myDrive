@@ -1,11 +1,24 @@
 import { connect } from "react-redux";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import bytes from "bytes";
+import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
+import { getCancelToken } from "../../utils/cancelTokenManager";
 
 const UploadItem = (props) => {
+  const filesRefreshed = useRef(false);
+  const { invalidateFilesCache } = useFilesClient();
+  const { invalidateQuickFilesCache } = useQuickFilesClient();
   const completed = props.completed;
   const uploadImage = props.getUploadImage();
   const canceled = props.canceled;
+
+  // TODO: Add ability to cancel indivdual uploads
+  useEffect(() => {
+    if (completed && !filesRefreshed.current) {
+      invalidateFilesCache();
+      invalidateQuickFilesCache();
+    }
+  }, [completed]);
 
   if (!completed && !canceled) {
     return (

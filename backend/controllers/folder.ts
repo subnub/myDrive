@@ -26,15 +26,17 @@ class FolderController {
     this.chunkService = chunkService;
   }
 
-  uploadFolder = async (req: RequestType, res: Response) => {
+  createFolder = async (req: RequestType, res: Response) => {
     if (!req.user) {
       return;
     }
 
     try {
-      const data = req.body;
+      const userID = req.user._id;
+      const name = req.body.name;
+      const parent = req.body.parent;
 
-      const folder = await folderService.uploadFolder(data);
+      const folder = await folderService.createFolder(userID, name, parent);
 
       res.send(folder);
     } catch (e: unknown) {
