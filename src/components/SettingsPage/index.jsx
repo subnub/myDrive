@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../Header/index";
+import Header from "../Header";
 import axios from "../../axiosInterceptor";
 import env from "../../enviroment/envFrontEnd";
 import Swal from "sweetalert2";

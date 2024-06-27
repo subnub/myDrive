@@ -5,8 +5,8 @@ export const useUtils = () => {
   const params = useParams();
 
   const isHome = useMemo(() => {
-    return !params.id;
-  }, [params.id]);
+    return !params.id && !params.query;
+  }, [params.id, params.query]);
 
   return { isHome };
 };

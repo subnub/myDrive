@@ -1,4 +1,4 @@
-import Header from "../Header";
+import Header from "../Header/";
 import LeftSection from "../LeftSection";
 import MainSection from "../MainSection";
 import Uploader from "../Uploader";

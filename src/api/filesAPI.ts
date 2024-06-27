@@ -80,6 +80,18 @@ export const getFileThumbnailAPI = async (thumbnailID: string) => {
   return imgUrl;
 };
 
+export const getSuggestedListAPI = async ({
+  queryKey,
+}: QueryFunctionContext<[string, { searchText: string }]>) => {
+  const [_key, { searchText }] = queryKey;
+  const response = await axios.get(`/file-service/suggested-list`, {
+    params: {
+      search: searchText,
+    },
+  });
+  return response.data;
+};
+
 // PATCH
 export const renameFileAPI = async (fileID: string, name: string) => {
   const response = await axios.patch(`/file-service/rename`, {

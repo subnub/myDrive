@@ -50,7 +50,7 @@ const AppRouter = () => {
         />
         <Route
           key={1}
-          path="/search/:id"
+          path="/search/:query"
           element={
             <PrivateRoute>
               <Homepage2 />

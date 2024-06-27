@@ -1,4 +1,5 @@
 export interface FolderInterface {
+  _id: string;
   name: string;
   parent: string;
   owner: string;

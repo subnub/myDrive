@@ -88,6 +88,7 @@
     "helmet": "^3.21.2",
     "history": "^4.10.1",
     "jsonwebtoken": "^9.0.2",
+    "lodash.debounce": "^4.0.8",
     "moment": "^2.24.0",
     "mongodb": "^6.7.0",
     "mongoose": "^8.4.1",
@@ -116,6 +117,7 @@
     "vite": "^5.2.13"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.5",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
     "concurrently": "^8.2.2",

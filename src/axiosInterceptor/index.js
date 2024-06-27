@@ -38,12 +38,9 @@ axiosRetry.interceptors.response.use(
   },
   (error) => {
     return new Promise((resolve, reject) => {
-      //console.log("request interceptor failed", error.config.url);
-
       let originalRequest = error.config;
 
       if (error.response.status !== 401) {
-        //console.log("error does not equal 401");
         return reject(error);
       }
 

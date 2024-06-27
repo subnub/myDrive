@@ -11,7 +11,7 @@ export const useFolders = () => {
       "folders",
       {
         parent: params.id || "/",
-        search: "",
+        search: params.query || "",
         sortBy,
         limit: undefined,
       },

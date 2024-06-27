@@ -22,6 +22,7 @@ export const getCancelToken = (id: string) => {
 export const cancelAllFileUploads = () => {
   for (const key in cancelTokens) {
     cancelTokens[key].cancel();
+    delete cancelTokens[key];
   }
 };
 

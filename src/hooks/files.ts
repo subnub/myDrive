@@ -1,9 +1,15 @@
-import { useInfiniteQuery, useQuery, useQueryClient } from "react-query";
+import {
+  QueryFunctionContext,
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import { useParams } from "react-router-dom";
 import {
   getFileThumbnailAPI,
   getFilesListAPI,
   getQuickFilesListAPI,
+  getSuggestedListAPI,
 } from "../api/filesAPI";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -17,7 +23,7 @@ export const useFiles = () => {
       "files",
       {
         parent: params.id || "/",
-        search: "",
+        search: params.query || "",
         sortBy,
         limit: undefined,
       },
@@ -121,4 +127,19 @@ export const useThumbnail = (hasThumbnail: boolean, thumbnailID?: string) => {
   }, [hasThumbnail, getThumbnail]);
 
   return { ...state, imageOnError };
+};
+
+export const useSearchSuggestions = (searchText: string) => {
+  const searchQuery = useQuery(
+    [
+      "search",
+      {
+        searchText,
+      },
+    ],
+    getSuggestedListAPI,
+    { enabled: searchText.length !== 0 }
+  );
+
+  return { ...searchQuery };
 };

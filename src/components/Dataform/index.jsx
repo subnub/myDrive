@@ -5,6 +5,7 @@ import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 import Files from "../Files";
 import { memo, useEffect, useState } from "react";
 import SpinnerPage from "../SpinnerPage";
+import SearchBar from "../SearchBar";
 
 const DataForm = memo(() => {
   const {
