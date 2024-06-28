@@ -12,7 +12,7 @@ import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
 import { FileInterface } from "../../types/file";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { setMainSelect } from "../../reducers/selected";
+import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
 
 interface QuickAccessItemProps {
   file: FileInterface;
@@ -24,10 +24,18 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
     if (state.selected.mainSection.type !== "quick-item") return false;
     return state.selected.mainSection.id === file._id;
   });
-  console.log("ele selected 2", elementSelected);
+  const elementMultiSelected = useAppSelector((state) => {
+    if (!state.selected.multiSelectMode) return false;
+    const selected = state.selected.multiSelectMap[file._id];
+    return selected && selected.type === "quick-item";
+  });
+  const multiSelectMode = useAppSelector(
+    (state) => state.selected.multiSelectMode
+  );
   const { image, hasThumbnail, imageOnError } = useThumbnail(
     file.metadata.hasThumbnail,
-    file.metadata.thumbnailID
+    file.metadata.thumbnailID,
+    true
   );
   const dispatch = useAppDispatch();
   const lastSelected = useRef(0);
@@ -54,6 +62,17 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
 
   // TODO: See if we can memoize this
   const quickItemClick = () => {
+    if (multiSelectMode) {
+      dispatch(
+        setMultiSelectMode({
+          type: "quick-item",
+          id: file._id,
+          file: file,
+          folder: null,
+        })
+      );
+      return;
+    }
     const currentDate = Date.now();
 
     if (!elementSelected) {
@@ -77,8 +96,10 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
   return (
     <div
       className={classNames(
-        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[125px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
-        elementSelected ? "border-[#3c85ee]" : "border-[#ebe9f9]"
+        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[125px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden bg-white",
+        elementSelected || elementMultiSelected
+          ? "border-[#3c85ee]"
+          : "border-[#ebe9f9]"
       )}
       onClick={quickItemClick}
       onContextMenu={onContextMenu}
@@ -136,7 +157,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
       <div
         className={classNames(
           "p-3 overflow-hidden text-ellipsis block w-full animate",
-          elementSelected
+          elementSelected || elementMultiSelected
             ? "bg-[#3c85ee] text-white"
             : "bg-white text-[#637381]"
         )}
@@ -144,7 +165,9 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
         <p
           className={classNames(
             "m-0 text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
-            elementSelected ? "text-white" : "text-[#212b36]"
+            elementSelected || elementMultiSelected
+              ? "text-white"
+              : "text-[#212b36]"
           )}
         >
           {capitalize(file.filename)}
@@ -152,7 +175,9 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
         <span
           className={classNames(
             "text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
-            elementSelected ? "text-white" : "text-[#637381]"
+            elementSelected || elementMultiSelected
+              ? "text-white"
+              : "text-[#637381]"
           )}
         >
           Created {moment(file.uploadDate).format("MM/DD/YY hh:mma")}

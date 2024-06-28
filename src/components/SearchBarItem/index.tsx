@@ -26,7 +26,7 @@ const SearchBarItem = (props: SearchBarItemProps) => {
   if (type === "folder" && folder) {
     return (
       <div
-        className="flex flex-row items-center py-2 px-4 overflow-hidden text-ellipsis hover:bg-[#f6f5fd] cursor-pointer"
+        className="flex flex-row items-center py-2 px-4 overflow-hidden text-ellipsis hover:bg-[#f6f5fd] cursor-pointer border-y mx-4"
         key={folder._id}
         onClick={() => folderClick(folder)}
       >
@@ -48,7 +48,7 @@ const SearchBarItem = (props: SearchBarItemProps) => {
             ></path>
           </svg>
         </div>
-        <span className="text-sm ml-4 text-ellipsis overflow-hidden whitespace-nowrap">
+        <span className="text-sm ml-4 text-ellipsis overflow-hidden whitespace-nowrap max-w-[50%]">
           {folder.name}
         </span>
       </div>
@@ -56,7 +56,7 @@ const SearchBarItem = (props: SearchBarItemProps) => {
   } else if (type === "file" && file) {
     return (
       <div
-        className="flex flex-row items-center py-2 px-4 overflow-hidden text-ellipsis hover:bg-[#f6f5fd] cursor-pointer"
+        className="flex flex-row items-center py-2 px-4 overflow-hidden text-ellipsis hover:bg-[#f6f5fd] cursor-pointer border-y mx-4"
         key={file._id}
         onClick={() => fileClick(file)}
       >

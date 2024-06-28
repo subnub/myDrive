@@ -30,7 +30,8 @@ class DbUtil {
     s3Enabled: boolean,
     type: string,
     storageType: string,
-    itemType: string
+    itemType: string,
+    trashMode: boolean
   ) => {
     let query: any = { owner: userID, parent: parent };
 
@@ -50,6 +51,12 @@ class DbUtil {
       if (itemType === "personal") query = { ...query, personalFolder: true };
       if (itemType === "nonpersonal")
         query = { ...query, personalFolder: null };
+    }
+
+    if (trashMode) {
+      query = { ...query, trashed: true };
+    } else {
+      query = { ...query, trashed: null };
     }
 
     const folderList = (await Folder.find(query).sort(
@@ -135,6 +142,21 @@ class DbUtil {
     })) as FolderInterface[];
 
     return folderList;
+  };
+
+  trashFoldersByParent = async (parentList: string[], userID: string) => {
+    const result = await Folder.updateMany(
+      {
+        owner: userID,
+        parentList: { $all: parentList },
+      },
+      {
+        $set: {
+          trashed: true,
+        },
+      }
+    );
+    return result;
   };
 }
 

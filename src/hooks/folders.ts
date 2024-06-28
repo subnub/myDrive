@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 export const useFolders = () => {
   const params = useParams();
   const sortBy = useSelector((state: any) => state.filter.sortBy);
+  const trashMode = false;
   const foldersReactQuery = useQuery(
     [
       "folders",
@@ -14,6 +15,7 @@ export const useFolders = () => {
         search: params.query || "",
         sortBy,
         limit: undefined,
+        trashMode,
       },
     ],
     getFoldersListAPI
@@ -26,6 +28,7 @@ export const useFoldersClient = () => {
   const params = useParams();
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const foldersReactClientQuery = useQueryClient();
+  const trashMode = false;
 
   const invalidateFoldersCache = () => {
     foldersReactClientQuery.invalidateQueries({
@@ -36,6 +39,7 @@ export const useFoldersClient = () => {
           search: "",
           sortBy,
           limit: undefined,
+          trashMode,
         },
       ],
     });

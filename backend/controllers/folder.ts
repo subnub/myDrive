@@ -220,6 +220,27 @@ class FolderController {
     }
   };
 
+  trashFolder = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const folderID = req.body.id;
+
+      await folderService.trashFolder(userID, folderID);
+
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nTrash Folder Error Folder Route:", e.message);
+      }
+
+      res.status(500).send("Server error trashing folder");
+    }
+  };
+
   renameFolder = async (req: RequestType, res: Response) => {
     if (!req.user) {
       return;

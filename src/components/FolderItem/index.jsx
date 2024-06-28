@@ -8,7 +8,7 @@ import { startSetSelectedItem } from "../../actions/selectedItem";
 import mobilecheck from "../../utils/mobileCheck";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { setMainSelect } from "../../reducers/selected";
+import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
 
 const FolderItem = React.memo((props) => {
   const { folder } = props;
@@ -16,6 +16,13 @@ const FolderItem = React.memo((props) => {
     if (state.selected.mainSection.type !== "folder") return false;
     return state.selected.mainSection.id === folder._id;
   });
+  const elementMultiSelected = useAppSelector((state) => {
+    if (!state.selected.multiSelectMode) return false;
+    return state.selected.multiSelectMap[folder._id];
+  });
+  const multiSelectMode = useAppSelector(
+    (state) => state.selected.multiSelectMode
+  );
   const lastSelected = useRef(0);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -30,6 +37,17 @@ const FolderItem = React.memo((props) => {
   } = useContextMenu();
 
   const folderClick = useCallback(() => {
+    if (multiSelectMode) {
+      dispatch(
+        setMultiSelectMode({
+          type: "folder",
+          id: folder._id,
+          file: null,
+          folder: folder,
+        })
+      );
+      return;
+    }
     const currentDate = Date.now();
 
     if (!elementSelected) {
@@ -58,14 +76,15 @@ const FolderItem = React.memo((props) => {
     navigate,
     folder._id,
     elementSelected,
+    multiSelectMode,
   ]);
 
   return (
     <div
       className={classNames(
-        "p-[12px] border border-[#ebe9f9] rounded-[4px] overflow-hidden cursor-pointer animate ",
+        "p-[12px] border border-[#ebe9f9] rounded-[4px] overflow-hidden cursor-pointer animate hover:border-[#3c85ee]",
         {
-          "bg-[#3c85ee]": elementSelected,
+          "bg-[#3c85ee]": elementSelected || elementMultiSelected,
         }
       )}
       onClick={folderClick}
@@ -91,7 +110,9 @@ const FolderItem = React.memo((props) => {
         <svg
           className={classNames(
             "w-[40px] h-[40px]",
-            elementSelected ? "text-white" : "text-[#3c85ee]"
+            elementSelected || elementMultiSelected
+              ? "text-white"
+              : "text-[#3c85ee]"
           )}
           aria-hidden="true"
           focusable="false"
@@ -111,7 +132,7 @@ const FolderItem = React.memo((props) => {
       <div
         className={classNames(
           "overflow-hidden text-ellipsis block w-full animate mt-2",
-          elementSelected
+          elementSelected || elementMultiSelected
             ? "bg-[#3c85ee] text-white"
             : "bg-white text-[#637381]"
         )}
@@ -119,7 +140,9 @@ const FolderItem = React.memo((props) => {
         <p
           className={classNames(
             "m-0 text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
-            elementSelected ? "text-white" : "text-black"
+            elementSelected || elementMultiSelected
+              ? "text-white"
+              : "text-black"
           )}
         >
           {folder.name}
@@ -127,7 +150,9 @@ const FolderItem = React.memo((props) => {
         <span
           className={classNames(
             "m-0 font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
-            elementSelected ? "text-white" : "text-[#637381]"
+            elementSelected || elementMultiSelected
+              ? "text-white"
+              : "text-[#637381]"
           )}
         >
           Created {moment(folder.createdAt).format("MM/DD/YY hh:mma")}

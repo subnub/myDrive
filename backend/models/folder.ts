@@ -22,6 +22,7 @@ const folderSchema = new mongoose.Schema(
       required: true,
     },
     personalFolder: Boolean,
+    trashed: Boolean,
   },
   {
     timestamps: true,
@@ -38,6 +39,7 @@ export interface FolderInterface
   parentList: string[];
   _doc?: any;
   personalFolder?: boolean;
+  trashed?: boolean;
 }
 
 const Folder = mongoose.model<FolderInterface>("Folder", folderSchema);

@@ -6,6 +6,7 @@ interface QueryKeyParams {
   search?: string;
   sortBy?: string;
   limit?: number;
+  trashMode?: boolean;
 }
 
 // GET
@@ -13,13 +14,14 @@ interface QueryKeyParams {
 export const getFoldersListAPI = async ({
   queryKey,
 }: QueryFunctionContext<[string, QueryKeyParams]>) => {
-  const [_key, { parent, search, sortBy, limit }] = queryKey;
+  const [_key, { parent, search, sortBy, limit, trashMode }] = queryKey;
   const response = await axios.get(`/folder-service/list`, {
     params: {
       parent,
       search,
       sortBy,
       limit,
+      trashMode,
     },
   });
   return response.data;
@@ -50,6 +52,13 @@ export const renameFolder = async (folderID: string, name: string) => {
   const response = await axios.patch("/folder-service/rename", {
     id: folderID,
     title: name,
+  });
+  return response.data;
+};
+
+export const trashFolderAPI = (folderID: string) => {
+  const response = axios.patch("/folder-service/trash", {
+    id: folderID,
   });
   return response.data;
 };

@@ -72,6 +72,21 @@ class DbUtil {
     return file;
   };
 
+  trashFile = async (fileID: string, userID: string) => {
+    const result = await File.findByIdAndUpdate(
+      {
+        _id: new ObjectId(fileID),
+        "metadata.owner": userID,
+      },
+      {
+        $set: {
+          "metadata.trashed": true,
+        },
+      }
+    );
+    return result;
+  };
+
   getFileInfo = async (fileID: string, userID: string) => {
     //TODO: Using mongoose like this causes the object to be returned in raw form
     // const file = await File.findOne({
@@ -87,7 +102,7 @@ class DbUtil {
   };
 
   getQuickList = async (userID: string, limit: number) => {
-    let query: any = { "metadata.owner": userID };
+    let query: any = { "metadata.owner": userID, "metadata.trashed": null };
 
     const fileList = (await conn.db
       .collection("fs.files")
@@ -131,6 +146,21 @@ class DbUtil {
       .toArray()) as FileInterface[];
 
     return fileList;
+  };
+
+  trashFilesByParent = async (parentList: string, userID: string) => {
+    const result = await File.updateMany(
+      {
+        "metadata.owner": userID,
+        "metadata.parentList": { $regex: `.*${parentList}.*` }, // REGEX
+      },
+      {
+        $set: {
+          "metadata.trashed": true,
+        },
+      }
+    );
+    return result;
   };
 
   renameFile = async (fileID: string, userID: string, title: string) => {

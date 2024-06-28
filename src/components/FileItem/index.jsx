@@ -12,7 +12,7 @@ import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
 import bytes from "bytes";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { setMainSelect } from "../../reducers/selected";
+import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
 
 const FileItem = React.memo((props) => {
   const { file } = props;
@@ -20,6 +20,14 @@ const FileItem = React.memo((props) => {
     if (state.selected.mainSection.type !== "file") return false;
     return state.selected.mainSection.id === file._id;
   });
+  const elementMultiSelected = useAppSelector((state) => {
+    if (!state.selected.multiSelectMode) return false;
+    const selected = state.selected.multiSelectMap[file._id];
+    return selected && selected.type === "file";
+  });
+  const multiSelectMode = useAppSelector(
+    (state) => state.selected.multiSelectMode
+  );
   const listView = useSelector((state) => state.filter.listView);
   const { image, hasThumbnail, imageOnError } = useThumbnail(
     file.metadata.hasThumbnail,
@@ -58,6 +66,18 @@ const FileItem = React.memo((props) => {
 
   // TODO: See if we can memoize this
   const fileClick = () => {
+    if (multiSelectMode) {
+      dispatch(
+        setMultiSelectMode({
+          type: "file",
+          id: file._id,
+          file: file,
+          folder: null,
+        })
+      );
+      return;
+    }
+
     const currentDate = Date.now();
 
     if (!elementSelected) {
@@ -82,7 +102,7 @@ const FileItem = React.memo((props) => {
       <tr
         className={classNames(
           "text-[14px] font-normal border-y",
-          !elementSelected
+          !elementSelected && !elementMultiSelected
             ? "text-[#212b36] hover:bg-[#f6f5fd]"
             : "bg-[#3c85ee] animate text-white"
         )}
@@ -137,7 +157,9 @@ const FileItem = React.memo((props) => {
               <svg
                 className={classNames(
                   "w-4 h-4",
-                  elementSelected ? "text-white" : "text-[#919eab]"
+                  elementSelected || elementMultiSelected
+                    ? "text-white"
+                    : "text-[#919eab]"
                 )}
                 aria-hidden="true"
                 focusable="false"
@@ -162,8 +184,10 @@ const FileItem = React.memo((props) => {
     return (
       <div
         className={classNames(
-          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[125px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden",
-          elementSelected ? "border-[#3c85ee]" : "border-[#ebe9f9]"
+          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[125px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden bg-white",
+          elementSelected || elementMultiSelected
+            ? "border-[#3c85ee]"
+            : "border-[#ebe9f9]"
         )}
         onClick={fileClick}
         onContextMenu={onContextMenu}
@@ -175,7 +199,7 @@ const FileItem = React.memo((props) => {
           <div onClick={clickStopPropagation}>
             <ContextMenu
               gridMode={true}
-              quickItemMode={true}
+              quickItemMode={false}
               contextSelected={contextMenuState}
               closeContext={closeContextMenu}
               file={file}
@@ -221,7 +245,7 @@ const FileItem = React.memo((props) => {
         <div
           className={classNames(
             "p-3 overflow-hidden text-ellipsis block w-full animate",
-            elementSelected
+            elementSelected || elementMultiSelected
               ? "bg-[#3c85ee] text-white"
               : "bg-white text-[#637381]"
           )}
@@ -229,7 +253,9 @@ const FileItem = React.memo((props) => {
           <p
             className={classNames(
               "m-0 text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
-              elementSelected ? "text-white" : "text-[#212b36]"
+              elementSelected || elementMultiSelected
+                ? "text-white"
+                : "text-[#212b36]"
             )}
           >
             {formattedFilename}
@@ -237,7 +263,9 @@ const FileItem = React.memo((props) => {
           <span
             className={classNames(
               "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
-              elementSelected ? "text-white" : "text-[#637381]"
+              elementSelected || elementMultiSelected
+                ? "text-white"
+                : "text-[#637381]"
             )}
           >
             Created {formattedCreatedDate}

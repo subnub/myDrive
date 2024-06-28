@@ -604,6 +604,16 @@ class S3Service implements ChunkInterface {
       }
     }
   };
+
+  trashMulti = async (
+    userID: string,
+    items: {
+      type: "file" | "folder" | "quick-item";
+      id: string;
+      file?: FileInterface;
+      folder?: FolderInterface;
+    }[]
+  ) => {};
 }
 
 export default S3Service;

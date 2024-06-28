@@ -486,6 +486,27 @@ class FileController {
     }
   };
 
+  trashFile = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const fileID = req.body.id;
+
+      const trashedFile = await fileService.trashFile(userID, fileID);
+
+      res.send(trashedFile.toObject());
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nTrash File Error File Route:", e.message);
+      }
+
+      res.status(500).send("Server error trashing file");
+    }
+  };
+
   deleteFile = async (req: RequestType, res: Response) => {
     if (!req.user) {
       return;
@@ -506,6 +527,27 @@ class FileController {
       }
 
       res.status(500).send("Server error deleting file");
+    }
+  };
+
+  trashMulti = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const items = req.body.items;
+
+      await this.chunkService.trashMulti(userID, items);
+
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nTrash Multi Error File Route:", e.message);
+      }
+
+      res.status(500).send("Server error trashing multi");
     }
   };
 }

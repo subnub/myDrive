@@ -2,7 +2,7 @@ import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import NotFoundError from "../../utils/NotFoundError";
 import env from "../../enviroment/env";
 import jwt from "jsonwebtoken";
-import Folder from "../../models/folder";
+import Folder, { FolderInterface } from "../../models/folder";
 import sortBySwitch from "../../utils/sortBySwitch";
 import createQuery from "../../utils/createQuery";
 import DbUtilFile from "../../db/utils/fileUtils/index";
@@ -127,6 +127,7 @@ class MongoFileService {
     const startAtName = query.startAtName || "";
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
+    const trashMode = query.trashMode === "true";
     sortBy = sortBySwitch(sortBy);
     limit = parseInt(limit);
     console.log("sortBy", sortBy, query.sortBy);
@@ -143,7 +144,8 @@ class MongoFileService {
       s3Enabled,
       startAtName,
       storageType,
-      folderSearch
+      folderSearch,
+      trashMode
     );
 
     const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);
@@ -217,6 +219,12 @@ class MongoFileService {
       fileList,
       folderList,
     };
+  };
+
+  trashFile = async (userID: string, fileID: string) => {
+    const trashedFile = await dbUtilsFile.trashFile(fileID, userID);
+    if (!trashedFile) throw new NotFoundError("Trash File Not Found Error");
+    return trashedFile;
   };
 
   renameFile = async (userID: string, fileID: string, title: string) => {

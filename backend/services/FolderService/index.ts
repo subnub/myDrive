@@ -122,6 +122,7 @@ class FolderService {
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
     const itemType = query.itemType || undefined;
+    const trashMode = query.trashMode === "true";
     sortBy = sortBySwitch(sortBy);
 
     const s3Enabled = user.s3Enabled ? true : false;
@@ -134,7 +135,8 @@ class FolderService {
         s3Enabled,
         type,
         storageType,
-        itemType
+        itemType,
+        trashMode
       );
 
       if (!folderList) throw new NotFoundError("Folder List Not Found Error");
@@ -205,6 +207,21 @@ class FolderService {
     }
 
     return folderList;
+  };
+
+  trashFolder = async (userID: string, folderID: string) => {
+    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+
+    if (!folder) throw new NotFoundError("Trash Folder Not Found Error");
+
+    folder.trashed = true;
+    await folder.save();
+
+    const parentList = [...folder.parentList, folder._id!.toString()];
+
+    await utilsFolder.trashFoldersByParent(parentList, userID);
+
+    await utilsFile.trashFilesByParent(parentList.toString(), userID);
   };
 
   moveFolder = async (userID: string, folderID: string, parentID: string) => {

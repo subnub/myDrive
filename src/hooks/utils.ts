@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
 export const useUtils = () => {
@@ -37,5 +37,59 @@ export const useClickOutOfBounds = (outOfBoundsCallback: () => any) => {
 
   return {
     wrapperRef,
+  };
+};
+
+export const useDragAndDrop = (fileDroppedCallback: (file: any) => any) => {
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const isDraggingFileRef = useRef(false);
+
+  const onDragDropEvent = useCallback((e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isDraggingFileRef.current = false;
+    setIsDraggingFile(false);
+
+    const fileInput = e.dataTransfer;
+
+    fileDroppedCallback(fileInput);
+  }, []);
+  const onDragEvent = useCallback((e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+  const onDragEnterEvent = useCallback((e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isDraggingFileRef.current) return;
+    isDraggingFileRef.current = true;
+    setIsDraggingFile(true);
+  }, []);
+  const stopDrag = useCallback((e: any) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    if (!isDraggingFileRef.current) return;
+    isDraggingFileRef.current = false;
+    setIsDraggingFile(false);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("dragover", stopDrag);
+    window.addEventListener("focus", stopDrag);
+
+    return () => {
+      window.removeEventListener("dragover", stopDrag);
+      window.removeEventListener("focus", stopDrag);
+    };
+  }, []);
+
+  return {
+    isDraggingFile,
+    onDragDropEvent,
+    onDragEvent,
+    onDragEnterEvent,
+    stopDrag,
   };
 };

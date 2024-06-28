@@ -29,9 +29,13 @@ import addToStoageSize from "./utils/addToStorageSize";
 import subtractFromStorageSize from "./utils/subtractFromStorageSize";
 import ForbiddenError from "../../utils/ForbiddenError";
 import { ObjectId } from "mongodb";
+import FolderService from "../FolderService";
+import MongoFileService from "../FileService";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
+const folderService = new FolderService();
+const fileService = new MongoFileService();
 
 class FileSystemService implements ChunkInterface {
   constructor() {}
@@ -463,6 +467,33 @@ class FileSystemService implements ChunkInterface {
 
     if (file.metadata.linkType === "one") {
       await dbUtilsFile.removeOneTimePublicLink(fileID);
+    }
+  };
+
+  trashMulti = async (
+    userID: string,
+    items: {
+      type: "file" | "folder" | "quick-item";
+      id: string;
+      file?: FileInterface;
+      folder?: FolderInterface;
+    }[]
+  ) => {
+    const fileList = items.filter(
+      (item) => item.type === "file" || item.type === "quick-item"
+    );
+    const folderList = items
+      .filter((item) => item.type === "folder")
+      .sort((a, b) => {
+        if (!a.folder || !b.folder) return 0;
+        return b.folder.parentList.length - a.folder.parentList.length;
+      });
+
+    for (const file of fileList) {
+      await fileService.trashFile(userID, file.id);
+    }
+    for (const folder of folderList) {
+      await folderService.trashFolder(userID, folder.id);
     }
   };
 

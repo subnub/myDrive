@@ -10,6 +10,7 @@ interface QueryKeyParams {
   startAtDate?: string;
   startAtName?: string;
   startAt?: boolean;
+  trashMode?: boolean;
 }
 
 // GET
@@ -20,7 +21,7 @@ export const getFilesListAPI = async ({
 }: QueryFunctionContext<[string, QueryKeyParams]>) => {
   const [
     _key,
-    { parent = "/", search = "", sortBy = "date_desc", limit = 50 },
+    { parent = "/", search = "", sortBy = "date_desc", limit = 50, trashMode },
   ] = queryKey;
 
   const queryParams: QueryKeyParams = {
@@ -28,6 +29,7 @@ export const getFilesListAPI = async ({
     search,
     sortBy,
     limit,
+    trashMode,
   };
 
   if (pageParam?.startAtDate && pageParam?.startAtName) {
@@ -93,6 +95,21 @@ export const getSuggestedListAPI = async ({
 };
 
 // PATCH
+
+export const trashFileAPI = async (fileID: string) => {
+  const response = await axios.patch(`/file-service/trash`, {
+    id: fileID,
+  });
+  return response.data;
+};
+
+export const trashMultiAPI = async (items: any) => {
+  const response = await axios.patch(`/file-service/trash-multi`, {
+    items,
+  });
+  return response.data;
+};
+
 export const renameFileAPI = async (fileID: string, name: string) => {
   const response = await axios.patch(`/file-service/rename`, {
     id: fileID,

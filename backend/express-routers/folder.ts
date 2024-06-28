@@ -37,6 +37,8 @@ router.patch("/folder-service/rename", auth, folderController.renameFolder);
 
 router.patch("/folder-service/move", auth, folderController.moveFolder);
 
+router.patch("/folder-service/trash", auth, folderController.trashFolder);
+
 router.get(
   "/folder-service/subfolder-list-full",
   auth,

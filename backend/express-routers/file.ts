@@ -99,6 +99,10 @@ router.patch("/file-service/rename", auth, fileController.renameFile);
 
 router.patch("/file-service/move", auth, fileController.moveFile);
 
+router.patch("/file-service/trash", auth, fileController.trashFile);
+
+router.patch("/file-service/trash-multi", auth, fileController.trashMulti);
+
 router.delete("/file-service/remove-link/:id", auth, fileController.removeLink);
 
 router.delete(

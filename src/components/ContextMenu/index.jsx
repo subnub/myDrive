@@ -5,24 +5,31 @@ import {
   deleteFileAPI,
   renameFileAPI,
   downloadFileAPI,
+  trashFileAPI,
 } from "../../api/filesAPI";
 import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { useFoldersClient } from "../../hooks/folders";
 import { useDispatch } from "react-redux";
 import { setMoverID } from "../../actions/mover";
 import { setShareSelected } from "../../actions/selectedItem";
-import { deleteFolder, renameFolder } from "../../api/foldersAPI";
+import {
+  deleteFolder,
+  renameFolder,
+  trashFolderAPI,
+} from "../../api/foldersAPI";
 import { useClickOutOfBounds } from "../../hooks/utils";
+import { useAppDispatch } from "../../hooks/store";
+import { setMultiSelectMode } from "../../reducers/selected";
 
 const ContextMenu = (props) => {
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
   const { wrapperRef } = useClickOutOfBounds(props.closeContext);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const liClassname =
     "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline transition-all duration-400 ease-in-out text- hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
-  const spanClassname = "inline-flex mr-[18px]";
+  const spanClassname = "flex items-center justify-center mr-[18px]";
 
   const renameItem = async () => {
     props.closeContext();
@@ -67,32 +74,32 @@ const ContextMenu = (props) => {
     props.closeContext();
     if (!props.folderMode) {
       const result = await Swal.fire({
-        title: "Confirm Deletion",
-        text: "You cannot undo this action",
+        title: "Move to trash?",
+        text: "Items in the trash will eventually be deleted.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete",
+        confirmButtonText: "Yes",
       });
 
       if (result.value) {
-        await deleteFileAPI(props.file._id);
+        await trashFileAPI(props.file._id);
         invalidateFilesCache();
         invalidateQuickFilesCache();
       }
     } else {
       const result = await Swal.fire({
-        title: "Confirm Deletion",
-        text: "You cannot undo this action",
+        title: "Move to trash?",
+        text: "Items in the trash will eventually be deleted.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete",
+        confirmButtonText: "Yes",
       });
       if (result.value) {
-        await deleteFolder(props.folder._id, props.folder.parentList);
+        await trashFolderAPI(props.folder._id);
         invalidateFoldersCache();
       }
     }
@@ -117,6 +124,29 @@ const ContextMenu = (props) => {
     downloadFileAPI(props.file._id);
   };
 
+  const selectItemMultiSelect = () => {
+    props.closeContext();
+    if (props.folderMode) {
+      dispatch(
+        setMultiSelectMode({
+          type: "folder",
+          id: props.folder._id,
+          file: null,
+          folder: props.folder,
+        })
+      );
+    } else {
+      dispatch(
+        setMultiSelectMode({
+          type: props.quickItemMode ? "quick-item" : "file",
+          id: props.file._id,
+          file: props.file,
+          folder: null,
+        })
+      );
+    }
+  };
+
   return (
     <div
       onClick={props.stopPropagation}
@@ -136,6 +166,18 @@ const ContextMenu = (props) => {
       }
     >
       <ul className="p-0 list-none m-0 ">
+        <li onClick={selectItemMultiSelect} className={liClassname}>
+          <a className="flex">
+            <span className={spanClassname}>
+              <img
+                src="/assets/checkbox-multiple-outline.svg"
+                alt="multiselect"
+                className="w-[19px] h-[20px]"
+              />
+            </span>
+            Multi select
+          </a>
+        </li>
         <li onClick={renameItem} className={liClassname}>
           <a className="flex">
             <span className={spanClassname}>
@@ -180,7 +222,7 @@ const ContextMenu = (props) => {
             <span className={spanClassname}>
               <img src="/assets/filesetting5.svg" alt="setting" />
             </span>
-            Delete
+            Trash
           </a>
         </li>
       </ul>

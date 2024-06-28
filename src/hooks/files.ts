@@ -11,13 +11,16 @@ import {
   getQuickFilesListAPI,
   getSuggestedListAPI,
 } from "../api/filesAPI";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { useAppSelector } from "./store";
+import { useUtils } from "./utils";
 
 export const useFiles = () => {
   const params = useParams();
   // TODO: Remove any
   const sortBy = useSelector((state: any) => state.filter.sortBy);
+  const trashMode = false;
   const filesReactQuery = useInfiniteQuery(
     [
       "files",
@@ -26,6 +29,7 @@ export const useFiles = () => {
         search: params.query || "",
         sortBy,
         limit: undefined,
+        trashMode,
       },
     ],
     getFilesListAPI,
@@ -53,6 +57,7 @@ export const useFilesClient = () => {
   // TODO: Remove any
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const filesReactClientQuery = useQueryClient();
+  const trashMode = false;
 
   const invalidateFilesCache = () => {
     filesReactClientQuery.invalidateQueries({
@@ -63,6 +68,7 @@ export const useFilesClient = () => {
           search: "",
           sortBy,
           limit: undefined,
+          trashMode,
         },
       ],
     });
@@ -94,11 +100,18 @@ interface thumbnailState {
   image: undefined | string;
 }
 
-export const useThumbnail = (hasThumbnail: boolean, thumbnailID?: string) => {
+export const useThumbnail = (
+  hasThumbnail: boolean,
+  thumbnailID?: string,
+  isQuickFile?: boolean
+) => {
+  const requestedThumbnail = useRef(false);
   const [state, setState] = useState<thumbnailState>({
     hasThumbnail: false,
     image: undefined,
   });
+  const { isHome } = useUtils();
+  const listView = useAppSelector((state) => state.filter.listView);
 
   const imageOnError = useCallback(() => {
     setState({
@@ -108,7 +121,11 @@ export const useThumbnail = (hasThumbnail: boolean, thumbnailID?: string) => {
   }, []);
   const getThumbnail = useCallback(async () => {
     try {
-      if (!thumbnailID) return;
+      if (!thumbnailID || requestedThumbnail.current) return;
+      if (isQuickFile && !isHome) return;
+      if (!isQuickFile && listView) return;
+      console.log("getting thumbnail", thumbnailID);
+      requestedThumbnail.current = true;
       const thumbnailData = await getFileThumbnailAPI(thumbnailID);
       setState({
         hasThumbnail: true,
@@ -118,7 +135,13 @@ export const useThumbnail = (hasThumbnail: boolean, thumbnailID?: string) => {
       console.log("error getting thumbnail data", e);
       imageOnError();
     }
-  }, [thumbnailID, getFileThumbnailAPI, imageOnError]);
+  }, [
+    thumbnailID,
+    getFileThumbnailAPI,
+    imageOnError,
+    listView,
+    requestedThumbnail.current,
+  ]);
 
   useEffect(() => {
     if (!hasThumbnail || !thumbnailID) return;

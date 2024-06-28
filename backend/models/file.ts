@@ -53,6 +53,7 @@ const fileSchema = new mongoose.Schema({
       filePath: String,
       s3ID: String,
       personalFile: Boolean,
+      trashed: Boolean,
     },
     required: true,
   },
@@ -79,6 +80,7 @@ export interface FileInterface
     filePath?: string;
     s3ID?: string;
     personalFile?: boolean;
+    trashed?: boolean;
   };
 }
 
