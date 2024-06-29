@@ -1,31 +1,19 @@
-const imageExtList = [
-	"jpeg",
-	"jpg",
-	"png",
-	"gif",
-	"svg",
-	"tiff",
-	"bmp"
-]
+const imageExtList = ["jpeg", "jpg", "png", "gif", "svg", "tiff", "bmp"];
 
-const imageChecker =  (filename: string) => {
+const imageChecker = (filename: string) => {
+  if (filename.length < 1 || !filename.includes(".")) {
+    return false;
+  }
 
-    if (filename.length < 1 || !filename.includes(".")) {
+  const extSplit = filename.split(".");
 
-        return false; 
-    }
+  if (extSplit.length <= 1) {
+    return false;
+  }
 
-    const extSplit = filename.split(".");
+  const ext = extSplit[extSplit.length - 1];
 
-    if (extSplit.length <= 1) {
-        
-        return false; 
-    }
-
-    const ext = extSplit[extSplit.length - 1];
-
-    return imageExtList.includes(ext.toLowerCase());
-
-}
+  return imageExtList.includes(ext.toLowerCase());
+};
 
 export default imageChecker;

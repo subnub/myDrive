@@ -31,6 +31,7 @@ import ForbiddenError from "../../utils/ForbiddenError";
 import { ObjectId } from "mongodb";
 import FolderService from "../FolderService";
 import MongoFileService from "../FileService";
+import createVideoThumbnailFS from "./utils/createVideoThumbnailFS";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
@@ -107,8 +108,6 @@ class FileSystemService implements ChunkInterface {
     const date = new Date();
     const encryptedFileSize = await getFileSize(metadata.filePath);
 
-    console.log("filtnamed", filename);
-
     const currentFile = new File({
       filename,
       uploadDate: date.toISOString(),
@@ -120,11 +119,19 @@ class FileSystemService implements ChunkInterface {
 
     await addToStoageSize(user, size, personalFile);
 
-    console.log("current file", currentFile);
-
     const imageCheck = imageChecker(currentFile.filename);
+    const videoCheck = videoChecker(currentFile.filename);
 
-    if (currentFile.length < 15728640 && imageCheck) {
+    if (videoCheck) {
+      console.log("is vidoe");
+      const updatedFile = await createVideoThumbnailFS(
+        currentFile,
+        filename,
+        user
+      );
+
+      return updatedFile;
+    } else if (currentFile.length < 15728640 && imageCheck) {
       const updatedFile = await createThumbnailAny(currentFile, filename, user);
 
       return updatedFile;

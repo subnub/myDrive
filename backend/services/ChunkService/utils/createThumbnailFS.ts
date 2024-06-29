@@ -8,6 +8,7 @@ import fs from "fs";
 import uuid from "uuid";
 import env from "../../../enviroment/env";
 import { ObjectId } from "mongodb";
+import File from "../../../models/file";
 
 const conn = mongoose.connection;
 
@@ -82,32 +83,27 @@ const createThumbnailFS = (
         if (!file._id) {
           return reject();
         }
-        const getUpdatedFile = await conn.db
-          .collection("fs.files")
-          .findOneAndUpdate(
-            { _id: new ObjectId(file._id) },
-            {
-              $set: {
-                "metadata.hasThumbnail": true,
-                "metadata.thumbnailID": thumbnailModel._id,
-              },
-            }
-          );
-        if (!getUpdatedFile) {
+        const updateFileResponse = await File.updateOne(
+          { _id: new ObjectId(file._id), "metadata.owner": user._id },
+          {
+            $set: {
+              "metadata.hasThumbnail": true,
+              "metadata.thumbnailID": thumbnailModel._id,
+            },
+          }
+        );
+        if (updateFileResponse.modifiedCount === 0) {
           return reject();
         }
-        let updatedFile: FileInterface = getUpdatedFile.value;
 
-        updatedFile = {
-          ...updatedFile,
-          metadata: {
-            ...updatedFile.metadata,
-            hasThumbnail: true,
-            thumbnailID: thumbnailModel._id,
-          },
-        } as FileInterface;
+        const updatedFile = await File.findById({
+          _id: new ObjectId(file._id),
+          "metadata.owner": user._id,
+        });
 
-        resolve(updatedFile);
+        if (!updatedFile) return reject();
+
+        resolve(updatedFile?.toObject());
       });
     } catch (e) {
       console.log("Thumbnail error", e);
