@@ -17,15 +17,23 @@ import {
   renameFolder,
   trashFolderAPI,
 } from "../../api/foldersAPI";
-import { useClickOutOfBounds } from "../../hooks/utils";
+import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import { useAppDispatch } from "../../hooks/store";
 import { setMultiSelectMode } from "../../reducers/selected";
+import TrashIcon from "../../icons/TrashIcon";
+import MultiSelectIcon from "../../icons/MultiSelectIcon";
+import RenameIcon from "../../icons/RenameIcon";
+import ShareIcon from "../../icons/ShareIcon";
+import DownloadIcon from "../../icons/DownloadIcon";
+import MoveIcon from "../../icons/MoveIcon";
+import RestoreIcon from "../../icons/RestoreIcon";
 
 const ContextMenu = (props) => {
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
   const { wrapperRef } = useClickOutOfBounds(props.closeContext);
+  const { isTrash } = useUtils();
   const dispatch = useAppDispatch();
   const liClassname =
     "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline transition-all duration-400 ease-in-out text- hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
@@ -70,7 +78,7 @@ const ContextMenu = (props) => {
     }
   };
 
-  const deleteItem = async () => {
+  const trashItem = async () => {
     props.closeContext();
     if (!props.folderMode) {
       const result = await Swal.fire({
@@ -100,6 +108,41 @@ const ContextMenu = (props) => {
       });
       if (result.value) {
         await trashFolderAPI(props.folder._id);
+        invalidateFoldersCache();
+      }
+    }
+  };
+
+  const deleteItem = async () => {
+    props.closeContext();
+    if (!props.folderMode) {
+      const result = await Swal.fire({
+        title: "Delete file?",
+        text: "You will not be able to recover this file.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+      });
+
+      if (result.value) {
+        await deleteFileAPI(props.file._id);
+        invalidateFilesCache();
+        invalidateQuickFilesCache();
+      }
+    } else {
+      const result = await Swal.fire({
+        title: "Delete folder?",
+        text: "You will not be able to recover this folder.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+      });
+      if (result.value) {
+        await deleteFolder(props.folder._id);
         invalidateFoldersCache();
       }
     }
@@ -169,62 +212,84 @@ const ContextMenu = (props) => {
         <li onClick={selectItemMultiSelect} className={liClassname}>
           <a className="flex">
             <span className={spanClassname}>
-              <img
-                src="/assets/checkbox-multiple-outline.svg"
-                alt="multiselect"
-                className="w-[19px] h-[20px]"
-              />
+              <MultiSelectIcon className="w-[19px] h-[20px]" />
             </span>
             Multi select
           </a>
         </li>
-        <li onClick={renameItem} className={liClassname}>
-          <a className="flex">
-            <span className={spanClassname}>
-              <img src="/assets/filesetting1.svg" alt="setting" />
-            </span>
-            Rename
-          </a>
-        </li>
-        {!props.folderMode ? (
+        {!isTrash && (
+          <li onClick={renameItem} className={liClassname}>
+            <a className="flex">
+              <span className={spanClassname}>
+                <RenameIcon />
+              </span>
+              Rename
+            </a>
+          </li>
+        )}
+        {!props.folderMode && !isTrash ? (
           <li onClick={openShareItemModal} className={liClassname}>
             <a className="flex" data-modal="share__modal">
-              <span
-                className="inline-flex mr-[18px]
-"
-              >
-                <img src="/assets/filesetting2.svg" alt="setting" />
+              <span className="inline-flex mr-[18px]">
+                <ShareIcon />
               </span>
               Share
             </a>
           </li>
         ) : undefined}
-        {!props.folderMode ? (
+        {!props.folderMode && !isTrash ? (
           <li onClick={downloadItem} className={liClassname}>
             <a className="flex">
               <span className={spanClassname}>
-                <img src="/assets/filesetting3.svg" alt="setting" />
+                <DownloadIcon />
               </span>
               Download
             </a>
           </li>
         ) : undefined}
-        <li onClick={openMoveItemModal} className={liClassname}>
-          <a className="flex" data-modal="destination__modal">
-            <span className={spanClassname}>
-              <img src="/assets/filesetting4.svg" alt="setting" />
-            </span>{" "}
-            Move
-          </a>
-        </li>
-        <li onClick={deleteItem} className={liClassname}>
-          <a className="flex">
-            <span className={spanClassname}>
-              <img src="/assets/filesetting5.svg" alt="setting" />
-            </span>
-            Trash
-          </a>
-        </li>
+        {!isTrash && (
+          <li onClick={openMoveItemModal} className={liClassname}>
+            <a className="flex" data-modal="destination__modal">
+              <span className={spanClassname}>
+                <MoveIcon />
+              </span>{" "}
+              Move
+            </a>
+          </li>
+        )}
+        {!isTrash && (
+          <li onClick={trashItem} className={liClassname}>
+            <a className="flex">
+              <span className={spanClassname}>
+                <TrashIcon />
+              </span>
+              Trash
+            </a>
+          </li>
+        )}
+        {isTrash && (
+          <li onClick={deleteItem} className={liClassname}>
+            <a className="flex">
+              <span className={spanClassname}>
+                <RestoreIcon className="w-[19px] h-[20px]" />
+              </span>
+              Restore
+            </a>
+          </li>
+        )}
+        {isTrash && (
+          <li
+            onClick={deleteItem}
+            className={classNames(liClassname, "hover:text-red-500")}
+          >
+            <a className="flex">
+              <span className={spanClassname}>
+                <TrashIcon />
+              </span>
+              Delete
+            </a>
+          </li>
+        )}
       </ul>
     </div>
   );

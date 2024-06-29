@@ -2,11 +2,12 @@ import { useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { getFolderInfoAPI, getFoldersListAPI } from "../api/foldersAPI";
 import { useSelector } from "react-redux";
+import { useUtils } from "./utils";
 
 export const useFolders = () => {
   const params = useParams();
   const sortBy = useSelector((state: any) => state.filter.sortBy);
-  const trashMode = false;
+  const { isTrash } = useUtils();
   const foldersReactQuery = useQuery(
     [
       "folders",
@@ -15,7 +16,7 @@ export const useFolders = () => {
         search: params.query || "",
         sortBy,
         limit: undefined,
-        trashMode,
+        trashMode: isTrash,
       },
     ],
     getFoldersListAPI
@@ -28,7 +29,7 @@ export const useFoldersClient = () => {
   const params = useParams();
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const foldersReactClientQuery = useQueryClient();
-  const trashMode = false;
+  const { isTrash } = useUtils();
 
   const invalidateFoldersCache = () => {
     foldersReactClientQuery.invalidateQueries({
@@ -36,10 +37,10 @@ export const useFoldersClient = () => {
         "folders",
         {
           parent: params.id || "/",
-          search: "",
+          search: params.query || "",
           sortBy,
           limit: undefined,
-          trashMode,
+          trashMode: isTrash,
         },
       ],
     });

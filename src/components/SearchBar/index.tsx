@@ -3,7 +3,7 @@ import { useAppDispatch } from "../../hooks/store";
 import { useSearchSuggestions } from "../../hooks/files";
 import debounce from "lodash/debounce";
 import { useNavigate } from "react-router-dom";
-import { useClickOutOfBounds } from "../../hooks/utils";
+import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import SearchBarItem from "../SearchBarItem";
 import { FolderInterface } from "../../types/folders";
 import { FileInterface } from "../../types/file";
@@ -18,6 +18,7 @@ const SearchBar = memo(() => {
   const { data: searchSuggestions, isLoading: isLoadingSearchSuggestions } =
     useSearchSuggestions(debouncedSearchText);
   const navigate = useNavigate();
+  const { isTrash } = useUtils();
 
   const debouncedSetSearchText = useMemo(
     () => debounce(setDebouncedSearchText, 500),
@@ -43,10 +44,18 @@ const SearchBar = memo(() => {
     e.preventDefault();
     setSearchText("");
     setDebouncedSearchText("");
-    if (searchText.length) {
-      navigate(`/search/${searchText}`);
+    if (!isTrash) {
+      if (searchText.length) {
+        navigate(`/search/${searchText}`);
+      } else {
+        navigate("/home");
+      }
     } else {
-      navigate("/home");
+      if (searchText.length) {
+        navigate(`/search-trash/${searchText}`);
+      } else {
+        navigate("/trash");
+      }
     }
   };
 
@@ -60,7 +69,12 @@ const SearchBar = memo(() => {
   };
 
   const folderClick = (folder: FolderInterface) => {
-    navigate(`/folder/${folder?._id}`);
+    if (!isTrash) {
+      navigate(`/folder/${folder?._id}`);
+    } else {
+      navigate(`/folder-trash/${folder?._id}`);
+    }
+
     resetState();
   };
 
@@ -88,7 +102,7 @@ const SearchBar = memo(() => {
         type="text"
         onChange={onChangeSearch}
         value={searchText}
-        placeholder="Search"
+        placeholder={!isTrash ? "Search" : "Search Trash"}
         className="w-full min-h-[42px] border border-[#BEC9D3] pl-[45px] pr-[15px] text-[16px] text-black rounded-[5px]"
       />
       <div

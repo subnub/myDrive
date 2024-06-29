@@ -84,11 +84,14 @@ export const getFileThumbnailAPI = async (thumbnailID: string) => {
 
 export const getSuggestedListAPI = async ({
   queryKey,
-}: QueryFunctionContext<[string, { searchText: string }]>) => {
-  const [_key, { searchText }] = queryKey;
+}: QueryFunctionContext<
+  [string, { searchText: string; trashMode: boolean }]
+>) => {
+  const [_key, { searchText, trashMode }] = queryKey;
   const response = await axios.get(`/file-service/suggested-list`, {
     params: {
       search: searchText,
+      trashMode,
     },
   });
   return response.data;

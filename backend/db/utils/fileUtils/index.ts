@@ -133,10 +133,15 @@ class DbUtil {
     return user;
   };
 
-  getFileSearchList = async (userID: string, searchQuery: RegExp) => {
+  getFileSearchList = async (
+    userID: string,
+    searchQuery: RegExp,
+    trashMode: boolean
+  ) => {
     let query: any = {
       "metadata.owner": userID,
       filename: searchQuery,
+      "metadata.trashed": trashMode ? true : null,
     };
 
     const fileList = (await conn.db

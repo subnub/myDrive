@@ -20,7 +20,7 @@ export const useFiles = () => {
   const params = useParams();
   // TODO: Remove any
   const sortBy = useSelector((state: any) => state.filter.sortBy);
-  const trashMode = false;
+  const { isTrash } = useUtils();
   const filesReactQuery = useInfiniteQuery(
     [
       "files",
@@ -29,7 +29,7 @@ export const useFiles = () => {
         search: params.query || "",
         sortBy,
         limit: undefined,
-        trashMode,
+        trashMode: isTrash,
       },
     ],
     getFilesListAPI,
@@ -57,7 +57,7 @@ export const useFilesClient = () => {
   // TODO: Remove any
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const filesReactClientQuery = useQueryClient();
-  const trashMode = false;
+  const { isTrash } = useUtils();
 
   const invalidateFilesCache = () => {
     filesReactClientQuery.invalidateQueries({
@@ -65,10 +65,10 @@ export const useFilesClient = () => {
         "files",
         {
           parent: params.id || "/",
-          search: "",
+          search: params.query || "",
           sortBy,
           limit: undefined,
-          trashMode,
+          trashMode: isTrash,
         },
       ],
     });
@@ -153,11 +153,13 @@ export const useThumbnail = (
 };
 
 export const useSearchSuggestions = (searchText: string) => {
+  const { isTrash } = useUtils();
   const searchQuery = useQuery(
     [
       "search",
       {
         searchText,
+        trashMode: isTrash,
       },
     ],
     getSuggestedListAPI,

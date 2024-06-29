@@ -57,6 +57,33 @@ const AppRouter = () => {
             </PrivateRoute>
           }
         />
+        <Route
+          key={1}
+          path="/search-trash/:query"
+          element={
+            <PrivateRoute>
+              <Homepage2 />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          key={1}
+          path="/trash"
+          element={
+            <PrivateRoute>
+              <Homepage2 />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          key={1}
+          path="/folder-trash/:id"
+          element={
+            <PrivateRoute>
+              <Homepage2 />
+            </PrivateRoute>
+          }
+        />
         <Route path="/verify-email/:id" element={<VerifyEmailPage />} />
         <Route path="/reset-password/:id" element={<ResetPasswordPage />} />
         <Route path="/settings" element={<SettingsPage />} />

@@ -9,6 +9,7 @@ import mobilecheck from "../../utils/mobileCheck";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
+import { useUtils } from "../../hooks/utils";
 
 const FolderItem = React.memo((props) => {
   const { folder } = props;
@@ -23,6 +24,7 @@ const FolderItem = React.memo((props) => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
+  const { isTrash } = useUtils();
   const lastSelected = useRef(0);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -66,7 +68,11 @@ const FolderItem = React.memo((props) => {
     const isMobile = mobilecheck();
 
     if (isMobile || currentDate - lastSelected.current < 1500) {
-      navigate(`/folder/${folder._id}`);
+      if (isTrash) {
+        navigate(`/folder-trash/${folder._id}`);
+      } else {
+        navigate(`/folder/${folder._id}`);
+      }
     }
 
     lastSelected.current = Date.now();

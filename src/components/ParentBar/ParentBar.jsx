@@ -8,14 +8,18 @@ const ParentBar = memo(() => {
   const { data: folder, isLoading } = useFolder();
   console.log("folder", folder);
   const navigate = useNavigate();
-  const { isHome } = useUtils();
+  const { isHome, isTrash } = useUtils();
 
   if (isHome || !folder) {
     return <div></div>;
   }
 
-  const goHome = () => {
-    navigate("/home");
+  const goHomeOrTrash = () => {
+    if (!isTrash) {
+      navigate("/home");
+    } else {
+      navigate("/trash");
+    }
   };
 
   const goToFolder = () => {
@@ -34,9 +38,9 @@ const ParentBar = memo(() => {
       <div className="flex items-center">
         <a
           className="text-[#637381] text-[18px] leading-[21px] font-medium m-0 no-underline animate cursor-pointer"
-          onClick={goHome}
+          onClick={goHomeOrTrash}
         >
-          Home
+          {!isTrash ? "Home" : "Trash"}
         </a>
         <span className="inline-flex m-[0px_10px]">
           <img src="/assets/spacer.svg" alt="spacer" />

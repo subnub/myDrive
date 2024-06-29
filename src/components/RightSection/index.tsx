@@ -11,9 +11,11 @@ import { setPopupFile } from "../../actions/popupFile";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../hooks/store";
 import { resetSelected } from "../../reducers/selected";
+import { useUtils } from "../../hooks/utils";
 
 const RightSection = memo(() => {
   const selectedItem = useAppSelector((state) => state.selected.mainSection);
+  const { isTrash } = useUtils();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -71,8 +73,10 @@ const RightSection = memo(() => {
   const openItem = () => {
     if (selectedItem.file) {
       dispatch(setPopupFile({ showPopup: true, ...selectedItem.file }));
-    } else {
+    } else if (!isTrash) {
       navigate(`/folder/${selectedItem.id}`);
+    } else {
+      navigate(`/folder-trash/${selectedItem.id}`);
     }
   };
   return (

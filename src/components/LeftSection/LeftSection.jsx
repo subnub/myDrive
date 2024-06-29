@@ -1,13 +1,18 @@
 import React, { useCallback, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { createFolderAPI } from "../../api/foldersAPI";
 import { useFoldersClient } from "../../hooks/folders";
 import { showCreateFolderPopup } from "../../popups/folder";
-import { useClickOutOfBounds } from "../../hooks/utils";
+import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import AddNewDropdown from "../AddNewDropdown";
+import HomeListIcon from "../../icons/HomeListIcon";
+import TrashIcon from "../../icons/TrashIcon";
+import classNames from "classnames";
 
 const LeftSection = (props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const { isHome, isTrash } = useUtils();
+  const navigate = useNavigate();
   const addNewDisabled = useRef(false);
 
   const openDropdown = useCallback(() => {
@@ -22,6 +27,14 @@ const LeftSection = (props) => {
     setTimeout(() => (addNewDisabled.current = false), 300);
   }, []);
 
+  const goHome = () => {
+    navigate("/home");
+  };
+
+  const goTrash = () => {
+    navigate("/trash");
+  };
+
   return (
     <div
       className="menu__block p-6 hidden mobileMode:block border-r w-[270px] min-w-[270px]"
@@ -34,42 +47,55 @@ const LeftSection = (props) => {
           : { left: "-290px" }
       }
     >
-      <div className="navigation__block">
-        <div className="add__new">
-          <a onClick={openDropdown}>
-            <p>ADD NEW</p>
-            <span>
-              <img src="/assets/dropselect.svg" alt="dropselect" />
-            </span>
-          </a>
-          {/* TODO: Remove this props */}
-          {isDropdownOpen && (
-            <AddNewDropdown closeDropdown={closeDropdown} {...props} />
-          )}
+      <div className="navigation__block flex flex-col h-full">
+        <div>
+          <div className="add__new">
+            <a onClick={openDropdown}>
+              <p>ADD NEW</p>
+              <span>
+                <img src="/assets/dropselect.svg" alt="dropselect" />
+              </span>
+            </a>
+            {/* TODO: Remove this props */}
+            {isDropdownOpen && (
+              <AddNewDropdown closeDropdown={closeDropdown} {...props} />
+            )}
+          </div>
+          <div className="pr-[20px] pb-4">
+            <ul className="m-0 list-none p-0 cursor-pointer">
+              <li>
+                <a
+                  onClick={goHome}
+                  className={classNames(
+                    "flex items-center text-[#3c85ee] font-medium no-underline animate",
+                    isHome ? "text-[#3c85ee]" : "text-[#637381]"
+                  )}
+                >
+                  <span>
+                    <HomeListIcon />
+                  </span>
+                  <p className="ml-3">Home</p>
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="page__navigation">
-          <ul>
-            <li className="active__page">
-              <a onClick={props.goHome}>
+        <div className="border-t border-[#E8EEF2] pr-[20px] pt-4">
+          <ul className="m-0 list-none p-0 cursor-pointer">
+            <li>
+              <a
+                onClick={goTrash}
+                className={classNames(
+                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
+                  isTrash ? "text-[#3c85ee]" : "text-[#637381]"
+                )}
+              >
                 <span>
-                  <img src="/assets/homea.svg" alt="homeactive" />
+                  <TrashIcon />
                 </span>
-                Home
+                <p className="ml-3">Trash</p>
               </a>
             </li>
-          </ul>
-        </div>
-        <div
-          className={
-            props.state.hideFolderTree
-              ? "utility__buttons utility__buttons_no_border"
-              : "utility__buttons"
-          }
-        >
-          <ul>
-            {/* <li><a href="#"><span><img src="/assets/utility1.svg" alt="utility"/></span> Shared with me</a></li>
-            <li><a href="#"><span><img src="/assets/utility2.svg" alt="utility"/></span> Recent Files</a></li>
-            <li><a href="#"><span><img src="/assets/utility3.svg" alt="utility"/></span> Trash</a></li> */}
           </ul>
         </div>
       </div>

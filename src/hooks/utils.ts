@@ -1,14 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
 export const useUtils = () => {
-  const params = useParams();
+  const location = useLocation();
 
   const isHome = useMemo(() => {
-    return !params.id && !params.query;
-  }, [params.id, params.query]);
+    return location.pathname === "/home";
+  }, [location.pathname]);
 
-  return { isHome };
+  const isTrash = useMemo(() => {
+    console.log("location", location.pathname);
+    return (
+      location.pathname === "/trash" ||
+      location.pathname.includes("/folder-trash") ||
+      location.pathname.includes("/search-trash")
+    );
+  }, [location.pathname]);
+
+  return { isHome, isTrash };
 };
 
 export const useClickOutOfBounds = (outOfBoundsCallback: () => any) => {

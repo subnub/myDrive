@@ -203,13 +203,22 @@ class MongoFileService {
     await removedTokenUser.save();
   };
 
-  getSuggestedList = async (userID: string, searchQuery: any) => {
+  getSuggestedList = async (
+    userID: string,
+    searchQuery: any,
+    trashMode: boolean
+  ) => {
     searchQuery = new RegExp(searchQuery, "i");
 
-    const fileList = await dbUtilsFile.getFileSearchList(userID, searchQuery);
+    const fileList = await dbUtilsFile.getFileSearchList(
+      userID,
+      searchQuery,
+      trashMode
+    );
     const folderList = await dbUtilsFolder.getFolderSearchList(
       userID,
-      searchQuery
+      searchQuery,
+      trashMode
     );
 
     if (!fileList || !folderList)

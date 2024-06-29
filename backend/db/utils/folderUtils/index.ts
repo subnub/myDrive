@@ -4,8 +4,16 @@ import { ObjectId } from "mongodb";
 class DbUtil {
   constructor() {}
 
-  getFolderSearchList = async (userID: string, searchQuery: RegExp) => {
-    let query: any = { owner: userID, name: searchQuery };
+  getFolderSearchList = async (
+    userID: string,
+    searchQuery: RegExp,
+    trashMode: boolean
+  ) => {
+    let query: any = {
+      owner: userID,
+      name: searchQuery,
+      trashed: trashMode ? true : null,
+    };
 
     const folderList = (await Folder.find(query).limit(
       10
@@ -75,7 +83,8 @@ class DbUtil {
     storageType: string,
     folderSearch: boolean,
     itemType: string,
-    s3Enabled: boolean
+    s3Enabled: boolean,
+    trashMode: boolean
   ) => {
     let query: any = { name: searchQuery, owner: userID };
 
@@ -103,6 +112,12 @@ class DbUtil {
       if (itemType === "personal") query = { ...query, personalFolder: true };
       if (itemType === "nonpersonal")
         query = { ...query, personalFolder: null };
+    }
+
+    if (trashMode) {
+      query = { ...query, trashed: true };
+    } else {
+      query = { ...query, trashed: null };
     }
 
     const folderList = (await Folder.find(query).sort(

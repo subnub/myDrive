@@ -153,7 +153,8 @@ class FolderService {
         storageType,
         folderSearch,
         itemType,
-        s3Enabled
+        s3Enabled,
+        trashMode
       );
 
       if (!folderList) throw new NotFoundError("Folder List Not Found Error");
