@@ -16,7 +16,7 @@ import { useSelector } from "react-redux";
 import { useAppSelector } from "./store";
 import { useUtils } from "./utils";
 
-export const useFiles = () => {
+export const useFiles = (enabled = true) => {
   const params = useParams();
   // TODO: Remove any
   const sortBy = useSelector((state: any) => state.filter.sortBy);
@@ -42,6 +42,7 @@ export const useFiles = () => {
           startAtName: lastElement.filename,
         };
       },
+      enabled,
     }
   );
 
@@ -77,8 +78,10 @@ export const useFilesClient = () => {
   return { ...filesReactClientQuery, invalidateFilesCache };
 };
 
-export const useQuickFiles = () => {
-  const quickFilesQuery = useQuery("quickFiles", getQuickFilesListAPI);
+export const useQuickFiles = (enabled = true) => {
+  const quickFilesQuery = useQuery("quickFiles", getQuickFilesListAPI, {
+    enabled,
+  });
 
   return { ...quickFilesQuery };
 };

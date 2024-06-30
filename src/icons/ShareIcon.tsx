@@ -1,8 +1,6 @@
-interface ShareIconProps {
-  className?: string;
-}
+type ShareIconType = React.SVGAttributes<SVGSVGElement>;
 
-const ShareIcon = (props: ShareIconProps) => {
+const ShareIcon: React.FC<ShareIconType> = (props) => {
   return (
     <svg
       width="17"
@@ -10,7 +8,7 @@ const ShareIcon = (props: ShareIconProps) => {
       viewBox="0 0 17 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
+      {...props}
     >
       <g id="share-3">
         <path

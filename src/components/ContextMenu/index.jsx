@@ -39,7 +39,7 @@ const ContextMenu = (props) => {
   const { isTrash } = useUtils();
   const dispatch = useAppDispatch();
   const liClassname =
-    "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline transition-all duration-400 ease-in-out text- hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
+    "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline animate hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
   const spanClassname = "flex items-center justify-center mr-[18px]";
 
   const renameItem = async () => {

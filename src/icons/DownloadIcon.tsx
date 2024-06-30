@@ -1,8 +1,6 @@
-interface DownloadIconProps {
-  className?: string;
-}
+type DownloadIconType = React.SVGAttributes<SVGSVGElement>;
 
-const DownloadIcon = (props: DownloadIconProps) => {
+const DownloadIcon: React.FC<DownloadIconType> = (props) => {
   return (
     <svg
       width="19"
@@ -10,7 +8,7 @@ const DownloadIcon = (props: DownloadIconProps) => {
       viewBox="0 0 19 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
+      {...props}
     >
       <g id="cloud-computing">
         <path

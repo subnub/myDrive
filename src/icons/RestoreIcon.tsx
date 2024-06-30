@@ -1,15 +1,12 @@
-interface RestoreIconProps {
-  className?: string;
-  onClick?: () => void;
-}
+type RestoreIconType = React.SVGAttributes<SVGSVGElement>;
 
-const RestoreIcon = (props: RestoreIconProps) => {
+const RestoreIcon: React.FC<RestoreIconType> = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       className={props.className}
-      onClick={props.onClick}
+      {...props}
     >
       <title>restore</title>
       <path

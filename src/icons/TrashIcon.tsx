@@ -1,9 +1,8 @@
-interface TrashIconProps {
-  className?: string;
-  onClick?: () => void;
-}
+import React from "react";
 
-const TrashIcon = (props: TrashIconProps) => {
+type TrashIconType = React.SVGAttributes<SVGSVGElement>;
+
+const TrashIcon: React.FC<TrashIconType> = (props) => {
   return (
     <svg
       width="17"
@@ -11,8 +10,7 @@ const TrashIcon = (props: TrashIconProps) => {
       viewBox="0 0 17 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
-      onClick={props.onClick}
+      {...props}
     >
       <g id="trash">
         <path

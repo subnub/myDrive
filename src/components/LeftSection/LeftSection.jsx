@@ -81,13 +81,13 @@ const LeftSection = (props) => {
           </div>
         </div>
         <div className="border-t border-[#E8EEF2] pr-[20px] pt-4">
-          <ul className="m-0 list-none p-0 cursor-pointer">
+          <ul className="m-0 list-none p-0 cursor-pointer ">
             <li>
               <a
                 onClick={goTrash}
                 className={classNames(
                   "flex items-center text-[#3c85ee] font-medium no-underline animate",
-                  isTrash ? "text-[#3c85ee]" : "text-[#637381]"
+                  isTrash ? "text-red-500" : "text-[#637381]"
                 )}
               >
                 <span>

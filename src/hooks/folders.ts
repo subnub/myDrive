@@ -4,7 +4,7 @@ import { getFolderInfoAPI, getFoldersListAPI } from "../api/foldersAPI";
 import { useSelector } from "react-redux";
 import { useUtils } from "./utils";
 
-export const useFolders = () => {
+export const useFolders = (enabled = true) => {
   const params = useParams();
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const { isTrash } = useUtils();
@@ -19,7 +19,8 @@ export const useFolders = () => {
         trashMode: isTrash,
       },
     ],
-    getFoldersListAPI
+    getFoldersListAPI,
+    { enabled }
   );
 
   return { ...foldersReactQuery };

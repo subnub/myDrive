@@ -8,7 +8,7 @@ import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";
 
 const Folders = memo(() => {
-  const { data: folders } = useFolders();
+  const { data: folders } = useFolders(false);
   const { isHome } = useUtils();
   const sortBy = useSelector((state) => state.filter.sortBy);
   const dispatch = useDispatch();

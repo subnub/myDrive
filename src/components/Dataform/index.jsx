@@ -1,6 +1,6 @@
 import QuickAccess from "../QuickAccess";
 import Folders from "../Folders";
-import { useFiles } from "../../hooks/files";
+import { useFiles, useQuickFiles } from "../../hooks/files";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 import Files from "../Files";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
@@ -12,17 +12,23 @@ import { useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useDragAndDrop } from "../../hooks/utils";
 import MultiSelectBar from "../MultiSelectBar";
+import { useFolders } from "../../hooks/folders";
 
 const DataForm = memo(() => {
   const {
     fetchNextPage: filesFetchNextPage,
     isFetchingNextPage,
     data: fileList,
+    isLoading: isLoadingFiles,
   } = useFiles();
+  const { isLoading: isLoadingFolders } = useFolders();
+  const { isLoading: isLoadingQuickItems } = useQuickFiles();
   const dispatch = useAppDispatch();
   const { sentinelRef, reachedIntersect } = useInfiniteScroll();
   const [initialLoad, setInitialLoad] = useState(true);
   const params = useParams();
+
+  const isLoading = isLoadingFiles || isLoadingFolders || isLoadingQuickItems;
 
   useEffect(() => {
     if (initialLoad) {
@@ -53,22 +59,35 @@ const DataForm = memo(() => {
 
   return (
     <div
-      className={classNames("w-full p-[17px_40px] overflow-y-scroll", {
-        "opacity-50": isDraggingFile,
-      })}
+      className={classNames(
+        "w-full p-[17px_15px] mobileMode:p-[17px_40px] overflow-y-scroll",
+        {
+          "opacity-50": isDraggingFile,
+        }
+      )}
       onDrop={onDragDropEvent}
       onDragOver={onDragEvent}
       onDragLeave={onDragEvent}
       onDragEnter={onDragEnterEvent}
       onMouseLeave={stopDrag}
     >
-      <MultiSelectBar />
+      {!isLoading && (
+        <div>
+          <MultiSelectBar />
 
-      <QuickAccess />
+          <QuickAccess />
 
-      <Folders />
+          <Folders />
 
-      <Files />
+          <Files />
+        </div>
+      )}
+
+      {isLoading && (
+        <div className="w-full flex justify-center items-center h-full">
+          <SpinnerPage />
+        </div>
+      )}
 
       <div ref={sentinelRef} className="h-1"></div>
 

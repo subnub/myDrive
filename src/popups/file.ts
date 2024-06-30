@@ -36,3 +36,16 @@ export const deleteItemsPopup = async () => {
   });
   return result.value;
 };
+
+export const trashItemsPopup = async () => {
+  const result = await Swal.fire({
+    title: "Move to trash?",
+    text: "Items in the trash will eventually be deleted.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes",
+  });
+  return result.value;
+};

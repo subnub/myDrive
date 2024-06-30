@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import classNames from "classnames";
 
 const Files = memo(() => {
-  const { data: files } = useFiles();
+  const { data: files } = useFiles(false);
   const parent = useSelector((state) => state.parent.parent);
   const listView = useSelector((state) => state.filter.listView);
   // TODO: Fix loading

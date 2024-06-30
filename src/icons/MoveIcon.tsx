@@ -1,9 +1,6 @@
-interface MoveiconProps {
-  className?: string;
-  onClick?: () => void;
-}
+type MoveIconType = React.SVGAttributes<SVGSVGElement>;
 
-const Moveicon = (props: MoveiconProps) => {
+const Moveicon: React.FC<MoveIconType> = (props) => {
   return (
     <svg
       width="19"
@@ -11,8 +8,7 @@ const Moveicon = (props: MoveiconProps) => {
       viewBox="0 0 19 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
-      onClick={props.onClick}
+      {...props}
     >
       <path
         id="Combined Shape"

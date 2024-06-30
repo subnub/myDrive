@@ -1,8 +1,6 @@
-export interface HomeListIconProps {
-  className?: string;
-}
+type HomeIconType = React.SVGAttributes<SVGSVGElement>;
 
-const HomeListIcon = (props: HomeListIconProps) => {
+const HomeListIcon: React.FC<HomeIconType> = (props) => {
   return (
     <svg
       width="18"
@@ -10,7 +8,7 @@ const HomeListIcon = (props: HomeListIconProps) => {
       viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
+      {...props}
     >
       <g id="Group 11">
         <path

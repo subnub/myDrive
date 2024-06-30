@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { resetMultiSelect } from "../../reducers/selected";
 import Swal from "sweetalert2";
@@ -11,12 +11,17 @@ import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { useFoldersClient } from "../../hooks/folders";
 import TrashIcon from "../../icons/TrashIcon";
 import Moveicon from "../../icons/MoveIcon";
-import { deleteItemsPopup, restoreItemsPopup } from "../../popups/file";
+import {
+  deleteItemsPopup,
+  restoreItemsPopup,
+  trashItemsPopup,
+} from "../../popups/file";
 import RestoreIcon from "../../icons/RestoreIcon";
 import { useUtils } from "../../hooks/utils";
 
 const MultiSelectBar = () => {
   const dispatch = useAppDispatch();
+  const ignoreFirstMount = useRef(true);
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
@@ -32,20 +37,20 @@ const MultiSelectBar = () => {
 
   const { isTrash } = useUtils();
 
+  useEffect(() => {
+    if (ignoreFirstMount.current) {
+      ignoreFirstMount.current = false;
+    } else {
+      closeMultiSelect();
+    }
+  }, [isTrash]);
+
   const closeMultiSelect = () => {
     dispatch(resetMultiSelect());
   };
 
   const trashItems = async () => {
-    const result = await Swal.fire({
-      title: "Move to trash?",
-      text: "Items in the trash will eventually be deleted.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    });
+    const result = await trashItemsPopup();
 
     if (result) {
       const itemsToTrash = Object.values(multiSelectMap);
@@ -99,7 +104,13 @@ const MultiSelectBar = () => {
 
           <div className="flex flex-row items-center">
             {!isTrash && (
-              <TrashIcon className="ml-4 cursor-pointer" onClick={trashItems} />
+              <React.Fragment>
+                <TrashIcon
+                  className="ml-4 cursor-pointer"
+                  onClick={trashItems}
+                />
+                <Moveicon className="ml-4 cursor-pointer" onClick={() => {}} />
+              </React.Fragment>
             )}
             {isTrash && (
               <React.Fragment>
@@ -112,10 +123,6 @@ const MultiSelectBar = () => {
                   onClick={deleteItems}
                 />
               </React.Fragment>
-            )}
-
-            {!isTrash && (
-              <Moveicon className="ml-4 cursor-pointer" onClick={() => {}} />
             )}
           </div>
         </div>

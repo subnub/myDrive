@@ -1,8 +1,6 @@
-interface MultiSelectIconProps {
-  className?: string;
-}
+type MultiSelectIconType = React.SVGAttributes<SVGSVGElement>;
 
-const MultiSelectIcon = (props: MultiSelectIconProps) => {
+const MultiSelectIcon: React.FC<MultiSelectIconType> = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

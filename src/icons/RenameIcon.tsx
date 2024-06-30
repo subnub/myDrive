@@ -1,8 +1,6 @@
-interface RenameIconProps {
-  className?: string;
-}
+type RenameIconType = React.SVGAttributes<SVGSVGElement>;
 
-const RenameIcon = (props: RenameIconProps) => {
+const RenameIcon: React.FC<RenameIconType> = (props) => {
   return (
     <svg
       width="19"
@@ -10,7 +8,7 @@ const RenameIcon = (props: RenameIconProps) => {
       viewBox="0 0 19 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={props.className}
+      {...props}
     >
       <path
         id="Combined Shape"

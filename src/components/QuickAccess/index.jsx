@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { useUtils } from "../../hooks/utils";
 
 const QuickAccess = memo(() => {
-  const { data: quickfilesList } = useQuickFiles();
+  const { data: quickfilesList } = useQuickFiles(false);
   const [quickAccessExpanded, setQuickAccessExpanded] = useState(false);
   const { isHome } = useUtils();
 
