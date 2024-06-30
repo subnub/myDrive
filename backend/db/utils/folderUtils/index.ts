@@ -173,6 +173,21 @@ class DbUtil {
     );
     return result;
   };
+
+  restoreFoldersByParent = async (parentList: string[], userID: string) => {
+    const result = await Folder.updateMany(
+      {
+        owner: userID,
+        parentList: { $all: parentList },
+      },
+      {
+        $set: {
+          trashed: null,
+        },
+      }
+    );
+    return result;
+  };
 }
 
 export default DbUtil;

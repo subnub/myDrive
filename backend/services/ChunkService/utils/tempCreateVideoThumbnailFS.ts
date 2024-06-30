@@ -28,9 +28,9 @@ const tempCreateVideoThumbnailFS = (
     const writeStream = fs.createWriteStream(
       env.fsDirectory + thumbnailFilename
     );
-    const tempWriteStream = fs.createWriteStream(
-      env.fsDirectory + "temp/" + thumbnailFilename
-    );
+
+    const tempDirectory = env.fsDirectory + "temp/" + thumbnailFilename;
+    const tempWriteStream = fs.createWriteStream(tempDirectory);
     const decipher = crypto.createDecipheriv(
       "aes256",
       CIPHER_KEY,
@@ -49,7 +49,7 @@ const tempCreateVideoThumbnailFS = (
 
     decryptedReadStream.pipe(tempWriteStream, { end: true });
 
-    ffmpeg(env.fsDirectory + "temp/" + thumbnailFilename, {
+    ffmpeg(tempDirectory, {
       timeout: 60,
     })
       .seek(1)
@@ -97,7 +97,9 @@ const tempCreateVideoThumbnailFS = (
 
         if (!updatedFile) return reject();
 
-        resolve(updatedFile?.toObject());
+        fs.unlink(tempDirectory, (err) => {
+          resolve(updatedFile?.toObject());
+        });
       })
       .on("error", (err, _, stderr) => {
         console.log("error", err, stderr);

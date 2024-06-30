@@ -39,7 +39,7 @@ export interface FolderInterface
   parentList: string[];
   _doc?: any;
   personalFolder?: boolean;
-  trashed?: boolean;
+  trashed: boolean | null;
 }
 
 const Folder = mongoose.model<FolderInterface>("Folder", folderSchema);

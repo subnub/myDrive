@@ -509,7 +509,7 @@ class FileController {
     }
   };
 
-  deleteFile = async (req: RequestType, res: Response) => {
+  restoreFile = async (req: RequestType, res: Response) => {
     if (!req.user) {
       return;
     }
@@ -518,7 +518,26 @@ class FileController {
       const userID = req.user._id;
       const fileID = req.body.id;
 
-      console.log("id", fileID);
+      const file = await fileService.restoreFile(userID, fileID);
+
+      res.send(file);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nRestore File Error File Route:", e.message);
+      }
+
+      res.status(500).send("Server error restoring file");
+    }
+  };
+
+  deleteFile = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const fileID = req.body.id;
 
       await this.chunkService.deleteFile(userID, fileID);
 
@@ -529,6 +548,29 @@ class FileController {
       }
 
       res.status(500).send("Server error deleting file");
+    }
+  };
+
+  deleteMulti = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const items = req.body.items;
+
+      console.log("items", req.body);
+
+      await this.chunkService.deleteMulti(userID, items);
+
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("Delete Multi Error File Route:", e.message);
+      }
+
+      res.status(500).send("Server error deleting multi");
     }
   };
 
@@ -550,6 +592,27 @@ class FileController {
       }
 
       res.status(500).send("Server error trashing multi");
+    }
+  };
+
+  restoreMulti = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const items = req.body.items;
+
+      await this.chunkService.restoreMulti(userID, items);
+
+      res.send();
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nRestore Multi Error File Route:", e.message);
+      }
+
+      res.status(500).send("Server error restoring multi");
     }
   };
 }

@@ -1,13 +1,15 @@
 interface RestoreIconProps {
   className?: string;
+  onClick?: () => void;
 }
 
-const RestoreIcon = (props: any) => {
+const RestoreIcon = (props: RestoreIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       className={props.className}
+      onClick={props.onClick}
     >
       <title>restore</title>
       <path

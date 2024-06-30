@@ -113,6 +113,20 @@ export const trashMultiAPI = async (items: any) => {
   return response.data;
 };
 
+export const restoreFileAPI = async (fileID: string) => {
+  const response = await axios.patch(`/file-service/restore`, {
+    id: fileID,
+  });
+  return response.data;
+};
+
+export const restoreMultiAPI = async (items: any) => {
+  const response = await axios.patch(`/file-service/restore-multi`, {
+    items,
+  });
+  return response.data;
+};
+
 export const renameFileAPI = async (fileID: string, name: string) => {
   const response = await axios.patch(`/file-service/rename`, {
     id: fileID,
@@ -126,6 +140,15 @@ export const deleteFileAPI = async (fileID: string) => {
   const response = await axios.delete(`/file-service/remove`, {
     data: {
       id: fileID,
+    },
+  });
+  return response.data;
+};
+
+export const deleteMultiAPI = async (items: any) => {
+  const response = await axios.delete(`/file-service/remove-multi`, {
+    data: {
+      items,
     },
   });
   return response.data;

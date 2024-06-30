@@ -87,6 +87,18 @@ class DbUtil {
     return result;
   };
 
+  restoreFile = async (fileID: string, userID: string) => {
+    const result = await File.updateOne(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      {
+        $set: {
+          "metadata.trashed": null,
+        },
+      }
+    );
+    return result;
+  };
+
   getFileInfo = async (fileID: string, userID: string) => {
     //TODO: Using mongoose like this causes the object to be returned in raw form
     // const file = await File.findOne({
@@ -162,6 +174,21 @@ class DbUtil {
       {
         $set: {
           "metadata.trashed": true,
+        },
+      }
+    );
+    return result;
+  };
+
+  restoreFilesByParent = async (parentList: string, userID: string) => {
+    const result = await File.updateMany(
+      {
+        "metadata.owner": userID,
+        "metadata.parentList": { $regex: `.*${parentList}.*` }, // REGEX
+      },
+      {
+        $set: {
+          "metadata.trashed": null,
         },
       }
     );

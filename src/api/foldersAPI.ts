@@ -56,8 +56,15 @@ export const renameFolder = async (folderID: string, name: string) => {
   return response.data;
 };
 
-export const trashFolderAPI = (folderID: string) => {
-  const response = axios.patch("/folder-service/trash", {
+export const trashFolderAPI = async (folderID: string) => {
+  const response = await axios.patch("/folder-service/trash", {
+    id: folderID,
+  });
+  return response.data;
+};
+
+export const restoreFolderAPI = async (folderID: string) => {
+  const response = await axios.patch("/folder-service/restore", {
     id: folderID,
   });
   return response.data;

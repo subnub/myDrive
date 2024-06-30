@@ -504,6 +504,60 @@ class FileSystemService implements ChunkInterface {
     }
   };
 
+  restoreMulti = async (
+    userID: string,
+    items: {
+      type: "file" | "folder" | "quick-item";
+      id: string;
+      file?: FileInterface;
+      folder?: FolderInterface;
+    }[]
+  ) => {
+    const fileList = items.filter(
+      (item) => item.type === "file" || item.type === "quick-item"
+    );
+    const folderList = items
+      .filter((item) => item.type === "folder")
+      .sort((a, b) => {
+        if (!a.folder || !b.folder) return 0;
+        return b.folder.parentList.length - a.folder.parentList.length;
+      });
+
+    for (const file of fileList) {
+      await fileService.restoreFile(userID, file.id);
+    }
+    for (const folder of folderList) {
+      await folderService.restoreFolder(userID, folder.id);
+    }
+  };
+
+  deleteMulti = async (
+    userID: string,
+    items: {
+      type: "file" | "folder" | "quick-item";
+      id: string;
+      file?: FileInterface;
+      folder?: FolderInterface;
+    }[]
+  ) => {
+    const fileList = items.filter(
+      (item) => item.type === "file" || item.type === "quick-item"
+    );
+    const folderList = items
+      .filter((item) => item.type === "folder")
+      .sort((a, b) => {
+        if (!a.folder || !b.folder) return 0;
+        return b.folder.parentList.length - a.folder.parentList.length;
+      });
+
+    for (const file of fileList) {
+      await this.deleteFile(userID, file.id);
+    }
+    for (const folder of folderList) {
+      await this.deleteFolder(userID, folder.id);
+    }
+  };
+
   deleteFile = async (userID: string, fileID: string) => {
     const file = await dbUtilsFile.getFileInfo(fileID, userID);
 

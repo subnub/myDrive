@@ -6,6 +6,7 @@ import {
   renameFileAPI,
   downloadFileAPI,
   trashFileAPI,
+  restoreFileAPI,
 } from "../../api/filesAPI";
 import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { useFoldersClient } from "../../hooks/folders";
@@ -15,6 +16,7 @@ import { setShareSelected } from "../../actions/selectedItem";
 import {
   deleteFolder,
   renameFolder,
+  restoreFolderAPI,
   trashFolderAPI,
 } from "../../api/foldersAPI";
 import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
@@ -27,6 +29,7 @@ import ShareIcon from "../../icons/ShareIcon";
 import DownloadIcon from "../../icons/DownloadIcon";
 import MoveIcon from "../../icons/MoveIcon";
 import RestoreIcon from "../../icons/RestoreIcon";
+import { restoreItemPopup } from "../../popups/file";
 
 const ContextMenu = (props) => {
   const { invalidateFilesCache } = useFilesClient();
@@ -145,6 +148,19 @@ const ContextMenu = (props) => {
         await deleteFolder(props.folder._id);
         invalidateFoldersCache();
       }
+    }
+  };
+
+  const restoreItem = async () => {
+    props.closeContext();
+    const result = await restoreItemPopup();
+    if (!result) return;
+    if (!props.folderMode) {
+      await restoreFileAPI(props.file._id);
+      invalidateFilesCache();
+    } else {
+      await restoreFolderAPI(props.folder._id);
+      invalidateFoldersCache();
     }
   };
 
@@ -268,7 +284,7 @@ const ContextMenu = (props) => {
           </li>
         )}
         {isTrash && (
-          <li onClick={deleteItem} className={liClassname}>
+          <li onClick={restoreItem} className={liClassname}>
             <a className="flex">
               <span className={spanClassname}>
                 <RestoreIcon className="w-[19px] h-[20px]" />

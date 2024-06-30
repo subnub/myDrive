@@ -58,7 +58,7 @@ class PopupWindow extends React.Component {
             </div>
           ) : (
             <video
-              className="popup-window__video"
+              className="popup-window__video !max-h-[70vh]"
               src={this.props.state.video}
               ref={this.props.video}
               type="video/mp4"

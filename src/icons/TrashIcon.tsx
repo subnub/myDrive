@@ -1,5 +1,6 @@
 interface TrashIconProps {
   className?: string;
+  onClick?: () => void;
 }
 
 const TrashIcon = (props: TrashIconProps) => {
@@ -11,6 +12,7 @@ const TrashIcon = (props: TrashIconProps) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={props.className}
+      onClick={props.onClick}
     >
       <g id="trash">
         <path

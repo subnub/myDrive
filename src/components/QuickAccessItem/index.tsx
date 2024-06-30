@@ -13,6 +13,7 @@ import { setPopupFile } from "../../actions/popupFile";
 import { FileInterface } from "../../types/file";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
+import PlayButtonIcon from "../../icons/PlayIcon";
 
 interface QuickAccessItemProps {
   file: FileInterface;
@@ -127,11 +128,14 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
         )}
       >
         {hasThumbnail ? (
-          <img
-            className="w-full min-h-[88px] max-h-[88px] h-full flex object-cover"
-            src={image}
-            onError={imageOnError}
-          />
+          <div className="w-full min-h-[88px] max-h-[88px] h-full flex">
+            <img className=" object-cover" src={image} onError={imageOnError} />
+            {file.metadata.isVideo && (
+              <div className="w-full h-full absolute flex justify-center items-center text-white">
+                <PlayButtonIcon className="w-[50px] h-[50px]" />
+              </div>
+            )}
+          </div>
         ) : (
           <svg
             xmlns="http://www.w3.org/2000/svg"

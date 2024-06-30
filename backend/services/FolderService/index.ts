@@ -225,6 +225,21 @@ class FolderService {
     await utilsFile.trashFilesByParent(parentList.toString(), userID);
   };
 
+  restoreFolder = async (userID: string, folderID: string) => {
+    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+
+    if (!folder) throw new NotFoundError("Restore Folder Not Found Error");
+
+    folder.trashed = null;
+    await folder.save();
+
+    const parentList = [...folder.parentList, folder._id!.toString()];
+
+    await utilsFolder.restoreFoldersByParent(parentList, userID);
+
+    await utilsFile.restoreFilesByParent(parentList.toString(), userID);
+  };
+
   moveFolder = async (userID: string, folderID: string, parentID: string) => {
     let parentList = ["/"];
 

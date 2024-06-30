@@ -236,6 +236,12 @@ class MongoFileService {
     return trashedFile;
   };
 
+  restoreFile = async (userID: string, fileID: string) => {
+    const restoredFile = await dbUtilsFile.restoreFile(fileID, userID);
+    if (!restoredFile) throw new NotFoundError("Restore File Not Found Error");
+    return restoredFile;
+  };
+
   renameFile = async (userID: string, fileID: string, title: string) => {
     const file = await dbUtilsFile.renameFile(fileID, userID, title);
 

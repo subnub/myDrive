@@ -103,6 +103,10 @@ router.patch("/file-service/trash", auth, fileController.trashFile);
 
 router.patch("/file-service/trash-multi", auth, fileController.trashMulti);
 
+router.patch("/file-service/restore", auth, fileController.restoreFile);
+
+router.patch("/file-service/restore-multi", auth, fileController.restoreMulti);
+
 router.delete("/file-service/remove-link/:id", auth, fileController.removeLink);
 
 router.delete(
@@ -112,6 +116,8 @@ router.delete(
 );
 
 router.delete("/file-service/remove", auth, fileController.deleteFile);
+
+router.delete("/file-service/remove-multi", auth, fileController.deleteMulti);
 
 router.post(
   "/file-service/send-share-email",
