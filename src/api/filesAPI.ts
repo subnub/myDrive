@@ -11,6 +11,7 @@ interface QueryKeyParams {
   startAtName?: string;
   startAt?: boolean;
   trashMode?: boolean;
+  mediaMode?: boolean;
 }
 
 // GET
@@ -21,7 +22,14 @@ export const getFilesListAPI = async ({
 }: QueryFunctionContext<[string, QueryKeyParams]>) => {
   const [
     _key,
-    { parent = "/", search = "", sortBy = "date_desc", limit = 50, trashMode },
+    {
+      parent = "/",
+      search = "",
+      sortBy = "date_desc",
+      limit = 50,
+      trashMode,
+      mediaMode,
+    },
   ] = queryKey;
 
   const queryParams: QueryKeyParams = {
@@ -30,6 +38,7 @@ export const getFilesListAPI = async ({
     sortBy,
     limit,
     trashMode,
+    mediaMode,
   };
 
   if (pageParam?.startAtDate && pageParam?.startAtName) {
@@ -85,13 +94,14 @@ export const getFileThumbnailAPI = async (thumbnailID: string) => {
 export const getSuggestedListAPI = async ({
   queryKey,
 }: QueryFunctionContext<
-  [string, { searchText: string; trashMode: boolean }]
+  [string, { searchText: string; trashMode: boolean; mediaMode: boolean }]
 >) => {
-  const [_key, { searchText, trashMode }] = queryKey;
+  const [_key, { searchText, trashMode, mediaMode }] = queryKey;
   const response = await axios.get(`/file-service/suggested-list`, {
     params: {
       search: searchText,
       trashMode,
+      mediaMode,
     },
   });
   return response.data;

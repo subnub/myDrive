@@ -36,7 +36,7 @@ const ContextMenu = (props) => {
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
   const { wrapperRef } = useClickOutOfBounds(props.closeContext);
-  const { isTrash } = useUtils();
+  const { isTrash, isMedia } = useUtils();
   const dispatch = useAppDispatch();
   const liClassname =
     "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline animate hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
@@ -230,10 +230,10 @@ const ContextMenu = (props) => {
             <span className={spanClassname}>
               <MultiSelectIcon className="w-[19px] h-[20px]" />
             </span>
-            Multi select
+            Multi-select
           </a>
         </li>
-        {!isTrash && (
+        {!isTrash && !isMedia && (
           <li onClick={renameItem} className={liClassname}>
             <a className="flex">
               <span className={spanClassname}>
@@ -263,7 +263,7 @@ const ContextMenu = (props) => {
             </a>
           </li>
         ) : undefined}
-        {!isTrash && (
+        {!isTrash && !isMedia && (
           <li onClick={openMoveItemModal} className={liClassname}>
             <a className="flex" data-modal="destination__modal">
               <span className={spanClassname}>

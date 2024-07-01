@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { resetMultiSelect } from "../../reducers/selected";
-import Swal from "sweetalert2";
 import {
   deleteMultiAPI,
   restoreMultiAPI,
@@ -19,7 +18,7 @@ import {
 import RestoreIcon from "../../icons/RestoreIcon";
 import { useUtils } from "../../hooks/utils";
 
-const MultiSelectBar = () => {
+const MultiSelectBar: React.FC = () => {
   const dispatch = useAppDispatch();
   const ignoreFirstMount = useRef(true);
   const multiSelectMode = useAppSelector(
@@ -35,7 +34,7 @@ const MultiSelectBar = () => {
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
 
-  const { isTrash } = useUtils();
+  const { isTrash, isMedia } = useUtils();
 
   useEffect(() => {
     if (ignoreFirstMount.current) {
@@ -45,9 +44,26 @@ const MultiSelectBar = () => {
     }
   }, [isTrash]);
 
-  const closeMultiSelect = () => {
+  const closeMultiSelect = useCallback(() => {
     dispatch(resetMultiSelect());
-  };
+  }, []);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" || e.key === "Esc") {
+        closeMultiSelect();
+      }
+    },
+    [closeMultiSelect]
+  );
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const trashItems = async () => {
     const result = await trashItemsPopup();
@@ -91,7 +107,7 @@ const MultiSelectBar = () => {
 
   return (
     <div className="flex justify-center items-center">
-      <div className="border border-[#ebe9f9] bg-[#ebe9f9] rounded-full p-2 px-5 text-black text-sm mb-4 max-w-[600px] w-full mt-4">
+      <div className="border border-[#ebe9f9] bg-[#ebe9f9] rounded-full p-2 px-5 text-black text-sm mb-4 max-w-[600px] w-full mt-4 min-w-[300px] shadow-lg">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center">
             <img
@@ -109,7 +125,12 @@ const MultiSelectBar = () => {
                   className="ml-4 cursor-pointer"
                   onClick={trashItems}
                 />
-                <Moveicon className="ml-4 cursor-pointer" onClick={() => {}} />
+                {!isMedia && (
+                  <Moveicon
+                    className="ml-4 cursor-pointer"
+                    onClick={() => {}}
+                  />
+                )}
               </React.Fragment>
             )}
             {isTrash && (

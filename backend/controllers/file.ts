@@ -402,11 +402,13 @@ class FileController {
       const userID = req.user._id;
       let searchQuery = req.query.search || "";
       const trashMode = req.query.trashMode === "true";
+      const mediaMode = req.query.mediaMode === "true";
 
       const { fileList, folderList } = await fileService.getSuggestedList(
         userID,
         searchQuery,
-        trashMode
+        trashMode,
+        mediaMode
       );
 
       return res.send({ folderList, fileList });

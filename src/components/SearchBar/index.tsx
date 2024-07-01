@@ -10,6 +10,7 @@ import { FileInterface } from "../../types/file";
 import { setPopupFile } from "../../actions/popupFile";
 import Spinner from "../Spinner";
 import classNames from "classnames";
+import { is } from "@babel/types";
 
 const SearchBar = memo(() => {
   const [searchText, setSearchText] = useState("");
@@ -18,7 +19,7 @@ const SearchBar = memo(() => {
   const { data: searchSuggestions, isLoading: isLoadingSearchSuggestions } =
     useSearchSuggestions(debouncedSearchText);
   const navigate = useNavigate();
-  const { isTrash } = useUtils();
+  const { isTrash, isMedia } = useUtils();
 
   const debouncedSetSearchText = useMemo(
     () => debounce(setDebouncedSearchText, 500),
@@ -44,17 +45,23 @@ const SearchBar = memo(() => {
     e.preventDefault();
     setSearchText("");
     setDebouncedSearchText("");
-    if (!isTrash) {
+    if (isMedia) {
       if (searchText.length) {
-        navigate(`/search/${searchText}`);
+        navigate(`/search-media/${searchText}`);
       } else {
-        navigate("/home");
+        navigate("/media");
       }
-    } else {
+    } else if (isTrash) {
       if (searchText.length) {
         navigate(`/search-trash/${searchText}`);
       } else {
         navigate("/trash");
+      }
+    } else {
+      if (searchText.length) {
+        navigate(`/search/${searchText}`);
+      } else {
+        navigate("/home");
       }
     }
   };
@@ -77,6 +84,16 @@ const SearchBar = memo(() => {
 
     resetState();
   };
+
+  const searchTextPlaceholder = useMemo(() => {
+    if (isMedia) {
+      return "Search Media";
+    } else if (isTrash) {
+      return "Search Trash";
+    } else {
+      return "Search";
+    }
+  }, [isMedia, isTrash]);
 
   return (
     <form
@@ -102,7 +119,7 @@ const SearchBar = memo(() => {
         type="text"
         onChange={onChangeSearch}
         value={searchText}
-        placeholder={!isTrash ? "Search" : "Search Trash"}
+        placeholder={searchTextPlaceholder}
         className="w-full min-h-[42px] border border-[#BEC9D3] pl-[45px] pr-[15px] text-[16px] text-black rounded-[5px]"
       />
       <div

@@ -148,13 +148,16 @@ class DbUtil {
   getFileSearchList = async (
     userID: string,
     searchQuery: RegExp,
-    trashMode: boolean
+    trashMode: boolean,
+    mediaMode: boolean
   ) => {
     let query: any = {
       "metadata.owner": userID,
       filename: searchQuery,
       "metadata.trashed": trashMode ? true : null,
     };
+
+    if (mediaMode) query = { ...query, "metadata.hasThumbnail": true };
 
     const fileList = (await conn.db
       .collection("fs.files")

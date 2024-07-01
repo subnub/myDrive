@@ -73,7 +73,9 @@ const DataForm = memo(() => {
     >
       {!isLoading && (
         <div>
-          <MultiSelectBar />
+          <div className="fixed bottom-0 flex justify-center items-center right-0 left-0">
+            <MultiSelectBar />
+          </div>
 
           <QuickAccess />
 

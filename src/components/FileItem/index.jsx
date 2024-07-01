@@ -66,8 +66,10 @@ const FileItem = React.memo((props) => {
   );
 
   // TODO: See if we can memoize this
-  const fileClick = () => {
-    if (multiSelectMode) {
+  const fileClick = (e) => {
+    const multiSelectKey = e.metaKey || e.ctrlKey;
+
+    if (multiSelectMode | multiSelectKey) {
       dispatch(
         setMultiSelectMode({
           type: "file",

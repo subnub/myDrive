@@ -68,6 +68,24 @@ const AppRouter = () => {
         />
         <Route
           key={1}
+          path="/media"
+          element={
+            <PrivateRoute>
+              <Homepage2 />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          key={1}
+          path="/search-media/:query"
+          element={
+            <PrivateRoute>
+              <Homepage2 />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          key={1}
           path="/trash"
           element={
             <PrivateRoute>

@@ -61,9 +61,10 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
     [file.filename]
   );
 
-  // TODO: See if we can memoize this
-  const quickItemClick = () => {
-    if (multiSelectMode) {
+  // TODO: See if we can memoize this and remove any
+  const quickItemClick = (e: any) => {
+    const multiSelectKey = e.metaKey || e.ctrlKey;
+    if (multiSelectMode || multiSelectKey) {
       dispatch(
         setMultiSelectMode({
           type: "quick-item",

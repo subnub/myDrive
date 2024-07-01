@@ -20,7 +20,8 @@ export const useFiles = (enabled = true) => {
   const params = useParams();
   // TODO: Remove any
   const sortBy = useSelector((state: any) => state.filter.sortBy);
-  const { isTrash } = useUtils();
+  const { isTrash, isMedia } = useUtils();
+  const limit = isMedia ? 100 : 50;
   const filesReactQuery = useInfiniteQuery(
     [
       "files",
@@ -28,8 +29,9 @@ export const useFiles = (enabled = true) => {
         parent: params.id || "/",
         search: params.query || "",
         sortBy,
-        limit: undefined,
+        limit,
         trashMode: isTrash,
+        mediaMode: isMedia,
       },
     ],
     getFilesListAPI,
@@ -58,7 +60,8 @@ export const useFilesClient = () => {
   // TODO: Remove any
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const filesReactClientQuery = useQueryClient();
-  const { isTrash } = useUtils();
+  const { isTrash, isMedia } = useUtils();
+  const limit = isMedia ? 100 : 50;
 
   const invalidateFilesCache = () => {
     filesReactClientQuery.invalidateQueries({
@@ -68,8 +71,9 @@ export const useFilesClient = () => {
           parent: params.id || "/",
           search: params.query || "",
           sortBy,
-          limit: undefined,
+          limit,
           trashMode: isTrash,
+          mediaMode: isMedia,
         },
       ],
     });
@@ -113,7 +117,7 @@ export const useThumbnail = (
     hasThumbnail: false,
     image: undefined,
   });
-  const { isHome } = useUtils();
+  const { isHome, isMedia } = useUtils();
   const listView = useAppSelector((state) => state.filter.listView);
 
   const imageOnError = useCallback(() => {
@@ -123,11 +127,11 @@ export const useThumbnail = (
     });
   }, []);
   const getThumbnail = useCallback(async () => {
+    console.log("getting thumbnail", thumbnailID);
     try {
       if (!thumbnailID || requestedThumbnail.current) return;
       if (isQuickFile && !isHome) return;
-      if (!isQuickFile && listView) return;
-      console.log("getting thumbnail", thumbnailID);
+      if (!isQuickFile && listView && !isMedia) return;
       requestedThumbnail.current = true;
       const thumbnailData = await getFileThumbnailAPI(thumbnailID);
       setState({
@@ -143,26 +147,32 @@ export const useThumbnail = (
     getFileThumbnailAPI,
     imageOnError,
     listView,
-    requestedThumbnail.current,
+    isHome,
+    isQuickFile,
   ]);
 
   useEffect(() => {
     if (!hasThumbnail || !thumbnailID) return;
 
     getThumbnail();
-  }, [hasThumbnail, getThumbnail]);
+
+    return () => {
+      requestedThumbnail.current = false;
+    };
+  }, [hasThumbnail, getThumbnail, thumbnailID]);
 
   return { ...state, imageOnError };
 };
 
 export const useSearchSuggestions = (searchText: string) => {
-  const { isTrash } = useUtils();
+  const { isTrash, isMedia } = useUtils();
   const searchQuery = useQuery(
     [
       "search",
       {
         searchText,
         trashMode: isTrash,
+        mediaMode: isMedia,
       },
     ],
     getSuggestedListAPI,

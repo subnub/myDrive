@@ -128,6 +128,7 @@ class MongoFileService {
     const storageType = query.storageType || undefined;
     const folderSearch = query.folder_search || undefined;
     const trashMode = query.trashMode === "true";
+    const mediaMode = query.mediaMode === "true";
     sortBy = sortBySwitch(sortBy);
     limit = parseInt(limit);
     console.log("sortBy", sortBy, query.sortBy);
@@ -145,7 +146,8 @@ class MongoFileService {
       startAtName,
       storageType,
       folderSearch,
-      trashMode
+      trashMode,
+      mediaMode
     );
 
     const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);
@@ -206,23 +208,34 @@ class MongoFileService {
   getSuggestedList = async (
     userID: string,
     searchQuery: any,
-    trashMode: boolean
+    trashMode: boolean,
+    mediaMode: boolean
   ) => {
     searchQuery = new RegExp(searchQuery, "i");
 
     const fileList = await dbUtilsFile.getFileSearchList(
       userID,
       searchQuery,
-      trashMode
+      trashMode,
+      mediaMode
     );
+
+    if (!fileList) throw new NotFoundError("Suggested List Not Found Error");
+
+    if (mediaMode) {
+      return {
+        fileList,
+        folderList: [],
+      };
+    }
+
     const folderList = await dbUtilsFolder.getFolderSearchList(
       userID,
       searchQuery,
       trashMode
     );
 
-    if (!fileList || !folderList)
-      throw new NotFoundError("Suggested List Not Found Error");
+    if (!folderList) throw new NotFoundError("Suggested List Not Found Error");
 
     return {
       fileList,

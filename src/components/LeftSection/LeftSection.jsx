@@ -8,10 +8,11 @@ import AddNewDropdown from "../AddNewDropdown";
 import HomeListIcon from "../../icons/HomeListIcon";
 import TrashIcon from "../../icons/TrashIcon";
 import classNames from "classnames";
+import PhotoIcon from "../../icons/PhotoIcon";
 
 const LeftSection = (props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const { isHome, isTrash } = useUtils();
+  const { isHome, isTrash, isMedia } = useUtils();
   const navigate = useNavigate();
   const addNewDisabled = useRef(false);
 
@@ -33,6 +34,10 @@ const LeftSection = (props) => {
 
   const goTrash = () => {
     navigate("/trash");
+  };
+
+  const goMedia = () => {
+    navigate("/media");
   };
 
   return (
@@ -79,6 +84,24 @@ const LeftSection = (props) => {
               </li>
             </ul>
           </div>
+        </div>
+        <div className="border-t border-[#E8EEF2] pr-[20px] pt-3 pb-3">
+          <ul className="m-0 list-none p-0 cursor-pointer ">
+            <li>
+              <a
+                onClick={goMedia}
+                className={classNames(
+                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
+                  isMedia ? "text-[#3c85ee]" : "text-[#637381]"
+                )}
+              >
+                <span>
+                  <PhotoIcon className="w-[20px] h-[20px]" />
+                </span>
+                <p className="ml-3">Media</p>
+              </a>
+            </li>
+          </ul>
         </div>
         <div className="border-t border-[#E8EEF2] pr-[20px] pt-4">
           <ul className="m-0 list-none p-0 cursor-pointer ">

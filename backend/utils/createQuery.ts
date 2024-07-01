@@ -17,6 +17,7 @@ export interface QueryInterface {
   };
   "metadata.personalFile"?: boolean | null;
   "metadata.trashed"?: boolean | null;
+  "metadata.hasThumbnail"?: boolean | null;
 }
 
 const createQuery = (
@@ -30,7 +31,8 @@ const createQuery = (
   startAtName: string,
   storageType: string,
   folderSearch: boolean,
-  trashMode: boolean
+  trashMode: boolean,
+  mediaMode: boolean
 ) => {
   let query: QueryInterface = { "metadata.owner": owner };
 
@@ -69,6 +71,10 @@ const createQuery = (
     query = { ...query, "metadata.trashed": true };
   } else {
     query = { ...query, "metadata.trashed": null };
+  }
+
+  if (mediaMode) {
+    query = { ...query, "metadata.hasThumbnail": true };
   }
 
   // if (storageType === "s3") {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export const useUtils = () => {
   const location = useLocation();
@@ -17,7 +17,15 @@ export const useUtils = () => {
     );
   }, [location.pathname]);
 
-  return { isHome, isTrash };
+  const isMedia = useMemo(() => {
+    console.log("location", location.pathname);
+    return (
+      location.pathname === "/media" ||
+      location.pathname.includes("/search-media")
+    );
+  }, [location.pathname]);
+
+  return { isHome, isTrash, isMedia };
 };
 
 export const useClickOutOfBounds = (outOfBoundsCallback: () => any) => {
@@ -42,7 +50,7 @@ export const useClickOutOfBounds = (outOfBoundsCallback: () => any) => {
       document.removeEventListener("mousedown", outOfBoundsClickCheck);
       document.removeEventListener("touchstart", outOfBoundsClickCheck);
     };
-  }, [outOfBoundsCallback]);
+  }, [outOfBoundsCallback, outOfBoundsClickCheck]);
 
   return {
     wrapperRef,
@@ -53,16 +61,19 @@ export const useDragAndDrop = (fileDroppedCallback: (file: any) => any) => {
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const isDraggingFileRef = useRef(false);
 
-  const onDragDropEvent = useCallback((e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
-    isDraggingFileRef.current = false;
-    setIsDraggingFile(false);
+  const onDragDropEvent = useCallback(
+    (e: any) => {
+      e.preventDefault();
+      e.stopPropagation();
+      isDraggingFileRef.current = false;
+      setIsDraggingFile(false);
 
-    const fileInput = e.dataTransfer;
+      const fileInput = e.dataTransfer;
 
-    fileDroppedCallback(fileInput);
-  }, []);
+      fileDroppedCallback(fileInput);
+    },
+    [fileDroppedCallback]
+  );
   const onDragEvent = useCallback((e: any) => {
     e.preventDefault();
     e.stopPropagation();
@@ -92,7 +103,7 @@ export const useDragAndDrop = (fileDroppedCallback: (file: any) => any) => {
       window.removeEventListener("dragover", stopDrag);
       window.removeEventListener("focus", stopDrag);
     };
-  }, []);
+  }, [stopDrag]);
 
   return {
     isDraggingFile,

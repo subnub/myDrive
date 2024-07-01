@@ -38,52 +38,56 @@ const FolderItem = React.memo((props) => {
     ...contextMenuState
   } = useContextMenu();
 
-  const folderClick = useCallback(() => {
-    if (multiSelectMode) {
-      dispatch(
-        setMultiSelectMode({
-          type: "folder",
-          id: folder._id,
-          file: null,
-          folder: folder,
-        })
-      );
-      return;
-    }
-    const currentDate = Date.now();
-
-    if (!elementSelected) {
-      dispatch(
-        setMainSelect({
-          file: null,
-          id: folder._id,
-          type: "folder",
-          folder: folder,
-        })
-      );
-      lastSelected.current = Date.now();
-      return;
-    }
-
-    const isMobile = mobilecheck();
-
-    if (isMobile || currentDate - lastSelected.current < 1500) {
-      if (isTrash) {
-        navigate(`/folder-trash/${folder._id}`);
-      } else {
-        navigate(`/folder/${folder._id}`);
+  const folderClick = useCallback(
+    (e) => {
+      const multiSelectKey = e.metaKey || e.ctrlKey;
+      if (multiSelectMode || multiSelectKey) {
+        dispatch(
+          setMultiSelectMode({
+            type: "folder",
+            id: folder._id,
+            file: null,
+            folder: folder,
+          })
+        );
+        return;
       }
-    }
+      const currentDate = Date.now();
 
-    lastSelected.current = Date.now();
-  }, [
-    startSetSelectedItem,
-    mobilecheck,
-    navigate,
-    folder._id,
-    elementSelected,
-    multiSelectMode,
-  ]);
+      if (!elementSelected) {
+        dispatch(
+          setMainSelect({
+            file: null,
+            id: folder._id,
+            type: "folder",
+            folder: folder,
+          })
+        );
+        lastSelected.current = Date.now();
+        return;
+      }
+
+      const isMobile = mobilecheck();
+
+      if (isMobile || currentDate - lastSelected.current < 1500) {
+        if (isTrash) {
+          navigate(`/folder-trash/${folder._id}`);
+        } else {
+          navigate(`/folder/${folder._id}`);
+        }
+      }
+
+      lastSelected.current = Date.now();
+    },
+    [
+      startSetSelectedItem,
+      mobilecheck,
+      navigate,
+      folder._id,
+      elementSelected,
+      multiSelectMode,
+    ]
+  );
 
   return (
     <div
