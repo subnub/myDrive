@@ -127,7 +127,6 @@ export const useThumbnail = (
     });
   }, []);
   const getThumbnail = useCallback(async () => {
-    console.log("getting thumbnail", thumbnailID);
     try {
       if (!thumbnailID || requestedThumbnail.current) return;
       if (isQuickFile && !isHome) return;

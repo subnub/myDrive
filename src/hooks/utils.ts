@@ -9,7 +9,6 @@ export const useUtils = () => {
   }, [location.pathname]);
 
   const isTrash = useMemo(() => {
-    console.log("location", location.pathname);
     return (
       location.pathname === "/trash" ||
       location.pathname.includes("/folder-trash") ||
@@ -18,7 +17,6 @@ export const useUtils = () => {
   }, [location.pathname]);
 
   const isMedia = useMemo(() => {
-    console.log("location", location.pathname);
     return (
       location.pathname === "/media" ||
       location.pathname.includes("/search-media")

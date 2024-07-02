@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { memo, useRef } from "react";
 import { FileInterface } from "../../types/file";
 import { useThumbnail } from "../../hooks/files";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
@@ -14,7 +14,7 @@ type MediaItemType = {
   file: FileInterface;
 };
 
-const MediaItem: React.FC<MediaItemType> = ({ file }) => {
+const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
   const elementSelected = useAppSelector((state) => {
     if (state.selected.mainSection.type !== "file") return false;
     return state.selected.mainSection.id === file._id;
@@ -114,6 +114,6 @@ const MediaItem: React.FC<MediaItemType> = ({ file }) => {
       />
     </div>
   );
-};
+});
 
 export default MediaItem;

@@ -57,7 +57,7 @@ const tempCreateVideoThumbnailFS = (
       .outputOptions([
         "-f image2pipe",
         "-vframes 1",
-        "-vf scale='if(gt(iw,ih),600,-1):if(gt(ih,iw),600,-1)'",
+        "-vf scale='if(gt(iw,ih),600,-1):if(gt(ih,iw),300,-1)'",
       ])
       .on("start", (command) => {
         /**

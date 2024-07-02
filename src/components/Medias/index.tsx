@@ -1,11 +1,11 @@
 import classNames from "classnames";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import MediaItem from "../MediaItem";
 import { useFiles, useThumbnail } from "../../hooks/files";
 import MultiSelectBar from "../MultiSelectBar";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 
-const Medias = () => {
+const Medias = memo(() => {
   const {
     data: files,
     isFetchingNextPage,
@@ -28,14 +28,14 @@ const Medias = () => {
 
   return (
     <div className="w-full p-[17px_15px] mobileMode:p-[17px_40px] overflow-y-scroll">
-      <div className="fixed bottom-0 flex justify-center items-center right-0 left-0">
-        <MultiSelectBar />
-      </div>
       <div
         className={classNames(
           "grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-[10px]"
         )}
       >
+        <div className="fixed bottom-0 flex justify-center items-center right-0 left-0">
+          <MultiSelectBar />
+        </div>
         {files?.pages.map((filePage, index) => (
           <React.Fragment key={index}>
             {filePage.map((file) => (
@@ -47,6 +47,6 @@ const Medias = () => {
       <div ref={sentinelRef} className="h-1"></div>
     </div>
   );
-};
+});
 
 export default Medias;
