@@ -21,7 +21,7 @@ import {
 } from "../../api/foldersAPI";
 import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import { useAppDispatch } from "../../hooks/store";
-import { setMultiSelectMode } from "../../reducers/selected";
+import { resetSelected, setMultiSelectMode } from "../../reducers/selected";
 import TrashIcon from "../../icons/TrashIcon";
 import MultiSelectIcon from "../../icons/MultiSelectIcon";
 import RenameIcon from "../../icons/RenameIcon";
@@ -98,6 +98,7 @@ const ContextMenu = (props) => {
         await trashFileAPI(props.file._id);
         invalidateFilesCache();
         invalidateQuickFilesCache();
+        dispatch(resetSelected());
       }
     } else {
       const result = await Swal.fire({
@@ -112,6 +113,7 @@ const ContextMenu = (props) => {
       if (result.value) {
         await trashFolderAPI(props.folder._id);
         invalidateFoldersCache();
+        dispatch(resetSelected());
       }
     }
   };
@@ -133,6 +135,7 @@ const ContextMenu = (props) => {
         await deleteFileAPI(props.file._id);
         invalidateFilesCache();
         invalidateQuickFilesCache();
+        dispatch(resetSelected());
       }
     } else {
       const result = await Swal.fire({
@@ -147,6 +150,7 @@ const ContextMenu = (props) => {
       if (result.value) {
         await deleteFolder(props.folder._id);
         invalidateFoldersCache();
+        dispatch(resetSelected());
       }
     }
   };

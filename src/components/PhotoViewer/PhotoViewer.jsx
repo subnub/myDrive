@@ -2,20 +2,21 @@ import React from "react";
 import Spinner from "../Spinner";
 
 const PhotoViewer = (props) => (
-    <div className="photoviewer">
+  <div className="photoviewer z-50">
+    <img
+      className="photoviewer__close-button"
+      onClick={props.closePhotoViewer}
+      src="/images/close-white-png.png"
+    />
 
-    <img className="photoviewer__close-button" onClick={props.closePhotoViewer} src="/images/close-white-png.png"/>
-
-    {props.state.image === "" ? 
-    <div className="photoviewer__loader">
+    {props.state.image === "" ? (
+      <div className="photoviewer__loader">
         <Spinner />
-    </div>
-    : 
-    <img className="photoviewer__image" src={props.state.image}/>
-    }
-    
-
-    </div>
-)
+      </div>
+    ) : (
+      <img className="photoviewer__image" src={props.state.image} />
+    )}
+  </div>
+);
 
 export default PhotoViewer;

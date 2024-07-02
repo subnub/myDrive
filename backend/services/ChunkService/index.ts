@@ -34,16 +34,15 @@ import MongoFileService from "../FileService";
 import createVideoThumbnailFS from "./utils/createVideoThumbnailFS";
 import { S3Actions } from "./S3Actions";
 import { FilesystemActions } from "./FileSystemActions";
+import { createGenericParams } from "./utils/storageHelper";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
-const folderService = new FolderService();
-const fileService = new MongoFileService();
 
 const storageActions =
   env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
 
-class StorageService implements ChunkInterface {
+class StorageService {
   constructor() {}
 
   uploadFile = async (user: UserInterface, busboy: any, req: Request) => {
@@ -145,56 +144,13 @@ class StorageService implements ChunkInterface {
     }
   };
 
-  getFileWriteStream = async (
-    user: UserInterface,
-    file: FileInterface,
-    parentFolder: FolderInterface
-  ) => {
-    const password = user.getEncryptionKey();
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const initVect = crypto.randomBytes(16);
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const cipher = crypto.createCipheriv("aes256", CIPHER_KEY, initVect);
-
-    const filename = file.filename;
-    const parent = parentFolder._id;
-    const parentList = [...parentFolder.parentList, parentFolder._id];
-    const size = file.metadata.size;
-    const personalFile = file.metadata.personalFile ? true : false;
-    let hasThumbnail = file.metadata.hasThumbnail;
-    let thumbnailID = file.metadata.thumbnailID;
-    const isVideo = file.metadata.isVideo;
-
-    const systemFileName = uuid.v4();
-
-    const metadata = {
-      owner: user._id,
-      parent,
-      parentList,
-      hasThumbnail,
-      thumbnailID,
-      isVideo,
-      size,
-      IV: file.metadata.IV,
-      filePath: env.fsDirectory + systemFileName,
-    };
-
-    const fileWriteStream = fs.createWriteStream(metadata.filePath);
-
-    return fileWriteStream;
-  };
-
+  // INJECTED
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {
-    console.log("DEP INJECT :)");
     const currentFile = await dbUtilsFile.getFileInfo(
       fileID,
       user._id.toString()
     );
-    console.log(fileID, user._id);
+
     if (!currentFile) throw new NotFoundError("Download File Not Found");
 
     const password = user.getEncryptionKey();
@@ -208,12 +164,10 @@ class StorageService implements ChunkInterface {
       IV = IV.buffer;
     }
 
-    const readStreamParams = {} as any;
-    if (env.dbType === "fs") {
-      readStreamParams.filePath = currentFile.metadata.filePath!;
-    } else {
-      readStreamParams.Key = currentFile.metadata.s3ID!;
-    }
+    const readStreamParams = createGenericParams({
+      filePath: currentFile.metadata.filePath,
+      Key: currentFile.metadata.s3ID,
+    });
 
     const readStream = storageActions.createReadStream(readStreamParams);
 
@@ -221,43 +175,14 @@ class StorageService implements ChunkInterface {
 
     const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
 
-    res.set("Content-Type", "binary/octet-stream");
-    res.set(
-      "Content-Disposition",
-      'attachment; filename="' + currentFile.filename + '"'
-    );
-    res.set("Content-Length", currentFile.metadata.size.toString());
-
-    const allStreamsToErrorCatch = [readStream, decipher];
-
-    await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
+    return {
+      readStream,
+      decipher,
+      file: currentFile,
+    };
   };
 
-  getFileReadStream = async (user: UserInterface, fileID: string) => {
-    const currentFile = await dbUtilsFile.getFileInfo(
-      fileID,
-      user._id.toString()
-    );
-
-    if (!currentFile) throw new NotFoundError("Download File Not Found");
-
-    const password = user.getEncryptionKey();
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const filePath = currentFile.metadata.filePath!;
-
-    const IV = currentFile.metadata.IV.buffer as Buffer;
-
-    const readStream = fs.createReadStream(filePath);
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
-
-    return readStream;
-  };
-
+  // INJECTED
   getThumbnail = async (user: UserInterface, id: string) => {
     const password = user.getEncryptionKey();
 
@@ -281,25 +206,21 @@ class StorageService implements ChunkInterface {
 
     const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, iv);
 
-    const readStreamParams = {} as any;
+    const readStreamParams = createGenericParams({
+      filePath: thumbnail.path,
+      Key: thumbnail.s3ID,
+    });
 
-    const readStream = fs.createReadStream(thumbnail.path!);
+    const readStream = storageActions.createReadStream(readStreamParams);
 
-    const allStreamsToErrorCatch = [readStream, decipher];
-
-    const bufferData = await streamToBuffer(
-      readStream.pipe(decipher),
-      allStreamsToErrorCatch
-    );
-
-    return bufferData;
+    return {
+      readStream,
+      decipher,
+    };
   };
 
-  getFullThumbnail = async (
-    user: UserInterface,
-    fileID: string,
-    res: Response
-  ) => {
+  // INJECTED
+  getFullThumbnail = async (user: UserInterface, fileID: string) => {
     const userID = user._id;
 
     const file = await dbUtilsFile.getFileInfo(fileID, userID.toString());
@@ -307,26 +228,31 @@ class StorageService implements ChunkInterface {
     if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
     const password = user.getEncryptionKey();
-    const IV = file.metadata.IV;
+
+    // TODO: Fix this type
+    let IV = file.metadata.IV as any;
+    if (!(IV instanceof Buffer)) {
+      IV = IV.buffer;
+    }
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
-    const readStream = fs.createReadStream(file.metadata.filePath!);
+    const readStreamParams = createGenericParams({
+      filePath: file.metadata.filePath,
+      Key: file.metadata.s3ID,
+    });
+
+    const readStream = storageActions.createReadStream(readStreamParams);
 
     const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
 
     const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
 
-    res.set("Content-Type", "binary/octet-stream");
-    res.set(
-      "Content-Disposition",
-      'attachment; filename="' + file.filename + '"'
-    );
-    res.set("Content-Length", file.metadata.size.toString());
-
-    const allStreamsToErrorCatch = [readStream, decipher];
-
-    await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
+    return {
+      readStream,
+      decipher,
+      file,
+    };
   };
 
   streamVideo = async (
@@ -490,60 +416,7 @@ class StorageService implements ChunkInterface {
     }
   };
 
-  trashMulti = async (
-    userID: string,
-    items: {
-      type: "file" | "folder" | "quick-item";
-      id: string;
-      file?: FileInterface;
-      folder?: FolderInterface;
-    }[]
-  ) => {
-    const fileList = items.filter(
-      (item) => item.type === "file" || item.type === "quick-item"
-    );
-    const folderList = items
-      .filter((item) => item.type === "folder")
-      .sort((a, b) => {
-        if (!a.folder || !b.folder) return 0;
-        return b.folder.parentList.length - a.folder.parentList.length;
-      });
-
-    for (const file of fileList) {
-      await fileService.trashFile(userID, file.id);
-    }
-    for (const folder of folderList) {
-      await folderService.trashFolder(userID, folder.id);
-    }
-  };
-
-  restoreMulti = async (
-    userID: string,
-    items: {
-      type: "file" | "folder" | "quick-item";
-      id: string;
-      file?: FileInterface;
-      folder?: FolderInterface;
-    }[]
-  ) => {
-    const fileList = items.filter(
-      (item) => item.type === "file" || item.type === "quick-item"
-    );
-    const folderList = items
-      .filter((item) => item.type === "folder")
-      .sort((a, b) => {
-        if (!a.folder || !b.folder) return 0;
-        return b.folder.parentList.length - a.folder.parentList.length;
-      });
-
-    for (const file of fileList) {
-      await fileService.restoreFile(userID, file.id);
-    }
-    for (const folder of folderList) {
-      await folderService.restoreFolder(userID, folder.id);
-    }
-  };
-
+  // INJECTED
   deleteMulti = async (
     userID: string,
     items: {
@@ -571,6 +444,7 @@ class StorageService implements ChunkInterface {
     }
   };
 
+  // INJECTED
   deleteFile = async (userID: string, fileID: string) => {
     const file = await dbUtilsFile.getFileInfo(fileID, userID);
 
@@ -580,21 +454,27 @@ class StorageService implements ChunkInterface {
       const thumbnail = (await Thumbnail.findById(
         file.metadata.thumbnailID
       )) as ThumbnailInterface;
-      const thumbnailPath = thumbnail.path!;
-      await removeChunksFS(thumbnailPath);
+
+      const removeChunksParams = createGenericParams({
+        filePath: thumbnail.path,
+        Key: thumbnail.s3ID,
+      });
+
+      await storageActions.removeChunks(removeChunksParams);
 
       await Thumbnail.deleteOne({ _id: file.metadata.thumbnailID });
     }
 
-    await removeChunksFS(file.metadata.filePath!);
+    const removeChunksParams = createGenericParams({
+      filePath: file.metadata.filePath,
+      Key: file.metadata.s3ID,
+    });
+
+    await storageActions.removeChunks(removeChunksParams);
     await File.deleteOne({ _id: file._id });
-    await subtractFromStorageSize(
-      userID,
-      file.length,
-      file.metadata.personalFile!
-    );
   };
 
+  // INJECTED
   deleteFolder = async (userID: string, folderID: string) => {
     const folder = await dbUtilsFolder.getFolderInfo(folderID, userID);
 
@@ -623,13 +503,23 @@ class StorageService implements ChunkInterface {
           const thumbnail = (await Thumbnail.findById(
             currentFile.metadata.thumbnailID
           )) as ThumbnailInterface;
-          const thumbnailPath = thumbnail.path!;
-          await removeChunksFS(thumbnailPath);
+
+          const removeChunksParams = createGenericParams({
+            filePath: thumbnail.path,
+            Key: thumbnail.s3ID,
+          });
+
+          await storageActions.removeChunks(removeChunksParams);
 
           await Thumbnail.deleteOne({ _id: currentFile.metadata.thumbnailID });
         }
 
-        await removeChunksFS(currentFile.metadata.filePath!);
+        const removeChunksParams = createGenericParams({
+          filePath: currentFile.metadata.filePath,
+          Key: currentFile.metadata.s3ID,
+        });
+
+        await storageActions.removeChunks(removeChunksParams);
         await File.deleteOne({ _id: currentFile._id });
       } catch (e) {
         console.log(
@@ -641,6 +531,7 @@ class StorageService implements ChunkInterface {
     }
   };
 
+  // INJECTED
   deleteAll = async (userID: string) => {
     await Folder.deleteMany({ owner: userID });
 
@@ -657,13 +548,22 @@ class StorageService implements ChunkInterface {
           const thumbnail = (await Thumbnail.findById(
             currentFile.metadata.thumbnailID
           )) as ThumbnailInterface;
-          const thumbnailPath = thumbnail.path!;
-          await removeChunksFS(thumbnailPath);
+          const removeChunksParams = createGenericParams({
+            filePath: thumbnail.path,
+            Key: thumbnail.s3ID,
+          });
+
+          await storageActions.removeChunks(removeChunksParams);
 
           await Thumbnail.deleteOne({ _id: currentFile.metadata.thumbnailID });
         }
 
-        await removeChunksFS(currentFile.metadata.filePath!);
+        const removeChunksParams = createGenericParams({
+          filePath: currentFile.metadata.filePath,
+          Key: currentFile.metadata.s3ID,
+        });
+
+        await storageActions.removeChunks(removeChunksParams);
         await File.deleteOne({ _id: currentFile._id });
       } catch (e) {
         console.log(

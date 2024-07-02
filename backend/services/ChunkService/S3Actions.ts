@@ -17,6 +17,23 @@ class S3Actions implements IStorageActions {
       .createReadStream();
     return s3ReadableStream;
   }
+
+  removeChunks(params: AuthParams) {
+    return new Promise<void>((resolve, reject) => {
+      if (!params.Key) {
+        reject("S3 not configured");
+        return;
+      }
+      const { s3Storage, bucket } = this.getAuth();
+      s3Storage.deleteObject({ Key: params.Key, Bucket: bucket }, (err) => {
+        if (err) {
+          reject("Error removing file");
+          return;
+        }
+        resolve();
+      });
+    });
+  }
 }
 
 export { S3Actions };

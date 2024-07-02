@@ -9,6 +9,7 @@ import {
   removeStreamVideoCookie,
 } from "../cookies/createCookies";
 import ChunkService from "../services/ChunkService";
+import streamToBuffer from "../utils/streamToBuffer";
 
 const fileService = new FileService();
 
@@ -30,10 +31,8 @@ interface RequestType extends Request {
   encryptedToken?: string;
 }
 
-type ChunkServiceType = FileSystemService | S3Service;
-
 class FileController {
-  chunkService: ChunkServiceType;
+  chunkService;
 
   constructor() {
     this.chunkService = new ChunkService();
@@ -43,19 +42,43 @@ class FileController {
     if (!req.user) {
       return;
     }
-
+    let responseSent = false;
     try {
       const user = req.user;
       const id = req.params.id;
 
-      const decryptedThumbnail = await this.chunkService.getThumbnail(user, id);
+      const { readStream, decipher } = await this.chunkService.getThumbnail(
+        user,
+        id
+      );
 
-      res.send(decryptedThumbnail);
+      readStream.on("error", (e: Error) => {
+        console.log("Get thumbnail read stream error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error getting thumbnail");
+        }
+      });
+
+      decipher.on("error", (e: Error) => {
+        console.log("Get thumbnail decipher error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error getting thumbnail");
+        }
+      });
+
+      const bufferData = await streamToBuffer(readStream.pipe(decipher));
+
+      res.send(bufferData);
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nGet Thumbnail Error File Route:", e.message);
       }
-      res.status(500).send("Server error getting thumbnail");
+      if (!responseSent) {
+        responseSent = true;
+        res.status(500).send("Server error getting thumbnail");
+      }
     }
   };
 
@@ -63,12 +86,38 @@ class FileController {
     if (!req.user) {
       return;
     }
-
+    let responseSent = false;
     try {
       const user = req.user;
       const fileID = req.params.id;
 
-      await this.chunkService.getFullThumbnail(user, fileID, res);
+      const { decipher, readStream, file } =
+        await this.chunkService.getFullThumbnail(user, fileID);
+
+      readStream.on("error", (e: Error) => {
+        console.log("Get full thumbnail read stream error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error getting full thumbnail");
+        }
+      });
+
+      decipher.on("error", (e: Error) => {
+        console.log("Get full thumbnail decipher error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error gettingfull thumbnail");
+        }
+      });
+
+      res.set("Content-Type", "binary/octet-stream");
+      res.set(
+        "Content-Disposition",
+        'attachment; filename="' + file.filename + '"'
+      );
+      res.set("Content-Length", file.metadata.size.toString());
+
+      readStream.pipe(decipher).pipe(res);
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nGet Thumbnail Full Error File Route:", e.message);
@@ -379,18 +428,46 @@ class FileController {
     if (!req.user) {
       return;
     }
-
+    let responseSent = false;
     try {
       const user = req.user;
       const fileID = req.params.id;
 
-      await this.chunkService.downloadFile(user, fileID, res);
+      const { readStream, decipher, file } =
+        await this.chunkService.downloadFile(user, fileID, res);
+
+      readStream.on("error", (e: Error) => {
+        console.log("read stream error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error downloading file");
+        }
+      });
+
+      decipher.on("error", (e: Error) => {
+        console.log("decipher stream error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error downloading file");
+        }
+      });
+
+      res.set("Content-Type", "binary/octet-stream");
+      res.set(
+        "Content-Disposition",
+        'attachment; filename="' + file.filename + '"'
+      );
+      res.set("Content-Length", file.metadata.size.toString());
+
+      readStream.pipe(decipher).pipe(res);
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nDownload File Error File Route:", e.message);
       }
-
-      res.status(500).send("Server error downloading file");
+      if (!responseSent) {
+        responseSent = true;
+        res.status(500).send("Server error downloading file");
+      }
     }
   };
 
@@ -586,7 +663,7 @@ class FileController {
       const userID = req.user._id;
       const items = req.body.items;
 
-      await this.chunkService.trashMulti(userID, items);
+      await fileService.trashMulti(userID, items);
 
       res.send();
     } catch (e: unknown) {
@@ -607,7 +684,7 @@ class FileController {
       const userID = req.user._id;
       const items = req.body.items;
 
-      await this.chunkService.restoreMulti(userID, items);
+      await fileService.restoreMulti(userID, items);
 
       res.send();
     } catch (e: unknown) {

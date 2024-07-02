@@ -10,9 +10,11 @@ import DbUtilFolder from "../../db/utils/folderUtils";
 import { UserInterface } from "../../models/user";
 import { FileInterface } from "../../models/file";
 import tempStorage from "../../tempStorage/tempStorage";
+import FolderService from "../FolderService";
 
 const dbUtilsFile = new DbUtilFile();
 const dbUtilsFolder = new DbUtilFolder();
+const folderService = new FolderService();
 
 type userAccessType = {
   _id: string;
@@ -249,10 +251,64 @@ class MongoFileService {
     return trashedFile;
   };
 
+  trashMulti = async (
+    userID: string,
+    items: {
+      type: "file" | "folder" | "quick-item";
+      id: string;
+      file?: FileInterface;
+      folder?: FolderInterface;
+    }[]
+  ) => {
+    const fileList = items.filter(
+      (item) => item.type === "file" || item.type === "quick-item"
+    );
+    const folderList = items
+      .filter((item) => item.type === "folder")
+      .sort((a, b) => {
+        if (!a.folder || !b.folder) return 0;
+        return b.folder.parentList.length - a.folder.parentList.length;
+      });
+
+    for (const file of fileList) {
+      await this.trashFile(userID, file.id);
+    }
+    for (const folder of folderList) {
+      await folderService.trashFolder(userID, folder.id);
+    }
+  };
+
   restoreFile = async (userID: string, fileID: string) => {
     const restoredFile = await dbUtilsFile.restoreFile(fileID, userID);
     if (!restoredFile) throw new NotFoundError("Restore File Not Found Error");
     return restoredFile;
+  };
+
+  restoreMulti = async (
+    userID: string,
+    items: {
+      type: "file" | "folder" | "quick-item";
+      id: string;
+      file?: FileInterface;
+      folder?: FolderInterface;
+    }[]
+  ) => {
+    const fileList = items.filter(
+      (item) => item.type === "file" || item.type === "quick-item"
+    );
+    const folderList = items
+      .filter((item) => item.type === "folder")
+      .sort((a, b) => {
+        if (!a.folder || !b.folder) return 0;
+        return b.folder.parentList.length - a.folder.parentList.length;
+      });
+
+    for (const file of fileList) {
+      await this.restoreFile(userID, file.id);
+    }
+    for (const folder of folderList) {
+      await folderService.restoreFolder(userID, folder.id);
+    }
   };
 
   renameFile = async (userID: string, fileID: string, title: string) => {

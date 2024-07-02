@@ -12,6 +12,22 @@ class FilesystemActions implements IStorageActions {
     const fsReadableStream = fs.createReadStream(params.filePath);
     return fsReadableStream;
   }
+  async removeChunks(params: AuthParams) {
+    return new Promise<void>((resolve, reject) => {
+      if (!params.filePath) {
+        reject("File path not configured");
+        return;
+      }
+      fs.unlink(params.filePath, (err) => {
+        if (err) {
+          reject("Error removing file");
+          return;
+        }
+
+        resolve();
+      });
+    });
+  }
 }
 
 export { FilesystemActions };

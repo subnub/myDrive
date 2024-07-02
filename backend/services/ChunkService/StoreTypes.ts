@@ -12,4 +12,5 @@ export interface IStorageActions {
   createReadStream(
     params: AuthParams
   ): NodeJS.ReadableStream | internal.Readable;
+  removeChunks(params: AuthParams): Promise<void>;
 }

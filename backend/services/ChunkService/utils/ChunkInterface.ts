@@ -2,6 +2,7 @@ import { UserInterface } from "../../../models/user";
 import { FileInterface } from "../../../models/file";
 import { Request, Response } from "express";
 import { FolderInterface } from "../../../models/folder";
+import crypto from "crypto";
 
 interface ChunkInterface {
   uploadFile: (
