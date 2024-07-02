@@ -119,7 +119,7 @@ const Files = memo(() => {
             <thead>
               <tr>
                 <th>
-                  <div className="flex flex-row items-center mb-2 ml-4">
+                  <div className="flex flex-row items-center mb-2">
                     <p className="text-[#212b36] text-sm font-medium">Name</p>
                   </div>
                 </th>

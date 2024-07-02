@@ -17,6 +17,7 @@ const UploadItem = (props) => {
     if (completed && !filesRefreshed.current) {
       invalidateFilesCache();
       invalidateQuickFilesCache();
+      filesRefreshed.current = true;
     }
   }, [completed]);
 

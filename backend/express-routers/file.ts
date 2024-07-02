@@ -1,25 +1,10 @@
 import { Router } from "express";
 import auth from "../middleware/auth";
 import FileController from "../controllers/file";
-import env from "../enviroment/env";
-import FileSystemService from "../services/ChunkService/FileSystemService";
-import S3Service from "../services/ChunkService/S3Service";
-import ChunkInterface from "../services/ChunkService/utils/ChunkInterface";
 import authFullUser from "../middleware/authFullUser";
 import authStreamVideo from "../middleware/authStreamVideo";
 
-let fileController: FileController;
-let chunkService: ChunkInterface;
-
-if (env.dbType === "fs") {
-  const fileSystemService = new FileSystemService();
-  chunkService = fileSystemService;
-  fileController = new FileController(fileSystemService);
-} else {
-  const s3Service = new S3Service();
-  chunkService = s3Service;
-  fileController = new FileController(s3Service);
-}
+const fileController = new FileController();
 
 const router = Router();
 

@@ -30,7 +30,10 @@ export const useUtils = () => {
   return { isHome, isTrash, isMedia, isSettings };
 };
 
-export const useClickOutOfBounds = (outOfBoundsCallback: (e: any) => any) => {
+export const useClickOutOfBounds = (
+  outOfBoundsCallback: (e: any) => any,
+  shouldCheck = true
+) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   // TODO: Remove this any
   const outOfBoundsClickCheck = useCallback(
@@ -44,15 +47,20 @@ export const useClickOutOfBounds = (outOfBoundsCallback: (e: any) => any) => {
 
   useEffect(() => {
     console.log("useeffect");
-    document.addEventListener("mousedown", outOfBoundsClickCheck);
-    document.addEventListener("touchstart", outOfBoundsClickCheck);
-
-    return () => {
-      console.log("remove listener");
+    if (shouldCheck) {
+      document.addEventListener("mousedown", outOfBoundsClickCheck);
+      document.addEventListener("touchstart", outOfBoundsClickCheck);
+    } else {
       document.removeEventListener("mousedown", outOfBoundsClickCheck);
       document.removeEventListener("touchstart", outOfBoundsClickCheck);
+    }
+    return () => {
+      if (shouldCheck) {
+        document.removeEventListener("mousedown", outOfBoundsClickCheck);
+        document.removeEventListener("touchstart", outOfBoundsClickCheck);
+      }
     };
-  }, [outOfBoundsCallback, outOfBoundsClickCheck]);
+  }, [outOfBoundsCallback, outOfBoundsClickCheck, shouldCheck]);
 
   return {
     wrapperRef,

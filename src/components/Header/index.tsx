@@ -4,9 +4,11 @@ import MenuIcon from "../../icons/MenuIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { useCallback, useMemo } from "react";
 import { toggleDrawer } from "../../reducers/leftSection";
+import { useUtils } from "../../hooks/utils";
 
 const Header = () => {
   const drawerOpen = useAppSelector((state) => state.leftSection.drawOpen);
+  const { isSettings } = useUtils();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -28,15 +30,17 @@ const Header = () => {
             <img className="w-[35px]" src="/images/icon.png" alt="logo" />
           </a>
         </div>
-        <div className="items-center flex desktopMode:hidden mr-4">
-          <a className="inline-flex items-center justify-center cursor-pointer">
-            <MenuIcon
-              id="menu-icon"
-              onClick={toggleDrawerClick}
-              className="text-[#3c85ee] w-[35px]"
-            />
-          </a>
-        </div>
+        {!isSettings && (
+          <div className="items-center flex desktopMode:hidden mr-4">
+            <a className="inline-flex items-center justify-center cursor-pointer">
+              <MenuIcon
+                id="menu-icon"
+                onClick={toggleDrawerClick}
+                className="text-[#3c85ee] w-[35px]"
+              />
+            </a>
+          </div>
+        )}
         <SearchBar />
         <div className="justify-end w-[260px] hidden desktopMode:flex">
           <div>

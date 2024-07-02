@@ -71,7 +71,7 @@ const LeftSection = (props) => {
     [closeDrawer, leftSectionOpen]
   );
 
-  const { wrapperRef } = useClickOutOfBounds(closeDrawerEvent);
+  const { wrapperRef } = useClickOutOfBounds(closeDrawerEvent, leftSectionOpen);
 
   return (
     <div

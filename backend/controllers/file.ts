@@ -8,6 +8,7 @@ import {
   createStreamVideoCookie,
   removeStreamVideoCookie,
 } from "../cookies/createCookies";
+import ChunkService from "../services/ChunkService";
 
 const fileService = new FileService();
 
@@ -34,8 +35,8 @@ type ChunkServiceType = FileSystemService | S3Service;
 class FileController {
   chunkService: ChunkServiceType;
 
-  constructor(chunkService: ChunkServiceType) {
-    this.chunkService = chunkService;
+  constructor() {
+    this.chunkService = new ChunkService();
   }
 
   getThumbnail = async (req: RequestTypeFullUser, res: Response) => {
