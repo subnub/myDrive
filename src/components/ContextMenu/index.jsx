@@ -211,7 +211,7 @@ const ContextMenu = (props) => {
       onClick={props.stopPropagation}
       ref={wrapperRef}
       className={classNames(
-        "fixed min-w-[215px] bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.15),_inset_0px_1px_0px_#f5f7fa] rounded-[4px] mt-[-5px] z-[2] ",
+        "fixed min-w-[215px] bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.15),_inset_0px_1px_0px_#f5f7fa] rounded-[4px] mt-[-5px] z-50 ",
         props.contextSelected.selected ? "opacity-100" : "opacity-0"
       )}
       style={

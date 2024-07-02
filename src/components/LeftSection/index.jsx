@@ -33,32 +33,37 @@ const LeftSection = (props) => {
   }, []);
 
   const goHome = () => {
-    closeDrawerEvent();
+    dispatch(closeDrawer());
     navigate("/home");
   };
 
   const goTrash = () => {
-    closeDrawerEvent();
+    dispatch(closeDrawer());
     navigate("/trash");
   };
 
   const goMedia = () => {
-    closeDrawerEvent();
+    dispatch(closeDrawer());
     navigate("/media");
   };
 
-  const closeDrawerEvent = (e) => {
-    if (
-      e &&
-      (!leftSectionOpen ||
+  const closeDrawerEvent = useCallback(
+    (e) => {
+      console.log("close", e?.target.id);
+      if (
+        !e ||
+        !leftSectionOpen ||
         e.target.id === "search-bar" ||
-        e.target.id === "menu-icon")
-    ) {
-      return;
-    }
+        e.target.id === "menu-icon" ||
+        e.target.id === "header"
+      ) {
+        return;
+      }
 
-    dispatch(closeDrawer());
-  };
+      dispatch(closeDrawer());
+    },
+    [closeDrawer, leftSectionOpen]
+  );
 
   const { wrapperRef } = useClickOutOfBounds(closeDrawerEvent);
 

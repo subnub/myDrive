@@ -10,11 +10,15 @@ const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const toggleDrawerClick = useCallback(() => {
-    dispatch(toggleDrawer());
-  }, [toggleDrawer]);
+  const toggleDrawerClick = useCallback(
+    (e: any) => {
+      e.stopPropagation();
+      dispatch(toggleDrawer());
+    },
+    [toggleDrawer]
+  );
   return (
-    <header>
+    <header id="header">
       <div className="px-6 flex justify-between min-h-[68px] items-center py-[15px]">
         <div className="items-center w-[260px] hidden mobileMode:flex">
           <a

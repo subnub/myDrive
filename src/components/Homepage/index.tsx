@@ -23,7 +23,6 @@ const Homepage2 = () => {
 
       <UploadOverlay />
       <ShareModelWrapper />
-      <MobileContextMenuContainer />
     </div>
   );
 };

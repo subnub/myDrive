@@ -17,7 +17,7 @@ import ResetPasswordPage from "../components/ResetPasswordPage";
 import GoogleAccountPage from "../components/GoogleAccountPage";
 import AddStoragePage from "../components/AddStoragePage";
 import SettingsPage from "../components/SettingsPage";
-import Homepage2 from "../components/Homepage/Homepage2";
+import Homepage from "../components/Homepage";
 
 // export const history = createHistory();
 
@@ -31,7 +31,7 @@ const AppRouter = () => {
           path="/home"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
@@ -44,7 +44,7 @@ const AppRouter = () => {
           path="/folder/:id"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
@@ -53,7 +53,7 @@ const AppRouter = () => {
           path="/search/:query"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
@@ -62,7 +62,7 @@ const AppRouter = () => {
           path="/search-trash/:query"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
@@ -71,7 +71,7 @@ const AppRouter = () => {
           path="/media"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
@@ -80,7 +80,7 @@ const AppRouter = () => {
           path="/search-media/:query"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
@@ -89,7 +89,7 @@ const AppRouter = () => {
           path="/trash"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
@@ -98,7 +98,7 @@ const AppRouter = () => {
           path="/folder-trash/:id"
           element={
             <PrivateRoute>
-              <Homepage2 />
+              <Homepage />
             </PrivateRoute>
           }
         />
