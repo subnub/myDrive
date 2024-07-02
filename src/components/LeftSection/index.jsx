@@ -11,11 +11,12 @@ import classNames from "classnames";
 import PhotoIcon from "../../icons/PhotoIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { closeDrawer } from "../../reducers/leftSection";
+import SettingsIcon from "../../icons/SettingsIcon";
 
 const LeftSection = (props) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const leftSectionOpen = useAppSelector((state) => state.leftSection.drawOpen);
-  const { isHome, isTrash, isMedia } = useUtils();
+  const { isHome, isTrash, isMedia, isSettings } = useUtils();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const addNewDisabled = useRef(false);
@@ -45,6 +46,11 @@ const LeftSection = (props) => {
   const goMedia = () => {
     dispatch(closeDrawer());
     navigate("/media");
+  };
+
+  const goSettings = () => {
+    dispatch(closeDrawer());
+    navigate("/settings");
   };
 
   const closeDrawerEvent = useCallback(
@@ -97,7 +103,7 @@ const LeftSection = (props) => {
               <AddNewDropdown closeDropdown={closeDropdown} {...props} />
             )}
           </div>
-          <div className="mr-[20px] py-2 hover:bg-[#f6f5fd]">
+          <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md">
             <ul className="m-0 list-none p-0 cursor-pointer">
               <li>
                 <a
@@ -116,7 +122,7 @@ const LeftSection = (props) => {
             </ul>
           </div>
         </div>
-        <div className="border-t border-[#E8EEF2] mr-[20px] py-2 hover:bg-[#f6f5fd]">
+        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] mt-1 mb-1 rounded-md">
           <ul className="m-0 list-none p-0 cursor-pointer ">
             <li>
               <a
@@ -134,7 +140,25 @@ const LeftSection = (props) => {
             </li>
           </ul>
         </div>
-        <div className="border-t border-[#E8EEF2] mr-[20px] py-2 hover:bg-[#f6f5fd]">
+        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md block mobileMode:hidden mb-1">
+          <ul className="m-0 list-none p-0 cursor-pointer ">
+            <li>
+              <a
+                onClick={goSettings}
+                className={classNames(
+                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
+                  isSettings ? "text-[#3c85ee]" : "text-[#637381]"
+                )}
+              >
+                <span>
+                  <SettingsIcon className="w-[22px] h-[22px] -ml-[2px]" />
+                </span>
+                <p className="ml-2">Settings</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md">
           <ul className="m-0 list-none p-0 cursor-pointer ">
             <li>
               <a

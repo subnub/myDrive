@@ -23,7 +23,11 @@ export const useUtils = () => {
     );
   }, [location.pathname]);
 
-  return { isHome, isTrash, isMedia };
+  const isSettings = useMemo(() => {
+    return location.pathname === "/settings";
+  }, [location.pathname]);
+
+  return { isHome, isTrash, isMedia, isSettings };
 };
 
 export const useClickOutOfBounds = (outOfBoundsCallback: (e: any) => any) => {
