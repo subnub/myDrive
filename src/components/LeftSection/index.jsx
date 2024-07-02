@@ -77,9 +77,9 @@ const LeftSection = (props) => {
     <div
       ref={wrapperRef}
       className={classNames(
-        "p-6 fixed mobileMode:relative border-r w-[270px] min-w-[270px] bg-white h-full z-20 mt-[9px] animate-movement",
+        "p-6 fixed desktopMode:relative border-r w-[270px] min-w-[270px] bg-white h-full z-20 mt-[9px] animate-movement",
         {
-          "-left-[270px] mobileMode:left-0": !leftSectionOpen,
+          "-left-[270px] desktopMode:left-0": !leftSectionOpen,
           "left-0": leftSectionOpen,
         }
       )}
@@ -140,7 +140,7 @@ const LeftSection = (props) => {
             </li>
           </ul>
         </div>
-        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md block mobileMode:hidden mb-1">
+        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md block desktopMode:hidden mb-1">
           <ul className="m-0 list-none p-0 cursor-pointer ">
             <li>
               <a

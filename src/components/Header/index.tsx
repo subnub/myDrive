@@ -20,7 +20,7 @@ const Header = () => {
   return (
     <header id="header">
       <div className="px-6 flex justify-between min-h-[68px] items-center py-[15px]">
-        <div className="items-center w-[260px] hidden mobileMode:flex">
+        <div className="items-center w-[260px] hidden desktopMode:flex">
           <a
             className="inline-flex items-center justify-center cursor-pointer"
             onClick={() => navigate("/")}
@@ -28,7 +28,7 @@ const Header = () => {
             <img className="w-[35px]" src="/images/icon.png" alt="logo" />
           </a>
         </div>
-        <div className="items-center flex mobileMode:hidden mr-4">
+        <div className="items-center flex desktopMode:hidden mr-4">
           <a className="inline-flex items-center justify-center cursor-pointer">
             <MenuIcon
               id="menu-icon"
@@ -38,7 +38,7 @@ const Header = () => {
           </a>
         </div>
         <SearchBar />
-        <div className="justify-end w-[260px] hidden mobileMode:flex">
+        <div className="justify-end w-[260px] hidden desktopMode:flex">
           <div>
             <div>
               <a

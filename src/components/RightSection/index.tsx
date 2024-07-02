@@ -82,7 +82,7 @@ const RightSection = memo(() => {
   return (
     <div
       className={classNames(
-        "!hidden mobileMode:!flex min-w-[260px] max-w-[260px] border-l border-[#e8eef2] p-[25px] bg-white right-0 justify-center relative",
+        "!hidden desktopMode:!flex min-w-[260px] max-w-[260px] border-l border-[#e8eef2] p-[25px] bg-white right-0 justify-center relative",
         selectedItem.id === "" ? "flex justify-center items-center" : ""
       )}
     >

@@ -27,7 +27,7 @@ const Medias = memo(() => {
   }, [reachedIntersect, initialLoad, isFetchingNextPage]);
 
   return (
-    <div className="w-full p-[17px_15px] mobileMode:p-[17px_40px] overflow-y-scroll">
+    <div className="w-full p-[17px_15px] desktopMode:p-[17px_40px] overflow-y-scroll">
       <div
         className={classNames(
           "grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-[10px]"

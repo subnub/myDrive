@@ -25,7 +25,7 @@ module.exports = {
       fileTextSM: "1000px",
       fileTextXSM: "900px",
       fileListShowDetails: "680px",
-      mobileMode: "1100px",
+      desktopMode: "1100px",
     },
   },
   plugins: [],
