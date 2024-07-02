@@ -10,7 +10,7 @@ import { FileInterface } from "../../types/file";
 import { setPopupFile } from "../../actions/popupFile";
 import Spinner from "../Spinner";
 import classNames from "classnames";
-import { is } from "@babel/types";
+import { closeDrawer } from "../../reducers/leftSection";
 
 const SearchBar = memo(() => {
   const [searchText, setSearchText] = useState("");
@@ -85,6 +85,10 @@ const SearchBar = memo(() => {
     resetState();
   };
 
+  const onFocus = () => {
+    dispatch(closeDrawer());
+  };
+
   const searchTextPlaceholder = useMemo(() => {
     if (isMedia) {
       return "Search Media";
@@ -121,6 +125,8 @@ const SearchBar = memo(() => {
         value={searchText}
         placeholder={searchTextPlaceholder}
         className="w-full min-h-[42px] border border-[#BEC9D3] pl-[45px] pr-[15px] text-[16px] text-black rounded-[5px]"
+        onFocus={onFocus}
+        id="search-bar"
       />
       <div
         className="absolute left-0 bg-white shadow-xl rounded-[4px] w-full top-[42px] max-h-[400px] overflow-y-scroll border border-[#BEC9D3]"

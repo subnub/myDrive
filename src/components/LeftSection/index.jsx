@@ -1,145 +1,155 @@
-import LeftSection from "./LeftSection";
-import { showAddOptions } from "../../actions/addOptions";
-import { startAddFile } from "../../actions/files";
-import { startAddFolder } from "../../actions/folders";
-import Swal from "sweetalert2";
-import { connect } from "react-redux";
-import React from "react";
-import { openUploadOverlay, setLeftSectionMode } from "../../actions/main";
+import React, { useCallback, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { createFolderAPI } from "../../api/foldersAPI";
+import { useFoldersClient } from "../../hooks/folders";
+import { showCreateFolderPopup } from "../../popups/folder";
+import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
+import AddNewDropdown from "../AddNewDropdown";
+import HomeListIcon from "../../icons/HomeListIcon";
+import TrashIcon from "../../icons/TrashIcon";
+import classNames from "classnames";
+import PhotoIcon from "../../icons/PhotoIcon";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
+import { closeDrawer } from "../../reducers/leftSection";
 
-class LeftSectionContainer extends React.Component {
-  constructor(props) {
-    super(props);
+const LeftSection = (props) => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const leftSectionOpen = useAppSelector((state) => state.leftSection.drawOpen);
+  const { isHome, isTrash, isMedia } = useUtils();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const addNewDisabled = useRef(false);
 
-    this.wrapperRef = React.createRef();
-    this.uploadInput = React.createRef();
+  const openDropdown = useCallback(() => {
+    if (addNewDisabled.current) return;
+    setIsDropdownOpen(true);
+  }, []);
 
-    this.leftSectionRef = React.createRef();
+  const closeDropdown = useCallback(() => {
+    addNewDisabled.current = true;
+    setIsDropdownOpen(false);
+    // Clicking out of bounds on the add new button will cause it to reopen
+    setTimeout(() => (addNewDisabled.current = false), 300);
+  }, []);
 
-    this.state = {
-      open: false,
-      hideFolderTree: false,
-    };
-  }
+  const goHome = () => {
+    closeDrawerEvent();
+    navigate("/home");
+  };
 
-  createFolder = async (e) => {
-    let inputValue = "";
+  const goTrash = () => {
+    closeDrawerEvent();
+    navigate("/trash");
+  };
 
-    const { value: folderName } = await Swal.fire({
-      title: "Enter Folder Name",
-      input: "text",
-      inputValue: inputValue,
-      showCancelButton: true,
-      inputValidator: (value) => {
-        if (!value) {
-          return "Please Enter a Name";
-        }
-      },
-    });
+  const goMedia = () => {
+    closeDrawerEvent();
+    navigate("/media");
+  };
 
-    if (folderName === undefined || folderName === null) {
+  const closeDrawerEvent = (e) => {
+    if (
+      e &&
+      (!leftSectionOpen ||
+        e.target.id === "search-bar" ||
+        e.target.id === "menu-icon")
+    ) {
       return;
     }
 
-    const parent = this.props.parent;
-    const owner = this.props.auth.id;
-    const parentList = this.props.parentList;
-    const isGoogle = this.props.isGoogle;
-
-    this.props.dispatch(
-      startAddFolder(folderName, owner, parent, parentList, isGoogle)
-    );
-    this.showDropDown();
+    dispatch(closeDrawer());
   };
 
-  handleClickOutside = (e) => {
-    if (
-      this.leftSectionRef &&
-      !this.leftSectionRef.current.contains(event.target)
-    ) {
-      if (this.props.leftSectionMode === "open") {
-        this.props.dispatch(setLeftSectionMode("close"));
-      }
-    }
-  };
+  const { wrapperRef } = useClickOutOfBounds(closeDrawerEvent);
 
-  componentDidMount = () => {
-    document.addEventListener("mousedown", this.handleClickOutside);
+  return (
+    <div
+      ref={wrapperRef}
+      className={classNames(
+        "p-6 fixed mobileMode:relative border-r w-[270px] min-w-[270px] bg-white h-full z-20 mt-[9px] animate-movement",
+        {
+          "-left-[270px] mobileMode:left-0": !leftSectionOpen,
+          "left-0": leftSectionOpen,
+        }
+      )}
+    >
+      <div className="flex flex-col h-full">
+        <div>
+          <div className="relative mb-[30px]">
+            <a
+              onClick={openDropdown}
+              className="flex items-center justify-center bg-[#3c85ee] no-underline rounded-[5px]"
+            >
+              <p className="m-0 w-full text-center text-white text-[16px] font-medium">
+                ADD NEW
+              </p>
+              <span className="min-w-[50px] min-h-[45px] rounded-tr-[5px] rounded-br-[5px] flex items-center justify-center">
+                <img src="/assets/dropselect.svg" alt="dropselect" />
+              </span>
+            </a>
+            {/* TODO: Remove this props */}
+            {isDropdownOpen && (
+              <AddNewDropdown closeDropdown={closeDropdown} {...props} />
+            )}
+          </div>
+          <div className="mr-[20px] py-2 hover:bg-[#f6f5fd]">
+            <ul className="m-0 list-none p-0 cursor-pointer">
+              <li>
+                <a
+                  onClick={goHome}
+                  className={classNames(
+                    "flex items-center text-[#3c85ee] font-medium no-underline animate",
+                    isHome ? "text-[#3c85ee]" : "text-[#637381]"
+                  )}
+                >
+                  <span>
+                    <HomeListIcon />
+                  </span>
+                  <p className="ml-3">Home</p>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="border-t border-[#E8EEF2] mr-[20px] py-2 hover:bg-[#f6f5fd]">
+          <ul className="m-0 list-none p-0 cursor-pointer ">
+            <li>
+              <a
+                onClick={goMedia}
+                className={classNames(
+                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
+                  isMedia ? "text-[#3c85ee]" : "text-[#637381]"
+                )}
+              >
+                <span>
+                  <PhotoIcon className="w-[20px] h-[20px] -ml-[2px]" />
+                </span>
+                <p className="ml-3">Media</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div className="border-t border-[#E8EEF2] mr-[20px] py-2 hover:bg-[#f6f5fd]">
+          <ul className="m-0 list-none p-0 cursor-pointer ">
+            <li>
+              <a
+                onClick={goTrash}
+                className={classNames(
+                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
+                  isTrash ? "text-red-500" : "text-[#637381]"
+                )}
+              >
+                <span>
+                  <TrashIcon />
+                </span>
+                <p className="ml-3">Trash</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-    const hideFolderTree = localStorage.getItem("hide-folder-tree");
-
-    if (hideFolderTree) {
-      this.setState(() => ({
-        hideFolderTree,
-      }));
-    }
-  };
-
-  componentWillUnmount = () => {
-    document.removeEventListener("mousedown", this.handleClickOutside);
-  };
-
-  addButtonEvent = () => {
-    const currentAddOptions = !this.props.showAddOptions;
-    this.props.dispatch(showAddOptions(currentAddOptions));
-  };
-
-  handleUpload = (e) => {
-    e.preventDefault();
-    console.log("handle upload");
-
-    this.props.dispatch(
-      startAddFile(
-        this.uploadInput.current,
-        this.props.parent,
-        this.props.parentList,
-        this.props.storageSwitcher
-      )
-    );
-    this.uploadInput.current.value = "";
-  };
-
-  showDropDown = () => {
-    this.setState(() => {
-      return {
-        ...this.state,
-        open: !this.state.open,
-      };
-    });
-  };
-
-  showUploadOverlay = () => {
-    this.showDropDown();
-    this.props.dispatch(openUploadOverlay());
-  };
-
-  render() {
-    return (
-      <LeftSection
-        addButtonEvent={this.addButtonEvent}
-        wrapperRef={this.wrapperRef}
-        uploadInput={this.uploadInput}
-        createFolder={this.createFolder}
-        handleUpload={this.handleUpload}
-        showDropDown={this.showDropDown}
-        showUploadOverlay={this.showUploadOverlay}
-        leftSectionRef={this.leftSectionRef}
-        state={this.state}
-        {...this.props}
-      />
-    );
-  }
-}
-
-const connectPropToState = (state) => ({
-  auth: state.auth,
-  parent: state.parent.parent,
-  parentList: state.parent.parentList,
-  storage: state.storage,
-  showAddOptions: state.addOptions.showAddOptions,
-  isGoogle: state.filter.isGoogle,
-  storageSwitcher: state.storageSwitcher.selected,
-  leftSectionMode: state.main.leftSectionMode,
-});
-
-export default connect(connectPropToState)(LeftSectionContainer);
+export default LeftSection;

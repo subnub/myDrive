@@ -39,12 +39,9 @@ const Files = memo(() => {
           )}
           {!isHome && (
             <React.Fragment>
-              <div className="hidden sm:block">
+              <div className="block">
                 <ParentBar />
               </div>
-              <h2 className="block sm:hidden m-0 text-[22px] font-medium">
-                Files
-              </h2>
             </React.Fragment>
           )}
 

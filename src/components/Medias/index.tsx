@@ -33,7 +33,7 @@ const Medias = memo(() => {
           "grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-[10px]"
         )}
       >
-        <div className="fixed bottom-0 flex justify-center items-center right-0 left-0">
+        <div className="fixed bottom-0 flex justify-center items-center right-0 left-0 z-10">
           <MultiSelectBar />
         </div>
         {files?.pages.map((filePage, index) => (

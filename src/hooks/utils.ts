@@ -26,14 +26,14 @@ export const useUtils = () => {
   return { isHome, isTrash, isMedia };
 };
 
-export const useClickOutOfBounds = (outOfBoundsCallback: () => any) => {
+export const useClickOutOfBounds = (outOfBoundsCallback: (e: any) => any) => {
   console.log("out");
   const wrapperRef = useRef<HTMLDivElement>(null);
   // TODO: Remove this any
   const outOfBoundsClickCheck = useCallback(
     (e: any) => {
       if (wrapperRef && !wrapperRef.current?.contains(e.target as Node)) {
-        outOfBoundsCallback();
+        outOfBoundsCallback(e);
       }
     },
     [outOfBoundsCallback]

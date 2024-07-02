@@ -34,7 +34,7 @@ const ParentBar = memo(() => {
   // }
 
   return (
-    <div className="w-full items-center hidden sm:flex">
+    <div className="w-full items-center flex">
       <div className="flex items-center">
         <a
           className="text-[#637381] text-[18px] leading-[21px] font-medium m-0 no-underline animate cursor-pointer"
@@ -47,7 +47,7 @@ const ParentBar = memo(() => {
         </span>
         <p
           onClick={goToFolder}
-          className="text-[#212b36] text-[18px] leading-[21px] font-medium m-0 whitespace-nowrap max-w-[300px] overflow-hidden text-ellipsis cursor-pointer"
+          className="text-[#212b36] text-[18px] leading-[21px] font-medium m-0 whitespace-nowrap max-w-[170px] sm:max-w-[300px] overflow-hidden text-ellipsis cursor-pointer"
         >
           {folder.name}
         </p>

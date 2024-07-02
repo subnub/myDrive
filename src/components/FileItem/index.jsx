@@ -220,7 +220,7 @@ const FileItem = React.memo((props) => {
           {hasThumbnail ? (
             <div className="w-full min-h-[88px] max-h-[88px] h-full flex">
               <img
-                className=" object-cover"
+                className="object-cover"
                 src={image}
                 onError={imageOnError}
               />
