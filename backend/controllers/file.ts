@@ -16,7 +16,7 @@ import File, { FileMetadateInterface } from "../models/file";
 import imageChecker from "../utils/imageChecker";
 import videoChecker from "../utils/videoChecker";
 import { S3Actions } from "../services/ChunkService/S3Actions";
-import { FilesystemActions } from "../services/ChunkService/FileSystemActions";
+import { FilesystemActions } from "../services/ChunkService/Actions/FileSystemActions";
 import createVideoThumbnail from "../services/ChunkService/utils/createVideoThumbnail";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
 

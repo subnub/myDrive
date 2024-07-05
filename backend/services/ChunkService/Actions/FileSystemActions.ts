@@ -1,7 +1,7 @@
 import fs from "fs";
-import { UserInterface } from "../../models/user";
-import { GenericParams, IStorageActions } from "./StoreTypes";
-import env from "../../enviroment/env";
+import { UserInterface } from "../../../models/user";
+import { GenericParams, IStorageActions } from "../StoreTypes";
+import env from "../../../enviroment/env";
 
 class FilesystemActions implements IStorageActions {
   async getAuth() {

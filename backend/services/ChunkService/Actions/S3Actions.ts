@@ -1,7 +1,6 @@
-import { UserInterface } from "../../models/user";
-import s3 from "../../db/s3";
-import env from "../../enviroment/env";
-import { GenericParams, IStorageActions } from "./StoreTypes";
+import s3 from "../../../db/s3";
+import env from "../../../enviroment/env";
+import { GenericParams, IStorageActions } from "./../StoreTypes";
 import internal from "stream";
 import { PassThrough } from "stream";
 

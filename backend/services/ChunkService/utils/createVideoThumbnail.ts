@@ -11,8 +11,8 @@ import { ObjectId } from "mongodb";
 import File from "../../../models/file";
 import ffmpeg from "fluent-ffmpeg";
 import tempCreateVideoThumbnailFS from "./tempCreateVideoThumbnailFS";
-import { S3Actions } from "../S3Actions";
-import { FilesystemActions } from "../FileSystemActions";
+import { S3Actions } from "../Actions/S3Actions";
+import { FilesystemActions } from "../Actions/FileSystemActions";
 import { createGenericParams } from "./storageHelper";
 
 const storageActions =

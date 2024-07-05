@@ -16,8 +16,8 @@ import fixStartChunkLength from "./utils/fixStartChunkLength";
 import Folder, { FolderInterface } from "../../models/folder";
 import ForbiddenError from "../../utils/ForbiddenError";
 import { ObjectId } from "mongodb";
-import { S3Actions } from "./S3Actions";
-import { FilesystemActions } from "./FileSystemActions";
+import { S3Actions } from "./Actions/S3Actions";
+import { FilesystemActions } from "./Actions/FileSystemActions";
 import { createGenericParams } from "./utils/storageHelper";
 
 const dbUtilsFile = new DbUtilFile();
