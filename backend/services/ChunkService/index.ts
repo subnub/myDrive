@@ -1,37 +1,21 @@
 import { Response, Request } from "express";
-import ChunkInterface from "./utils/ChunkInterface";
 import { UserInterface } from "../../models/user";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import NotFoundError from "../../utils/NotFoundError";
 import crypto from "crypto";
 import getBusboyData from "./utils/getBusboyData";
 import videoChecker from "../../utils/videoChecker";
-import fs from "fs";
 import uuid from "uuid";
-import awaitUploadStreamFS from "./utils/awaitUploadStreamFS";
 import File, { FileInterface } from "../../models/file";
-import getFileSize from "./utils/getFileSize";
 import DbUtilFile from "../../db/utils/fileUtils/index";
 import DbUtilFolder from "../../db/utils/folderUtils/index";
-import awaitStream from "./utils/awaitStream";
-import createThumbnailAny from "./utils/createThumbailAny";
-import imageChecker from "../../utils/imageChecker";
 import Thumbnail, { ThumbnailInterface } from "../../models/thumbnail";
-import streamToBuffer from "../../utils/streamToBuffer";
 import User from "../../models/user";
 import env from "../../enviroment/env";
-import removeChunksFS from "./utils/removeChunksFS";
-import getPrevIVFS from "./utils/getPrevIVFS";
-import awaitStreamVideo from "./utils/awaitStreamVideo";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
 import Folder, { FolderInterface } from "../../models/folder";
-import addToStoageSize from "./utils/addToStorageSize";
-import subtractFromStorageSize from "./utils/subtractFromStorageSize";
 import ForbiddenError from "../../utils/ForbiddenError";
 import { ObjectId } from "mongodb";
-import FolderService from "../FolderService";
-import MongoFileService from "../FileService";
-import createVideoThumbnailFS from "./utils/createVideoThumbnailFS";
 import { S3Actions } from "./S3Actions";
 import { FilesystemActions } from "./FileSystemActions";
 import { createGenericParams } from "./utils/storageHelper";
@@ -110,7 +94,6 @@ class StorageService {
     };
   };
 
-  // INJECTED
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {
     const currentFile = await dbUtilsFile.getFileInfo(
       fileID,
@@ -148,7 +131,6 @@ class StorageService {
     };
   };
 
-  // INJECTED
   getThumbnail = async (user: UserInterface, id: string) => {
     const password = user.getEncryptionKey();
 
@@ -185,7 +167,6 @@ class StorageService {
     };
   };
 
-  // INJECTED
   getFullThumbnail = async (user: UserInterface, fileID: string) => {
     const userID = user._id;
 
@@ -221,7 +202,6 @@ class StorageService {
     };
   };
 
-  // INJECTED
   streamVideo = async (user: UserInterface, fileID: string, headers: any) => {
     const userID = user._id;
     const currentFile = await dbUtilsFile.getFileInfo(
@@ -299,7 +279,6 @@ class StorageService {
     };
   };
 
-  // INJECTED
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {
     const file: FileInterface = await dbUtilsFile.getPublicFile(fileID);
 
@@ -340,7 +319,6 @@ class StorageService {
     };
   };
 
-  // INJECTED
   deleteMulti = async (
     userID: string,
     items: {
@@ -368,7 +346,6 @@ class StorageService {
     }
   };
 
-  // INJECTED
   deleteFile = async (userID: string, fileID: string) => {
     const file = await dbUtilsFile.getFileInfo(fileID, userID);
 
@@ -398,7 +375,6 @@ class StorageService {
     await File.deleteOne({ _id: file._id });
   };
 
-  // INJECTED
   deleteFolder = async (userID: string, folderID: string) => {
     const folder = await dbUtilsFolder.getFolderInfo(folderID, userID);
 
@@ -455,7 +431,6 @@ class StorageService {
     }
   };
 
-  // INJECTED
   deleteAll = async (userID: string) => {
     await Folder.deleteMany({ owner: userID });
 

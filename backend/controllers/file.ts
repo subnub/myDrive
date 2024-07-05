@@ -13,8 +13,16 @@ import streamToBuffer from "../utils/streamToBuffer";
 import env from "../enviroment/env";
 import getFileSize from "../services/ChunkService/utils/getFileSize";
 import File, { FileMetadateInterface } from "../models/file";
+import imageChecker from "../utils/imageChecker";
+import videoChecker from "../utils/videoChecker";
+import { S3Actions } from "../services/ChunkService/S3Actions";
+import { FilesystemActions } from "../services/ChunkService/FileSystemActions";
+import createVideoThumbnail from "../services/ChunkService/utils/createVideoThumbnail";
+import NotAuthorizedError from "../utils/NotAuthorizedError";
 
 const fileService = new FileService();
+const storageActions =
+  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
 
 type userAccessType = {
   _id: string;
@@ -148,6 +156,10 @@ class FileController {
       metadata: FileMetadateInterface
     ) => {
       try {
+        const user = req.user;
+
+        if (!user) throw new NotAuthorizedError("User Not Authorized");
+
         const date = new Date();
 
         let length = 0;
@@ -168,7 +180,28 @@ class FileController {
 
         await currentFile.save();
 
-        res.send(currentFile);
+        const imageCheck = imageChecker(currentFile.filename);
+        const videoCheck = videoChecker(currentFile.filename);
+
+        if (videoCheck) {
+          console.log("is vidoe");
+          const updatedFile = await createVideoThumbnail(
+            currentFile,
+            filename,
+            user
+          );
+
+          res.send(updatedFile);
+        } else if (currentFile.length < 15728640 && imageCheck) {
+          // const updatedFile = await createThumbnailAny(
+          //   currentFile,
+          //   filename,
+          //   user
+          // );
+          // return updatedFile;
+        } else {
+          res.send(currentFile);
+        }
       } catch (e: unknown) {
         if (!responseSent) {
           res.writeHead(500, { Connection: "close" });
