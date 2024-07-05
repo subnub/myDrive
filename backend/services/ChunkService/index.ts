@@ -61,7 +61,6 @@ class StorageService {
     const filename = fileInfo.filename;
     const parent = formData.get("parent") || "/";
     const size = formData.get("size") || "";
-    const personalFile = formData.get("personal-file") ? true : false;
     let hasThumbnail = false;
     let thumbnailID = "";
     const isVideo = videoChecker(filename);
@@ -78,7 +77,7 @@ class StorageService {
       parentList.push("/");
     }
 
-    const systemFileName = uuid.v4();
+    const randomFilenameID = uuid.v4();
 
     const metadata = {
       owner: user._id,
@@ -89,53 +88,26 @@ class StorageService {
       isVideo,
       size,
       IV: initVect,
-      filePath: env.fsDirectory + systemFileName,
-    };
+    } as any;
 
-    const fileWriteStream = fs.createWriteStream(metadata.filePath);
+    if (env.dbType === "fs") {
+      metadata.filePath = env.fsDirectory + randomFilenameID;
+    } else {
+      metadata.s3ID = randomFilenameID;
+    }
 
-    const totalStreamsToErrorCatch = [file, cipher, fileWriteStream];
-
-    await awaitUploadStreamFS(
+    const fileWriteStream = storageActions.createWriteStream(
+      metadata,
       file.pipe(cipher),
-      fileWriteStream,
-      req,
-      metadata.filePath,
-      totalStreamsToErrorCatch
+      randomFilenameID
     );
 
-    const date = new Date();
-    const encryptedFileSize = await getFileSize(metadata.filePath);
-
-    const currentFile = new File({
-      filename,
-      uploadDate: date.toISOString(),
-      length: encryptedFileSize,
+    return {
+      cipher,
+      fileWriteStream,
       metadata,
-    });
-
-    await currentFile.save();
-
-    await addToStoageSize(user, size, personalFile);
-
-    const imageCheck = imageChecker(currentFile.filename);
-    const videoCheck = videoChecker(currentFile.filename);
-
-    if (videoCheck) {
-      const updatedFile = await createVideoThumbnailFS(
-        currentFile,
-        filename,
-        user
-      );
-
-      return updatedFile;
-    } else if (currentFile.length < 15728640 && imageCheck) {
-      const updatedFile = await createThumbnailAny(currentFile, filename, user);
-
-      return updatedFile;
-    } else {
-      return currentFile;
-    }
+      filename,
+    };
   };
 
   // INJECTED

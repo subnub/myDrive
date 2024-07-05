@@ -3,6 +3,7 @@ import s3 from "../../db/s3";
 import env from "../../enviroment/env";
 import { GenericParams, IStorageActions } from "./StoreTypes";
 import internal from "stream";
+import { PassThrough } from "stream";
 
 class S3Actions implements IStorageActions {
   getAuth() {
@@ -48,7 +49,7 @@ class S3Actions implements IStorageActions {
       });
     });
   }
-  async getPrevIV(params: GenericParams, start: number) {
+  getPrevIV(params: GenericParams, start: number) {
     return new Promise<Buffer | string>((resolve, reject) => {
       if (!params.Key) throw new Error("S3 not configured");
       const { s3Storage, bucket } = this.getAuth();
@@ -63,6 +64,26 @@ class S3Actions implements IStorageActions {
       });
     });
   }
+  createWriteStream = (
+    params: GenericParams,
+    stream: NodeJS.ReadableStream,
+    randomID: string
+  ) => {
+    const pass = new PassThrough();
+
+    const { Key } = params;
+    if (!Key) throw new Error("S3 not configured");
+    const { s3Storage, bucket } = this.getAuth();
+
+    s3Storage.upload({ Bucket: bucket, Body: stream, Key: randomID }, (err) => {
+      if (err) {
+        console.log("Amazon upload err", err);
+        pass.emit("error", err);
+      }
+    });
+
+    return pass;
+  };
 }
 
 export { S3Actions };

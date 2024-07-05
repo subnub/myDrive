@@ -10,7 +10,9 @@ import {
 } from "../cookies/createCookies";
 import ChunkService from "../services/ChunkService";
 import streamToBuffer from "../utils/streamToBuffer";
-import { read } from "fs";
+import env from "../enviroment/env";
+import getFileSize from "../services/ChunkService/utils/getFileSize";
+import File, { FileMetadateInterface } from "../models/file";
 
 const fileService = new FileService();
 
@@ -132,22 +134,84 @@ class FileController {
       return;
     }
 
+    let responseSent = false;
+
+    const handleError = () => {
+      if (!responseSent) {
+        responseSent = true;
+        res.status(500).send("Server error uploading file");
+      }
+    };
+
+    const handleFinish = async (
+      filename: string,
+      metadata: FileMetadateInterface
+    ) => {
+      try {
+        const date = new Date();
+
+        let length = 0;
+
+        if (env.dbType === "fs" && metadata.filePath) {
+          length = (await getFileSize(metadata.filePath)) as number;
+        } else {
+          // TODO: Fix this we should be using the encrypted file size
+          length = metadata.size;
+        }
+
+        const currentFile = new File({
+          filename,
+          uploadDate: date.toISOString(),
+          length,
+          metadata,
+        });
+
+        await currentFile.save();
+
+        res.send(currentFile);
+      } catch (e: unknown) {
+        if (!responseSent) {
+          res.writeHead(500, { Connection: "close" });
+          res.end();
+        }
+      }
+    };
+
     try {
       const user = req.user;
       const busboy = req.busboy;
 
+      busboy.on("error", (e: Error) => {
+        console.log("busboy error", e);
+        handleError();
+      });
+
       req.pipe(busboy);
 
-      const file = await this.chunkService.uploadFile(user, busboy, req);
+      const { cipher, fileWriteStream, metadata, filename } =
+        await this.chunkService.uploadFile(user, busboy, req);
 
-      res.send(file);
+      cipher.on("error", (e: Error) => {
+        console.log("cipher error", e);
+        handleError();
+      });
+
+      fileWriteStream.on("error", (e: Error) => {
+        console.log("file write stream error", e);
+        handleError();
+      });
+
+      cipher.pipe(fileWriteStream).on("finish", async () => {
+        handleFinish(filename, metadata);
+      });
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nUploading File Error File Route:", e.message);
       }
-
-      res.writeHead(500, { Connection: "close" });
-      res.end();
+      if (!responseSent) {
+        res.writeHead(500, { Connection: "close" });
+        res.end();
+      }
     }
   };
 
@@ -184,10 +248,6 @@ class FileController {
       res.set("Content-Length", file.metadata.size.toString());
 
       readStream.pipe(decipher).pipe(res);
-
-      // if (file.metadata.linkType === "one") {
-      //   await dbUtilsFile.removeOneTimePublicLink(fileID);
-      // }
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nGet Public Download Error File Route:", e.message);

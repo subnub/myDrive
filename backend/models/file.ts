@@ -59,6 +59,23 @@ const fileSchema = new mongoose.Schema({
   },
 });
 
+export interface FileMetadateInterface {
+  owner: string;
+  parent: string;
+  parentList: string;
+  hasThumbnail: boolean;
+  isVideo: boolean;
+  thumbnailID?: string;
+  size: number;
+  IV: Buffer;
+  linkType?: "one" | "public";
+  link?: string;
+  filePath?: string;
+  s3ID?: string;
+  personalFile?: boolean;
+  trashed?: boolean;
+}
+
 export interface FileInterface
   extends mongoose.Document<mongoose.Types.ObjectId> {
   length: number;
@@ -66,22 +83,7 @@ export interface FileInterface
   uploadDate: string;
   filename: string;
   lastErrorObject: { updatedExisting: any };
-  metadata: {
-    owner: string;
-    parent: string;
-    parentList: string;
-    hasThumbnail: boolean;
-    isVideo: boolean;
-    thumbnailID?: string;
-    size: number;
-    IV: Buffer;
-    linkType?: "one" | "public";
-    link?: string;
-    filePath?: string;
-    s3ID?: string;
-    personalFile?: boolean;
-    trashed?: boolean;
-  };
+  metadata: FileMetadateInterface;
 }
 
 const File = mongoose.model<FileInterface>("fs.files", fileSchema);

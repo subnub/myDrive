@@ -1,6 +1,7 @@
 import fs from "fs";
 import { UserInterface } from "../../models/user";
 import { GenericParams, IStorageActions } from "./StoreTypes";
+import env from "../../enviroment/env";
 
 class FilesystemActions implements IStorageActions {
   async getAuth() {
@@ -20,7 +21,7 @@ class FilesystemActions implements IStorageActions {
     });
     return fsReadableStream;
   }
-  async removeChunks(params: GenericParams) {
+  removeChunks(params: GenericParams) {
     return new Promise<void>((resolve, reject) => {
       if (!params.filePath) {
         reject("File path not configured");
@@ -36,7 +37,7 @@ class FilesystemActions implements IStorageActions {
       });
     });
   }
-  async getPrevIV(params: GenericParams, start: number) {
+  getPrevIV(params: GenericParams, start: number) {
     return new Promise<Buffer | string>((resolve, reject) => {
       if (!params.filePath) throw new Error("File path not configured");
       const stream = fs.createReadStream(params.filePath, {
@@ -49,6 +50,19 @@ class FilesystemActions implements IStorageActions {
       });
     });
   }
+  uploadFile = (params: GenericParams, stream: NodeJS.ReadableStream) => {
+    return new Promise<void>((resolve, reject) => {
+      resolve();
+    });
+  };
+  createWriteStream = (
+    params: GenericParams,
+    stream: NodeJS.ReadableStream,
+    randomID: string
+  ) => {
+    const path = `${env.fsDirectory}${randomID}`;
+    return fs.createWriteStream(path);
+  };
 }
 
 export { FilesystemActions };
