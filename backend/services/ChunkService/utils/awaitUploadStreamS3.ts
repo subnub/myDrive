@@ -1,11 +1,7 @@
 import { ManagedUpload } from "aws-sdk/clients/s3";
 import s3 from "../../../db/s3";
 
-const awaitUploadStreamS3 = (
-  params: any,
-  personalFile: boolean,
-  s3Data: { id: string; key: string; bucket: string }
-) => {
+const uploadStreamS3 = (params: any) => {
   return new Promise<void>((resolve, reject) => {
     s3.upload(params, (err: any, data: ManagedUpload.SendData) => {
       if (err) {
@@ -18,4 +14,4 @@ const awaitUploadStreamS3 = (
   });
 };
 
-export default awaitUploadStreamS3;
+export default uploadStreamS3;

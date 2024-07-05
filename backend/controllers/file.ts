@@ -10,6 +10,7 @@ import {
 } from "../cookies/createCookies";
 import ChunkService from "../services/ChunkService";
 import streamToBuffer from "../utils/streamToBuffer";
+import { read } from "fs";
 
 const fileService = new FileService();
 
@@ -151,16 +152,50 @@ class FileController {
   };
 
   getPublicDownload = async (req: RequestType, res: Response) => {
+    let responseSent = false;
     try {
       const ID = req.params.id;
       const tempToken = req.params.tempToken;
 
-      await this.chunkService.getPublicDownload(ID, tempToken, res);
+      const { readStream, decipher, file } =
+        await this.chunkService.getPublicDownload(ID, tempToken, res);
+
+      readStream.on("error", (e: Error) => {
+        console.log("read stream error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error downloading publicfile");
+        }
+      });
+
+      decipher.on("error", (e: Error) => {
+        console.log("decipher stream error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error downloading public file");
+        }
+      });
+
+      res.set("Content-Type", "binary/octet-stream");
+      res.set(
+        "Content-Disposition",
+        'attachment; filename="' + file.filename + '"'
+      );
+      res.set("Content-Length", file.metadata.size.toString());
+
+      readStream.pipe(decipher).pipe(res);
+
+      // if (file.metadata.linkType === "one") {
+      //   await dbUtilsFile.removeOneTimePublicLink(fileID);
+      // }
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nGet Public Download Error File Route:", e.message);
       }
-      res.status(500).send("Server error downloading");
+      if (!responseSent) {
+        responseSent = true;
+        res.status(500).send("Server error downloading public file");
+      }
     }
   };
 
@@ -408,19 +443,70 @@ class FileController {
     if (!req.user) {
       return;
     }
+    let responseSent = false;
 
     try {
       const user = req.user;
       const fileID = req.params.id;
       const headers = req.headers;
 
-      await this.chunkService.streamVideo(user, fileID, headers, res, req);
+      const { decipher, readStream, head } =
+        await this.chunkService.streamVideo(user, fileID, headers);
+
+      const cleanUp = () => {
+        if (readStream) readStream.destroy();
+        if (decipher) decipher.end();
+      };
+
+      const handleError = (e: Error) => {
+        console.log("stream video read stream error", e);
+        if (!responseSent) {
+          responseSent = true;
+          res.status(500).send("Server error streaming video");
+        }
+        cleanUp();
+      };
+
+      readStream.on("error", handleError);
+
+      decipher.on("error", handleError);
+
+      readStream.on("end", () => {
+        if (!responseSent) {
+          responseSent = true;
+          res.end();
+        }
+        cleanUp();
+      });
+
+      readStream.on("close", () => {
+        cleanUp();
+      });
+
+      decipher.on("end", () => {
+        if (!responseSent) {
+          responseSent = true;
+          res.end();
+        }
+        cleanUp();
+      });
+
+      decipher.on("close", () => {
+        cleanUp();
+      });
+
+      res.writeHead(206, head);
+
+      readStream.pipe(decipher).pipe(res);
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nStream Video Error File Route:", e.message);
       }
 
-      res.status(500).send("Server error streaming video");
+      if (!responseSent) {
+        responseSent = true;
+        res.status(500).send("Server error streaming video");
+      }
     }
   };
 

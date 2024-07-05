@@ -1,6 +1,6 @@
 import internal from "stream";
 
-export interface AuthParams {
+export interface GenericParams {
   Key?: string;
   Bucket?: string;
   filePath?: string;
@@ -10,7 +10,7 @@ export interface AuthParams {
 export interface IStorageActions {
   getAuth(): Object;
   createReadStream(
-    params: AuthParams
+    params: GenericParams
   ): NodeJS.ReadableStream | internal.Readable;
-  removeChunks(params: AuthParams): Promise<void>;
+  removeChunks(params: GenericParams): Promise<void>;
 }

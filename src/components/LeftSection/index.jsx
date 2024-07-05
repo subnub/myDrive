@@ -104,10 +104,9 @@ const LeftSection = (props) => {
             )}
           </div>
           <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md">
-            <ul className="m-0 list-none p-0 cursor-pointer">
+            <ul onClick={goHome} className="m-0 list-none p-0 cursor-pointer">
               <li>
                 <a
-                  onClick={goHome}
                   className={classNames(
                     "flex items-center text-[#3c85ee] font-medium no-underline animate",
                     isHome ? "text-[#3c85ee]" : "text-[#637381]"
@@ -123,10 +122,9 @@ const LeftSection = (props) => {
           </div>
         </div>
         <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] mt-1 mb-1 rounded-md">
-          <ul className="m-0 list-none p-0 cursor-pointer ">
+          <ul onClick={goMedia} className="m-0 list-none p-0 cursor-pointer ">
             <li>
               <a
-                onClick={goMedia}
                 className={classNames(
                   "flex items-center text-[#3c85ee] font-medium no-underline animate",
                   isMedia ? "text-[#3c85ee]" : "text-[#637381]"
@@ -141,10 +139,12 @@ const LeftSection = (props) => {
           </ul>
         </div>
         <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md block desktopMode:hidden mb-1">
-          <ul className="m-0 list-none p-0 cursor-pointer ">
+          <ul
+            onClick={goSettings}
+            className="m-0 list-none p-0 cursor-pointer "
+          >
             <li>
               <a
-                onClick={goSettings}
                 className={classNames(
                   "flex items-center text-[#3c85ee] font-medium no-underline animate",
                   isSettings ? "text-[#3c85ee]" : "text-[#637381]"
@@ -159,10 +159,9 @@ const LeftSection = (props) => {
           </ul>
         </div>
         <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md">
-          <ul className="m-0 list-none p-0 cursor-pointer ">
+          <ul onClick={goTrash} className="m-0 list-none p-0 cursor-pointer ">
             <li>
               <a
-                onClick={goTrash}
                 className={classNames(
                   "flex items-center text-[#3c85ee] font-medium no-underline animate",
                   isTrash ? "text-red-500" : "text-[#637381]"

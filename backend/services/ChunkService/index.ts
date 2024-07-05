@@ -46,7 +46,6 @@ class StorageService {
   constructor() {}
 
   uploadFile = async (user: UserInterface, busboy: any, req: Request) => {
-    console.log("upeload file2");
     const password = user.getEncryptionKey();
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
@@ -60,14 +59,12 @@ class StorageService {
     const { file, filename: fileInfo, formData } = await getBusboyData(busboy);
 
     const filename = fileInfo.filename;
-    console.log("1");
     const parent = formData.get("parent") || "/";
     const size = formData.get("size") || "";
     const personalFile = formData.get("personal-file") ? true : false;
     let hasThumbnail = false;
     let thumbnailID = "";
     const isVideo = videoChecker(filename);
-    console.log("2", parent, typeof parent);
 
     const parentList = [];
 
@@ -80,8 +77,6 @@ class StorageService {
     } else {
       parentList.push("/");
     }
-
-    console.log("parent list", parentList);
 
     const systemFileName = uuid.v4();
 
@@ -127,7 +122,6 @@ class StorageService {
     const videoCheck = videoChecker(currentFile.filename);
 
     if (videoCheck) {
-      console.log("is vidoe");
       const updatedFile = await createVideoThumbnailFS(
         currentFile,
         filename,
@@ -255,23 +249,8 @@ class StorageService {
     };
   };
 
-  streamVideo = async (
-    user: UserInterface,
-    fileID: string,
-    headers: any,
-    res: Response,
-    req: Request
-  ) => {
-    // To get this all working correctly with encryption and across
-    // All browsers took many days, tears, and some of my sanity.
-    // Shoutout to Tyzoid for helping me with the decryption
-    // And and helping me understand how the IVs work.
-
-    // P.S I hate safari >:(
-    // Why do yall have to be weird with video streaming
-    // 90% of the issues with this are only in Safari
-    // Is safari going to be the next internet explorer?
-
+  // INJECTED
+  streamVideo = async (user: UserInterface, fileID: string, headers: any) => {
     const userID = user._id;
     const currentFile = await dbUtilsFile.getFileInfo(
       fileID,
@@ -306,52 +285,33 @@ class StorageService {
     let fixedEnd = currentFile.length;
 
     if (start === 0 && end === 1) {
-      // This is for Safari/iOS, Safari will request the first
-      // Byte before actually playing the video. Needs to be
-      // 16 bytes.
-
       fixedStart = 0;
       fixedEnd = 15;
     } else {
-      // If you're a normal browser, or this isn't Safari's first request
-      // We need to make it so start is divisible by 16, since AES256
-      // Has a block size of 16 bytes.
-
       fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
     }
 
     if (+start === 0) {
-      // This math will not work if the start is 0
-      // So if it is we just change fixed start back
-      // To 0.
-
       fixedStart = 0;
     }
 
-    // We also need to calculate the difference between the start and the
-    // Fixed start position. Since there will be an offset if the original
-    // Request is not divisible by 16, it will not return the right part
-    // Of the file, you will see how we do this in the awaitStreamVideo
-    // code.
-
-    const differenceStart = start - fixedStart;
+    const readStreamParams = createGenericParams({
+      filePath: currentFile.metadata.filePath,
+      Key: currentFile.metadata.s3ID,
+    });
 
     if (fixedStart !== 0 && start !== 0) {
-      // If this isn't the first request, the way AES256 works is when you try to
-      // Decrypt a certain part of the file that isn't the start, the IV will
-      // Actually be the 16 bytes ahead of where you are trying to
-      // Start the decryption.
-
-      currentIV = (await getPrevIVFS(
-        fixedStart - 16,
-        currentFile.metadata.filePath!
+      currentIV = (await storageActions.getPrevIV(
+        readStreamParams,
+        fixedStart - 16
       )) as Buffer;
     }
 
-    const readStream = fs.createReadStream(currentFile.metadata.filePath!, {
-      start: fixedStart,
-      end: fixedEnd,
-    });
+    const readStream = storageActions.createReadStreamWithRange(
+      readStreamParams,
+      fixedStart,
+      fixedEnd
+    );
 
     const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
 
@@ -359,26 +319,15 @@ class StorageService {
 
     decipher.setAutoPadding(false);
 
-    res.writeHead(206, head);
-
-    const allStreamsToErrorCatch = [readStream, decipher];
-
-    readStream.pipe(decipher);
-
-    await awaitStreamVideo(
-      start,
-      end,
-      differenceStart,
+    return {
+      readStream,
       decipher,
-      res,
-      req,
-      allStreamsToErrorCatch,
-      readStream
-    );
-
-    readStream.destroy();
+      file: currentFile,
+      head,
+    };
   };
 
+  // INJECTED
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {
     const file: FileInterface = await dbUtilsFile.getPublicFile(fileID);
 
@@ -386,34 +335,37 @@ class StorageService {
       throw new NotAuthorizedError("File Not Public");
     }
 
+    await dbUtilsFile.removeOneTimePublicLink(fileID);
+
     const user = (await User.findById(file.metadata.owner)) as UserInterface;
 
     const password = user.getEncryptionKey();
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
-    const IV = file.metadata.IV.buffer as Buffer;
+    // TODO: I believe this has to do with using conn.db instead of the mongoose driver
+    // We should switch to the mongoose driver
+    let IV = file.metadata.IV as any;
+    if (!(IV instanceof Buffer)) {
+      IV = IV.buffer;
+    }
 
-    const readStream = fs.createReadStream(file.metadata.filePath!);
+    const readStreamParams = createGenericParams({
+      filePath: file.metadata.filePath,
+      Key: file.metadata.s3ID,
+    });
+
+    const readStream = storageActions.createReadStream(readStreamParams);
 
     const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
 
     const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
 
-    res.set("Content-Type", "binary/octet-stream");
-    res.set(
-      "Content-Disposition",
-      'attachment; filename="' + file.filename + '"'
-    );
-    res.set("Content-Length", file.metadata.size.toString());
-
-    const allStreamsToErrorCatch = [readStream, decipher];
-
-    await awaitStream(readStream.pipe(decipher), res, allStreamsToErrorCatch);
-
-    if (file.metadata.linkType === "one") {
-      await dbUtilsFile.removeOneTimePublicLink(fileID);
-    }
+    return {
+      readStream,
+      decipher,
+      file: file,
+    };
   };
 
   // INJECTED

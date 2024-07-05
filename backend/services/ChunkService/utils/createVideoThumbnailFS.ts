@@ -45,43 +45,6 @@ const createVideoThumbnailFS = (
 
     const decryptedReadStream = readStream.pipe(decipher);
 
-    // const encryptedWriteStream = thumbnailCipher
-    //   .pipe(writeStream)
-    //   .on("finish", async () => {
-    //     const thumbnailModel = new Thumbnail({
-    //       name: filename,
-    //       owner: user._id,
-    //       IV: thumbnailIV,
-    //       path: env.fsDirectory + thumbnailFilename,
-    //     });
-
-    //     await thumbnailModel.save();
-    //     if (!file._id) {
-    //       return reject();
-    //     }
-    //     const updateFileResponse = await File.updateOne(
-    //       { _id: new ObjectId(file._id), "metadata.owner": user._id },
-    //       {
-    //         $set: {
-    //           "metadata.hasThumbnail": true,
-    //           "metadata.thumbnailID": thumbnailModel._id,
-    //         },
-    //       }
-    //     );
-    //     if (updateFileResponse.modifiedCount === 0) {
-    //       return reject();
-    //     }
-
-    //     const updatedFile = await File.findById({
-    //       _id: new ObjectId(file._id),
-    //       "metadata.owner": user._id,
-    //     });
-
-    //     if (!updatedFile) return reject();
-
-    //     resolve(updatedFile?.toObject());
-    //   });
-
     ffmpeg(decryptedReadStream, {
       timeout: 60,
     })
@@ -146,44 +109,6 @@ const createVideoThumbnailFS = (
       })
       .pipe(thumbnailCipher)
       .pipe(writeStream, { end: true });
-
-    // ffmpeg()
-    //   .input(readStream.pipe(decipher))
-    //   .seekInput("00:00:01.00")
-    //   .outputFormat("image2")
-    //   .pipe(writeStream, { end: true })
-    //   .on("end", async () => {
-    //     const thumbnailModel = new Thumbnail({
-    //       name: filename,
-    //       owner: user._id,
-    //       IV: thumbnailIV,
-    //       path: env.fsDirectory + thumbnailFilename,
-    //     });
-
-    //     await thumbnailModel.save();
-    //     resolve(file);
-    //   })
-    //   .on("error", (e) => {
-    //     console.log("error", e);
-    //     reject(e);
-    //   });
-
-    // ffmpeg()
-    //   .input(readStream.pipe(decipher))
-    //   .size("300x?")
-    //   .outputOptions("-frames:v 1")
-    //   .on("end", async () => {
-    //     const thumbnailModel = new Thumbnail({
-    //       name: filename,
-    //       owner: user._id,
-    //       IV: thumbnailIV,
-    //       path: env.fsDirectory + thumbnailFilename,
-    //     });
-
-    //     await thumbnailModel.save();
-    //     resolve(file);
-    //   })
-    //   .output(writeStream);
   });
 };
 

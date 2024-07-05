@@ -1,7 +1,7 @@
 import { UserInterface } from "../../models/user";
 import s3 from "../../db/s3";
 import env from "../../enviroment/env";
-import { AuthParams, IStorageActions } from "./StoreTypes";
+import { GenericParams, IStorageActions } from "./StoreTypes";
 import internal from "stream";
 
 class S3Actions implements IStorageActions {
@@ -9,7 +9,7 @@ class S3Actions implements IStorageActions {
     return { s3Storage: s3, bucket: env.s3Bucket! };
   }
 
-  createReadStream(params: AuthParams): internal.Readable {
+  createReadStream(params: GenericParams): internal.Readable {
     if (!params.Key) throw new Error("S3 not configured");
     const { s3Storage, bucket } = this.getAuth();
     const s3ReadableStream = s3Storage
@@ -18,7 +18,21 @@ class S3Actions implements IStorageActions {
     return s3ReadableStream;
   }
 
-  removeChunks(params: AuthParams) {
+  createReadStreamWithRange(
+    params: GenericParams,
+    start: number,
+    end: number
+  ): internal.Readable {
+    if (!params.Key) throw new Error("S3 not configured");
+    const range = `bytes=${start}-${end}`;
+    const { s3Storage, bucket } = this.getAuth();
+    const s3ReadableStream = s3Storage
+      .getObject({ Key: params.Key, Bucket: bucket, Range: range })
+      .createReadStream();
+    return s3ReadableStream;
+  }
+
+  removeChunks(params: GenericParams) {
     return new Promise<void>((resolve, reject) => {
       if (!params.Key) {
         reject("S3 not configured");
@@ -31,6 +45,21 @@ class S3Actions implements IStorageActions {
           return;
         }
         resolve();
+      });
+    });
+  }
+  async getPrevIV(params: GenericParams, start: number) {
+    return new Promise<Buffer | string>((resolve, reject) => {
+      if (!params.Key) throw new Error("S3 not configured");
+      const { s3Storage, bucket } = this.getAuth();
+      const range = `bytes=${start}-${start + 15}`;
+
+      const stream = s3Storage
+        .getObject({ Key: params.Key, Bucket: bucket, Range: range })
+        .createReadStream();
+
+      stream.on("data", (data) => {
+        resolve(data);
       });
     });
   }
