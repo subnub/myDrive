@@ -11,11 +11,7 @@ import classNames from "classnames";
 
 const Files = memo(() => {
   const { data: files } = useFiles(false);
-  const parent = useSelector((state) => state.parent.parent);
   const listView = useSelector((state) => state.filter.listView);
-  // TODO: Fix loading
-  const loading = useSelector((state) => state.main.loading);
-  const loadingMore = useSelector((state) => state.main.loadingMoreItems);
   const search = useSelector((state) => state.filter.search);
   const { isHome } = useUtils();
 
@@ -115,7 +111,7 @@ const Files = memo(() => {
             ))}
           </div>
         ) : (
-          <table className="w-full" style={loading ? { display: "none" } : {}}>
+          <table className="w-full">
             <thead>
               <tr>
                 <th>

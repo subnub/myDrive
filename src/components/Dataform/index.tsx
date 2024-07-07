@@ -13,6 +13,7 @@ import classNames from "classnames";
 import { useDragAndDrop } from "../../hooks/utils";
 import MultiSelectBar from "../MultiSelectBar";
 import { useFolders } from "../../hooks/folders";
+import { FileInterface } from "../../types/file";
 
 const DataForm = memo(() => {
   const {
@@ -43,7 +44,7 @@ const DataForm = memo(() => {
   }, [reachedIntersect, initialLoad, isFetchingNextPage]);
 
   const addFile = useCallback(
-    (file) => {
+    (file: FileInterface) => {
       dispatch(startAddFile(file, params.id));
     },
     [params.id]
@@ -90,7 +91,7 @@ const DataForm = memo(() => {
           <SpinnerPage />
         </div>
       )}
-
+      {/* @ts-ignore  */}
       <div ref={sentinelRef} className="h-1"></div>
 
       {/* TODO: Change this spinner name */}

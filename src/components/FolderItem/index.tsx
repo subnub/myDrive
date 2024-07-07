@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { memo, useCallback, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import classNames from "classnames";
@@ -10,8 +10,13 @@ import moment from "moment";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
 import { useUtils } from "../../hooks/utils";
+import { FolderInterface } from "../../types/folders";
 
-const FolderItem = React.memo((props) => {
+interface FolderItemProps {
+  folder: FolderInterface;
+}
+
+const FolderItem: React.FC<FolderItemProps> = memo((props) => {
   const { folder } = props;
   const elementSelected = useAppSelector((state) => {
     if (state.selected.mainSection.type !== "folder") return false;
@@ -39,7 +44,7 @@ const FolderItem = React.memo((props) => {
   } = useContextMenu();
 
   const folderClick = useCallback(
-    (e) => {
+    (e: any) => {
       const multiSelectKey = e.metaKey || e.ctrlKey;
       if (multiSelectMode || multiSelectKey) {
         dispatch(
@@ -108,10 +113,10 @@ const FolderItem = React.memo((props) => {
           <ContextMenu
             gridMode={true}
             folderMode={true}
-            quickItemMode={props.folder.parent !== "/"}
+            quickItemMode={folder.parent !== "/"}
             contextSelected={contextMenuState}
             closeContext={closeContextMenu}
-            folder={props.folder}
+            folder={folder}
           />
         </div>
       )}

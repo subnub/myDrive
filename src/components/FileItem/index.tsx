@@ -1,6 +1,6 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { memo, useCallback, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import mobilecheck from "../../utils/mobileCheck";
 import { useContextMenu } from "../../hooks/contextMenu";
@@ -16,8 +16,13 @@ import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
 import PlayButtonIcon from "../../icons/PlayIcon";
 import { setPopupSelect } from "../../reducers/selected";
 import ActionsIcon from "../../icons/ActionsIcon";
+import { FileInterface } from "../../types/file";
 
-const FileItem = React.memo((props) => {
+interface FileItemProps {
+  file: FileInterface;
+}
+
+const FileItem: React.FC<FileItemProps> = memo((props) => {
   const { file } = props;
   const elementSelected = useAppSelector((state) => {
     if (state.selected.mainSection.type !== "file") return false;
@@ -68,10 +73,10 @@ const FileItem = React.memo((props) => {
   );
 
   // TODO: See if we can memoize this
-  const fileClick = (e) => {
+  const fileClick = (e: any) => {
     const multiSelectKey = e.metaKey || e.ctrlKey;
 
-    if (multiSelectMode | multiSelectKey) {
+    if (multiSelectMode || multiSelectKey) {
       dispatch(
         setMultiSelectMode({
           type: "file",
@@ -158,6 +163,7 @@ const FileItem = React.memo((props) => {
             )}
 
             {/* <ContextMenu parent={props.metadata.parent} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/> */}
+
             <a onClick={onContextMenu}>
               <ActionsIcon
                 className={classNames(

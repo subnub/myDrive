@@ -42,7 +42,7 @@ const Folders = memo(() => {
   }, [sortBy]);
 
   const switchTypeOrderBy = useCallback(
-    (e) => {
+    (e: any) => {
       const value = e.target.value;
 
       let newSortBy = "date_desc";
@@ -117,9 +117,9 @@ const Folders = memo(() => {
       <div
         className={classNames(
           "grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[16px]",
-          folders?.length > 1
-            ? "justify-center xs:justify-normal"
-            : "justify-normal"
+          folders?.length === 1
+            ? "justify-normal"
+            : "justify-center xs:justify-normal"
         )}
       >
         {folders?.map((folder) => (

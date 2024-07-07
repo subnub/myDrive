@@ -20,9 +20,6 @@ import NotAuthorizedError from "../utils/NotAuthorizedError";
 import createThumbnail from "../services/ChunkService/utils/createImageThumbnail";
 
 const fileService = new FileService();
-const storageActions =
-  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
-
 type userAccessType = {
   _id: string;
   emailVerified: boolean;

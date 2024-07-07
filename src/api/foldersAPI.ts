@@ -72,11 +72,10 @@ export const restoreFolderAPI = async (folderID: string) => {
 
 // DELETE
 
-export const deleteFolder = async (folderID: string, parentList: string[]) => {
+export const deleteFolder = async (folderID: string) => {
   const response = await axios.delete("/folder-service/remove", {
     data: {
       id: folderID,
-      parentList,
     },
   });
   return response.data;

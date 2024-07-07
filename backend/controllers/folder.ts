@@ -1,7 +1,6 @@
 import FolderService from "../services/FolderService";
 import { Request, Response } from "express";
-import FileSystemService from "../services/ChunkService/FileSystemService";
-import S3Service from "../services/ChunkService/S3Service";
+import ChunkService from "../services/ChunkService";
 
 const folderService = new FolderService();
 
@@ -17,14 +16,10 @@ interface RequestType extends Request {
   encryptedToken?: string;
 }
 
-type ChunkServiceType = FileSystemService | S3Service;
+const chunkService = new ChunkService();
 
 class FolderController {
-  chunkService: ChunkServiceType;
-
-  constructor(chunkService: ChunkServiceType) {
-    this.chunkService = chunkService;
-  }
+  constructor() {}
 
   createFolder = async (req: RequestType, res: Response) => {
     if (!req.user) {
@@ -57,7 +52,7 @@ class FolderController {
       const folderID = req.body.id;
       const parentList = req.body.parentList;
 
-      await this.chunkService.deleteFolder(userID, folderID, parentList);
+      await chunkService.deleteFolder(userID, folderID);
 
       res.send();
     } catch (e: unknown) {
@@ -90,30 +85,6 @@ class FolderController {
     }
   };
 
-  deletePersonalFolder = async (req: RequestType, res: Response) => {
-    if (!req.user) {
-      return;
-    }
-
-    try {
-      const userID = req.user._id;
-      const folderID = req.body.id;
-      const parentList = req.body.parentList;
-
-      const s3Service = new S3Service();
-
-      await s3Service.deleteFolder(userID, folderID, parentList);
-
-      res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nDelete Personal Folder Error Folder Route:", e.message);
-      }
-
-      res.status(500).send("Server error deleting personal folder");
-    }
-  };
-
   deleteAll = async (req: RequestType, res: Response) => {
     if (!req.user) {
       return;
@@ -122,7 +93,7 @@ class FolderController {
     try {
       const userID = req.user._id;
 
-      await this.chunkService.deleteAll(userID);
+      await chunkService.deleteAll(userID);
 
       res.send();
     } catch (e: unknown) {

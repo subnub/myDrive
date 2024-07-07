@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { MouseEventHandler, useRef, useState } from "react";
 
 export const useContextMenu = () => {
   // 215 X 240
@@ -9,7 +9,7 @@ export const useContextMenu = () => {
   });
   const lastTouched = useRef(0);
 
-  const onContextMenu = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onContextMenu = (e: any) => {
     if (e) e.stopPropagation();
     if (e) e.preventDefault();
 

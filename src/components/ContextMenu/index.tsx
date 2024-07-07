@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import {
   deleteFileAPI,
@@ -30,8 +30,25 @@ import DownloadIcon from "../../icons/DownloadIcon";
 import MoveIcon from "../../icons/MoveIcon";
 import RestoreIcon from "../../icons/RestoreIcon";
 import { restoreItemPopup } from "../../popups/file";
+import { FileInterface } from "../../types/file";
+import { FolderInterface } from "../../types/folders";
 
-const ContextMenu = (props) => {
+export interface ContextMenuProps {
+  closeContext: () => void;
+  contextSelected: {
+    selected: boolean;
+    X: number;
+    Y: number;
+  };
+  folderMode?: boolean;
+  quickItemMode: boolean;
+  file?: FileInterface;
+  folder?: FolderInterface;
+  stopPropagation?: () => void;
+  gridMode: boolean;
+}
+
+const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
@@ -44,7 +61,7 @@ const ContextMenu = (props) => {
 
   const renameItem = async () => {
     props.closeContext();
-    if (!props.folderMode) {
+    if (!props.folderMode && props.file) {
       const { value: filename } = await Swal.fire({
         title: "Enter A File Name",
         input: "text",
@@ -59,7 +76,7 @@ const ContextMenu = (props) => {
       await renameFileAPI(props.file._id, filename);
       invalidateFilesCache();
       invalidateQuickFilesCache();
-    } else {
+    } else if (props.folderMode && props.folder) {
       const { value: folderName } = await Swal.fire({
         title: "Enter A folder Name",
         input: "text",
@@ -83,7 +100,7 @@ const ContextMenu = (props) => {
 
   const trashItem = async () => {
     props.closeContext();
-    if (!props.folderMode) {
+    if (!props.folderMode && props.file) {
       const result = await Swal.fire({
         title: "Move to trash?",
         text: "Items in the trash will eventually be deleted.",
@@ -100,7 +117,7 @@ const ContextMenu = (props) => {
         invalidateQuickFilesCache();
         dispatch(resetSelected());
       }
-    } else {
+    } else if (props.folderMode && props.folder) {
       const result = await Swal.fire({
         title: "Move to trash?",
         text: "Items in the trash will eventually be deleted.",
@@ -120,7 +137,7 @@ const ContextMenu = (props) => {
 
   const deleteItem = async () => {
     props.closeContext();
-    if (!props.folderMode) {
+    if (!props.folderMode && props.file) {
       const result = await Swal.fire({
         title: "Delete file?",
         text: "You will not be able to recover this file.",
@@ -137,7 +154,7 @@ const ContextMenu = (props) => {
         invalidateQuickFilesCache();
         dispatch(resetSelected());
       }
-    } else {
+    } else if (props.folderMode && props.folder) {
       const result = await Swal.fire({
         title: "Delete folder?",
         text: "You will not be able to recover this folder.",
@@ -159,10 +176,10 @@ const ContextMenu = (props) => {
     props.closeContext();
     const result = await restoreItemPopup();
     if (!result) return;
-    if (!props.folderMode) {
+    if (!props.folderMode && props.file) {
       await restoreFileAPI(props.file._id);
       invalidateFilesCache();
-    } else {
+    } else if (props.folderMode && props.folder) {
       await restoreFolderAPI(props.folder._id);
       invalidateFoldersCache();
     }
@@ -170,9 +187,9 @@ const ContextMenu = (props) => {
 
   const openMoveItemModal = async () => {
     props.closeContext();
-    if (!props.folderMode) {
+    if (!props.folderMode && props.file) {
       dispatch(setMoverID(props.file._id, props.file.metadata.parent, true));
-    } else {
+    } else if (props.folderMode && props.folder) {
       dispatch(setMoverID(props.folder._id, props.folder.parent, false));
     }
   };
@@ -184,12 +201,12 @@ const ContextMenu = (props) => {
 
   const downloadItem = () => {
     props.closeContext();
-    downloadFileAPI(props.file._id);
+    if (props.file) downloadFileAPI(props.file._id);
   };
 
   const selectItemMultiSelect = () => {
     props.closeContext();
-    if (props.folderMode) {
+    if (props.folderMode && props.folder) {
       dispatch(
         setMultiSelectMode({
           type: "folder",
@@ -198,7 +215,7 @@ const ContextMenu = (props) => {
           folder: props.folder,
         })
       );
-    } else {
+    } else if (!props.folderMode && props.file) {
       dispatch(
         setMultiSelectMode({
           type: props.quickItemMode ? "quick-item" : "file",
@@ -313,6 +330,6 @@ const ContextMenu = (props) => {
       </ul>
     </div>
   );
-};
+});
 
 export default ContextMenu;

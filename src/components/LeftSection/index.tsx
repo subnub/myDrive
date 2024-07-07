@@ -54,7 +54,7 @@ const LeftSection = (props) => {
   };
 
   const closeDrawerEvent = useCallback(
-    (e) => {
+    (e: any) => {
       console.log("close", e?.target.id);
       if (
         !e ||
@@ -99,9 +99,7 @@ const LeftSection = (props) => {
               </span>
             </a>
             {/* TODO: Remove this props */}
-            {isDropdownOpen && (
-              <AddNewDropdown closeDropdown={closeDropdown} {...props} />
-            )}
+            {isDropdownOpen && <AddNewDropdown closeDropdown={closeDropdown} />}
           </div>
           <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md">
             <ul onClick={goHome} className="m-0 list-none p-0 cursor-pointer">

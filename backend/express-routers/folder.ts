@@ -9,10 +9,10 @@ let folderController: FolderController;
 
 if (env.dbType === "fs") {
   const fileSystemService = new FileSystemService();
-  folderController = new FolderController(fileSystemService);
+  folderController = new FolderController();
 } else {
   const s3Service = new S3Service();
-  folderController = new FolderController(s3Service);
+  folderController = new FolderController();
 }
 
 const router = Router();

@@ -7,7 +7,11 @@ import { useAppDispatch } from "../../hooks/store";
 import { startAddFile } from "../../actions/files";
 import { useRef } from "react";
 
-const AddNewDropdown = (props: any) => {
+interface AddNewDropdownProps {
+  closeDropdown: () => void;
+}
+
+const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
   const params = useParams();
   const { invalidateFoldersCache } = useFoldersClient();
   const { wrapperRef } = useClickOutOfBounds(props.closeDropdown);
@@ -44,15 +48,13 @@ const AddNewDropdown = (props: any) => {
           <div>
             <input
               className="w-full top-0 bg-red-500 h-[41px] mt-[3px] cursor-pointer absolute opacity-0"
+              // @ts-ignore
               ref={uploadRef}
               type="file"
               multiple={true}
               onChange={handleUpload}
             />
-            <a
-              onClick={props.showUploadOverlay}
-              className="flex items-center bg-white justify-start p-[12px_20px] transition-all duration-400 ease-in-out no-underline rounded-[5px] overflow-hidden text-[#0E1C71] text-[15px] leading-[18px]"
-            >
+            <a className="flex items-center bg-white justify-start p-[12px_20px] transition-all duration-400 ease-in-out no-underline rounded-[5px] overflow-hidden text-[#0E1C71] text-[15px] leading-[18px]">
               <span className="inline-flex min-w-[30px]">
                 <img
                   className="max-w-full h-auto"
