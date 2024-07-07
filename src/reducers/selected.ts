@@ -11,7 +11,10 @@ interface MainSecionType {
 
 export interface SelectedStateType {
   mainSection: MainSecionType;
-  popupModal: FileInterface | null;
+  popupModal: {
+    type: "" | "quick-item" | "file";
+    file: FileInterface | null;
+  };
   multiSelectMode: boolean;
   multiSelectMap: {
     [key: string]: MainSecionType;
@@ -26,7 +29,10 @@ const initialState: SelectedStateType = {
     file: null,
     folder: null,
   },
-  popupModal: null,
+  popupModal: {
+    type: "",
+    file: null,
+  },
   multiSelectMode: false,
   multiSelectMap: {},
   multiSelectCount: 0,
@@ -66,6 +72,24 @@ const selectedSlice = createSlice({
       state.multiSelectMap = {};
       state.multiSelectCount = 0;
     },
+    setPopupSelect: (
+      state,
+      action: PayloadAction<{
+        type: "quick-item" | "file";
+        file: FileInterface;
+      }>
+    ) => {
+      state.popupModal = {
+        type: action.payload.type,
+        file: action.payload.file,
+      };
+    },
+    resetPopupSelect: (state) => {
+      state.popupModal = {
+        type: "",
+        file: null,
+      };
+    },
   },
 });
 
@@ -74,6 +98,8 @@ export const {
   resetSelected,
   setMultiSelectMode,
   resetMultiSelect,
+  setPopupSelect,
+  resetPopupSelect,
 } = selectedSlice.actions;
 
 export default selectedSlice.reducer;

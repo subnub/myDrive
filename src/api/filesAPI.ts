@@ -1,6 +1,7 @@
 import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
 import { getUserToken } from "./user";
+import { FileInterface } from "../types/file";
 
 interface QueryKeyParams {
   parent: string;
@@ -91,6 +92,22 @@ export const getFileThumbnailAPI = async (thumbnailID: string) => {
   return imgUrl;
 };
 
+export const getFileFullThumbnailAPI = async (fileID: string) => {
+  const config = {
+    responseType: "arraybuffer",
+  };
+  const url = `http://localhost:5173/api/file-service/full-thumbnail/${fileID}`;
+  const response = await axios.get(url, config);
+  return response.data;
+};
+
+export const getVideoTokenAPI = async () => {
+  const response = await axios.get(
+    "/file-service/download/access-token-stream-video"
+  );
+  return response.data;
+};
+
 export const getSuggestedListAPI = async ({
   queryKey,
 }: QueryFunctionContext<
@@ -161,5 +178,12 @@ export const deleteMultiAPI = async (items: any) => {
       items,
     },
   });
+  return response.data;
+};
+
+export const deleteVideoTokenAPI = async () => {
+  const response = await axios.delete(
+    "/file-service/remove-stream-video-token"
+  );
   return response.data;
 };

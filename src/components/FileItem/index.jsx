@@ -14,6 +14,8 @@ import bytes from "bytes";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
 import PlayButtonIcon from "../../icons/PlayIcon";
+import { setPopupSelect } from "../../reducers/selected";
+import ActionsIcon from "../../icons/ActionsIcon";
 
 const FileItem = React.memo((props) => {
   const { file } = props;
@@ -94,7 +96,7 @@ const FileItem = React.memo((props) => {
     const isMobile = mobilecheck();
 
     if (isMobile || currentDate - lastSelected.current < 1500) {
-      dispatch(setPopupFile({ showPopup: true, ...file }));
+      dispatch(setPopupSelect({ type: "file", file }));
     }
 
     lastSelected.current = Date.now();
@@ -157,27 +159,14 @@ const FileItem = React.memo((props) => {
 
             {/* <ContextMenu parent={props.metadata.parent} contextSelected={props.state.contextSelected} closeContext={props.closeContext} downloadFile={props.downloadFile} file={props} changeEditNameMode={props.changeEditNameMode} closeEditNameMode={props.closeEditNameMode} changeDeleteMode={props.changeDeleteMode} startMovingFile={props.startMovingFile}/> */}
             <a onClick={onContextMenu}>
-              <svg
+              <ActionsIcon
                 className={classNames(
                   "w-4 h-4",
                   elementSelected || elementMultiSelected
                     ? "text-white"
                     : "text-[#919eab]"
                 )}
-                aria-hidden="true"
-                focusable="false"
-                data-prefix="fas"
-                data-icon="ellipsis-h"
-                role="img"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 512 512"
-                data-fa-i2svg=""
-              >
-                <path
-                  fill="currentColor"
-                  d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"
-                ></path>
-              </svg>
+              />
             </a>
           </div>
         </td>

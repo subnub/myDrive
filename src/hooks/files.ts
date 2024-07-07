@@ -1,5 +1,7 @@
 import {
   QueryFunctionContext,
+  UseInfiniteQueryResult,
+  UseQueryResult,
   useInfiniteQuery,
   useQuery,
   useQueryClient,
@@ -15,6 +17,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useAppSelector } from "./store";
 import { useUtils } from "./utils";
+import { FileInterface } from "../types/file";
 
 export const useFiles = (enabled = true) => {
   const params = useParams();
@@ -22,31 +25,40 @@ export const useFiles = (enabled = true) => {
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const { isTrash, isMedia } = useUtils();
   const limit = isMedia ? 100 : 50;
-  const filesReactQuery = useInfiniteQuery(
-    [
-      "files",
+  const filesReactQuery: UseInfiniteQueryResult<FileInterface[]> =
+    useInfiniteQuery(
+      [
+        "files",
+        {
+          parent: params.id || "/",
+          search: params.query || "",
+          sortBy,
+          limit,
+          trashMode: isTrash,
+          mediaMode: isMedia,
+        },
+      ],
+      getFilesListAPI,
       {
-        parent: params.id || "/",
-        search: params.query || "",
-        sortBy,
-        limit,
-        trashMode: isTrash,
-        mediaMode: isMedia,
-      },
-    ],
-    getFilesListAPI,
-    {
-      getNextPageParam: (lastPage, pages) => {
-        const lastElement = lastPage[lastPage.length - 1];
-        if (!lastElement) return undefined;
-        return {
-          startAtDate: lastElement.uploadDate,
-          startAtName: lastElement.filename,
-        };
-      },
-      enabled,
-    }
-  );
+        getNextPageParam: (lastPage, pages) => {
+          const lastElement = lastPage[lastPage.length - 1];
+          if (!lastElement) return undefined;
+          return {
+            startAtDate: lastElement.uploadDate,
+            startAtName: lastElement.filename,
+          };
+        },
+        getPreviousPageParam: (firstPage, pages) => {
+          const firstElement = firstPage[0];
+          if (!firstElement) return undefined;
+          return {
+            startAtDate: firstElement.uploadDate,
+            startAtName: firstElement.filename,
+          };
+        },
+        enabled,
+      }
+    );
 
   const testFunction = () => {
     console.log("this is a test function");
@@ -83,9 +95,13 @@ export const useFilesClient = () => {
 };
 
 export const useQuickFiles = (enabled = true) => {
-  const quickFilesQuery = useQuery("quickFiles", getQuickFilesListAPI, {
-    enabled,
-  });
+  const quickFilesQuery: UseQueryResult<FileInterface[]> = useQuery(
+    "quickFiles",
+    getQuickFilesListAPI,
+    {
+      enabled,
+    }
+  );
 
   return { ...quickFilesQuery };
 };

@@ -12,7 +12,11 @@ import { startSetSelectedItem } from "../../actions/selectedItem";
 import { setPopupFile } from "../../actions/popupFile";
 import { FileInterface } from "../../types/file";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
+import {
+  setMainSelect,
+  setMultiSelectMode,
+  setPopupSelect,
+} from "../../reducers/selected";
 import PlayButtonIcon from "../../icons/PlayIcon";
 
 interface QuickAccessItemProps {
@@ -89,7 +93,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
     const isMobile = mobilecheck();
 
     if (isMobile || currentDate - lastSelected.current < 1500) {
-      dispatch(setPopupFile({ showPopup: true, ...file }));
+      dispatch(setPopupSelect({ type: "quick-item", file }));
     }
 
     lastSelected.current = Date.now();

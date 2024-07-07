@@ -2,7 +2,11 @@ import React, { memo, useRef } from "react";
 import { FileInterface } from "../../types/file";
 import { useThumbnail } from "../../hooks/files";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
+import {
+  setMainSelect,
+  setMultiSelectMode,
+  setPopupSelect,
+} from "../../reducers/selected";
 import mobilecheck from "../../utils/mobileCheck";
 import { setPopupFile } from "../../actions/popupFile";
 import classNames from "classnames";
@@ -71,7 +75,7 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
     const isMobile = mobilecheck();
 
     if (isMobile || currentDate - lastSelected.current < 1500) {
-      dispatch(setPopupFile({ showPopup: true, ...file }));
+      dispatch(setPopupSelect({ type: "file", file }));
     }
 
     lastSelected.current = Date.now();

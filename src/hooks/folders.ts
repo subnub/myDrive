@@ -1,14 +1,15 @@
-import { useQuery, useQueryClient } from "react-query";
+import { UseQueryResult, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
 import { getFolderInfoAPI, getFoldersListAPI } from "../api/foldersAPI";
 import { useSelector } from "react-redux";
 import { useUtils } from "./utils";
+import { FolderInterface } from "../types/folders";
 
 export const useFolders = (enabled = true) => {
   const params = useParams();
   const sortBy = useSelector((state: any) => state.filter.sortBy);
   const { isTrash } = useUtils();
-  const foldersReactQuery = useQuery(
+  const foldersReactQuery: UseQueryResult<FolderInterface[]> = useQuery(
     [
       "folders",
       {
