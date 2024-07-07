@@ -8,30 +8,25 @@ import FileItem from "../FileItem";
 import ParentBar from "../ParentBar";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
+import { toggleListView } from "../../reducers/filter";
 
 const Files = memo(() => {
   const { data: files } = useFiles(false);
-  const listView = useSelector((state) => state.filter.listView);
-  const search = useSelector((state) => state.filter.search);
+  const listView = useAppSelector((state) => state.filter.listView);
   const { isHome } = useUtils();
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const changeListViewMode = () => {
-    if (!listView) {
-      dispatch(enableListView());
-    } else {
-      dispatch(disableListView());
-    }
+    dispatch(toggleListView());
   };
   return (
     <div className="mt-8">
       <div>
         <div className="flex justify-between items-center mb-[20px]">
           {isHome && (
-            <h2 className="m-0 text-[22px] font-medium">
-              {search !== "" ? "Files" : "Home Files"}
-            </h2>
+            <h2 className="m-0 text-[22px] font-medium">Home Files</h2>
           )}
           {!isHome && (
             <React.Fragment>

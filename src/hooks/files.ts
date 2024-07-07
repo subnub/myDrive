@@ -22,7 +22,7 @@ import { FileInterface } from "../types/file";
 export const useFiles = (enabled = true) => {
   const params = useParams();
   // TODO: Remove any
-  const sortBy = useSelector((state: any) => state.filter.sortBy);
+  const sortBy = useAppSelector((state) => state.filter.sortBy);
   const { isTrash, isMedia } = useUtils();
   const limit = isMedia ? 100 : 50;
   const filesReactQuery: UseInfiniteQueryResult<FileInterface[]> =

@@ -7,10 +7,9 @@ import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import SearchBarItem from "../SearchBarItem";
 import { FolderInterface } from "../../types/folders";
 import { FileInterface } from "../../types/file";
-import { setPopupFile } from "../../actions/popupFile";
-import Spinner from "../Spinner";
 import classNames from "classnames";
 import { closeDrawer } from "../../reducers/leftSection";
+import { setPopupSelect } from "../../reducers/selected";
 
 const SearchBar = memo(() => {
   const [searchText, setSearchText] = useState("");
@@ -71,7 +70,7 @@ const SearchBar = memo(() => {
   };
 
   const fileClick = (file: FileInterface) => {
-    dispatch(setPopupFile({ showPopup: true, ...file }));
+    dispatch(setPopupSelect({ type: "file", file }));
     resetState();
   };
 

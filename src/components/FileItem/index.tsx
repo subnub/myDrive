@@ -1,15 +1,12 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { memo, useCallback, useMemo, useRef } from "react";
+import React, { memo, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu";
-import mobilecheck from "../../utils/mobileCheck";
 import { useContextMenu } from "../../hooks/contextMenu";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import classNames from "classnames";
 import { useThumbnail } from "../../hooks/files";
 import { getFileColor, getFileExtension } from "../../utils/files";
-import { startSetSelectedItem } from "../../actions/selectedItem";
-import { setPopupFile } from "../../actions/popupFile";
 import bytes from "bytes";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
@@ -98,9 +95,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
       return;
     }
 
-    const isMobile = mobilecheck();
-
-    if (isMobile || currentDate - lastSelected.current < 1500) {
+    if (currentDate - lastSelected.current < 1500) {
       dispatch(setPopupSelect({ type: "file", file }));
     }
 

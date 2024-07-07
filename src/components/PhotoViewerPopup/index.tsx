@@ -256,7 +256,7 @@ const PhotoViewerPopup = memo(() => {
           />
         </div>
       </div>
-      <div className="flex absolute bottom-0  desktopMode:top-[50px] desktopMode:bottom-0 w-full h-full justify-between items-end desktopMode:items-center p-4">
+      <div className="flex absolute pb-[70px] desktopMode:pb-0 top-[50px] bottom-0 w-full h-full justify-between items-end desktopMode:items-center p-4">
         <CircleLeftIcon
           onClick={goToPreviousItem}
           className="pointer text-white w-[30px] h-[30px] select-none"

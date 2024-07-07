@@ -1,17 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useFolders } from "../../hooks/folders";
-import { setSortBy } from "../../actions/filter";
 import FolderItem from "../FolderItem";
 import { memo, useCallback, useEffect } from "react";
 import ParentBar from "../ParentBar";
 import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
+import { setSortBy } from "../../reducers/filter";
 
 const Folders = memo(() => {
   const { data: folders } = useFolders(false);
   const { isHome } = useUtils();
-  const sortBy = useSelector((state) => state.filter.sortBy);
-  const dispatch = useDispatch();
+  const sortBy = useAppSelector((state) => state.filter.sortBy);
+  const dispatch = useAppDispatch();
 
   const switchOrderSortBy = useCallback(() => {
     let newSortBy = "";
