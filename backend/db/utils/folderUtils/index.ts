@@ -15,18 +15,16 @@ class DbUtil {
       trashed: trashMode ? true : null,
     };
 
-    const folderList = (await Folder.find(query).limit(
-      10
-    )) as FolderInterface[];
+    const folderList = await Folder.find(query).limit(10);
 
     return folderList;
   };
 
   getFolderInfo = async (folderID: string, userID: string) => {
-    const folder = (await Folder.findOne({
+    const folder = await Folder.findOne({
       owner: userID,
       _id: new ObjectId(folderID),
-    })) as FolderInterface;
+    });
 
     return folder;
   };
@@ -67,9 +65,7 @@ class DbUtil {
       query = { ...query, trashed: null };
     }
 
-    const folderList = (await Folder.find(query).sort(
-      sortBy
-    )) as FolderInterface[];
+    const folderList = await Folder.find(query).sort(sortBy);
 
     return folderList;
   };
@@ -120,9 +116,7 @@ class DbUtil {
       query = { ...query, trashed: null };
     }
 
-    const folderList = (await Folder.find(query).sort(
-      sortBy
-    )) as FolderInterface[];
+    const folderList = await Folder.find(query).sort(sortBy);
 
     return folderList;
   };
@@ -142,19 +136,19 @@ class DbUtil {
   };
 
   renameFolder = async (folderID: string, userID: string, title: string) => {
-    const folder = (await Folder.findOneAndUpdate(
+    const folder = await Folder.findOneAndUpdate(
       { _id: new ObjectId(folderID), owner: userID },
       { $set: { name: title } }
-    )) as FolderInterface;
+    );
 
     return folder;
   };
 
   findAllFoldersByParent = async (parentID: string, userID: string) => {
-    const folderList = (await Folder.find({
+    const folderList = await Folder.find({
       parentList: parentID,
       owner: userID,
-    })) as FolderInterface[];
+    });
 
     return folderList;
   };

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import FileService from "../services/FileService";
-import FileSystemService from "../services/ChunkService/FileSystemService";
-import S3Service from "../services/ChunkService/S3Service";
 import User, { UserInterface } from "../models/user";
 import sendShareEmail from "../utils/sendShareEmail";
 import {
@@ -15,10 +13,11 @@ import getFileSize from "../services/ChunkService/utils/getFileSize";
 import File, { FileMetadateInterface } from "../models/file";
 import imageChecker from "../utils/imageChecker";
 import videoChecker from "../utils/videoChecker";
-import { S3Actions } from "../services/ChunkService/S3Actions";
+import { S3Actions } from "../services/ChunkService/Actions/S3Actions";
 import { FilesystemActions } from "../services/ChunkService/Actions/FileSystemActions";
 import createVideoThumbnail from "../services/ChunkService/utils/createVideoThumbnail";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
+import createThumbnail from "../services/ChunkService/utils/createImageThumbnail";
 
 const fileService = new FileService();
 const storageActions =
@@ -184,7 +183,6 @@ class FileController {
         const videoCheck = videoChecker(currentFile.filename);
 
         if (videoCheck) {
-          console.log("is vidoe");
           const updatedFile = await createVideoThumbnail(
             currentFile,
             filename,
@@ -193,12 +191,13 @@ class FileController {
 
           res.send(updatedFile);
         } else if (currentFile.length < 15728640 && imageCheck) {
-          // const updatedFile = await createThumbnailAny(
-          //   currentFile,
-          //   filename,
-          //   user
-          // );
-          // return updatedFile;
+          const updatedFile = await createThumbnail(
+            currentFile,
+            filename,
+            user
+          );
+
+          res.send(updatedFile);
         } else {
           res.send(currentFile);
         }

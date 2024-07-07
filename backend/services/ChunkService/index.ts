@@ -56,6 +56,7 @@ class StorageService {
         parent,
         user._id.toString()
       );
+      if (!parentFolder) throw new NotFoundError("Parent Folder Not Found");
       parentList.push(...parentFolder.parentList, parentFolder._id);
     } else {
       parentList.push("/");
@@ -106,12 +107,7 @@ class StorageService {
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
-    // TODO: I believe this has to do with using conn.db instead of the mongoose driver
-    // We should switch to the mongoose driver
-    let IV = currentFile.metadata.IV;
-    if (!(IV instanceof Buffer)) {
-      IV = IV.buffer;
-    }
+    const IV = currentFile.metadata.IV;
 
     const readStreamParams = createGenericParams({
       filePath: currentFile.metadata.filePath,
@@ -144,11 +140,7 @@ class StorageService {
       throw new ForbiddenError("Thumbnail Unauthorized Error");
     }
 
-    // TODO: Fix this type
-    let iv = thumbnail.IV as any;
-    if (!(iv instanceof Buffer)) {
-      iv = iv.buffer;
-    }
+    const iv = thumbnail.IV;
 
     const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
 
@@ -176,11 +168,7 @@ class StorageService {
 
     const password = user.getEncryptionKey();
 
-    // TODO: Fix this type
-    let IV = file.metadata.IV as any;
-    if (!(IV instanceof Buffer)) {
-      IV = IV.buffer;
-    }
+    const IV = file.metadata.IV;
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
@@ -221,7 +209,7 @@ class StorageService {
     const parts = range.replace(/bytes=/, "").split("-");
     let start = parseInt(parts[0], 10);
     let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const IV = currentFile.metadata.IV.buffer as Buffer;
+    const IV = currentFile.metadata.IV;
     const chunksize = end - start + 1;
 
     let head = {
@@ -280,7 +268,7 @@ class StorageService {
   };
 
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {
-    const file: FileInterface = await dbUtilsFile.getPublicFile(fileID);
+    const file = await dbUtilsFile.getPublicFile(fileID);
 
     if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
       throw new NotAuthorizedError("File Not Public");
@@ -294,12 +282,7 @@ class StorageService {
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
-    // TODO: I believe this has to do with using conn.db instead of the mongoose driver
-    // We should switch to the mongoose driver
-    let IV = file.metadata.IV as any;
-    if (!(IV instanceof Buffer)) {
-      IV = IV.buffer;
-    }
+    const IV = file.metadata.IV;
 
     const readStreamParams = createGenericParams({
       filePath: file.metadata.filePath,

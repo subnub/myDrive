@@ -1,46 +1,51 @@
-import mongoose, {Document} from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-const thumbnailSchema = new mongoose.Schema({
-    
+const thumbnailSchema = new mongoose.Schema(
+  {
     name: {
-        type: String, 
-        required: true,
+      type: String,
+      required: true,
     },
     owner: {
-        type: String, 
-        required: true
+      type: String,
+      required: true,
     },
-    
+
     data: {
-        type: Buffer,
+      type: Buffer,
     },
     path: {
-        type: String
+      type: String,
     },
 
     IV: {
-        type: Buffer,
+      type: Buffer,
     },
     s3ID: String,
     personalFile: String,
-}, {
-    timestamps: true
-})
+  },
+  {
+    timestamps: true,
+  }
+);
 
 export interface ThumbnailInterface extends Document {
-    _id: any,
-    name: string,
-    owner: string,
-    data?: any,
-    path?: string,
-    IV?: Buffer,
-    s3ID? : string,
-    personalFile?: boolean,
-    createdAt: Date,
-    updatedAt: Date
+  _id: any;
+  name: string;
+  owner: string;
+  data?: any;
+  path?: string;
+  IV: Buffer;
+  s3ID?: string;
+  personalFile?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const Thumbnail = mongoose.model<ThumbnailInterface>("Thumbnail", thumbnailSchema);
+const Thumbnail = mongoose.model<ThumbnailInterface>(
+  "Thumbnail",
+  thumbnailSchema
+);
 
 export default Thumbnail;
 module.exports = Thumbnail;

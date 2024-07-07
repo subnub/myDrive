@@ -1,73 +1,59 @@
 import mongoose from "../../mongoose";
 import { ObjectId } from "mongodb";
-import File, { FileInterface } from "../../../models/file";
+import File from "../../../models/file";
 import { UserInterface } from "../../../models/user";
 import { QueryInterface } from "../../../utils/createQuery";
-const conn = mongoose.connection;
 
 class DbUtil {
   constructor() {}
 
   getPublicFile = async (fileID: string) => {
-    let file = (await conn.db
-      .collection("fs.files")
-      .findOne({ _id: new ObjectId(fileID) })) as FileInterface;
-
+    const file = await File.findOne({ _id: new ObjectId(fileID) });
     return file;
   };
 
   removeOneTimePublicLink = async (
     fileID: string | mongoose.Types.ObjectId
   ) => {
-    mongoose;
-    const file = (await conn.db.collection("fs.files").findOneAndUpdate(
+    const file = await File.findOneAndUpdate(
       { _id: new ObjectId(fileID) },
       {
         $unset: { "metadata.linkType": "", "metadata.link": "" },
       }
-    )) as FileInterface;
-
-    return file;
+    );
   };
 
   removeLink = async (fileID: string, userID: string) => {
-    const file = (await conn.db
-      .collection("fs.files")
-      .findOneAndUpdate(
-        { _id: new ObjectId(fileID), "metadata.owner": userID },
-        { $unset: { "metadata.linkType": "", "metadata.link": "" } }
-      )) as FileInterface;
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      { $unset: { "metadata.linkType": "", "metadata.link": "" } }
+    );
 
     return file;
   };
 
   makePublic = async (fileID: string, userID: string, token: string) => {
-    const file = (await conn.db
-      .collection("fs.files")
-      .findOneAndUpdate(
-        { _id: new ObjectId(fileID), "metadata.owner": userID },
-        { $set: { "metadata.linkType": "public", "metadata.link": token } }
-      )) as FileInterface;
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      { $set: { "metadata.linkType": "public", "metadata.link": token } }
+    );
 
     return file;
   };
 
   getPublicInfo = async (fileID: string, tempToken: string) => {
-    const file = (await conn.db.collection("fs.files").findOne({
+    const file = await File.findOne({
       _id: new ObjectId(fileID),
       "metadata.link": tempToken,
-    })) as FileInterface;
-
+    });
     return file;
   };
 
   makeOneTimePublic = async (fileID: string, userID: string, token: string) => {
-    const file = (await conn.db
-      .collection("fs.files")
-      .findOneAndUpdate(
-        { _id: new ObjectId(fileID), "metadata.owner": userID },
-        { $set: { "metadata.linkType": "one", "metadata.link": token } }
-      )) as FileInterface;
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      { $set: { "metadata.linkType": "one", "metadata.link": token } }
+    );
 
     return file;
   };
@@ -100,12 +86,7 @@ class DbUtil {
   };
 
   getFileInfo = async (fileID: string, userID: string) => {
-    //TODO: Using mongoose like this causes the object to be returned in raw form
-    // const file = await File.findOne({
-    //   "metadata.owner": userID,
-    //   _id: new ObjectId(fileID),
-    // });
-    const file = await conn.db.collection("fs.files").findOne({
+    const file = await File.findOne({
       "metadata.owner": userID,
       _id: new ObjectId(fileID),
     });
@@ -116,23 +97,15 @@ class DbUtil {
   getQuickList = async (userID: string, limit: number) => {
     let query: any = { "metadata.owner": userID, "metadata.trashed": null };
 
-    const fileList = (await conn.db
-      .collection("fs.files")
-      .find(query)
+    const fileList = await File.find(query)
       .sort({ uploadDate: -1 })
-      .limit(limit)
-      .toArray()) as FileInterface[];
+      .limit(limit);
 
     return fileList;
   };
 
   getList = async (queryObj: QueryInterface, sortBy: string, limit: number) => {
-    const fileList = (await conn.db
-      .collection("fs.files")
-      .find(queryObj)
-      .sort(sortBy)
-      .limit(limit)
-      .toArray()) as FileInterface[];
+    const fileList = await File.find(queryObj).sort(sortBy).limit(limit);
 
     return fileList;
   };
@@ -159,11 +132,7 @@ class DbUtil {
 
     if (mediaMode) query = { ...query, "metadata.hasThumbnail": true };
 
-    const fileList = (await conn.db
-      .collection("fs.files")
-      .find(query)
-      .limit(10)
-      .toArray()) as FileInterface[];
+    const fileList = await File.find(query).limit(10);
 
     return fileList;
   };
@@ -212,7 +181,7 @@ class DbUtil {
     parent: string,
     parentList: string
   ) => {
-    const file = await conn.db.collection("fs.files").findOneAndUpdate(
+    const file = await File.findOneAndUpdate(
       { _id: new ObjectId(fileID), "metadata.owner": userID },
       {
         $set: {
@@ -229,28 +198,18 @@ class DbUtil {
     userID: string | mongoose.Types.ObjectId,
     parentListString: string
   ) => {
-    const fileList = (await conn.db
-      .collection("fs.files")
-      .find({
-        "metadata.owner": userID,
-        "metadata.parentList": { $regex: `.*${parentListString}.*` },
-      })
-      .toArray()) as FileInterface[];
+    const fileList = await File.find({
+      "metadata.owner": userID,
+      "metadata.parentList": { $regex: `.*${parentListString}.*` },
+    });
 
     return fileList;
   };
 
   getFileListByOwner = async (userID: string) => {
-    const fileList = (await conn.db
-      .collection("fs.files")
-      .find({ "metadata.owner": userID })
-      .toArray()) as FileInterface[];
+    const fileList = await File.find({ "metadata.owner": userID });
 
     return fileList;
-  };
-
-  removeChunksByID = async (fileID: string) => {
-    await conn.db.collection("fs.chunks").deleteMany({ files_id: fileID });
   };
 }
 
