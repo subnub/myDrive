@@ -1,11 +1,10 @@
-import React, { memo, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { memo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUtils } from "../../hooks/utils";
 import { useFolder } from "../../hooks/folders";
-import Spinner from "../Spinner";
 
 const ParentBar = memo(() => {
-  const { data: folder, isLoading } = useFolder();
+  const { data: folder } = useFolder();
   console.log("folder", folder);
   const navigate = useNavigate();
   const { isHome, isTrash } = useUtils();

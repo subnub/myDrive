@@ -33,7 +33,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
-  const listView = useSelector((state) => state.filter.listView);
+  const listView = useAppSelector((state) => state.filter.listView);
   const { image, hasThumbnail, imageOnError } = useThumbnail(
     file.metadata.hasThumbnail,
     file.metadata.thumbnailID
@@ -148,7 +148,6 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
             {contextMenuState.selected && (
               <div onClick={clickStopPropagation}>
                 <ContextMenu
-                  gridMode={false}
                   quickItemMode={false}
                   contextSelected={contextMenuState}
                   closeContext={closeContextMenu}
@@ -191,7 +190,6 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
         {contextMenuState.selected && (
           <div onClick={clickStopPropagation}>
             <ContextMenu
-              gridMode={true}
               quickItemMode={false}
               contextSelected={contextMenuState}
               closeContext={closeContextMenu}

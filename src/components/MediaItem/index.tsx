@@ -98,7 +98,6 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>
           <ContextMenu
-            gridMode={true}
             quickItemMode={false}
             contextSelected={contextMenuState}
             closeContext={closeContextMenu}

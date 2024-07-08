@@ -1,12 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
-import { disableListView, enableListView } from "../../actions/filter";
 import { useFiles } from "../../hooks/files";
 import { useUtils } from "../../hooks/utils";
-import SpinnerImage from "../SpinnerImage";
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import FileItem from "../FileItem";
 import ParentBar from "../ParentBar";
-import { useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { toggleListView } from "../../reducers/filter";
@@ -92,9 +88,9 @@ const Files = memo(() => {
           <div
             className={classNames(
               "grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[16px]",
-              files?.pages[0]?.length > 1
-                ? "justify-center xs:justify-normal"
-                : "justify-normal"
+              files?.pages[0]?.length === 1
+                ? "justify-normal"
+                : "justify-center xs:justify-normal"
             )}
           >
             {files?.pages.map((filePage, index) => (

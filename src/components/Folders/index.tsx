@@ -1,8 +1,6 @@
-import { useDispatch, useSelector } from "react-redux";
 import { useFolders } from "../../hooks/folders";
 import FolderItem from "../FolderItem";
-import { memo, useCallback, useEffect } from "react";
-import ParentBar from "../ParentBar";
+import { memo, useCallback } from "react";
 import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";

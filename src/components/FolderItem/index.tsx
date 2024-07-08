@@ -1,10 +1,8 @@
-import React, { memo, useCallback, useMemo, useRef } from "react";
+import React, { memo, useCallback, useRef } from "react";
 import ContextMenu from "../ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import classNames from "classnames";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { startSetSelectedItem } from "../../actions/selectedItem";
 import mobilecheck from "../../utils/mobileCheck";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
@@ -84,14 +82,7 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
 
       lastSelected.current = Date.now();
     },
-    [
-      startSetSelectedItem,
-      mobilecheck,
-      navigate,
-      folder._id,
-      elementSelected,
-      multiSelectMode,
-    ]
+    [mobilecheck, navigate, folder._id, elementSelected, multiSelectMode]
   );
 
   return (
@@ -111,7 +102,6 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>
           <ContextMenu
-            gridMode={true}
             folderMode={true}
             quickItemMode={folder.parent !== "/"}
             contextSelected={contextMenuState}

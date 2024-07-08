@@ -20,9 +20,8 @@ class FolderService {
   createFolder = async (userID: string, name: string, parent: string) => {
     const newFolderParentList = [];
     if (parent && parent !== "/") {
-      const parentFolder = (
-        await utilsFolder.getFolderInfo(parent, userID)
-      ).toObject() as FolderInterface | null;
+      const parentFolder = await utilsFolder.getFolderInfo(parent, userID);
+
       if (!parentFolder) throw new Error("Parent not found");
       newFolderParentList.push(
         ...parentFolder.parentList,
@@ -47,32 +46,8 @@ class FolderService {
   };
 
   getFolderInfo = async (userID: string, folderID: string) => {
-    let currentFolder = await utilsFolder.getFolderInfo(folderID, userID);
-
+    const currentFolder = await utilsFolder.getFolderInfo(folderID, userID);
     if (!currentFolder) throw new NotFoundError("Folder Info Not Found Error");
-
-    const parentID = currentFolder.parent;
-
-    let parentName = "";
-
-    if (parentID === "/") {
-      parentName = "Home";
-    } else {
-      const parentFolder = await utilsFolder.getFolderInfo(parentID, userID);
-
-      if (parentFolder) {
-        parentName = parentFolder.name;
-      } else {
-        parentName = "Unknown";
-      }
-    }
-
-    const folderName = currentFolder.name;
-
-    currentFolder = { ...currentFolder._doc, parentName, folderName };
-    // Must Use ._doc here, or the destucturing/spreading
-    // Will add a bunch of unneeded variables to the object.
-
     return currentFolder;
   };
 
@@ -97,6 +72,8 @@ class FolderService {
           currentSubFolderID,
           userID
         );
+
+        if (!currentFolder) throw new NotFoundError("Folder Info Not Found");
 
         folderIDList.push(currentFolder._id);
         folderNameList.push(currentFolder.name);
@@ -174,6 +151,8 @@ class FolderService {
 
     const folder = await utilsFolder.getFolderInfo(id, userID);
 
+    if (!folder) throw new NotFoundError("Folder Info Not Found");
+
     const subFolders = await this.getFolderList(user, { parent: id }); //folderService.getFolderList(user._id, {parent: id})
 
     let folderList: any[] = [];
@@ -245,6 +224,9 @@ class FolderService {
 
     if (parentID.length !== 1) {
       const parentFile = await utilsFolder.getFolderInfo(parentID, userID);
+
+      if (!parentFile) throw new NotFoundError("Parent Folder Info Not Found");
+
       parentList = parentFile.parentList;
       parentList.push(parentID);
     }

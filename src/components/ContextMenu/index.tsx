@@ -41,11 +41,10 @@ export interface ContextMenuProps {
     Y: number;
   };
   folderMode?: boolean;
-  quickItemMode: boolean;
-  file?: FileInterface;
-  folder?: FolderInterface;
+  quickItemMode?: boolean;
+  file?: FileInterface | null;
+  folder?: FolderInterface | null;
   stopPropagation?: () => void;
-  gridMode: boolean;
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {

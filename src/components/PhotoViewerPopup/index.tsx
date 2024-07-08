@@ -16,6 +16,7 @@ import CircleRightIcon from "../../icons/CircleRightIcon";
 import { useFiles, useQuickFiles } from "../../hooks/files";
 import { FileInterface } from "../../types/file";
 import { InfiniteData } from "react-query";
+import { getFileColor, getFileExtension } from "../../utils/files";
 
 const PhotoViewerPopup = memo(() => {
   const [image, setImage] = useState("");
@@ -37,6 +38,16 @@ const PhotoViewerPopup = memo(() => {
     clickStopPropagation,
     ...contextMenuState
   } = useContextMenu();
+
+  const fileExtension = useMemo(
+    () => getFileExtension(file.filename, 3),
+    [file.filename]
+  );
+
+  const imageColor = useMemo(
+    () => getFileColor(file.filename),
+    [file.filename]
+  );
 
   console.log("rerender");
 
@@ -229,7 +240,6 @@ const PhotoViewerPopup = memo(() => {
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>
           <ContextMenu
-            gridMode={true}
             quickItemMode={false}
             contextSelected={contextMenuState}
             closeContext={closeContextMenu}
@@ -239,21 +249,38 @@ const PhotoViewerPopup = memo(() => {
       )}
 
       <div
-        className="absolute top-[20px] right-[20px] flex"
+        className="absolute top-[20px] flex justify-between w-full"
         id="actions-wrapper"
       >
-        <div onClick={onContextMenu} id="action-context-wrapper">
-          <ActionsIcon
-            className="pointer text-white w-[20px] h-[25px] mr-4"
-            id="action-context-icon"
-          />
+        <div className="ml-4 flex items-center">
+          <span className="inline-flex items-center mr-[15px] max-w-[27px] min-w-[27px] min-h-[27px] max-h-[27px]">
+            <div
+              className="h-[27px] w-[27px] bg-red-500 rounded-[3px] flex flex-row justify-center items-center"
+              style={{ background: imageColor }}
+            >
+              <span className="font-semibold text-[9.5px] text-white">
+                {fileExtension}
+              </span>
+            </div>
+          </span>
+          <p className="text-md text-white text-ellipsis overflow-hidden max-w-[200px] md:max-w-[600px] whitespace-nowrap">
+            {file.filename}
+          </p>
         </div>
+        <div className="flex mr-4">
+          <div onClick={onContextMenu} id="action-context-wrapper">
+            <ActionsIcon
+              className="pointer text-white w-[20px] h-[25px] mr-4"
+              id="action-context-icon"
+            />
+          </div>
 
-        <div onClick={closePhotoViewer} id="action-close-wrapper">
-          <CloseIcon
-            className="pointer text-white w-[25px] h-[25px]"
-            id="action-close-icon"
-          />
+          <div onClick={closePhotoViewer} id="action-close-wrapper">
+            <CloseIcon
+              className="pointer text-white w-[25px] h-[25px]"
+              id="action-close-icon"
+            />
+          </div>
         </div>
       </div>
       <div className="flex absolute pb-[70px] desktopMode:pb-0 top-[50px] bottom-0 w-full h-full justify-between items-end desktopMode:items-center p-4">

@@ -116,7 +116,6 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>
           <ContextMenu
-            gridMode={true}
             quickItemMode={true}
             contextSelected={contextMenuState}
             closeContext={closeContextMenu}

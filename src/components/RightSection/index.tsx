@@ -1,16 +1,14 @@
 import bytes from "bytes";
 import moment from "moment";
-import React, { memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import ContextMenu from "../ContextMenu";
 import classNames from "classnames";
-import { useDispatch, useSelector } from "react-redux";
-import { resetSelectedItem } from "../../actions/selectedItem";
+import { useDispatch } from "react-redux";
 import { getFileExtension } from "../../utils/files";
 import { useContextMenu } from "../../hooks/contextMenu";
-import { setPopupFile } from "../../actions/popupFile";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../hooks/store";
-import { resetSelected } from "../../reducers/selected";
+import { resetSelected, setPopupSelect } from "../../reducers/selected";
 import { useUtils } from "../../hooks/utils";
 
 const RightSection = memo(() => {
@@ -72,7 +70,7 @@ const RightSection = memo(() => {
   };
   const openItem = () => {
     if (selectedItem.file) {
-      dispatch(setPopupFile({ showPopup: true, ...selectedItem.file }));
+      dispatch(setPopupSelect({ type: "file", file: selectedItem.file }));
     } else if (!isTrash) {
       navigate(`/folder/${selectedItem.id}`);
     } else {
@@ -163,14 +161,14 @@ const RightSection = memo(() => {
           </div>
           <div className="mt-[15px] flex items-center">
             <a
-              className="w-[80px] h-[40px] inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate"
+              className="w-[80px] h-[40px] inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate cursor-pointer hover:bg-[#f6f5fd]"
               onClick={openItem}
             >
               Open
             </a>
             <div className="ml-[15px] px-[20px]">
               <a
-                className="w-[40px] h-[40px] rounded-[4px] inline-flex items-center justify-center border border-[#919eab] text-[#919eab] no-underline animate"
+                className="w-[40px] h-[40px] rounded-[4px] inline-flex items-center justify-center border border-[#919eab] text-[#919eab] no-underline animate cursor-pointer"
                 // @ts-ignore
                 onClick={onContextMenu}
               >
@@ -181,7 +179,6 @@ const RightSection = memo(() => {
           {contextMenuState.selected && (
             <div onClick={clickStopPropagation}>
               <ContextMenu
-                gridMode={true}
                 contextSelected={contextMenuState}
                 closeContext={closeContextMenu}
                 folderMode={!selectedItem.file}

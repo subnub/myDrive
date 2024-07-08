@@ -9,6 +9,7 @@ import { useUtils } from "../../hooks/utils";
 import Medias from "../Medias";
 import { useAppSelector } from "../../hooks/store";
 import PhotoViewerPopup from "../PhotoViewerPopup";
+import FileInfoPopup from "../FileInfoPopup";
 
 const MainSection = memo(() => {
   const moverID = useAppSelector((state) => state.mover.id);
@@ -23,6 +24,12 @@ const MainSection = memo(() => {
         (selectedItem.file.metadata.hasThumbnail ||
           selectedItem.file.metadata.isVideo) ? (
           <PhotoViewerPopup />
+        ) : undefined}
+
+        {selectedItem?.file &&
+        !selectedItem.file.metadata.isVideo &&
+        !selectedItem.file.metadata.hasThumbnail ? (
+          <FileInfoPopup />
         ) : undefined}
 
         {moverID.length === 0 ? undefined : <MoverMenu />}
