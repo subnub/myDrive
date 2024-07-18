@@ -219,6 +219,16 @@ class FolderService {
     await utilsFile.restoreFilesByParent(parentList.toString(), userID);
   };
 
+  renameFolder2 = async (folderID: string, userID: string, title: string) => {
+    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+
+    if (!folder) throw new NotFoundError("Rename Folder Not Found");
+
+    folder.name = title;
+
+    await folder.save();
+  };
+
   moveFolder = async (userID: string, folderID: string, parentID: string) => {
     let parentList = ["/"];
 

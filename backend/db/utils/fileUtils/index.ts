@@ -188,7 +188,8 @@ class DbUtil {
           "metadata.parent": parent,
           "metadata.parentList": parentList,
         },
-      }
+      },
+      { new: true }
     );
 
     return file;

@@ -5,7 +5,6 @@ import { useFolder } from "../../hooks/folders";
 
 const ParentBar = memo(() => {
   const { data: folder } = useFolder();
-  console.log("folder", folder);
   const navigate = useNavigate();
   const { isHome, isTrash } = useUtils();
 

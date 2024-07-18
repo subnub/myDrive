@@ -729,9 +729,9 @@ class FileController {
     try {
       const fileID = req.body.id;
       const userID = req.user._id;
-      const parentID = req.body.parent;
+      const folderID = req.body.parentID;
 
-      await fileService.moveFile(userID, fileID, parentID);
+      await fileService.moveFile(userID, fileID, folderID);
 
       res.send();
     } catch (e: unknown) {

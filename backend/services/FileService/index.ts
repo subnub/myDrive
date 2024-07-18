@@ -38,8 +38,7 @@ class MongoFileService {
   removeLink = async (userID: string, fileID: string) => {
     const file = await dbUtilsFile.removeLink(fileID, userID);
 
-    if (!file.lastErrorObject.updatedExisting)
-      throw new NotFoundError("Remove Link File Not Found Error");
+    if (!file) throw new NotFoundError("Remove Link File Not Found Error");
   };
 
   makePublic = async (userID: string, fileID: string) => {
@@ -47,17 +46,13 @@ class MongoFileService {
 
     const file = await dbUtilsFile.makePublic(fileID, userID, token);
 
-    if (!file.lastErrorObject.updatedExisting)
-      throw new NotFoundError("Make Public File Not Found Error");
+    if (!file) throw new NotFoundError("Make Public File Not Found Error");
 
     return token;
   };
 
   getPublicInfo = async (fileID: string, tempToken: string) => {
-    const file: FileInterface = await dbUtilsFile.getPublicInfo(
-      fileID,
-      tempToken
-    );
+    const file = await dbUtilsFile.getPublicInfo(fileID, tempToken);
 
     if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
       throw new NotFoundError("Public Info Not Found");
@@ -71,8 +66,7 @@ class MongoFileService {
 
     const file = await dbUtilsFile.makeOneTimePublic(fileID, userID, token);
 
-    if (!file.lastErrorObject.updatedExisting)
-      throw new NotFoundError("Make One Time Public Not Found Error");
+    if (!file) throw new NotFoundError("Make One Time Public Not Found Error");
 
     return token;
   };
@@ -319,28 +313,29 @@ class MongoFileService {
     return file;
   };
 
-  moveFile = async (userID: string, fileID: string, parentID: string) => {
-    let parentList = ["/"];
+  moveFile = async (userID: string, fileID: string, folderID: string) => {
+    const file = await dbUtilsFile.getFileInfo(fileID, userID);
 
-    if (parentID.length !== 1) {
-      const parentFile = await dbUtilsFolder.getFolderInfo(parentID, userID);
-      if (!parentFile)
-        throw new NotFoundError("Rename Parent File Not Found Error");
-      const parentList = parentFile.parentList;
-      parentList.push(parentID);
-    }
+    if (!file) throw new NotFoundError("Move File Not Found Error");
 
-    const file = await dbUtilsFile.moveFile(
+    const folder = await dbUtilsFolder.getFolderInfo(folderID, userID);
+
+    if (!folder) throw new NotFoundError("Move Folder Not Found Error");
+
+    const newParentList = [...folder.parentList, folder._id];
+
+    const updatedFile = await dbUtilsFile.moveFile(
       fileID,
       userID,
-      parentID,
-      parentList.toString()
+      folderID,
+      newParentList.toString()
     );
 
-    if (!file || !file.lastErrorObject.updatedExisting)
-      throw new NotFoundError("Rename File Not Found Error");
+    if (!updatedFile) {
+      throw new NotFoundError("Move Updated File Not Found Error");
+    }
 
-    return file;
+    return updatedFile;
   };
 }
 
