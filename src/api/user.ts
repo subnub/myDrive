@@ -19,5 +19,5 @@ export const loginAPI = async (email: string, password: string) => {
     email,
     password,
   });
-  response.data;
+  return response.data;
 };
