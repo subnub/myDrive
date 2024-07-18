@@ -20,6 +20,7 @@ import uploadStorageSwitcherReducer from "../reducers/uploadStorageSwitcher";
 import mobileContextMenuReducer from "../reducers/mobileContextMenu";
 import selectedReducer from "../reducers/selected";
 import leftSectionReducer from "../reducers/leftSection";
+import userReducer from "../reducers/user";
 
 //const composeEnchancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -34,6 +35,7 @@ const store = configureStore({
     leftSection: leftSectionReducer,
     // selectedItem: selectedItemReducer,
     uploads: uploadsReducer,
+    user: userReducer,
     // storage: storageReducer,
     // quickFiles: quickFilesReducer,
     // popupFile: popupFilesReducer,

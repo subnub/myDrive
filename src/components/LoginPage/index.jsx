@@ -225,7 +225,7 @@ class LoginPageContainer extends React.Component {
       ...this.state,
       email: "",
     }));
-    this.loginWithToken();
+    // this.loginWithToken();
   };
 
   render() {
