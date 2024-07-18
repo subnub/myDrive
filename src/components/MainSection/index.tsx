@@ -12,8 +12,6 @@ import PhotoViewerPopup from "../PhotoViewerPopup";
 import FileInfoPopup from "../FileInfoPopup";
 
 const MainSection = memo(() => {
-  const moverID = useAppSelector((state) => state.mover.id);
-  const showPopup = useAppSelector((state) => state.popupFile.showPopup);
   const selectedItem = useAppSelector((state) => state.selected.popupModal);
   const { isMedia } = useUtils();
   return (
@@ -31,8 +29,6 @@ const MainSection = memo(() => {
         !selectedItem.file.metadata.hasThumbnail ? (
           <FileInfoPopup />
         ) : undefined}
-
-        {moverID.length === 0 ? undefined : <MoverMenu />}
 
         <div className="flex flex-row h-screen w-screen pt-16">
           <LeftSection />

@@ -32,9 +32,10 @@ class LoginPageContainer extends React.Component {
   }
 
   loginWithToken = async () => {
+    console.log("login with token");
     const loginSuccessful = await this.props.dispatch(startLoginCheck());
     const loginRedirectRoute =
-      this.props.location.state?.from?.pathname || this.props.currentRoute;
+      this.props.location.state?.from?.pathname || "/home";
     if (loginSuccessful) {
       this.props.navigate(loginRedirectRoute);
     }
@@ -250,7 +251,6 @@ const mapStateToProps = (state) => ({
   id: state.auth.id,
   loginFailed: state.main.loginFailed,
   loginFailedCode: state.main.loginFailedCode,
-  currentRoute: state.routes.currentRoute,
   createNewAccount: state.main.createNewAccount,
 });
 
