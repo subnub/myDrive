@@ -15,7 +15,6 @@ import { setFiles, startResetCache } from "../../actions/files";
 import { connect } from "react-redux";
 import { setParent } from "../../actions/parent";
 import uuid from "uuid";
-import InvoiceItem from "../InvoiceItem";
 import { setUpdateSettingsID } from "../../utils/updateSettings";
 import HomepageSpinner from "../HomepageSpinner";
 import { setLoading } from "../../actions/main";
@@ -1493,13 +1492,6 @@ class SettingsPageContainer extends React.Component {
                           <th></th>
                         </tr>
 
-                        {!this.state.loaded || !this.state.invoicesLoaded
-                          ? undefined
-                          : this.state.invoices.map((currentInvoice) => {
-                              return (
-                                <InvoiceItem currentInvoice={currentInvoice} />
-                              );
-                            })}
                         {/* <tr>
                 <td className="date__history">May 1, 2020</td>
                 <td className="plan__history">myDrive Standard Plan</td>

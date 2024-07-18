@@ -14,8 +14,6 @@ import DownloadPage from "../components/DownloadPage";
 import VerifyEmailPage from "../components/VerifyEmailPage";
 import uuid from "uuid";
 import ResetPasswordPage from "../components/ResetPasswordPage";
-import GoogleAccountPage from "../components/GoogleAccountPage";
-import AddStoragePage from "../components/AddStoragePage";
 import SettingsPage from "../components/SettingsPage";
 import Homepage from "../components/Homepage";
 
