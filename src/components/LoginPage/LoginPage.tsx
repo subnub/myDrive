@@ -1,11 +1,14 @@
 import SpinnerLogin from "../SpinnerLogin";
-import React, { useEffect, useMemo, useState } from "react";
-import { getUserAPI, loginAPI } from "../../api/user";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createAccountAPI, getUserAPI, loginAPI } from "../../api/user";
 import { useLocation, useNavigate } from "react-router-dom";
 import { setUser } from "../../reducers/user";
 import { useAppDispatch } from "../../hooks/store";
 import { capitalize } from "lodash";
 import AlertIcon from "../../icons/AlertIcon";
+import SpinnerPage from "../SpinnerPage";
+import classNames from "classnames";
+import { emailVerificationSentPopup } from "../../popups/user";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -13,24 +16,19 @@ const LoginPage = () => {
   const [verifyPassword, setVerifyPassword] = useState("");
   const [mode, setMode] = useState<"login" | "create" | "reset">("login");
   const [attemptingLogin, setAttemptingLogin] = useState(false);
-  const [loginExpired, setLoginExpired] = useState(false);
+  const [loadingLogin, setLoadingLogin] = useState(false);
+  const [error, setError] = useState("");
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
   const attemptLoginWithToken = async () => {
     setAttemptingLogin(true);
-    console.log("login with token");
 
     try {
       const userResponse = await getUserAPI();
-      console.log("user response", userResponse);
-      if (userResponse.emailVerified) {
-        // TODO: Fix this
-      }
 
       const redirectPath = location.state?.from?.pathname || "/home";
-      console.log("redirect path", redirectPath);
       dispatch(setUser(userResponse));
       navigate(redirectPath);
       setAttemptingLogin(false);
@@ -39,20 +37,44 @@ const LoginPage = () => {
       console.log("Login Error", e);
       setAttemptingLogin(false);
       if (window.localStorage.getItem("hasPreviouslyLoggedIn")) {
-        setLoginExpired(true);
+        setError("Login Expired");
+        window.localStorage.removeItem("hasPreviouslyLoggedIn");
       }
     }
   };
 
   const login = async () => {
     try {
+      setLoadingLogin(true);
       const loginResponse = await loginAPI(email, password);
-      console.log("login response", loginResponse);
       window.localStorage.setItem("hasPreviouslyLoggedIn", "true");
       dispatch(setUser(loginResponse));
       navigate("/home");
+      setLoadingLogin(false);
     } catch (e) {
       console.log("Login Error", e);
+      setLoadingLogin(false);
+      setError("Login Failed");
+    }
+  };
+
+  const createAccount = async () => {
+    try {
+      setLoadingLogin(true);
+      const createAccountResponse = await createAccountAPI(email, password);
+      window.localStorage.setItem("hasPreviouslyLoggedIn", "true");
+
+      if (createAccountResponse.emailSent) {
+        emailVerificationSentPopup();
+      }
+
+      dispatch(setUser(createAccountResponse.user));
+      navigate("/home");
+      setLoadingLogin(false);
+    } catch (e) {
+      console.log("Create Account Error", e);
+      setLoadingLogin(false);
+      setError("Create Account Failed");
     }
   };
 
@@ -73,6 +95,8 @@ const LoginPage = () => {
     e.preventDefault();
     if (mode === "login") {
       login();
+    } else if (mode === "create") {
+      createAccount();
     }
   };
 
@@ -89,6 +113,16 @@ const LoginPage = () => {
     }
   }, [mode]);
 
+  const validationError = useMemo(() => {
+    if (mode === "login" || mode === "reset") return "";
+
+    if (mode === "create") {
+      if (password !== verifyPassword) return "Passwords do not match";
+    }
+
+    return "";
+  }, [mode, email, password, verifyPassword]);
+
   useEffect(() => {
     attemptLoginWithToken();
   }, []);
@@ -96,7 +130,7 @@ const LoginPage = () => {
   if (attemptingLogin) {
     return (
       <div>
-        <div className="box-layout">
+        <div className="w-screen h-screen flex justify-center items-center">
           <div>
             <SpinnerLogin />
           </div>
@@ -108,10 +142,18 @@ const LoginPage = () => {
   return (
     <div>
       <div className="bg-[#F4F4F6] w-screen h-screen flex justify-center items-center">
-        <div className="rounded-md shadow-lg bg-white p-10 relative min-w-[500px]">
+        <div
+          className={classNames(
+            "rounded-md shadow-lg bg-white p-10 relative w-[90%] sm:w-[500px] animate-height",
+            {}
+          )}
+        >
           <div className="absolute -top-10 left-0 right-0 flex justify-center items-center">
             <div className="flex items-center justify-center rounded-full bg-white p-3 shadow-md">
-              <img src="/images/icon.png" alt="logo" className="w-[45px]" />
+              {!loadingLogin && (
+                <img src="/images/icon.png" alt="logo" className="w-[45px]" />
+              )}
+              {loadingLogin && <SpinnerPage />}
             </div>
           </div>
           <form onSubmit={onSubmit}>
@@ -165,12 +207,14 @@ const LoginPage = () => {
               <input
                 type="submit"
                 value={capitalize(mode)}
-                disabled={isSubmitDisabled}
-                className="bg-[#3c85ee] border border-[#3c85ee] rounded-[5px] text-white text-[15px] font-medium cursor-pointer py-2 px-4 disabled:opacity-50"
+                disabled={
+                  isSubmitDisabled || loadingLogin || validationError !== ""
+                }
+                className="bg-[#3c85ee] border border-[#3c85ee] rounded-[5px] text-white text-[15px] font-medium cursor-pointer py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
-            <div className="mt-2">
+            <div className="mt-4">
               {mode === "login" && (
                 <p className="text-center text-[#637381] text-[15px] font-normal">
                   Don't have an account?{" "}
@@ -194,11 +238,13 @@ const LoginPage = () => {
                 </p>
               )}
             </div>
-            {loginExpired && (
+            {(validationError || error) && (
               <div className="mt-4">
                 <div className="flex justify-center items-center">
                   <AlertIcon className="w-[20px] text-red-600 mr-2" />
-                  <p className="text-[#637381] text-[15px]">Login expired</p>
+                  <p className="text-[#637381] text-[15px]">
+                    {validationError || error}
+                  </p>
                 </div>
               </div>
             )}

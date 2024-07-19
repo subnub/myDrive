@@ -143,20 +143,19 @@ class UserController {
 
   createUser = async (req: RequestType, res: Response) => {
     if (env.createAcctBlocked) {
-      return await res.status(401).send();
+      res.status(401).send();
+      return;
     }
 
     try {
       const currentUUID = req.headers.uuid as string;
 
-      const { user, accessToken, refreshToken } = await UserProvider.create(
-        req.body,
-        currentUUID
-      );
+      const { user, accessToken, refreshToken, emailSent } =
+        await UserProvider.create(req.body, currentUUID);
 
       createLoginCookie(res, accessToken, refreshToken);
 
-      res.status(201).send({ user });
+      res.status(201).send({ user, emailSent });
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nCreate User Route Error:", e.message);

@@ -21,6 +21,12 @@ export default {
   disableEmailVerification: process.env.DISABLE_EMAIL_VERIFICATION,
   secureCookies: process.env.SECURE_COOKIES,
   tempDirectory: process.env.TEMP_DIRECTORY,
+  emailVerification: process.env.EMAIL_VERIFICATION,
+  emailDomain: process.env.EMAIL_DOMAIN,
+  emailAPIKey: process.env.EMAIL_API_KEY,
+  emailHost: process.env.EMAIL_HOST,
+  emailPort: process.env.EMAIL_PORT,
+  emailAddress: process.env.EMAIL_ADDRESS,
 };
 
 module.exports = {
@@ -46,4 +52,10 @@ module.exports = {
   disableEmailVerification: process.env.DISABLE_EMAIL_VERIFICATION,
   secureCookies: process.env.SECURE_COOKIES,
   tempDirectory: process.env.TEMP_DIRECTORY,
+  emailVerification: process.env.EMAIL_VERIFICATION,
+  emailDomain: process.env.EMAIL_DOMAIN,
+  emailAPIKey: process.env.EMAIL_API_KEY,
+  emailHost: process.env.EMAIL_HOST,
+  emailPort: process.env.EMAIL_PORT,
+  emailAddress: process.env.EMAIL_ADDRESS,
 };

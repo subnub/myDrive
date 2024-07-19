@@ -88,7 +88,6 @@ class UserService {
     const user = new User({
       email: userData.email,
       password: userData.password,
-      emailVerified: env.disableEmailVerification,
     });
     await user.save();
 
@@ -99,13 +98,12 @@ class UserService {
     const { accessToken, refreshToken } = await user.generateAuthToken(uuid);
     const emailToken = await user.generateEmailVerifyToken();
 
-    if (!env.disableEmailVerification)
-      await sendEmailVerification(user, emailToken);
+    const emailSent = await sendEmailVerification(user, emailToken);
 
     if (!accessToken || !refreshToken)
       throw new InternalServerError("Could Not Create New User Error");
 
-    return { user, accessToken, refreshToken };
+    return { user, accessToken, refreshToken, emailSent };
   };
 
   changePassword = async (
