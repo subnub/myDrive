@@ -21,7 +21,11 @@ import {
 } from "../../api/foldersAPI";
 import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import { useAppDispatch } from "../../hooks/store";
-import { resetSelected, setMultiSelectMode } from "../../reducers/selected";
+import {
+  resetSelected,
+  setMultiSelectMode,
+  setShareModal,
+} from "../../reducers/selected";
 import TrashIcon from "../../icons/TrashIcon";
 import MultiSelectIcon from "../../icons/MultiSelectIcon";
 import RenameIcon from "../../icons/RenameIcon";
@@ -195,7 +199,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
 
   const openShareItemModal = () => {
     props.closeContext();
-    dispatch(setShareSelected(props.file));
+    dispatch(setShareModal(props.file!));
   };
 
   const downloadItem = () => {

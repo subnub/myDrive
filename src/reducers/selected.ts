@@ -20,6 +20,9 @@ export interface SelectedStateType {
     [key: string]: MainSecionType;
   };
   multiSelectCount: number;
+  shareModal: {
+    file: FileInterface | null;
+  };
 }
 
 const initialState: SelectedStateType = {
@@ -36,6 +39,9 @@ const initialState: SelectedStateType = {
   multiSelectMode: false,
   multiSelectMap: {},
   multiSelectCount: 0,
+  shareModal: {
+    file: null,
+  },
 };
 
 const selectedSlice = createSlice({
@@ -90,6 +96,20 @@ const selectedSlice = createSlice({
         file: null,
       };
     },
+    setShareModal: (state, action: PayloadAction<FileInterface>) => {
+      state.popupModal = {
+        type: "",
+        file: null,
+      };
+      state.shareModal = {
+        file: action.payload,
+      };
+    },
+    resetShareModal: (state) => {
+      state.shareModal = {
+        file: null,
+      };
+    },
   },
 });
 
@@ -100,6 +120,8 @@ export const {
   resetMultiSelect,
   setPopupSelect,
   resetPopupSelect,
+  setShareModal,
+  resetShareModal,
 } = selectedSlice.actions;
 
 export default selectedSlice.reducer;

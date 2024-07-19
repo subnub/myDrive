@@ -49,10 +49,16 @@ const FileInfoPopup = memo(() => {
     downloadFileAPI(file._id);
   };
 
+  const outterWrapperClick = (e: any) => {
+    if (e.target.id !== "outer-wrapper" || contextMenuState.selected) return;
+    dispatch(resetPopupSelect());
+  };
+
   return (
     <div
       className="w-screen h-screen bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col"
       id="outer-wrapper"
+      onClick={outterWrapperClick}
     >
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>

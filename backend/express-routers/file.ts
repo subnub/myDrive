@@ -92,7 +92,7 @@ router.patch("/file-service/restore", auth, fileController.restoreFile);
 
 router.patch("/file-service/restore-multi", auth, fileController.restoreMulti);
 
-router.delete("/file-service/remove-link/:id", auth, fileController.removeLink);
+router.patch("/file-service/remove-link/:id", auth, fileController.removeLink);
 
 router.delete(
   "/file-service/remove/token-video/:id",

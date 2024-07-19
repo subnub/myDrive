@@ -39,6 +39,8 @@ class MongoFileService {
     const file = await dbUtilsFile.removeLink(fileID, userID);
 
     if (!file) throw new NotFoundError("Remove Link File Not Found Error");
+
+    return file;
   };
 
   makePublic = async (userID: string, fileID: string) => {
@@ -48,7 +50,7 @@ class MongoFileService {
 
     if (!file) throw new NotFoundError("Make Public File Not Found Error");
 
-    return token;
+    return { file, token };
   };
 
   getPublicInfo = async (fileID: string, tempToken: string) => {
@@ -68,7 +70,7 @@ class MongoFileService {
 
     if (!file) throw new NotFoundError("Make One Time Public Not Found Error");
 
-    return token;
+    return { file, token };
   };
 
   getFileInfo = async (userID: string, fileID: string) => {

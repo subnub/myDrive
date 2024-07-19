@@ -162,6 +162,21 @@ export const renameFileAPI = async (fileID: string, name: string) => {
   return response.data;
 };
 
+export const makePublicAPI = async (fileID: string) => {
+  const response = await axios.patch(`/file-service/make-public/${fileID}`);
+  return response.data;
+};
+
+export const makeOneTimePublicAPI = async (fileID: string) => {
+  const response = await axios.patch(`/file-service/make-one/${fileID}`);
+  return response.data;
+};
+
+export const removeLinkAPI = async (fileID: string) => {
+  const response = await axios.patch(`/file-service/remove-link/${fileID}`);
+  return response.data;
+};
+
 // DELETE
 export const deleteFileAPI = async (fileID: string) => {
   const response = await axios.delete(`/file-service/remove`, {

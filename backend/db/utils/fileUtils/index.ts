@@ -26,7 +26,8 @@ class DbUtil {
   removeLink = async (fileID: string, userID: string) => {
     const file = await File.findOneAndUpdate(
       { _id: new ObjectId(fileID), "metadata.owner": userID },
-      { $unset: { "metadata.linkType": "", "metadata.link": "" } }
+      { $unset: { "metadata.linkType": "", "metadata.link": "" } },
+      { new: true }
     );
 
     return file;
@@ -35,7 +36,8 @@ class DbUtil {
   makePublic = async (fileID: string, userID: string, token: string) => {
     const file = await File.findOneAndUpdate(
       { _id: new ObjectId(fileID), "metadata.owner": userID },
-      { $set: { "metadata.linkType": "public", "metadata.link": token } }
+      { $set: { "metadata.linkType": "public", "metadata.link": token } },
+      { new: true }
     );
 
     return file;
@@ -52,7 +54,8 @@ class DbUtil {
   makeOneTimePublic = async (fileID: string, userID: string, token: string) => {
     const file = await File.findOneAndUpdate(
       { _id: new ObjectId(fileID), "metadata.owner": userID },
-      { $set: { "metadata.linkType": "one", "metadata.link": token } }
+      { $set: { "metadata.linkType": "one", "metadata.link": token } },
+      { new: true }
     );
 
     return file;

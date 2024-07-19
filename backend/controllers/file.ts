@@ -297,9 +297,9 @@ class FileController {
       const id = req.params.id;
       const userID = req.user._id;
 
-      await fileService.removeLink(userID, id);
+      const file = await fileService.removeLink(userID, id);
 
-      res.send();
+      res.send(file);
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nRemove Public Link Error File Route:", e.message);
@@ -317,9 +317,9 @@ class FileController {
       const fileID = req.params.id;
       const userID = req.user._id;
 
-      const token = await fileService.makePublic(userID, fileID);
+      const { file, token } = await fileService.makePublic(userID, fileID);
 
-      res.send(token);
+      res.send({ file, token });
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nMake Public Error File Route:", e.message);
@@ -353,9 +353,9 @@ class FileController {
       const id = req.params.id;
       const userID = req.user._id;
 
-      const token = await fileService.makeOneTimePublic(userID, id);
+      const { file, token } = await fileService.makeOneTimePublic(userID, id);
 
-      res.send(token);
+      res.send({ file, token });
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nMake One Time Public Link Error File Route:", e.message);

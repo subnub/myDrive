@@ -49,3 +49,42 @@ export const trashItemsPopup = async () => {
   });
   return result.value;
 };
+
+export const makePublicPopup = async () => {
+  const result = await Swal.fire({
+    title: "Make file public?",
+    text: "This iwill make the file public, anyone with the link will be able to access the file.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes",
+  });
+  return result.value;
+};
+
+export const makeOneTimePublicPopup = async () => {
+  const result = await Swal.fire({
+    title: "Make file public?",
+    text: "This iwill make the file public, anyone with the link will be able to access the file for a single time.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes",
+  });
+  return result.value;
+};
+
+export const removeLinkPopup = async () => {
+  const result = await Swal.fire({
+    title: "Remove link?",
+    text: "This will remove public access to the file.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes",
+  });
+  return result.value;
+};
