@@ -2,7 +2,6 @@ import { memo, useEffect, useMemo, useState } from "react";
 import CloseIcon from "../../icons/CloseIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { getFileColor, getFileExtension } from "../../utils/files";
-import ActionsIcon from "../../icons/ActionsIcon";
 import bytes from "bytes";
 import moment from "moment";
 import { makePublicPopup, removeLinkPopup } from "../../popups/file";
@@ -17,7 +16,7 @@ import {
   setMainSelect,
   setShareModal,
 } from "../../reducers/selected";
-import SpinnerPage from "../SpinnerPage";
+import { toast } from "react-toastify";
 
 const SharePopup = memo(() => {
   const file = useAppSelector((state) => state.selected.shareModal.file)!;
@@ -49,7 +48,14 @@ const SharePopup = memo(() => {
       const result = await makePublicPopup();
       if (!result) return;
       setUpdating(true);
-      const { file: updatedFile } = await makePublicAPI(file._id);
+      const { file: updatedFile } = await toast.promise(
+        makePublicAPI(file._id),
+        {
+          pending: "Making Public...",
+          success: "Public Link Generated",
+          error: "Error Making Public",
+        }
+      );
       dispatch(
         setMainSelect({
           file: updatedFile,
@@ -62,8 +68,9 @@ const SharePopup = memo(() => {
       invalidateFilesCache();
     } catch (e) {
       console.log("Error making file public", e);
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const makeOneTimePublic = async () => {
@@ -71,7 +78,14 @@ const SharePopup = memo(() => {
       const result = await makePublicPopup();
       if (!result) return;
       setUpdating(true);
-      const { file: updatedFile } = await makeOneTimePublicAPI(file._id);
+      const { file: updatedFile } = await toast.promise(
+        makeOneTimePublicAPI(file._id),
+        {
+          pending: "Making Public...",
+          success: "Public Link Generated",
+          error: "Error Making Public",
+        }
+      );
       dispatch(
         setMainSelect({
           file: updatedFile,
@@ -84,8 +98,9 @@ const SharePopup = memo(() => {
       invalidateFilesCache();
     } catch (e) {
       console.log("Error making file public", e);
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const removeLink = async () => {
@@ -93,7 +108,11 @@ const SharePopup = memo(() => {
       const result = await removeLinkPopup();
       if (!result) return;
       setUpdating(true);
-      const updatedFile = await removeLinkAPI(file._id);
+      const updatedFile = await toast.promise(removeLinkAPI(file._id), {
+        pending: "Removing Link...",
+        success: "Link Removed",
+        error: "Error Removing Link",
+      });
       dispatch(
         setMainSelect({
           file: updatedFile,
@@ -107,12 +126,14 @@ const SharePopup = memo(() => {
       setShareLink("");
     } catch (e) {
       console.log("Error removing link", e);
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const copyLink = () => {
     navigator.clipboard.writeText(shareLink);
+    toast.success("Link Copied");
   };
 
   const closeShareModal = () => {
@@ -162,7 +183,7 @@ const SharePopup = memo(() => {
           </div>
         </div>
       </div>
-      <div className="w-[400px] p-4 bg-white rounded-md">
+      <div className="w-[90%] sm:w-[400px] p-4 bg-white rounded-md">
         <p className="text-lg mb-4 text-center">Share file</p>
         <div className="mt-2 flex justify-between">
           <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
@@ -244,12 +265,6 @@ const SharePopup = memo(() => {
             >
               Make Private
             </button>
-          </div>
-        )}
-
-        {updating && (
-          <div className="flex justify-center items-center mt-4">
-            <SpinnerPage />
           </div>
         )}
       </div>

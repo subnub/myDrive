@@ -6,6 +6,7 @@ import HomepageSpinner from "../HomepageSpinner";
 import MobileContextMenuContainer from "../MobileContextMenu";
 import PhotoViewer from "../PhotoViewer";
 import { useAppSelector } from "../../hooks/store";
+import { ToastContainer } from "react-toastify";
 
 const Homepage = () => {
   return (
@@ -19,6 +20,8 @@ const Homepage = () => {
           <Uploader />
         </div>
       </div>
+
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };

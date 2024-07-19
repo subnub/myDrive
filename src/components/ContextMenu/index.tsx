@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 import { setMoverID } from "../../actions/mover";
 import { setShareSelected } from "../../actions/selectedItem";
 import {
-  deleteFolder,
+  deleteFolderAPI,
   renameFolder,
   restoreFolderAPI,
   trashFolderAPI,
@@ -33,9 +33,16 @@ import ShareIcon from "../../icons/ShareIcon";
 import DownloadIcon from "../../icons/DownloadIcon";
 import MoveIcon from "../../icons/MoveIcon";
 import RestoreIcon from "../../icons/RestoreIcon";
-import { restoreItemPopup } from "../../popups/file";
+import {
+  deleteFilePopup,
+  renameFilePopup,
+  restoreItemPopup,
+  trashItemsPopup,
+} from "../../popups/file";
 import { FileInterface } from "../../types/file";
 import { FolderInterface } from "../../types/folders";
+import { toast } from "react-toastify";
+import { deleteFolderPopup, renameFolderPopup } from "../../popups/folder";
 
 export interface ContextMenuProps {
   closeContext: () => void;
@@ -65,75 +72,67 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const renameItem = async () => {
     props.closeContext();
     if (!props.folderMode && props.file) {
-      const { value: filename } = await Swal.fire({
-        title: "Enter A File Name",
-        input: "text",
-        inputValue: props.file.filename,
-        showCancelButton: true,
-        inputValidator: (value) => {
-          if (!value) {
-            return "Please Enter a Name";
-          }
-        },
-      });
-      await renameFileAPI(props.file._id, filename);
-      invalidateFilesCache();
-      invalidateQuickFilesCache();
-    } else if (props.folderMode && props.folder) {
-      const { value: folderName } = await Swal.fire({
-        title: "Enter A folder Name",
-        input: "text",
-        inputValue: props.folder.name,
-        showCancelButton: true,
-        inputValidator: (value) => {
-          if (!value) {
-            return "Please Enter a Name";
-          }
-        },
-      });
-
-      if (folderName === undefined || folderName === null) {
-        return;
+      try {
+        const filename = await renameFilePopup(props.file.filename);
+        if (!filename || filename === props.file.filename) return;
+        await toast.promise(renameFileAPI(props.file._id, filename), {
+          pending: "Renaming...",
+          success: "Renamed",
+          error: "Error Renaming",
+        });
+        invalidateFilesCache();
+        invalidateQuickFilesCache();
+      } catch (e) {
+        console.log("Error renaming file", e);
       }
-
-      await renameFolder(props.folder._id, folderName);
-      invalidateFoldersCache();
+    } else if (props.folderMode && props.folder) {
+      try {
+        const folderName = await renameFolderPopup(props.folder.name);
+        if (!folderName || folderName === props.folder.name) return;
+        await toast.promise(renameFolder(props.folder._id, folderName), {
+          pending: "Renaming...",
+          success: "Renamed",
+          error: "Error Renaming",
+        });
+        invalidateFoldersCache();
+      } catch (e) {
+        console.log("Error renaming folder", e);
+      }
     }
   };
 
   const trashItem = async () => {
     props.closeContext();
     if (!props.folderMode && props.file) {
-      const result = await Swal.fire({
-        title: "Move to trash?",
-        text: "Items in the trash will eventually be deleted.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-      });
+      try {
+        const result = await trashItemsPopup();
+        if (!result) return;
 
-      if (result.value) {
-        await trashFileAPI(props.file._id);
+        await toast.promise(trashFileAPI(props.file._id), {
+          pending: "Trashing...",
+          success: "Trashed",
+          error: "Error Trashing",
+        });
         invalidateFilesCache();
         invalidateQuickFilesCache();
         dispatch(resetSelected());
+      } catch (e) {
+        console.log("Error trashing file", e);
       }
     } else if (props.folderMode && props.folder) {
-      const result = await Swal.fire({
-        title: "Move to trash?",
-        text: "Items in the trash will eventually be deleted.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-      });
-      if (result.value) {
-        await trashFolderAPI(props.folder._id);
+      try {
+        const result = await trashItemsPopup();
+        if (!result) return;
+
+        await toast.promise(trashFolderAPI(props.folder._id), {
+          pending: "Trashing...",
+          success: "Trashed",
+          error: "Error Trashing",
+        });
         invalidateFoldersCache();
         dispatch(resetSelected());
+      } catch (e) {
+        console.log("Error trashing folder", e);
       }
     }
   };
@@ -141,36 +140,35 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const deleteItem = async () => {
     props.closeContext();
     if (!props.folderMode && props.file) {
-      const result = await Swal.fire({
-        title: "Delete file?",
-        text: "You will not be able to recover this file.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-      });
+      try {
+        const result = await deleteFilePopup();
+        if (!result) return;
 
-      if (result.value) {
-        await deleteFileAPI(props.file._id);
+        await toast.promise(deleteFileAPI(props.file._id), {
+          pending: "Deleting...",
+          success: "Deleted",
+          error: "Error Deleting",
+        });
         invalidateFilesCache();
         invalidateQuickFilesCache();
         dispatch(resetSelected());
+      } catch (e) {
+        console.log("Error deleting file", e);
       }
     } else if (props.folderMode && props.folder) {
-      const result = await Swal.fire({
-        title: "Delete folder?",
-        text: "You will not be able to recover this folder.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes",
-      });
-      if (result.value) {
-        await deleteFolder(props.folder._id);
+      try {
+        const result = await deleteFolderPopup();
+        if (!result) return;
+
+        await toast.promise(deleteFolderAPI(props.folder._id), {
+          pending: "Deleting...",
+          success: "Deleted",
+          error: "Error Deleting",
+        });
         invalidateFoldersCache();
         dispatch(resetSelected());
+      } catch (e) {
+        console.log("Error deleting folder", e);
       }
     }
   };
@@ -180,11 +178,27 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     const result = await restoreItemPopup();
     if (!result) return;
     if (!props.folderMode && props.file) {
-      await restoreFileAPI(props.file._id);
-      invalidateFilesCache();
+      try {
+        await toast.promise(restoreFileAPI(props.file._id), {
+          pending: "Restoring...",
+          success: "Restored",
+          error: "Error Restoring",
+        });
+        invalidateFilesCache();
+      } catch (e) {
+        console.log("Error restoring file", e);
+      }
     } else if (props.folderMode && props.folder) {
-      await restoreFolderAPI(props.folder._id);
-      invalidateFoldersCache();
+      try {
+        await toast.promise(restoreFolderAPI(props.folder._id), {
+          pending: "Restoring...",
+          success: "Restored",
+          error: "Error Restoring",
+        });
+        invalidateFoldersCache();
+      } catch (e) {
+        console.log("Error restoring folder", e);
+      }
     }
   };
 
