@@ -81,7 +81,7 @@ export const trashItemsPopup = async () => {
 export const makePublicPopup = async () => {
   const result = await Swal.fire({
     title: "Make file public?",
-    text: "This iwill make the file public, anyone with the link will be able to access the file.",
+    text: "Anyone with the link will be able to download the file.",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",
@@ -93,8 +93,8 @@ export const makePublicPopup = async () => {
 
 export const makeOneTimePublicPopup = async () => {
   const result = await Swal.fire({
-    title: "Make file public?",
-    text: "This iwill make the file public, anyone with the link will be able to access the file for a single time.",
+    title: "Make file temporarly public?",
+    text: "Anyone with the link will be able to downoad the file once.",
     icon: "warning",
     showCancelButton: true,
     confirmButtonColor: "#3085d6",

@@ -1,6 +1,5 @@
 import classNames from "classnames";
-import React, { memo, useEffect, useRef } from "react";
-import Swal from "sweetalert2";
+import React, { memo } from "react";
 import {
   deleteFileAPI,
   renameFileAPI,

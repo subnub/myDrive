@@ -8,7 +8,7 @@ import { capitalize } from "lodash";
 import AlertIcon from "../../icons/AlertIcon";
 import SpinnerPage from "../SpinnerPage";
 import classNames from "classnames";
-import { emailVerificationSentPopup } from "../../popups/user";
+import { toast, ToastContainer } from "react-toastify";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -34,7 +34,6 @@ const LoginPage = () => {
       setAttemptingLogin(false);
       window.localStorage.setItem("hasPreviouslyLoggedIn", "true");
     } catch (e) {
-      console.log("Login Error", e);
       setAttemptingLogin(false);
       if (window.localStorage.getItem("hasPreviouslyLoggedIn")) {
         setError("Login Expired");
@@ -65,7 +64,7 @@ const LoginPage = () => {
       window.localStorage.setItem("hasPreviouslyLoggedIn", "true");
 
       if (createAccountResponse.emailSent) {
-        emailVerificationSentPopup();
+        toast.success("Email Verification Sent");
       }
 
       dispatch(setUser(createAccountResponse.user));
@@ -251,6 +250,7 @@ const LoginPage = () => {
           </form>
         </div>
       </div>
+      <ToastContainer position="bottom-right" />
     </div>
   );
 };

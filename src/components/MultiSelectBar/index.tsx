@@ -17,6 +17,7 @@ import {
 } from "../../popups/file";
 import RestoreIcon from "../../icons/RestoreIcon";
 import { useUtils } from "../../hooks/utils";
+import { toast } from "react-toastify";
 
 const MultiSelectBar: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -66,41 +67,59 @@ const MultiSelectBar: React.FC = () => {
   }, []);
 
   const trashItems = async () => {
-    const result = await trashItemsPopup();
+    try {
+      const result = await trashItemsPopup();
+      if (!result) return;
 
-    if (result) {
       const itemsToTrash = Object.values(multiSelectMap);
-      await trashMultiAPI(itemsToTrash);
+      await toast.promise(trashMultiAPI(itemsToTrash), {
+        pending: "Trashing...",
+        success: "Trashed",
+        error: "Error Trashing",
+      });
       invalidateFilesCache();
       invalidateFoldersCache();
       invalidateQuickFilesCache();
       closeMultiSelect();
+    } catch (e) {
+      console.log("Error Trashing Items", e);
     }
   };
 
   const deleteItems = async () => {
-    const result = await deleteItemsPopup();
-    if (result) {
-      const itemsToTrash = Object.values(multiSelectMap);
-      await deleteMultiAPI(itemsToTrash);
+    try {
+      const result = await deleteItemsPopup();
+      if (!result) return;
+
+      const itesmsToDelete = Object.values(multiSelectMap);
+      await toast.promise(deleteMultiAPI(itesmsToDelete), {
+        pending: "Deleting...",
+        success: "Deleted",
+        error: "Error Deleting",
+      });
       invalidateFilesCache();
       invalidateFoldersCache();
       invalidateQuickFilesCache();
       closeMultiSelect();
+    } catch (e) {
+      console.log("Error Deleting Items", e);
     }
   };
 
   const restoreItems = async () => {
     const result = await restoreItemsPopup();
+    if (!result) return;
 
-    if (result) {
-      const itemsToTrash = Object.values(multiSelectMap);
-      await restoreMultiAPI(itemsToTrash);
-      invalidateFilesCache();
-      invalidateFoldersCache();
-      invalidateQuickFilesCache();
-      closeMultiSelect();
-    }
+    const itemsToRestore = Object.values(multiSelectMap);
+    await toast.promise(restoreMultiAPI(itemsToRestore), {
+      pending: "Restoring...",
+      success: "Restored",
+      error: "Error Restoring",
+    });
+    invalidateFilesCache();
+    invalidateFoldersCache();
+    invalidateQuickFilesCache();
+    closeMultiSelect();
   };
 
   if (!multiSelectMode) return <div></div>;

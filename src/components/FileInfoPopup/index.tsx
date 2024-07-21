@@ -93,14 +93,14 @@ const FileInfoPopup = memo(() => {
         <div className="flex mr-4">
           <div onClick={onContextMenu} id="action-context-wrapper">
             <ActionsIcon
-              className="pointer text-white w-[20px] h-[25px] mr-4"
+              className="pointer text-white w-[20px] h-[25px] mr-4 cursor-pointer"
               id="action-context-icon"
             />
           </div>
 
           <div onClick={closePhotoViewer} id="action-close-wrapper">
             <CloseIcon
-              className="pointer text-white w-[25px] h-[25px]"
+              className="pointer text-white w-[25px] h-[25px] cursor-pointer"
               id="action-close-icon"
             />
           </div>

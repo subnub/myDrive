@@ -56,3 +56,19 @@
 .animate-very-long {
   transition: 6s ease all;
 }
+
+.Toastify__progress-bar--success {
+  background-color: #3c85ee !important;
+}
+
+.--toastify-color-transparent .Toastify__toast-icon {
+  background-color: #3c85ee !important;
+}
+
+.Toastify__toast--success .Toastify__icon svg path {
+  fill: #3c85ee !important;
+}
+
+:root {
+  --toastify-icon-color-success: #3c85ee !important;
+}

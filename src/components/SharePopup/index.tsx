@@ -4,7 +4,11 @@ import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import bytes from "bytes";
 import moment from "moment";
-import { makePublicPopup, removeLinkPopup } from "../../popups/file";
+import {
+  makeOneTimePublicPopup,
+  makePublicPopup,
+  removeLinkPopup,
+} from "../../popups/file";
 import {
   makeOneTimePublicAPI,
   makePublicAPI,
@@ -75,7 +79,7 @@ const SharePopup = memo(() => {
 
   const makeOneTimePublic = async () => {
     try {
-      const result = await makePublicPopup();
+      const result = await makeOneTimePublicPopup();
       if (!result) return;
       setUpdating(true);
       const { file: updatedFile } = await toast.promise(
@@ -179,7 +183,7 @@ const SharePopup = memo(() => {
         </div>
         <div className="flex mr-4">
           <div id="action-close-wrapper" onClick={closeShareModal}>
-            <CloseIcon className="pointer text-white w-[25px] h-[25px]" />
+            <CloseIcon className="text-white w-[25px] h-[25px] cursor-pointer" />
           </div>
         </div>
       </div>
