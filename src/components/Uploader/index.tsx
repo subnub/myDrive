@@ -36,7 +36,7 @@ const Uploader = memo(() => {
   };
 
   return (
-    <div className="fixed bottom-0 right-[20px] z-10 bg-white shadow-lg rounded-t-md w-[315px]">
+    <div className="fixed bottom-0 sm:right-[20px] z-10 bg-white shadow-lg rounded-t-md w-full sm:w-[315px]">
       <div className="flex flex-row bg-[#3c85ee] justify-between p-4 rounded-t-md">
         <p className="text-white">{uploadTitle}</p>
         <div className="flex flex-row items-center justify-center">
