@@ -5,8 +5,9 @@ import { getCancelToken } from "../../utils/cancelTokenManager";
 import CloseIcon from "../../icons/CloseIcon";
 import CheckCircleIcon from "../../icons/CheckCircleIcon";
 import AlertIcon from "../../icons/AlertIcon";
+import { UploadItemType } from "../../reducers/uploader";
 
-const UploadItem = (props) => {
+const UploadItem: React.FC<UploadItemType> = (props) => {
   const filesRefreshed = useRef(false);
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();

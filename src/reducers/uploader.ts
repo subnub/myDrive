@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface UploadItemType {
+export interface UploadItemType {
   id: string;
   progress: number;
   name: string;
