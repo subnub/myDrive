@@ -1,10 +1,7 @@
 import DataForm from "../Dataform";
 import RightSection from "../RightSection";
-import MoverMenu from "../MoverMenu";
-import PopupWindow from "../PopupWindow";
-import React, { memo } from "react";
+import { memo } from "react";
 import LeftSection from "../LeftSection";
-import { useSelector } from "react-redux";
 import { useUtils } from "../../hooks/utils";
 import Medias from "../Medias";
 import { useAppSelector } from "../../hooks/store";

@@ -3,17 +3,14 @@ import Folders from "../Folders";
 import { useFiles, useQuickFiles, useUploader } from "../../hooks/files";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 import Files from "../Files";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
-import SpinnerPage from "../SpinnerPage";
-import SearchBar from "../SearchBar";
+import { memo, useCallback, useEffect, useState } from "react";
+import Spinner from "../Spinner";
 import { useAppDispatch } from "../../hooks/store";
-import { startAddFile } from "../../actions/files";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useDragAndDrop } from "../../hooks/utils";
 import MultiSelectBar from "../MultiSelectBar";
 import { useFolders } from "../../hooks/folders";
-import { FileInterface } from "../../types/file";
 
 const DataForm = memo(() => {
   const {
@@ -89,7 +86,7 @@ const DataForm = memo(() => {
 
       {isLoading && (
         <div className="w-full flex justify-center items-center h-full">
-          <SpinnerPage />
+          <Spinner />
         </div>
       )}
       {/* @ts-ignore  */}
@@ -98,7 +95,7 @@ const DataForm = memo(() => {
       {/* TODO: Change this spinner name */}
       {isFetchingNextPage && (
         <div className="w-full flex justify-center items-center mt-4">
-          <SpinnerPage />
+          <Spinner />
         </div>
       )}
     </div>

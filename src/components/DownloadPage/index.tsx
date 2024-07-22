@@ -6,7 +6,7 @@ import {
   getPublicFileInfoAPI,
 } from "../../api/filesAPI";
 import { toast, ToastContainer } from "react-toastify";
-import SpinnerPage from "../SpinnerPage";
+import Spinner from "../Spinner";
 import moment from "moment";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { FileInterface } from "../../types/file";
@@ -41,7 +41,7 @@ const PublicDownloadPage = () => {
   if (!file) {
     return (
       <div className="w-screen h-screen flex justify-center items-center">
-        <SpinnerPage />
+        <Spinner />
         <ToastContainer position="bottom-right" />
       </div>
     );

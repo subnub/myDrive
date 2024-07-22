@@ -6,7 +6,7 @@ import { setUser } from "../../reducers/user";
 import { useAppDispatch } from "../../hooks/store";
 import { capitalize } from "lodash";
 import AlertIcon from "../../icons/AlertIcon";
-import SpinnerPage from "../SpinnerPage";
+import Spinner from "../Spinner";
 import classNames from "classnames";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -131,7 +131,7 @@ const LoginPage = () => {
       <div>
         <div className="w-screen h-screen flex justify-center items-center">
           <div>
-            <SpinnerLogin />
+            <Spinner />
           </div>
         </div>
       </div>
@@ -152,7 +152,7 @@ const LoginPage = () => {
               {!loadingLogin && (
                 <img src="/images/icon.png" alt="logo" className="w-[45px]" />
               )}
-              {loadingLogin && <SpinnerPage />}
+              {loadingLogin && <Spinner />}
             </div>
           </div>
           <form onSubmit={onSubmit}>

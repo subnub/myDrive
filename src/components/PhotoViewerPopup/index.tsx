@@ -10,17 +10,19 @@ import ActionsIcon from "../../icons/ActionsIcon";
 import { useContextMenu } from "../../hooks/contextMenu";
 import ContextMenu from "../ContextMenu";
 import { resetPopupSelect, setPopupSelect } from "../../reducers/selected";
-import { useClickOutOfBounds } from "../../hooks/utils";
 import CircleLeftIcon from "../../icons/CircleLeftIcon";
 import CircleRightIcon from "../../icons/CircleRightIcon";
 import { useFiles, useQuickFiles } from "../../hooks/files";
 import { FileInterface } from "../../types/file";
 import { InfiniteData } from "react-query";
 import { getFileColor, getFileExtension } from "../../utils/files";
+import Spinner from "../Spinner";
+import { toast } from "react-toastify";
 
 const PhotoViewerPopup = memo(() => {
   const [image, setImage] = useState("");
   const [video, setVideo] = useState("");
+  const [loading, setLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const file = useAppSelector((state) => state.selected.popupModal.file)!;
   const type = useAppSelector((state) => state.selected.popupModal.type)!;
@@ -49,33 +51,33 @@ const PhotoViewerPopup = memo(() => {
     [file.filename]
   );
 
-  console.log("rerender");
-
-  const outOfBoundsClick = useCallback(
-    (e: any) => {
-      console.log("out of bounds click", e);
-      if (e?.target?.id !== "outer-wrapper") return;
-      console.log("out of bounds click2");
-      dispatch(resetPopupSelect());
-    },
-    [resetPopupSelect]
-  );
-
-  const { wrapperRef } = useClickOutOfBounds(outOfBoundsClick);
-
   const getImage = useCallback(async () => {
-    const imageData = await getFileFullThumbnailAPI(file._id);
-    const imgFile = new Blob([imageData]);
-    const imgUrl = URL.createObjectURL(imgFile);
-    setImage(imgUrl);
+    try {
+      setLoading(true);
+      const imageData = await getFileFullThumbnailAPI(file._id);
+      const imgFile = new Blob([imageData]);
+      const imgUrl = URL.createObjectURL(imgFile);
+      setImage(imgUrl);
+      setLoading(false);
+    } catch (e) {
+      console.log("Error getting image", e);
+      toast.error("Error getting image");
+    }
   }, [file._id, getFileFullThumbnailAPI]);
 
   const getVideo = useCallback(async () => {
-    // TODO: Change this
-    await getVideoTokenAPI();
-    const videoURL = `http://localhost:5173/api/file-service/stream-video/${file._id}`;
-    console.log("video url", videoURL);
-    setVideo(videoURL);
+    try {
+      setLoading(true);
+      // TODO: Change this
+      await getVideoTokenAPI();
+      const videoURL = `http://localhost:5173/api/file-service/stream-video/${file._id}`;
+      console.log("video url", videoURL);
+      setVideo(videoURL);
+      setLoading(false);
+    } catch (e) {
+      console.log("Error getting video", e);
+      toast.error("Error getting video");
+    }
   }, [file._id, getVideoTokenAPI]);
 
   const cleanUpVideo = useCallback(async () => {
@@ -293,17 +295,15 @@ const PhotoViewerPopup = memo(() => {
           className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer"
         />
       </div>
-      <div
-        ref={wrapperRef}
-        className="max-w-[80vw] max-h-[80vh] flex justify-center items-center"
-      >
-        {!file.metadata.isVideo && (
+      <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center">
+        {loading && <Spinner />}
+        {!file.metadata.isVideo && !loading && (
           <img
             src={image}
             className="max-w-full max-h-full object-contain select-none"
           />
         )}
-        {file.metadata.isVideo && (
+        {file.metadata.isVideo && !loading && (
           <video
             src={video}
             ref={videoRef}
