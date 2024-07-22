@@ -1,5 +1,3 @@
-import axios from "../axiosInterceptor";
-
 interface MapType {
   [key: string]: {
     token: any;
@@ -28,7 +26,3 @@ export const cancelAllFileUploads = () => {
     delete cancelTokens[key];
   }
 };
-
-//   export const cancelFileUpload = (fileId) => {
-
-//   };

@@ -1,6 +1,6 @@
 import QuickAccess from "../QuickAccess";
 import Folders from "../Folders";
-import { useFiles, useQuickFiles } from "../../hooks/files";
+import { useFiles, useQuickFiles, useUploader } from "../../hooks/files";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 import Files from "../Files";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
@@ -28,6 +28,7 @@ const DataForm = memo(() => {
   const { sentinelRef, reachedIntersect } = useInfiniteScroll();
   const [initialLoad, setInitialLoad] = useState(true);
   const params = useParams();
+  const { uploadFiles } = useUploader();
 
   const isLoading = isLoadingFiles || isLoadingFolders || isLoadingQuickItems;
 
@@ -44,8 +45,8 @@ const DataForm = memo(() => {
   }, [reachedIntersect, initialLoad, isFetchingNextPage]);
 
   const addFile = useCallback(
-    (file: FileInterface) => {
-      dispatch(startAddFile(file, params.id));
+    (files: FileList) => {
+      uploadFiles(files);
     },
     [params.id]
   );

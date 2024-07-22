@@ -78,9 +78,7 @@ export const useDragAndDrop = (fileDroppedCallback: (file: any) => any) => {
       isDraggingFileRef.current = false;
       setIsDraggingFile(false);
 
-      const fileInput = e.dataTransfer;
-
-      fileDroppedCallback(fileInput);
+      fileDroppedCallback(e.dataTransfer.files);
     },
     [fileDroppedCallback]
   );

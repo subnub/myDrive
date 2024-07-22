@@ -209,7 +209,7 @@ const LoginPage = () => {
                 disabled={
                   isSubmitDisabled || loadingLogin || validationError !== ""
                 }
-                className="bg-[#3c85ee] border border-[#3c85ee] rounded-[5px] text-white text-[15px] font-medium cursor-pointer py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#3c85ee] border border-[#3c85ee] hover:bg-[#326bcc] rounded-[5px] text-white text-[15px] font-medium cursor-pointer py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 

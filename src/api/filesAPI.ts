@@ -1,8 +1,6 @@
 import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
 import { getUserToken } from "./user";
-import { FileInterface } from "../types/file";
-import { AxiosRequestConfig } from "axios";
 
 interface QueryKeyParams {
   parent: string;
@@ -81,11 +79,10 @@ export const downloadFileAPI = async (fileID: string) => {
 export const getFileThumbnailAPI = async (thumbnailID: string) => {
   // TODO: Change this
   const url = `http://localhost:5173/api/file-service/thumbnail/${thumbnailID}`;
-  const config = {
-    responseType: "arraybuffer",
-  };
 
-  const response = await axios.get(url, config);
+  const response = await axios.get(url, {
+    responseType: "arraybuffer",
+  });
 
   const imgFile = new Blob([response.data]);
   const imgUrl = URL.createObjectURL(imgFile);
@@ -94,11 +91,10 @@ export const getFileThumbnailAPI = async (thumbnailID: string) => {
 };
 
 export const getFileFullThumbnailAPI = async (fileID: string) => {
-  const config = {
-    responseType: "arraybuffer",
-  };
   const url = `http://localhost:5173/api/file-service/full-thumbnail/${fileID}`;
-  const response = await axios.get(url, config);
+  const response = await axios.get(url, {
+    responseType: "arraybuffer",
+  });
   return response.data;
 };
 
@@ -206,6 +202,7 @@ export const removeLinkAPI = async (fileID: string) => {
 };
 
 // DELETE
+
 export const deleteFileAPI = async (fileID: string) => {
   const response = await axios.delete(`/file-service/remove`, {
     data: {

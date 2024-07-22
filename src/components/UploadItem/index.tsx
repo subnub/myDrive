@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { getCancelToken } from "../../utils/cancelTokenManager";
 import CloseIcon from "../../icons/CloseIcon";
@@ -26,7 +26,7 @@ const UploadItem: React.FC<UploadItemType> = (props) => {
     cancelToken.cancel();
   };
 
-  const ProgressIcon = () => {
+  const ProgressIcon = memo(() => {
     if (completed) {
       return <CheckCircleIcon className="w-[20px] h-[20px] text-green-600" />;
     } else if (canceled) {
@@ -39,7 +39,7 @@ const UploadItem: React.FC<UploadItemType> = (props) => {
         />
       );
     }
-  };
+  });
 
   return (
     <div className="relative p-[20px] flex justify-between items-start hover:bg-[#f6f5fd]">

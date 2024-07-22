@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { closeDrawer } from "../../reducers/leftSection";
 import SettingsIcon from "../../icons/SettingsIcon";
 
-const LeftSection = (props) => {
+const LeftSection = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const leftSectionOpen = useAppSelector((state) => state.leftSection.drawOpen);
   const { isHome, isTrash, isMedia, isSettings } = useUtils();
@@ -89,7 +89,7 @@ const LeftSection = (props) => {
           <div className="relative mb-[30px]">
             <a
               onClick={openDropdown}
-              className="flex items-center justify-center bg-[#3c85ee] no-underline rounded-[5px]"
+              className="flex items-center justify-center bg-[#3c85ee] hover:bg-[#326bcc] no-underline rounded-[5px]"
             >
               <p className="m-0 w-full text-center text-white text-[16px] font-medium">
                 ADD NEW
