@@ -1,18 +1,18 @@
 import { connect } from "react-redux";
 import React, { useEffect, useRef } from "react";
-import bytes from "bytes";
 import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { getCancelToken } from "../../utils/cancelTokenManager";
+import CloseIcon from "../../icons/CloseIcon";
+import CheckCircleIcon from "../../icons/CheckCircleIcon";
+import AlertIcon from "../../icons/AlertIcon";
 
 const UploadItem = (props) => {
   const filesRefreshed = useRef(false);
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
-  const completed = props.completed;
-  const uploadImage = props.getUploadImage();
-  const canceled = props.canceled;
+  const { completed, canceled, progress, name, id } = props;
+  const cancelToken = getCancelToken(id);
 
-  // TODO: Add ability to cancel indivdual uploads
   useEffect(() => {
     if (completed && !filesRefreshed.current) {
       invalidateFilesCache();
@@ -21,97 +21,49 @@ const UploadItem = (props) => {
     }
   }, [completed]);
 
-  if (!completed && !canceled) {
-    return (
-      <div className="elem__upload uploading__now">
-        <div className="upload__elem--status">
-          <span>
-            <img src="/assets/upload_now.svg" alt="upload" />
-          </span>
-        </div>
-        <div className="upload__info">
-          <div className="top__upload">
-            <div className="upload__text">
-              <p>{props.name}</p>
-            </div>
-            <div className="upload__size">
-              <div className="stop__download">
-                <span>
-                  <img
-                    onClick={props.cancelUploadEvent}
-                    src="/assets/cancel.svg"
-                    alt="cancel"
-                  />
-                </span>
-              </div>
-              <span>{bytes(props.size)}</span>
-            </div>
+  const cancelUpload = () => {
+    cancelToken.cancel();
+  };
+
+  const ProgressIcon = () => {
+    if (completed) {
+      return <CheckCircleIcon className="w-[20px] h-[20px] text-green-600" />;
+    } else if (canceled) {
+      return <AlertIcon className="w-[20px] h-[20px] text-red-600" />;
+    } else {
+      return (
+        <CloseIcon
+          className="w-[20px] h-[20px] cursor-pointer"
+          onClick={cancelUpload}
+        />
+      );
+    }
+  };
+
+  return (
+    <div className="relative p-[20px] flex justify-between items-start hover:bg-[#f6f5fd]">
+      <div className="w-full">
+        <div className="flex justify-between items-center mb-[15px]">
+          <div className="mr-[30px]">
+            <p className="text-[15px] leading-[18px] font-medium max-w-[160px] overflow-hidden whitespace-nowrap text-ellipsis">
+              {name}
+            </p>
           </div>
-          <div className="bottom__upload">
-            <div className="progress__upload">
-              <div
-                className="active__progress"
-                style={{ width: `${props.progress}%` }}
-              ></div>
-            </div>
+          <div>
+            <ProgressIcon />
           </div>
         </div>
-      </div>
-    );
-  } else if (completed) {
-    return (
-      <div className="elem__upload uploaded__already">
-        <div className="upload__elem--status">
-          <span>
-            <img src="/assets/uploaded__success.svg" alt="upload" />
-          </span>
-        </div>
-        <div className="upload__info">
-          <div className="top__upload">
-            <div className="upload__text">
-              <p>{props.name}</p>
-            </div>
-            <div className="upload__size">
-              <span>{bytes(props.size)}</span>
-            </div>
-          </div>
-          <div className="bottom__upload">
-            <div className="progress__upload">
-              <div
-                className="active__progress"
-                style={{ width: `${props.progress}%` }}
-              ></div>
-            </div>
+        <div>
+          <div className="w-full bg-[#e0dcf3] rounded-[1.5px] h-[3px] relative">
+            <div
+              className="h-[3px] bg-[#3c85ee] rounded-[1.5px]"
+              style={{ width: `${progress}%` }}
+            ></div>
           </div>
         </div>
       </div>
-    );
-  } else {
-    return (
-      <div className="elem__upload uploaded__cancelled">
-        <div className="upload__elem--status">
-          <span>
-            <img src="/assets/uploaded__failed.svg" alt="upload" />
-          </span>
-        </div>
-        <div className="upload__info">
-          <div className="top__upload">
-            <div className="upload__text">
-              <p>{props.name}</p>
-            </div>
-            <div className="retry__download">
-              <a href="#">Retry</a>
-            </div>
-          </div>
-          <div className="bottom__upload">
-            <div className="failed__info">
-              <span>Upload failed</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+    </div>
+  );
 };
 
 export default connect()(UploadItem);

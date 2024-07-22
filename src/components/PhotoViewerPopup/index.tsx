@@ -298,7 +298,10 @@ const PhotoViewerPopup = memo(() => {
         className="max-w-[80vw] max-h-[80vh] flex justify-center items-center"
       >
         {!file.metadata.isVideo && (
-          <img src={image} className="max-w-full max-h-full object-contain" />
+          <img
+            src={image}
+            className="max-w-full max-h-full object-contain select-none"
+          />
         )}
         {file.metadata.isVideo && (
           <video

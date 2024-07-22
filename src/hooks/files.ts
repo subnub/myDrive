@@ -12,12 +12,18 @@ import {
   getFilesListAPI,
   getQuickFilesListAPI,
   getSuggestedListAPI,
+  uploadFileAPI,
 } from "../api/filesAPI";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useAppSelector } from "./store";
+import { useAppDispatch, useAppSelector } from "./store";
 import { useUtils } from "./utils";
 import { FileInterface } from "../types/file";
+import { v4 as uuid } from "uuid";
+import axiosNonInterceptor from "axios";
+import { addFileUploadCancelToken } from "../utils/cancelTokenManager";
+import { debounce } from "lodash";
+import { addUpload, editUpload } from "../reducers/uploader";
 
 export const useFiles = (enabled = true) => {
   const params = useParams();
@@ -195,4 +201,86 @@ export const useSearchSuggestions = (searchText: string) => {
   );
 
   return { ...searchQuery };
+};
+
+export const useUploader = () => {
+  const dispatch = useAppDispatch();
+  const params = useParams();
+
+  const debounceDispatch = debounce(dispatch, 200);
+
+  const uploadFiles = async (files: FileList) => {
+    for (let i = 0; i < files.length; i++) {
+      const parent = params.id || "/";
+
+      const currentFile = files[i];
+      const currentID = uuid();
+
+      const CancelToken = axiosNonInterceptor.CancelToken;
+      const source = CancelToken.source();
+
+      addFileUploadCancelToken(currentID, source);
+
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Transfere-Encoding": "chunked",
+        },
+        onUploadProgress: (progressEvent: ProgressEvent<EventTarget>) => {
+          const currentProgress = Math.round(
+            (progressEvent.loaded / progressEvent.total) * 100
+          );
+
+          if (currentProgress !== 100) {
+            debounceDispatch(
+              editUpload({
+                id: currentID,
+                updateData: { progress: currentProgress },
+              })
+            );
+          }
+        },
+        cancelToken: source.token,
+      };
+
+      dispatch(
+        addUpload({
+          id: currentID,
+          progress: 0,
+          name: currentFile.name,
+          completed: false,
+          canceled: false,
+          size: currentFile.size,
+        })
+      );
+
+      const data = new FormData();
+
+      data.append("filename", currentFile.name);
+      data.append("parent", parent);
+      data.append("currentID", currentID);
+      data.append("size", currentFile.size.toString());
+      data.append("file", currentFile);
+
+      try {
+        await uploadFileAPI(data, config);
+        dispatch(
+          editUpload({
+            id: currentID,
+            updateData: { completed: true, progress: 100 },
+          })
+        );
+      } catch (e) {
+        console.log("Error uploading file", e);
+        dispatch(
+          editUpload({
+            id: currentID,
+            updateData: { canceled: true },
+          })
+        );
+      }
+    }
+  };
+
+  return { uploadFiles };
 };

@@ -34,7 +34,7 @@ const AppRouter = () => {
           }
         />
         <Route
-          path="/download-page/:id/:tempToken"
+          path="/public-download/:id/:tempToken"
           element={<DownloadPage />}
         />
         <Route

@@ -5,7 +5,10 @@ import { useClickOutOfBounds } from "../../hooks/utils";
 import { showCreateFolderPopup } from "../../popups/folder";
 import { useAppDispatch } from "../../hooks/store";
 import { startAddFile } from "../../actions/files";
-import { useRef } from "react";
+import { RefObject, useRef } from "react";
+import axiosNonInterceptor from "axios";
+import uuid from "uuid";
+import { useUploader } from "../../hooks/files";
 
 interface AddNewDropdownProps {
   closeDropdown: () => void;
@@ -15,7 +18,8 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
   const params = useParams();
   const { invalidateFoldersCache } = useFoldersClient();
   const { wrapperRef } = useClickOutOfBounds(props.closeDropdown);
-  const uploadRef = useRef("");
+  const uploadRef: RefObject<HTMLInputElement> = useRef(null);
+  const { uploadFiles } = useUploader();
   const dispatch = useAppDispatch();
 
   const createFolder = async () => {
@@ -35,10 +39,10 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
     props.closeDropdown();
     console.log("handle upload");
 
-    dispatch(startAddFile(uploadRef.current, params.id));
-    if (uploadRef && uploadRef.current) {
-      uploadRef.current = "";
-    }
+    const files = uploadRef.current?.files;
+    if (!files) return;
+
+    uploadFiles(files);
   };
 
   return (

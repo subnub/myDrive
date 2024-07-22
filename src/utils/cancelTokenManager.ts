@@ -15,7 +15,6 @@ export const addFileUploadCancelToken = (id: string, cancelToken: any) => {
 };
 
 export const getCancelToken = (id: string) => {
-  console.log("cancel tokens", cancelTokens);
   return cancelTokens[id];
 };
 

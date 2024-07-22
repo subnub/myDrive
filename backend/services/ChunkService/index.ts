@@ -274,7 +274,9 @@ class StorageService {
       throw new NotAuthorizedError("File Not Public");
     }
 
-    await dbUtilsFile.removeOneTimePublicLink(fileID);
+    if (file.metadata.linkType === "one") {
+      await dbUtilsFile.removeOneTimePublicLink(fileID);
+    }
 
     const user = (await User.findById(file.metadata.owner)) as UserInterface;
 

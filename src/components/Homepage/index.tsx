@@ -9,6 +9,10 @@ import { useAppSelector } from "../../hooks/store";
 import { ToastContainer } from "react-toastify";
 
 const Homepage = () => {
+  const showUploader = useAppSelector(
+    (state) => state.uploader.uploads.length !== 0
+  );
+
   return (
     <div>
       <HomepageSpinner />
@@ -17,7 +21,7 @@ const Homepage = () => {
         <Header />
         <div className="flex space-between">
           <MainSection />
-          <Uploader />
+          {showUploader && <Uploader />}
         </div>
       </div>
 

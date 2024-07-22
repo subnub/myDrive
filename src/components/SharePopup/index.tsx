@@ -151,7 +151,7 @@ const SharePopup = memo(() => {
 
   useEffect(() => {
     if (!file.metadata.link) return;
-    const url = `${window.location.origin}/download-page/${file._id}/${shareLink}`;
+    const url = `${window.location.origin}/public-download/${file._id}/${file.metadata.link}`;
     console.log("url", url);
     setShareLink(url);
   }, [file.metadata.link]);

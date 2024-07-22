@@ -2,6 +2,7 @@ import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
 import { getUserToken } from "./user";
 import { FileInterface } from "../types/file";
+import { AxiosRequestConfig } from "axios";
 
 interface QueryKeyParams {
   parent: string;
@@ -124,6 +125,33 @@ export const getSuggestedListAPI = async ({
   return response.data;
 };
 
+export const getPublicFileInfoAPI = async (
+  fileID: string,
+  tempToken: string
+) => {
+  const response = await axios.get(
+    `/file-service/public/info/${fileID}/${tempToken}`
+  );
+  return response.data;
+};
+
+export const downloadPublicFileAPI = async (
+  fileID: string,
+  tempToken: string
+) => {
+  await getUserToken();
+
+  // TODO: Change this
+  const url = `http://localhost:5173/api/file-service/public/download/${fileID}/${tempToken}`;
+
+  const link = document.createElement("a");
+  document.body.appendChild(link);
+  link.href = url;
+  link.setAttribute("type", "hidden");
+  link.setAttribute("download", "true");
+  link.click();
+};
+
 // PATCH
 
 export const trashFileAPI = async (fileID: string) => {
@@ -200,5 +228,12 @@ export const deleteVideoTokenAPI = async () => {
   const response = await axios.delete(
     "/file-service/remove-stream-video-token"
   );
+  return response.data;
+};
+
+// POST
+export const uploadFileAPI = async (data: FormData, config: any) => {
+  const url = "/file-service/upload";
+  const response = await axios.post(url, data, config);
   return response.data;
 };
