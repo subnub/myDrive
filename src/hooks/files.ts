@@ -21,7 +21,10 @@ import { useUtils } from "./utils";
 import { FileInterface } from "../types/file";
 import { v4 as uuid } from "uuid";
 import axiosNonInterceptor from "axios";
-import { addFileUploadCancelToken } from "../utils/cancelTokenManager";
+import {
+  addFileUploadCancelToken,
+  removeFileUploadCancelToken,
+} from "../utils/cancelTokenManager";
 import { debounce } from "lodash";
 import { addUpload, editUpload } from "../reducers/uploader";
 
@@ -209,7 +212,7 @@ export const useUploader = () => {
 
   const debounceDispatch = debounce(dispatch, 200);
 
-  const uploadFiles = async (files: FileList) => {
+  const uploadFiles = (files: FileList) => {
     for (let i = 0; i < files.length; i++) {
       const parent = params.id || "/";
 
@@ -262,23 +265,26 @@ export const useUploader = () => {
       data.append("size", currentFile.size.toString());
       data.append("file", currentFile);
 
-      try {
-        await uploadFileAPI(data, config);
-        dispatch(
-          editUpload({
-            id: currentID,
-            updateData: { completed: true, progress: 100 },
-          })
-        );
-      } catch (e) {
-        console.log("Error uploading file", e);
-        dispatch(
-          editUpload({
-            id: currentID,
-            updateData: { canceled: true },
-          })
-        );
-      }
+      uploadFileAPI(data, config)
+        .then(() => {
+          dispatch(
+            editUpload({
+              id: currentID,
+              updateData: { completed: true, progress: 100 },
+            })
+          );
+          removeFileUploadCancelToken(currentID);
+        })
+        .catch((e) => {
+          console.log("Error uploading file", e);
+          dispatch(
+            editUpload({
+              id: currentID,
+              updateData: { canceled: true },
+            })
+          );
+          removeFileUploadCancelToken(currentID);
+        });
     }
   };
 

@@ -14,6 +14,10 @@ export const addFileUploadCancelToken = (id: string, cancelToken: any) => {
   cancelTokens[id] = cancelToken;
 };
 
+export const removeFileUploadCancelToken = (id: string) => {
+  delete cancelTokens[id];
+};
+
 export const getCancelToken = (id: string) => {
   return cancelTokens[id];
 };

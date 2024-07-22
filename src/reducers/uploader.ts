@@ -22,7 +22,7 @@ const uploaderSlice = createSlice({
   initialState,
   reducers: {
     addUpload(state, action: PayloadAction<UploadItemType>) {
-      state.uploads.push(action.payload);
+      state.uploads.unshift(action.payload);
     },
     editUpload(
       state,
@@ -48,9 +48,12 @@ const uploaderSlice = createSlice({
 
       state.uploads = uploads;
     },
+    resetUploads(state) {
+      state.uploads = [];
+    },
   },
 });
 
-export const { addUpload, editUpload } = uploaderSlice.actions;
+export const { addUpload, editUpload, resetUploads } = uploaderSlice.actions;
 
 export default uploaderSlice.reducer;
