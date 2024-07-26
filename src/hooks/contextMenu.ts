@@ -13,20 +13,8 @@ export const useContextMenu = () => {
     if (e) e.stopPropagation();
     if (e) e.preventDefault();
 
-    const contextWidth = 245;
-    const contextHeight = 260;
-
-    const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
     let X = e.clientX;
     let Y = e.clientY;
-
-    if (X + contextWidth > windowWidth) {
-      X = windowWidth - contextWidth;
-    }
-
-    if (Y + contextHeight > windowHeight) {
-      Y = windowHeight - contextHeight - 60;
-    }
 
     setContextData({
       ...contextData,

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   deleteFileAPI,
   renameFileAPI,
@@ -58,6 +58,11 @@ export interface ContextMenuProps {
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
+  const [fixedCoords, setFixedCoords] = useState({
+    X: 0,
+    Y: 0,
+    set: false,
+  });
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
@@ -73,6 +78,31 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const { wrapperRef } = useClickOutOfBounds(closeContext);
   const { isTrash, isMedia } = useUtils();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+    const modalWidth = wrapperRef.current.clientWidth;
+    const modalHeight = wrapperRef.current.clientHeight;
+
+    const { innerWidth: windowWidth, innerHeight: windowHeight } = window;
+
+    let X = contextSelected.X;
+    let Y = contextSelected.Y;
+
+    if (X + modalWidth > windowWidth) {
+      X = windowWidth - windowWidth;
+    }
+
+    if (Y + modalHeight > windowHeight) {
+      Y = windowHeight - modalHeight - 10;
+    }
+
+    setFixedCoords({
+      X,
+      Y,
+      set: true,
+    });
+  }, [wrapperRef, contextSelected.X, contextSelected.Y]);
 
   const renameItem = async () => {
     closeContext();
@@ -255,13 +285,13 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
       ref={wrapperRef}
       className="fixed min-w-[215px] bg-white shadow-lg rounded-md z-50"
       style={
-        contextSelected.selected
+        fixedCoords.set
           ? {
               display: "block",
-              left: `${contextSelected.X}px`,
-              top: `${contextSelected.Y}px`,
+              left: `${fixedCoords.X}px`,
+              top: `${fixedCoords.Y}px`,
             }
-          : { display: "none" }
+          : { opacity: 0 }
       }
     >
       <div>
