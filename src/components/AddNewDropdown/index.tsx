@@ -56,24 +56,24 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
         multiple={true}
         onChange={handleUpload}
       />
-      <ul className="pl-0 list-none m-0 rounded-[5px] overflow-hidden shadow-md">
+      <ul className="rounded-sm overflow-hidden shadow-lg">
         <li>
           <div>
             <a
-              className="flex items-center justify-start p-[12px_20px] no-underline rounded-[5px] overflow-hidden text-[15px] leading-[18px] bg-white hover:bg-[#f6f5fd]"
+              className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
               onClick={triggerFileUpload}
             >
-              <UploadFileIcon className="w-[20px] h-[20px] mr-[10px] text-[#3c85ee]" />
+              <UploadFileIcon className="w-5 h-5 mr-2.5 text-primary" />
               <p className="text-sm">Upload Files</p>
             </a>
           </div>
         </li>
         <li>
           <a
-            className="flex items-center justify-start p-[12px_20px] no-underline rounded-[5px] overflow-hidden text-[15px] leading-[18px] bg-white hover:bg-[#f6f5fd]"
+            className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
             onClick={createFolder}
           >
-            <CreateFolderIcon className="w-[20px] h-[20px] mr-[10px] text-[#3c85ee]" />
+            <CreateFolderIcon className="w-5 h-5 mr-2.5 text-primary" />
             <p className="text-sm">Create Folder</p>
           </a>
         </li>

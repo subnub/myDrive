@@ -10,27 +10,26 @@ import FileInfoPopup from "../FileInfoPopup";
 import SharePopup from "../SharePopup";
 
 const MainSection = memo(() => {
-  const selectedItem = useAppSelector((state) => state.selected.popupModal);
+  const popupModalItem = useAppSelector(
+    (state) => state.selected.popupModal.file
+  );
   const shareModalItem = useAppSelector(
     (state) => state.selected.shareModal.file
   );
+
+  const isMediaSelected =
+    popupModalItem?.metadata.isVideo || popupModalItem?.metadata.hasThumbnail;
+  const isFileInfoSelected = !isMediaSelected && popupModalItem;
 
   const { isMedia } = useUtils();
   return (
     <div>
       <div className="flex h-full">
-        {/* {showPopup ? <PopupWindow /> : undefined} */}
-        {selectedItem?.file &&
-        (selectedItem.file.metadata.hasThumbnail ||
-          selectedItem.file.metadata.isVideo) ? (
-          <PhotoViewerPopup />
-        ) : undefined}
+        {isMediaSelected && (
+          <PhotoViewerPopup file={popupModalItem} key={popupModalItem._id} />
+        )}
 
-        {selectedItem?.file &&
-        !selectedItem.file.metadata.isVideo &&
-        !selectedItem.file.metadata.hasThumbnail ? (
-          <FileInfoPopup />
-        ) : undefined}
+        {isFileInfoSelected && <FileInfoPopup />}
 
         {shareModalItem && <SharePopup />}
 

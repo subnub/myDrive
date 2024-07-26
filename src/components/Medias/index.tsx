@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { memo, useEffect, useMemo, useState } from "react";
 import MediaItem from "../MediaItem";
-import { useFiles, useThumbnail } from "../../hooks/files";
+import { useFiles } from "../../hooks/files";
 import MultiSelectBar from "../MultiSelectBar";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 
@@ -44,6 +44,7 @@ const Medias = memo(() => {
           </React.Fragment>
         ))}
       </div>
+      {/* @ts-ignore */}
       <div ref={sentinelRef} className="h-1"></div>
     </div>
   );

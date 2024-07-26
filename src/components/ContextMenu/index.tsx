@@ -61,20 +61,26 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateFoldersCache } = useFoldersClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
-  const { wrapperRef } = useClickOutOfBounds(props.closeContext);
+  const {
+    closeContext,
+    contextSelected,
+    folderMode,
+    file,
+    quickItemMode,
+    stopPropagation,
+    folder,
+  } = props;
+  const { wrapperRef } = useClickOutOfBounds(closeContext);
   const { isTrash, isMedia } = useUtils();
   const dispatch = useAppDispatch();
-  const liClassname =
-    "flex w-full px-[20px] py-[12px] items-center font-normal text-[#637381] justify-start no-underline animate hover:bg-[#f6f5fd] hover:text-[#3c85ee] hover:font-medium";
-  const spanClassname = "flex items-center justify-center mr-[18px]";
 
   const renameItem = async () => {
-    props.closeContext();
-    if (!props.folderMode && props.file) {
+    closeContext();
+    if (!folderMode && file) {
       try {
-        const filename = await renameFilePopup(props.file.filename);
-        if (!filename || filename === props.file.filename) return;
-        await toast.promise(renameFileAPI(props.file._id, filename), {
+        const filename = await renameFilePopup(file.filename);
+        if (!filename || filename === file.filename) return;
+        await toast.promise(renameFileAPI(file._id, filename), {
           pending: "Renaming...",
           success: "Renamed",
           error: "Error Renaming",
@@ -84,11 +90,11 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
       } catch (e) {
         console.log("Error renaming file", e);
       }
-    } else if (props.folderMode && props.folder) {
+    } else if (folderMode && folder) {
       try {
-        const folderName = await renameFolderPopup(props.folder.name);
-        if (!folderName || folderName === props.folder.name) return;
-        await toast.promise(renameFolder(props.folder._id, folderName), {
+        const folderName = await renameFolderPopup(folder.name);
+        if (!folderName || folderName === folder.name) return;
+        await toast.promise(renameFolder(folder._id, folderName), {
           pending: "Renaming...",
           success: "Renamed",
           error: "Error Renaming",
@@ -101,13 +107,13 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   };
 
   const trashItem = async () => {
-    props.closeContext();
-    if (!props.folderMode && props.file) {
+    closeContext();
+    if (!folderMode && file) {
       try {
         const result = await trashItemsPopup();
         if (!result) return;
 
-        await toast.promise(trashFileAPI(props.file._id), {
+        await toast.promise(trashFileAPI(file._id), {
           pending: "Trashing...",
           success: "Trashed",
           error: "Error Trashing",
@@ -118,12 +124,12 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
       } catch (e) {
         console.log("Error trashing file", e);
       }
-    } else if (props.folderMode && props.folder) {
+    } else if (folderMode && folder) {
       try {
         const result = await trashItemsPopup();
         if (!result) return;
 
-        await toast.promise(trashFolderAPI(props.folder._id), {
+        await toast.promise(trashFolderAPI(folder._id), {
           pending: "Trashing...",
           success: "Trashed",
           error: "Error Trashing",
@@ -137,13 +143,13 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   };
 
   const deleteItem = async () => {
-    props.closeContext();
-    if (!props.folderMode && props.file) {
+    closeContext();
+    if (!folderMode && file) {
       try {
         const result = await deleteFilePopup();
         if (!result) return;
 
-        await toast.promise(deleteFileAPI(props.file._id), {
+        await toast.promise(deleteFileAPI(file._id), {
           pending: "Deleting...",
           success: "Deleted",
           error: "Error Deleting",
@@ -154,12 +160,12 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
       } catch (e) {
         console.log("Error deleting file", e);
       }
-    } else if (props.folderMode && props.folder) {
+    } else if (folderMode && folder) {
       try {
         const result = await deleteFolderPopup();
         if (!result) return;
 
-        await toast.promise(deleteFolderAPI(props.folder._id), {
+        await toast.promise(deleteFolderAPI(folder._id), {
           pending: "Deleting...",
           success: "Deleted",
           error: "Error Deleting",
@@ -173,12 +179,12 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   };
 
   const restoreItem = async () => {
-    props.closeContext();
+    closeContext();
     const result = await restoreItemPopup();
     if (!result) return;
-    if (!props.folderMode && props.file) {
+    if (!folderMode && file) {
       try {
-        await toast.promise(restoreFileAPI(props.file._id), {
+        await toast.promise(restoreFileAPI(file._id), {
           pending: "Restoring...",
           success: "Restored",
           error: "Error Restoring",
@@ -187,9 +193,9 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
       } catch (e) {
         console.log("Error restoring file", e);
       }
-    } else if (props.folderMode && props.folder) {
+    } else if (folderMode && folder) {
       try {
-        await toast.promise(restoreFolderAPI(props.folder._id), {
+        await toast.promise(restoreFolderAPI(folder._id), {
           pending: "Restoring...",
           success: "Restored",
           error: "Error Restoring",
@@ -202,41 +208,41 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   };
 
   const openMoveItemModal = async () => {
-    props.closeContext();
-    if (!props.folderMode && props.file) {
-      dispatch(setMoverID(props.file._id, props.file.metadata.parent, true));
-    } else if (props.folderMode && props.folder) {
-      dispatch(setMoverID(props.folder._id, props.folder.parent, false));
+    closeContext();
+    if (!folderMode && file) {
+      dispatch(setMoverID(file._id, file.metadata.parent, true));
+    } else if (folderMode && folder) {
+      dispatch(setMoverID(folder._id, folder.parent, false));
     }
   };
 
   const openShareItemModal = () => {
-    props.closeContext();
-    dispatch(setShareModal(props.file!));
+    closeContext();
+    dispatch(setShareModal(file!));
   };
 
   const downloadItem = () => {
-    props.closeContext();
-    if (props.file) downloadFileAPI(props.file._id);
+    closeContext();
+    if (file) downloadFileAPI(file._id);
   };
 
   const selectItemMultiSelect = () => {
-    props.closeContext();
-    if (props.folderMode && props.folder) {
+    closeContext();
+    if (folderMode && folder) {
       dispatch(
         setMultiSelectMode({
           type: "folder",
-          id: props.folder._id,
+          id: folder._id,
           file: null,
-          folder: props.folder,
+          folder: folder,
         })
       );
-    } else if (!props.folderMode && props.file) {
+    } else if (!folderMode && file) {
       dispatch(
         setMultiSelectMode({
-          type: props.quickItemMode ? "quick-item" : "file",
-          id: props.file._id,
-          file: props.file,
+          type: quickItemMode ? "quick-item" : "file",
+          id: file._id,
+          file: file,
           folder: null,
         })
       );
@@ -245,105 +251,91 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
 
   return (
     <div
-      onClick={props.stopPropagation}
+      onClick={stopPropagation}
       ref={wrapperRef}
-      className={classNames(
-        "fixed min-w-[215px] bg-white shadow-[0px_2px_4px_rgba(0,0,0,0.15),_inset_0px_1px_0px_#f5f7fa] rounded-[4px] mt-[-5px] z-50 ",
-        props.contextSelected.selected ? "opacity-100" : "opacity-0"
-      )}
+      className="fixed min-w-[215px] bg-white shadow-lg rounded-md z-50"
       style={
-        props.contextSelected.selected
+        contextSelected.selected
           ? {
               display: "block",
-              left: `${props.contextSelected.X}px`,
-              top: `${props.contextSelected.Y}px`,
+              left: `${contextSelected.X}px`,
+              top: `${contextSelected.Y}px`,
             }
           : { display: "none" }
       }
     >
-      <ul className="p-0 list-none m-0 ">
-        <li onClick={selectItemMultiSelect} className={liClassname}>
-          <a className="flex">
-            <span className={spanClassname}>
-              <MultiSelectIcon className="w-[19px] h-[20px]" />
-            </span>
-            Multi-select
-          </a>
-        </li>
+      <div>
+        <div
+          onClick={selectItemMultiSelect}
+          className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-t-md"
+        >
+          <MultiSelectIcon className="w-5 h-5" />
+          <p className="ml-2.5 text-sm">Multi-select</p>
+        </div>
         {!isTrash && !isMedia && (
-          <li onClick={renameItem} className={liClassname}>
-            <a className="flex">
-              <span className={spanClassname}>
-                <RenameIcon />
-              </span>
-              Rename
-            </a>
-          </li>
+          <div
+            onClick={renameItem}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+          >
+            <RenameIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Rename</p>
+          </div>
         )}
-        {!props.folderMode && !isTrash ? (
-          <li onClick={openShareItemModal} className={liClassname}>
-            <a className="flex" data-modal="share__modal">
-              <span className="inline-flex mr-[18px]">
-                <ShareIcon />
-              </span>
-              Share
-            </a>
-          </li>
-        ) : undefined}
-        {!props.folderMode && !isTrash ? (
-          <li onClick={downloadItem} className={liClassname}>
-            <a className="flex">
-              <span className={spanClassname}>
-                <DownloadIcon />
-              </span>
-              Download
-            </a>
-          </li>
-        ) : undefined}
+        {!folderMode && !isTrash && (
+          <div
+            onClick={openShareItemModal}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+          >
+            <ShareIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Share</p>
+          </div>
+        )}
+        {!folderMode && !isTrash && (
+          <div
+            onClick={downloadItem}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+          >
+            <DownloadIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Download</p>
+          </div>
+        )}
         {!isTrash && !isMedia && (
-          <li onClick={openMoveItemModal} className={liClassname}>
-            <a className="flex" data-modal="destination__modal">
-              <span className={spanClassname}>
-                <MoveIcon />
-              </span>{" "}
-              Move
-            </a>
-          </li>
+          <div
+            onClick={openMoveItemModal}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+          >
+            <MoveIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Move</p>
+          </div>
         )}
         {!isTrash && (
-          <li onClick={trashItem} className={liClassname}>
-            <a className="flex">
-              <span className={spanClassname}>
-                <TrashIcon />
-              </span>
-              Trash
-            </a>
-          </li>
-        )}
-        {isTrash && (
-          <li onClick={restoreItem} className={liClassname}>
-            <a className="flex">
-              <span className={spanClassname}>
-                <RestoreIcon className="w-[19px] h-[20px]" />
-              </span>
-              Restore
-            </a>
-          </li>
-        )}
-        {isTrash && (
-          <li
-            onClick={deleteItem}
-            className={classNames(liClassname, "hover:text-red-500")}
+          <div
+            onClick={trashItem}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-b-md"
           >
-            <a className="flex">
-              <span className={spanClassname}>
-                <TrashIcon />
-              </span>
-              Delete
-            </a>
-          </li>
+            <TrashIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Trash</p>
+          </div>
         )}
-      </ul>
+        {isTrash && (
+          <div
+            onClick={restoreItem}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+          >
+            <RestoreIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Restore</p>
+          </div>
+        )}
+        {isTrash && (
+          <div
+            onClick={deleteItem}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-red-500 rounded-b-md"
+          >
+            <TrashIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Delete</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 });

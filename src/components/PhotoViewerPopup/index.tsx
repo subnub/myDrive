@@ -12,20 +12,27 @@ import ContextMenu from "../ContextMenu";
 import { resetPopupSelect, setPopupSelect } from "../../reducers/selected";
 import CircleLeftIcon from "../../icons/CircleLeftIcon";
 import CircleRightIcon from "../../icons/CircleRightIcon";
-import { useFiles, useQuickFiles } from "../../hooks/files";
+import { useFiles, useFullThumbnail, useQuickFiles } from "../../hooks/files";
 import { FileInterface } from "../../types/file";
 import { InfiniteData } from "react-query";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import Spinner from "../Spinner";
 import { toast } from "react-toastify";
 
-const PhotoViewerPopup = memo(() => {
-  const [image, setImage] = useState("");
+interface PhotoViewerPopupProps {
+  file: FileInterface;
+}
+
+const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
+  const { file } = props;
   const [video, setVideo] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const file = useAppSelector((state) => state.selected.popupModal.file)!;
   const type = useAppSelector((state) => state.selected.popupModal.type)!;
+  const { data: thumbnail, isLoading: isThumbnailLoading } = useFullThumbnail(
+    file._id,
+    file.metadata.isVideo
+  );
   const finalLastPageLoaded = useRef(false);
   const loadingNextPage = useRef(false);
   const { data: quickFiles } = useQuickFiles(false);
@@ -51,29 +58,16 @@ const PhotoViewerPopup = memo(() => {
     [file.filename]
   );
 
-  const getImage = useCallback(async () => {
-    try {
-      setLoading(true);
-      const imageData = await getFileFullThumbnailAPI(file._id);
-      const imgFile = new Blob([imageData]);
-      const imgUrl = URL.createObjectURL(imgFile);
-      setImage(imgUrl);
-      setLoading(false);
-    } catch (e) {
-      console.log("Error getting image", e);
-      toast.error("Error getting image");
-    }
-  }, [file._id, getFileFullThumbnailAPI]);
-
   const getVideo = useCallback(async () => {
     try {
-      setLoading(true);
+      setIsVideoLoading(true);
+      setVideo("");
       // TODO: Change this
       await getVideoTokenAPI();
       const videoURL = `http://localhost:5173/api/file-service/stream-video/${file._id}`;
       console.log("video url", videoURL);
       setVideo(videoURL);
-      setLoading(false);
+      setIsVideoLoading(false);
     } catch (e) {
       console.log("Error getting video", e);
       toast.error("Error getting video");
@@ -225,14 +219,12 @@ const PhotoViewerPopup = memo(() => {
   useEffect(() => {
     if (file.metadata.isVideo) {
       getVideo();
-    } else {
-      getImage();
     }
 
     return () => {
       cleanUpVideo();
     };
-  }, [file._id, getVideo, getImage, cleanUpVideo]);
+  }, [file.metadata.isVideo, getVideo, cleanUpVideo]);
 
   return (
     <div
@@ -296,14 +288,14 @@ const PhotoViewerPopup = memo(() => {
         />
       </div>
       <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center">
-        {loading && <Spinner />}
-        {!file.metadata.isVideo && !loading && (
+        {(isVideoLoading || isThumbnailLoading) && <Spinner />}
+        {!file.metadata.isVideo && !isThumbnailLoading && (
           <img
-            src={image}
+            src={thumbnail}
             className="max-w-full max-h-full object-contain select-none"
           />
         )}
-        {file.metadata.isVideo && !loading && (
+        {file.metadata.isVideo && !isVideoLoading && (
           <video
             src={video}
             ref={videoRef}

@@ -92,10 +92,15 @@ export const getFileThumbnailAPI = async (thumbnailID: string) => {
 
 export const getFileFullThumbnailAPI = async (fileID: string) => {
   const url = `http://localhost:5173/api/file-service/full-thumbnail/${fileID}`;
+
   const response = await axios.get(url, {
     responseType: "arraybuffer",
   });
-  return response.data;
+
+  const imgFile = new Blob([response.data]);
+  const imgUrl = URL.createObjectURL(imgFile);
+
+  return imgUrl;
 };
 
 export const getVideoTokenAPI = async () => {

@@ -6,10 +6,7 @@ import classNames from "classnames";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { useThumbnail } from "../../hooks/files";
 import { useContextMenu } from "../../hooks/contextMenu";
-import { useDispatch, useSelector } from "react-redux";
 import mobilecheck from "../../utils/mobileCheck";
-import { startSetSelectedItem } from "../../actions/selectedItem";
-import { setPopupFile } from "../../actions/popupFile";
 import { FileInterface } from "../../types/file";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import {
@@ -37,11 +34,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
-  const { image, hasThumbnail, imageOnError } = useThumbnail(
-    file.metadata.hasThumbnail,
-    file.metadata.thumbnailID,
-    true
-  );
+  const { data: thumbnail } = useThumbnail(file.metadata.thumbnailID, true);
   const dispatch = useAppDispatch();
   const lastSelected = useRef(0);
 
@@ -127,13 +120,13 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
         className={classNames(
           "inline-flex items-center w-full bg-white relative",
           {
-            "mt-2": !hasThumbnail,
+            "mt-2": !thumbnail,
           }
         )}
       >
-        {hasThumbnail ? (
+        {!!thumbnail ? (
           <div className="w-full min-h-[88px] max-h-[88px] h-full flex">
-            <img className=" object-cover" src={image} onError={imageOnError} />
+            <img className=" object-cover" src={thumbnail} />
             {file.metadata.isVideo && (
               <div className="w-full h-full absolute flex justify-center items-center text-white">
                 <PlayButtonIcon className="w-[50px] h-[50px]" />
@@ -156,7 +149,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
             />
           </svg>
         )}
-        {!hasThumbnail && (
+        {!thumbnail && (
           <div className="w-full h-full absolute flex justify-center items-center text-white mt-3">
             <p className="text-sm">{fileExtension}</p>
           </div>

@@ -25,7 +25,7 @@ export const useContextMenu = () => {
     }
 
     if (Y + contextHeight > windowHeight) {
-      Y = windowHeight - contextHeight;
+      Y = windowHeight - contextHeight - 60;
     }
 
     setContextData({

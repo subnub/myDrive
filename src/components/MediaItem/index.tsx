@@ -8,7 +8,6 @@ import {
   setPopupSelect,
 } from "../../reducers/selected";
 import mobilecheck from "../../utils/mobileCheck";
-import { setPopupFile } from "../../actions/popupFile";
 import classNames from "classnames";
 import { useContextMenu } from "../../hooks/contextMenu";
 import ContextMenu from "../ContextMenu";
@@ -42,10 +41,7 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
   } = useContextMenu();
   const lastSelected = useRef(0);
   const dispatch = useAppDispatch();
-  const { image, imageOnError } = useThumbnail(
-    file.metadata.hasThumbnail,
-    file.metadata.thumbnailID
-  );
+  const { data: thumbnail } = useThumbnail(file.metadata.thumbnailID);
 
   // TODO: See if we can memoize this and remove any
   const mediaItemClick = (e: any) => {
@@ -110,11 +106,7 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
           <PlayButtonIcon className="w-[50px] h-[50px]" />
         </div>
       )}
-      <img
-        className="object-cover h-full w-full"
-        src={image}
-        onError={imageOnError}
-      />
+      <img className="object-cover h-full w-full" src={thumbnail} />
     </div>
   );
 });

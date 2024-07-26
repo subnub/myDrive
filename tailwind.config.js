@@ -6,7 +6,13 @@ module.exports = {
     "./public/index.html",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#3c85ee",
+        "white-hover": "#f6f5fd",
+        "gray-primary": "#637381",
+      },
+    },
     screens: {
       quickAccessOne: "1000px",
       quickAccessTwo: "1210px",

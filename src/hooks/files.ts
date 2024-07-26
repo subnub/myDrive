@@ -8,6 +8,7 @@ import {
 } from "react-query";
 import { useParams } from "react-router-dom";
 import {
+  getFileFullThumbnailAPI,
   getFileThumbnailAPI,
   getFilesListAPI,
   getQuickFilesListAPI,
@@ -127,65 +128,50 @@ export const useQuickFilesClient = () => {
   return { ...quickFilesReactClientQuery, invalidateQuickFilesCache };
 };
 
-interface thumbnailState {
-  hasThumbnail: boolean;
-  image: undefined | string;
-}
-
 export const useThumbnail = (
-  hasThumbnail: boolean,
-  thumbnailID?: string,
+  thumbnailID: string | undefined,
   isQuickFile?: boolean
 ) => {
-  const requestedThumbnail = useRef(false);
-  const [state, setState] = useState<thumbnailState>({
-    hasThumbnail: false,
-    image: undefined,
-  });
-  const { isHome, isMedia } = useUtils();
   const listView = useAppSelector((state) => state.filter.listView);
-
-  const imageOnError = useCallback(() => {
-    setState({
-      hasThumbnail: false,
-      image: undefined,
-    });
-  }, []);
-  const getThumbnail = useCallback(async () => {
-    try {
-      if (!thumbnailID || requestedThumbnail.current) return;
-      if (isQuickFile && !isHome) return;
-      if (!isQuickFile && listView && !isMedia) return;
-      requestedThumbnail.current = true;
-      const thumbnailData = await getFileThumbnailAPI(thumbnailID);
-      setState({
-        hasThumbnail: true,
-        image: thumbnailData,
-      });
-    } catch (e) {
-      console.log("error getting thumbnail data", e);
-      imageOnError();
+  const { isMedia } = useUtils();
+  const disabled = listView && !isMedia && !isQuickFile;
+  const thumbnailQuery = useQuery(
+    ["thumbnail", { thumbnailID }],
+    () => {
+      if (thumbnailID) {
+        return getFileThumbnailAPI(thumbnailID);
+      } else {
+        return undefined;
+      }
+    },
+    {
+      enabled: !!thumbnailID && !disabled,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      keepPreviousData: true,
     }
-  }, [
-    thumbnailID,
-    getFileThumbnailAPI,
-    imageOnError,
-    listView,
-    isHome,
-    isQuickFile,
-  ]);
+  );
+  return thumbnailQuery;
+};
 
-  useEffect(() => {
-    if (!hasThumbnail || !thumbnailID) return;
-
-    getThumbnail();
-
-    return () => {
-      requestedThumbnail.current = false;
-    };
-  }, [hasThumbnail, getThumbnail, thumbnailID]);
-
-  return { ...state, imageOnError };
+export const useFullThumbnail = (fileID: string, isVideo: boolean) => {
+  console.log("usefullthumbnail", fileID, isVideo);
+  const thumbnailQuery = useQuery(
+    ["full-thumbnail", { fileID }],
+    () => {
+      if (!isVideo) {
+        return getFileFullThumbnailAPI(fileID);
+      } else {
+        return undefined;
+      }
+    },
+    {
+      enabled: !isVideo,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
+  return thumbnailQuery;
 };
 
 export const useSearchSuggestions = (searchText: string) => {
