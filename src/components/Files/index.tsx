@@ -87,7 +87,7 @@ const Files = memo(() => {
         {!listView ? (
           <div
             className={classNames(
-              "grid grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[16px]",
+              "grid grid-cols-[repeat(auto-fit,minmax(47%,45%))] xs:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[16px]",
               files?.pages[0]?.length === 1
                 ? "justify-normal"
                 : "justify-center xs:justify-normal"

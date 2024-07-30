@@ -1,17 +1,15 @@
-import React, { useCallback, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { createFolderAPI } from "../../api/foldersAPI";
-import { useFoldersClient } from "../../hooks/folders";
-import { showCreateFolderPopup } from "../../popups/folder";
+import { useCallback, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import AddNewDropdown from "../AddNewDropdown";
-import HomeListIcon from "../../icons/HomeListIcon";
 import TrashIcon from "../../icons/TrashIcon";
 import classNames from "classnames";
 import PhotoIcon from "../../icons/PhotoIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { closeDrawer } from "../../reducers/leftSection";
 import SettingsIcon from "../../icons/SettingsIcon";
+import ChevronSolid from "../../icons/ChevronSolid";
+import HomeIconOutline from "../../icons/HomeIconOutline";
 
 const LeftSection = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -55,7 +53,6 @@ const LeftSection = () => {
 
   const closeDrawerEvent = useCallback(
     (e: any) => {
-      console.log("close", e?.target.id);
       if (
         !e ||
         !leftSectionOpen ||
@@ -77,7 +74,7 @@ const LeftSection = () => {
     <div
       ref={wrapperRef}
       className={classNames(
-        "p-6 fixed desktopMode:relative border-r w-[270px] min-w-[270px] bg-white h-full z-20 mt-[9px] animate-movement",
+        "p-6 fixed desktopMode:relative border-r w-[270px] min-w-[270px] bg-white h-full z-20 desktopMode:z-0 animate-movement mt-1.5",
         {
           "-left-[270px] desktopMode:left-0": !leftSectionOpen,
           "left-0": leftSectionOpen,
@@ -86,92 +83,62 @@ const LeftSection = () => {
     >
       <div className="flex flex-col h-full">
         <div>
-          <div className="relative mb-[30px]">
+          <div className="relative mb-7">
             <a
               onClick={openDropdown}
-              className="flex items-center justify-center bg-[#3c85ee] hover:bg-[#326bcc] no-underline rounded-[5px]"
+              className="flex items-center justify-center bg-primary hover:bg-primary-hover no-underline rounded-md px-2 py-2.5"
             >
-              <p className="m-0 w-full text-center text-white text-[16px] font-medium">
+              <p className="m-0 w-full text-center text-white font-medium text-sm">
                 ADD NEW
               </p>
-              <span className="min-w-[50px] min-h-[45px] rounded-tr-[5px] rounded-br-[5px] flex items-center justify-center">
-                <img src="/assets/dropselect.svg" alt="dropselect" />
-              </span>
+              <ChevronSolid className="text-white mr-1" />
             </a>
-            {/* TODO: Remove this props */}
             {isDropdownOpen && <AddNewDropdown closeDropdown={closeDropdown} />}
           </div>
-          <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md">
-            <ul onClick={goHome} className="m-0 list-none p-0 cursor-pointer">
-              <li>
-                <a
-                  className={classNames(
-                    "flex items-center text-[#3c85ee] font-medium no-underline animate",
-                    isHome ? "text-[#3c85ee]" : "text-[#637381]"
-                  )}
-                >
-                  <span>
-                    <HomeListIcon />
-                  </span>
-                  <p className="ml-3">Home</p>
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
-        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] mt-1 mb-1 rounded-md">
-          <ul onClick={goMedia} className="m-0 list-none p-0 cursor-pointer ">
-            <li>
-              <a
-                className={classNames(
-                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
-                  isMedia ? "text-[#3c85ee]" : "text-[#637381]"
-                )}
-              >
-                <span>
-                  <PhotoIcon className="w-[20px] h-[20px] -ml-[2px]" />
-                </span>
-                <p className="ml-3">Media</p>
-              </a>
-            </li>
-          </ul>
+
+        <div
+          className={classNames(
+            "pl-2 mr-5 py-2 hover:bg-white-hover rounded-md cursor-pointer animate flex flex-row items-center w-full",
+            isHome ? "text-primary bg-white-hover" : "text-gray-primary"
+          )}
+          onClick={goHome}
+        >
+          <HomeIconOutline className="w-6 h-6" />
+          <p className="ml-3">Home</p>
         </div>
-        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md block desktopMode:hidden mb-1">
-          <ul
-            onClick={goSettings}
-            className="m-0 list-none p-0 cursor-pointer "
-          >
-            <li>
-              <a
-                className={classNames(
-                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
-                  isSettings ? "text-[#3c85ee]" : "text-[#637381]"
-                )}
-              >
-                <span>
-                  <SettingsIcon className="w-[22px] h-[22px] -ml-[2px]" />
-                </span>
-                <p className="ml-2">Settings</p>
-              </a>
-            </li>
-          </ul>
+
+        <div
+          className={classNames(
+            "pl-2 mr-5 py-2 hover:bg-white-hover rounded-md cursor-pointer animate flex flex-row items-center mt-1 w-full",
+            isMedia ? "text-primary bg-white-hover" : "text-gray-primary"
+          )}
+          onClick={goMedia}
+        >
+          <PhotoIcon className="w-6 h-6" />
+          <p className="ml-3">Media</p>
         </div>
-        <div className="pl-2 mr-[20px] py-2 hover:bg-[#f6f5fd] rounded-md">
-          <ul onClick={goTrash} className="m-0 list-none p-0 cursor-pointer ">
-            <li>
-              <a
-                className={classNames(
-                  "flex items-center text-[#3c85ee] font-medium no-underline animate",
-                  isTrash ? "text-red-500" : "text-[#637381]"
-                )}
-              >
-                <span>
-                  <TrashIcon />
-                </span>
-                <p className="ml-3">Trash</p>
-              </a>
-            </li>
-          </ul>
+
+        <div
+          className={classNames(
+            "pl-2 mr-5 py-2 hover:bg-white-hover rounded-md cursor-pointer animate flex flex-row items-center desktopMode:hidden mt-1 w-full",
+            isSettings ? "text-primary bg-white-hover" : "text-gray-primary"
+          )}
+          onClick={goSettings}
+        >
+          <SettingsIcon className="w-6 h-6" />
+          <p className="ml-3">Settings</p>
+        </div>
+
+        <div
+          className={classNames(
+            "pl-2 mr-5 py-2 hover:bg-white-hover rounded-md cursor-pointer animate flex flex-row items-center mt-1 w-full",
+            isTrash ? "text-red-500 bg-white-hover" : "text-gray-primary"
+          )}
+          onClick={goTrash}
+        >
+          <TrashIcon className="w-6 h-6" />
+          <p className="ml-3">Trash</p>
         </div>
       </div>
     </div>

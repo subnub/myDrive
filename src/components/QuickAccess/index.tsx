@@ -5,6 +5,7 @@ import { useQuickFiles } from "../../hooks/files";
 import classNames from "classnames";
 import { useParams } from "react-router-dom";
 import { useUtils } from "../../hooks/utils";
+import ChevronOutline from "../../icons/ChevronOutline";
 
 const QuickAccess = memo(() => {
   const { data: quickfilesList } = useQuickFiles(false);
@@ -20,26 +21,20 @@ const QuickAccess = memo(() => {
         <h2 className=" text-[#212b36] text-[22px] font-medium">
           Quick Access
         </h2>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="35"
-          height="35"
+        <ChevronOutline
           onClick={() => setQuickAccessExpanded(!quickAccessExpanded)}
-          className={classNames("cursor-pointer animate-movement", {
-            "rotate-180": quickAccessExpanded,
-          })}
-        >
-          <path
-            d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"
-            fill="#3c85ee"
-          />
-        </svg>
+          className={classNames(
+            "cursor-pointer animate-movement text-primary",
+            {
+              "rotate-180": quickAccessExpanded,
+            }
+          )}
+        />
       </div>
 
       <div
         className={classNames(
-          "grid animate-movement grid-cols-[repeat(auto-fit,minmax(40%,45%))] xs:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[16px]",
+          "grid animate-movement grid-cols-[repeat(auto-fit,minmax(47%,45%))] xs:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-[16px]",
           quickfilesList?.length === 1
             ? "justify-normal"
             : "justify-center xs:justify-normal",

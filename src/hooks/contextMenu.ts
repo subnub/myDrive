@@ -1,7 +1,6 @@
 import { MouseEventHandler, useRef, useState } from "react";
 
 export const useContextMenu = () => {
-  // 215 X 240
   const [contextData, setContextData] = useState({
     selected: false,
     X: 0,
