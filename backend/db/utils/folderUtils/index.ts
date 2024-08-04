@@ -182,6 +182,36 @@ class DbUtil {
     );
     return result;
   };
+
+  getMoveFolderList = async (
+    userID: string,
+    parent = "/",
+    search?: string,
+    folderID?: string
+  ) => {
+    let query: any = {
+      owner: userID,
+    };
+
+    if (folderID) {
+      query.parentList = { $ne: folderID };
+      query._id = { $ne: folderID };
+    }
+
+    if (!search || search === "") {
+      query.parent = parent;
+    }
+
+    if (search && search !== "") {
+      query.name = new RegExp(search, "i");
+    }
+
+    console.log("query", query);
+
+    const result = await Folder.find(query);
+
+    return result;
+  };
 }
 
 export default DbUtil;

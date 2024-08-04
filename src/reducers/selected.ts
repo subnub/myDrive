@@ -9,6 +9,12 @@ interface MainSecionType {
   folder: FolderInterface | null;
 }
 
+type MoveStateType = {
+  type: "" | "file" | "folder";
+  file: FileInterface | null;
+  folder: FolderInterface | null;
+};
+
 export interface SelectedStateType {
   mainSection: MainSecionType;
   popupModal: {
@@ -23,6 +29,7 @@ export interface SelectedStateType {
   shareModal: {
     file: FileInterface | null;
   };
+  moveModal: MoveStateType;
 }
 
 const initialState: SelectedStateType = {
@@ -41,6 +48,11 @@ const initialState: SelectedStateType = {
   multiSelectCount: 0,
   shareModal: {
     file: null,
+  },
+  moveModal: {
+    type: "",
+    file: null,
+    folder: null,
   },
 };
 
@@ -110,6 +122,16 @@ const selectedSlice = createSlice({
         file: null,
       };
     },
+    setMoveModal: (state, action: PayloadAction<MoveStateType>) => {
+      state.moveModal = action.payload;
+    },
+    resetMoveModal: (state) => {
+      state.moveModal = {
+        type: "",
+        file: null,
+        folder: null,
+      };
+    },
   },
 });
 
@@ -122,6 +144,8 @@ export const {
   resetPopupSelect,
   setShareModal,
   resetShareModal,
+  setMoveModal,
+  resetMoveModal,
 } = selectedSlice.actions;
 
 export default selectedSlice.reducer;

@@ -36,6 +36,22 @@ export const getFolderInfoAPI = async ({
   return response.data;
 };
 
+export const getMoveFolderListAPI = async ({
+  queryKey,
+}: QueryFunctionContext<
+  [string, { parent: string; search: string; folderID?: string }]
+>) => {
+  const [_key, { parent, search, folderID }] = queryKey;
+  const response = await axios.get(`/folder-service/move-folder-list`, {
+    params: {
+      parent,
+      search,
+      folderID,
+    },
+  });
+  return response.data;
+};
+
 // POST
 
 export const createFolderAPI = async (name: string, parent?: string) => {

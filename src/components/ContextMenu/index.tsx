@@ -22,6 +22,7 @@ import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
 import { useAppDispatch } from "../../hooks/store";
 import {
   resetSelected,
+  setMoveModal,
   setMultiSelectMode,
   setShareModal,
 } from "../../reducers/selected";
@@ -240,9 +241,12 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const openMoveItemModal = async () => {
     closeContext();
     if (!folderMode && file) {
-      dispatch(setMoverID(file._id, file.metadata.parent, true));
+      // dispatch(setMoverID(file._id, file.metadata.parent, true));
+      dispatch(setMoveModal({ type: "file", file, folder: null }));
     } else if (folderMode && folder) {
-      dispatch(setMoverID(folder._id, folder.parent, false));
+      //   dispatch(setMoverID(folder._id, folder.parent, false));
+      // }
+      dispatch(setMoveModal({ type: "folder", file: null, folder }));
     }
   };
 

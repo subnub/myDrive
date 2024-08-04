@@ -229,6 +229,22 @@ class FolderService {
     await folder.save();
   };
 
+  getMoveFolderList = async (
+    userID: string,
+    parent?: string,
+    search?: string,
+    folderID?: string
+  ) => {
+    const folderList = await utilsFolder.getMoveFolderList(
+      userID,
+      parent,
+      search,
+      folderID
+    );
+
+    return folderList;
+  };
+
   moveFolder = async (userID: string, folderID: string, parentID: string) => {
     let parentList = ["/"];
 

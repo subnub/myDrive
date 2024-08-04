@@ -8,6 +8,7 @@ import { useAppSelector } from "../../hooks/store";
 import PhotoViewerPopup from "../PhotoViewerPopup";
 import FileInfoPopup from "../FileInfoPopup";
 import SharePopup from "../SharePopup";
+import MoverPopup from "../MoverPopup/MoverPopup";
 
 const MainSection = memo(() => {
   const popupModalItem = useAppSelector(
@@ -15,6 +16,9 @@ const MainSection = memo(() => {
   );
   const shareModalItem = useAppSelector(
     (state) => state.selected.shareModal.file
+  );
+  const moveModalItemType = useAppSelector(
+    (state) => state.selected.moveModal.type
   );
 
   const isMediaSelected =
@@ -32,6 +36,8 @@ const MainSection = memo(() => {
         {isFileInfoSelected && <FileInfoPopup />}
 
         {shareModalItem && <SharePopup />}
+
+        {moveModalItemType && <MoverPopup />}
 
         <div className="flex flex-row h-screen w-screen pt-16">
           <LeftSection />

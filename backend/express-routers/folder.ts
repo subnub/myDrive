@@ -4,6 +4,7 @@ import env from "../enviroment/env";
 import FileSystemService from "../services/ChunkService/FileSystemService";
 import S3Service from "../services/ChunkService/S3Service";
 import FolderController from "../controllers/folder";
+import { moveFolderValidationRules } from "../middleware/Folders/FolderMiddleware";
 
 let folderController: FolderController;
 
@@ -45,6 +46,13 @@ router.get(
   "/folder-service/subfolder-list-full",
   auth,
   folderController.getSubfolderFullList
+);
+
+router.get(
+  "/folder-service/move-folder-list",
+  auth,
+  moveFolderValidationRules,
+  folderController.getMoveFolderList
 );
 
 export default router;

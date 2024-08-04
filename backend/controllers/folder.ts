@@ -254,6 +254,36 @@ class FolderController {
       res.status(500).send("Server error renaming folder");
     }
   };
+
+  getMoveFolderList = async (req: RequestType, res: Response) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const parent = (req.query.parent as string) || undefined;
+      const search = (req.query.search as string) || undefined;
+      const folderID = (req.query.folderID as string) || undefined;
+
+      console.log("folderID", folderID);
+
+      const folderList = await folderService.getMoveFolderList(
+        userID,
+        parent,
+        search,
+        folderID
+      );
+
+      res.send(folderList);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log("\nGet Move Folder List Error Folder Route:", e.message);
+      }
+
+      res.status(500).send("Server error getting move folder list");
+    }
+  };
 }
 
 export default FolderController;

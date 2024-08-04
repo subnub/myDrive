@@ -1,6 +1,10 @@
 import { UseQueryResult, useQuery, useQueryClient } from "react-query";
 import { useParams } from "react-router-dom";
-import { getFolderInfoAPI, getFoldersListAPI } from "../api/foldersAPI";
+import {
+  getFolderInfoAPI,
+  getFoldersListAPI,
+  getMoveFolderListAPI,
+} from "../api/foldersAPI";
 import { useSelector } from "react-redux";
 import { useUtils } from "./utils";
 import { FolderInterface } from "../types/folders";
@@ -66,4 +70,24 @@ export const useFolder = () => {
   );
 
   return { ...folderQuery };
+};
+
+export const useMoveFolders = (
+  parent: string,
+  search: string,
+  folderID?: string
+) => {
+  const moveFoldersQuery = useQuery(
+    [
+      "move-folder-list",
+      {
+        parent,
+        search,
+        folderID,
+      },
+    ],
+    getMoveFolderListAPI
+  );
+
+  return { ...moveFoldersQuery };
 };
