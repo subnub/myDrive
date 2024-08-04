@@ -187,16 +187,21 @@ class DbUtil {
     userID: string,
     parent = "/",
     search?: string,
-    folderID?: string
+    folderID?: string,
+    currentParent?: string
   ) => {
     let query: any = {
       owner: userID,
     };
 
+    const idQuery = [currentParent];
+
     if (folderID) {
       query.parentList = { $ne: folderID };
-      query._id = { $ne: folderID };
+      idQuery.push(folderID);
     }
+
+    query._id = { $nin: idQuery };
 
     if (!search || search === "") {
       query.parent = parent;

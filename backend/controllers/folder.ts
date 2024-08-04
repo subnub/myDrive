@@ -265,6 +265,7 @@ class FolderController {
       const parent = (req.query.parent as string) || undefined;
       const search = (req.query.search as string) || undefined;
       const folderID = (req.query.folderID as string) || undefined;
+      const currentParent = (req.query.currentParent as string) || undefined;
 
       console.log("folderID", folderID);
 
@@ -272,7 +273,8 @@ class FolderController {
         userID,
         parent,
         search,
-        folderID
+        folderID,
+        currentParent
       );
 
       res.send(folderList);

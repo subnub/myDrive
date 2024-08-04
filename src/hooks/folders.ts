@@ -77,6 +77,7 @@ export const useMoveFolders = (
   search: string,
   folderID?: string
 ) => {
+  const params = useParams();
   const moveFoldersQuery = useQuery(
     [
       "move-folder-list",
@@ -84,6 +85,7 @@ export const useMoveFolders = (
         parent,
         search,
         folderID,
+        currentParent: params.id || "/",
       },
     ],
     getMoveFolderListAPI

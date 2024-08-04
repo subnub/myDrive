@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { resetMultiSelect } from "../../reducers/selected";
+import { resetMultiSelect, setMoveModal } from "../../reducers/selected";
 import {
   deleteMultiAPI,
   restoreMultiAPI,
@@ -122,6 +122,10 @@ const MultiSelectBar: React.FC = () => {
     closeMultiSelect();
   };
 
+  const moveItems = () => {
+    dispatch(setMoveModal({ type: "multi-select", file: null, folder: null }));
+  };
+
   if (!multiSelectMode) return <div></div>;
 
   return (
@@ -141,13 +145,13 @@ const MultiSelectBar: React.FC = () => {
             {!isTrash && (
               <React.Fragment>
                 <TrashIcon
-                  className="ml-4 cursor-pointer"
+                  className="ml-4 cursor-pointer w-5 h-5"
                   onClick={trashItems}
                 />
                 {!isMedia && (
                   <Moveicon
-                    className="ml-4 cursor-pointer"
-                    onClick={() => {}}
+                    className="ml-4 cursor-pointer w-5 h-5"
+                    onClick={moveItems}
                   />
                 )}
               </React.Fragment>
@@ -155,11 +159,11 @@ const MultiSelectBar: React.FC = () => {
             {isTrash && (
               <React.Fragment>
                 <RestoreIcon
-                  className="ml-4 cursor-pointer h-[20px] w-[20px]"
+                  className="ml-4 cursor-pointer w-5 h-5"
                   onClick={restoreItems}
                 />
                 <TrashIcon
-                  className="ml-4 cursor-pointer text-red-500"
+                  className="ml-4 cursor-pointer text-red-500 w-5 h-5"
                   onClick={deleteItems}
                 />
               </React.Fragment>

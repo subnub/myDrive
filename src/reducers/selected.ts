@@ -10,7 +10,7 @@ interface MainSecionType {
 }
 
 type MoveStateType = {
-  type: "" | "file" | "folder";
+  type: "" | "file" | "folder" | "multi-select";
   file: FileInterface | null;
   folder: FolderInterface | null;
 };
