@@ -90,6 +90,14 @@ export const restoreFolderAPI = async (folderID: string) => {
   return response.data;
 };
 
+export const moveFolderAPI = async (folderID: string, parentID: string) => {
+  const response = await axios.patch(`/folder-service/move`, {
+    id: folderID,
+    parentID,
+  });
+  return response.data;
+};
+
 // DELETE
 
 export const deleteFolderAPI = async (folderID: string) => {

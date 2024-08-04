@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { useMoveFolders } from "../../hooks/folders";
+import { useFoldersClient, useMoveFolders } from "../../hooks/folders";
 import { FolderInterface } from "../../types/folders";
 import CloseIcon from "../../icons/CloseIcon";
 import { resetMoveModal } from "../../reducers/selected";
@@ -10,6 +10,10 @@ import HomeIconOutline from "../../icons/HomeIconOutline";
 import ArrowBackIcon from "../../icons/ArrowBackIcon";
 import classNames from "classnames";
 import FolderIcon from "../../icons/FolderIcon";
+import { toast } from "react-toastify";
+import { moveFileAPI } from "../../api/filesAPI";
+import { useFilesClient } from "../../hooks/files";
+import { moveFolderAPI } from "../../api/foldersAPI";
 
 const MoverPopup = () => {
   const [search, setSearch] = useState("");
@@ -22,9 +26,12 @@ const MoverPopup = () => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
+  const [isLoadingMove, setIsLoadingMove] = useState(false);
   const file = useAppSelector((state) => state.selected.moveModal.file);
   const folder = useAppSelector((state) => state.selected.moveModal.folder);
   const dispatch = useAppDispatch();
+  const { invalidateFilesCache } = useFilesClient();
+  const { invalidateFoldersCache } = useFoldersClient();
   const lastSelected = useRef({
     timestamp: 0,
     folderID: "",
@@ -59,7 +66,7 @@ const MoverPopup = () => {
       setDebouncedSearch("");
       setParentList([...parentList, folder]);
       setParent(folder);
-      setSelectedFolder(folder);
+      setSelectedFolder(null);
     } else {
       setSelectedFolder(folder);
     }
@@ -83,14 +90,21 @@ const MoverPopup = () => {
   };
 
   const moveText = useMemo(() => {
-    if (selectedFolder?._id) {
-      return "Move to selected folder";
+    if (selectedFolder?._id && selectedFolder?.name) {
+      let reducedLengthFileName = selectedFolder.name;
+      if (reducedLengthFileName.length > 10)
+        reducedLengthFileName = reducedLengthFileName.substring(0, 10) + "...";
+      return `Move to ${reducedLengthFileName}`;
     } else if (!parent) {
-      return "Move home";
+      return "Move to home";
     } else {
-      return "Move here";
+      const lastParent = parentList[parentList.length - 1];
+      let reducedLengthFileName = lastParent.name;
+      if (reducedLengthFileName.length > 10)
+        reducedLengthFileName = reducedLengthFileName.substring(0, 10) + "...";
+      return `Move to ${reducedLengthFileName}`;
     }
-  }, [selectedFolder?._id, parent?._id]);
+  }, [selectedFolder?._id, selectedFolder?.name, parent?._id]);
 
   const headerText = useMemo(() => {
     if (parent) {
@@ -108,14 +122,40 @@ const MoverPopup = () => {
     setSelectedFolder(null);
   };
 
-  const onMoveClick = () => {
+  const onMoveClick = async () => {
+    setIsLoadingMove(true);
     const moveTo = selectedFolder?._id
       ? selectedFolder?._id
       : parent?._id || "/";
-    if (file) {
-    } else if (folder) {
+    try {
+      if (multiSelectMode) {
+      } else if (file) {
+        await toast.promise(moveFileAPI(file._id, moveTo), {
+          pending: "Moving File...",
+          success: "File Moved",
+          error: "Error Moving File",
+        });
+        invalidateFilesCache();
+        dispatch(resetMoveModal());
+      } else if (folder) {
+        await toast.promise(moveFolderAPI(folder._id, moveTo), {
+          pending: "Moving Folder...",
+          success: "Folder Moved",
+          error: "Error Moving Folder",
+        });
+        invalidateFoldersCache();
+        dispatch(resetMoveModal());
+      }
+      console.log("move to", moveTo);
+    } catch (e) {
+      console.log("move error", e);
+    } finally {
+      setIsLoadingMove(false);
     }
-    console.log("move to", moveTo);
+  };
+
+  const onTitleClick = () => {
+    setSelectedFolder(parentList[parentList.length - 1]);
   };
 
   const closeMoverModal = (e: any) => {
@@ -163,7 +203,10 @@ const MoverPopup = () => {
           />
         </div>
         <div>
-          <p className="text-lg mt-2 mb-2 max-w-[75%] text-ellipsis overflow-hidden">
+          <p
+            className="text-lg mt-2 mb-2 max-w-[75%] text-ellipsis overflow-hidden select-none cursor-pointer"
+            onClick={onTitleClick}
+          >
             {headerText}
           </p>
         </div>
@@ -206,9 +249,13 @@ const MoverPopup = () => {
         <div className="flex justify-end mt-4">
           <button
             className={classNames(
-              "bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md"
+              "bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md",
+              {
+                "opacity-50": isLoadingMove,
+              }
             )}
             onClick={onMoveClick}
+            disabled={isLoadingMove}
           >
             {moveText}
           </button>

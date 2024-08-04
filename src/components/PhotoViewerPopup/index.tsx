@@ -264,14 +264,14 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
         <div className="flex mr-4">
           <div onClick={onContextMenu} id="action-context-wrapper">
             <ActionsIcon
-              className="pointer text-white w-[20px] h-[25px] mr-4 cursor-pointer"
+              className="pointer text-white w-[20px] h-[25px] mr-4 cursor-pointer hover:text-white-hover"
               id="action-context-icon"
             />
           </div>
 
           <div onClick={closePhotoViewer} id="action-close-wrapper">
             <CloseIcon
-              className="pointer text-white w-[25px] h-[25px] cursor-pointer"
+              className="pointer text-white w-[25px] h-[25px] cursor-pointer hover:text-white-hover"
               id="action-close-icon"
             />
           </div>
@@ -280,11 +280,11 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
       <div className="flex absolute pb-[70px] desktopMode:pb-0 top-[50px] bottom-0 w-full h-full justify-between items-end desktopMode:items-center p-4">
         <CircleLeftIcon
           onClick={goToPreviousItem}
-          className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer"
+          className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
         />
         <CircleRightIcon
           onClick={goToNextItem}
-          className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer"
+          className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
         />
       </div>
       <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center">

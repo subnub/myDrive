@@ -206,6 +206,14 @@ export const removeLinkAPI = async (fileID: string) => {
   return response.data;
 };
 
+export const moveFileAPI = async (fileID: string, parentID: string) => {
+  const response = await axios.patch(`/file-service/move`, {
+    id: fileID,
+    parentID,
+  });
+  return response.data;
+};
+
 // DELETE
 
 export const deleteFileAPI = async (fileID: string) => {

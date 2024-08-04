@@ -129,7 +129,7 @@ class DbUtil {
   ) => {
     const folder = (await Folder.findOneAndUpdate(
       { _id: new ObjectId(folderID), owner: userID },
-      { $set: { parent: parent, parentList: parentList } }
+      { $set: { parent: parent, parentList: parentList }, new: true }
     )) as FolderInterface;
 
     return folder;
@@ -194,7 +194,11 @@ class DbUtil {
       owner: userID,
     };
 
-    const idQuery = [currentParent];
+    const idQuery = [];
+
+    if (currentParent && currentParent !== "/") {
+      idQuery.push(currentParent);
+    }
 
     if (folderID) {
       query.parentList = { $ne: folderID };
@@ -216,6 +220,17 @@ class DbUtil {
     const result = await Folder.find(query);
 
     return result;
+  };
+
+  getFolderListByIncludedParent = async (userID: string, parent: string) => {
+    const folderList = await Folder.find({
+      owner: userID,
+      parentList: {
+        $in: parent,
+      },
+    });
+
+    return folderList;
   };
 }
 

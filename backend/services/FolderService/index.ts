@@ -248,16 +248,56 @@ class FolderService {
   };
 
   moveFolder = async (userID: string, folderID: string, parentID: string) => {
+    console.log("parentID", parentID);
+    const foldersByIncludedParent =
+      await utilsFolder.getFolderListByIncludedParent(userID, folderID);
+
+    //const newParentList = [];
+
+    if (parentID !== "/") {
+      const folderToMoveTo = await utilsFolder.getFolderInfo(parentID, userID);
+
+      if (!folderToMoveTo) {
+        throw new NotFoundError("Move Folder Not Found Error");
+      }
+
+      for (let i = 0; i < foldersByIncludedParent.length; i++) {
+        const currentFolder = foldersByIncludedParent[i];
+
+        const currentParentIndex = currentFolder.parentList.indexOf(folderID);
+
+        const newParentList = [
+          ...folderToMoveTo.parentList,
+          folderToMoveTo._id.toString(),
+          ...currentFolder.parentList.slice(currentParentIndex + 1),
+        ];
+
+        console.log("new parent list", newParentList);
+
+        await utilsFolder.moveFolder(
+          folderID,
+          userID,
+          folderToMoveTo._id.toString(),
+          newParentList
+        );
+      }
+    } else {
+      // newParentList.push("/");
+    }
+
+    console.log("foldersByIncludedParent", foldersByIncludedParent);
+
+    return;
     let parentList = ["/"];
 
-    if (parentID.length !== 1) {
-      const parentFile = await utilsFolder.getFolderInfo(parentID, userID);
+    // if (parentID.length !== 1) {
+    //   const parentFile = await utilsFolder.getFolderInfo(parentID, userID);
 
-      if (!parentFile) throw new NotFoundError("Parent Folder Info Not Found");
+    //   if (!parentFile) throw new NotFoundError("Parent Folder Info Not Found");
 
-      parentList = parentFile.parentList;
-      parentList.push(parentID);
-    }
+    //   parentList = parentFile.parentList;
+    //   parentList.push(parentID);
+    // }
 
     const folder = await utilsFolder.moveFolder(
       folderID,

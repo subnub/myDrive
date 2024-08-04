@@ -727,11 +727,11 @@ class FileController {
     }
 
     try {
-      const fileID = req.body.id;
-      const userID = req.user._id;
-      const folderID = req.body.parentID;
+      const fileID = req.body.id as string;
+      const userID = req.user._id as string;
+      const parentID = (req.body.parentID as string) || "/";
 
-      await fileService.moveFile(userID, fileID, folderID);
+      await fileService.moveFile(userID, fileID, parentID);
 
       res.send();
     } catch (e: unknown) {

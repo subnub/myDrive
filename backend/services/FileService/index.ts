@@ -315,21 +315,29 @@ class MongoFileService {
     return file;
   };
 
-  moveFile = async (userID: string, fileID: string, folderID: string) => {
+  moveFile = async (userID: string, fileID: string, parentID: string) => {
     const file = await dbUtilsFile.getFileInfo(fileID, userID);
 
     if (!file) throw new NotFoundError("Move File Not Found Error");
 
-    const folder = await dbUtilsFolder.getFolderInfo(folderID, userID);
+    const newParentList = [];
 
-    if (!folder) throw new NotFoundError("Move Folder Not Found Error");
+    if (parentID !== "/") {
+      const folder = await dbUtilsFolder.getFolderInfo(parentID, userID);
 
-    const newParentList = [...folder.parentList, folder._id];
+      if (!folder) throw new NotFoundError("Move Folder Not Found Error");
+
+      newParentList.push(...folder.parentList, folder._id);
+    } else {
+      newParentList.push("/");
+    }
+
+    console.log("new parent list", newParentList, parentID);
 
     const updatedFile = await dbUtilsFile.moveFile(
       fileID,
       userID,
-      folderID,
+      parentID,
       newParentList.toString()
     );
 

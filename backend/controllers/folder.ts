@@ -177,9 +177,9 @@ class FolderController {
     try {
       const userID = req.user._id;
       const folderID = req.body.id;
-      const parent = req.body.parent;
+      const parentID = req.body.parentID;
 
-      await folderService.moveFolder(userID, folderID, parent);
+      await folderService.moveFolder(userID, folderID, parentID);
 
       res.send();
     } catch (e: unknown) {
