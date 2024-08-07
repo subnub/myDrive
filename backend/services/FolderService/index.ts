@@ -248,123 +248,46 @@ class FolderService {
   };
 
   moveFolder = async (userID: string, folderID: string, parentID: string) => {
-    console.log("parentID", parentID);
     const foldersByIncludedParent =
       await utilsFolder.getFolderListByIncludedParent(userID, folderID);
 
-    //const newParentList = [];
+    const startParentList = [];
 
     if (parentID !== "/") {
       const folderToMoveTo = await utilsFolder.getFolderInfo(parentID, userID);
-
       if (!folderToMoveTo) {
         throw new NotFoundError("Move Folder Not Found Error");
       }
-
-      for (let i = 0; i < foldersByIncludedParent.length; i++) {
-        const currentFolder = foldersByIncludedParent[i];
-
-        const currentParentIndex = currentFolder.parentList.indexOf(folderID);
-
-        const newParentList = [
-          ...folderToMoveTo.parentList,
-          folderToMoveTo._id.toString(),
-          ...currentFolder.parentList.slice(currentParentIndex + 1),
-        ];
-
-        console.log("new parent list", newParentList);
-
-        await utilsFolder.moveFolder(
-          folderID,
-          userID,
-          folderToMoveTo._id.toString(),
-          newParentList
-        );
-      }
+      startParentList.push(
+        ...folderToMoveTo.parentList,
+        folderToMoveTo._id.toString()
+      );
     } else {
-      // newParentList.push("/");
+      startParentList.push("/");
     }
 
-    console.log("foldersByIncludedParent", foldersByIncludedParent);
+    for (let i = 0; i < foldersByIncludedParent.length; i++) {
+      const currentFolder = foldersByIncludedParent[i];
 
-    return;
-    let parentList = ["/"];
+      const currentParentIndex = currentFolder.parentList.indexOf(folderID);
 
-    // if (parentID.length !== 1) {
-    //   const parentFile = await utilsFolder.getFolderInfo(parentID, userID);
+      const newParentList = [];
 
-    //   if (!parentFile) throw new NotFoundError("Parent Folder Info Not Found");
-
-    //   parentList = parentFile.parentList;
-    //   parentList.push(parentID);
-    // }
-
-    const folder = await utilsFolder.moveFolder(
-      folderID,
-      userID,
-      parentID,
-      parentList
-    );
-
-    if (!folder) throw new NotFoundError("Move Folder Not Found");
-
-    const folderChilden = await utilsFolder.findAllFoldersByParent(
-      folderID.toString(),
-      userID
-    );
-
-    folderChilden.map(async (currentFolderChild) => {
-      let currentFolderChildParentList = currentFolderChild.parentList;
-
-      const indexOfFolderID = currentFolderChildParentList.indexOf(
-        folderID.toString()
+      newParentList.push(
+        ...startParentList,
+        ...currentFolder.parentList.slice(currentParentIndex + 1)
       );
 
-      currentFolderChildParentList =
-        currentFolderChildParentList.splice(indexOfFolderID);
-
-      currentFolderChildParentList = [
-        ...parentList,
-        ...currentFolderChildParentList,
-      ];
-
-      currentFolderChild.parentList = currentFolderChildParentList;
-
-      await currentFolderChild.save();
-    });
-
-    const fileChildren = await utilsFile.getFileListByParent(
-      userID,
-      folderID.toString()
-    );
-
-    fileChildren.map(async (currentFileChild) => {
-      let currentFileChildParentList: string | string[] =
-        currentFileChild.metadata.parentList;
-
-      currentFileChildParentList = currentFileChildParentList.split(",");
-
-      const indexOfFolderID = currentFileChildParentList.indexOf(
-        folderID.toString()
-      );
-
-      currentFileChildParentList =
-        currentFileChildParentList.splice(indexOfFolderID);
-
-      currentFileChildParentList = [
-        ...parentList,
-        ...currentFileChildParentList,
-      ];
-
-      if (currentFileChild._id) {
-        await utilsFile.moveFile(
-          currentFileChild._id,
+      await Promise.all([
+        utilsFolder.moveFolder(folderID, userID, parentID, newParentList),
+        utilsFile.moveMultipleFiles(
           userID,
-          currentFileChild.metadata.parent,
-          currentFileChildParentList.toString()
-        );
-      }
-    });
+          currentFolder._id.toString(),
+          parentID,
+          newParentList.toString()
+        ),
+      ]);
+    }
   };
 }
 

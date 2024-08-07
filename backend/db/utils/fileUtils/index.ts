@@ -198,7 +198,7 @@ class DbUtil {
     return file;
   };
 
-  getFileListByParent = async (
+  getFileListByIncludedParent = async (
     userID: string | mongoose.Types.ObjectId,
     parentListString: string
   ) => {
@@ -214,6 +214,33 @@ class DbUtil {
     const fileList = await File.find({ "metadata.owner": userID });
 
     return fileList;
+  };
+
+  getFileListByParent = async (userID: string, parent: string) => {
+    const fileList = await File.find({
+      owner: userID,
+      "metadata.parent": parent,
+    });
+
+    return fileList;
+  };
+
+  moveMultipleFiles = async (
+    userID: string | mongoose.Types.ObjectId,
+    currentParent: string,
+    newParent: string,
+    newParentList: string
+  ) => {
+    await File.updateMany(
+      { "metadata.owner": userID, "metadata.parent": currentParent },
+      {
+        $set: {
+          "metadata.parent": newParent,
+          "metadata.parentList": newParentList,
+        },
+      },
+      { new: true }
+    );
   };
 }
 

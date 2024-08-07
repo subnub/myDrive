@@ -196,9 +196,9 @@ class DbUtil {
 
     const idQuery = [];
 
-    if (currentParent && currentParent !== "/") {
-      idQuery.push(currentParent);
-    }
+    // if (currentParent && currentParent !== "/") {
+    //   idQuery.push(currentParent);
+    // }
 
     if (folderID) {
       query.parentList = { $ne: folderID };
@@ -215,9 +215,7 @@ class DbUtil {
       query.name = new RegExp(search, "i");
     }
 
-    console.log("query", query);
-
-    const result = await Folder.find(query);
+    const result = await Folder.find(query).sort({ createdAt: -1 });
 
     return result;
   };
@@ -228,6 +226,7 @@ class DbUtil {
       parentList: {
         $in: parent,
       },
+      trashed: null,
     });
 
     return folderList;

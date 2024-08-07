@@ -373,7 +373,7 @@ class StorageService {
     });
     await Folder.deleteMany({ owner: userID, _id: folderID });
 
-    const fileList = await dbUtilsFile.getFileListByParent(
+    const fileList = await dbUtilsFile.getFileListByIncludedParent(
       userID,
       parentList.toString()
     );
