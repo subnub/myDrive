@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import QuickAccessItem from "../QuickAccessItem";
+import QuickAccessItem from "../QuickAccessItem/QuickAccessItem";
 import React, { memo, useMemo, useState } from "react";
 import { useQuickFiles } from "../../hooks/files";
 import classNames from "classnames";

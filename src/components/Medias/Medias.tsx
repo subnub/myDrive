@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import React, { memo, useEffect, useMemo, useState } from "react";
-import MediaItem from "../MediaItem";
+import MediaItem from "../MediaItem/MediaItem";
 import { useFiles } from "../../hooks/files";
-import MultiSelectBar from "../MultiSelectBar";
+import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 
 const Medias = memo(() => {

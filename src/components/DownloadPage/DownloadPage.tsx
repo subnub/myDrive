@@ -6,7 +6,7 @@ import {
   getPublicFileInfoAPI,
 } from "../../api/filesAPI";
 import { toast, ToastContainer } from "react-toastify";
-import Spinner from "../Spinner";
+import Spinner from "../Spinner/Spinner";
 import moment from "moment";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { FileInterface } from "../../types/file";

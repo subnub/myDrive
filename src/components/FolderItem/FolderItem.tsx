@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useRef } from "react";
-import ContextMenu from "../ContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";

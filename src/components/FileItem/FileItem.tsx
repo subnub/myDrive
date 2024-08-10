@@ -1,7 +1,7 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
 import React, { memo, useMemo, useRef } from "react";
-import ContextMenu from "../ContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import { useSelector } from "react-redux";
 import classNames from "classnames";

@@ -4,7 +4,7 @@ import { useSearchSuggestions } from "../../hooks/files";
 import debounce from "lodash/debounce";
 import { useNavigate } from "react-router-dom";
 import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
-import SearchBarItem from "../SearchBarItem";
+import SearchBarItem from "../SearchBarItem/SearchBarItem";
 import { FolderInterface } from "../../types/folders";
 import { FileInterface } from "../../types/file";
 import classNames from "classnames";

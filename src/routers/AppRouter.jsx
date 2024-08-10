@@ -6,16 +6,16 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import LoginPage from "../components/LoginPage";
-import HomePage from "../components/Homepage";
+import LoginPage from "../components/LoginPage/LoginPage";
+import HomePage from "../components/Homepage/Homepage";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
-import DownloadPage from "../components/DownloadPage";
+import DownloadPage from "../components/DownloadPage/DownloadPage";
 import VerifyEmailPage from "../components/VerifyEmailPage";
 import uuid from "uuid";
 import ResetPasswordPage from "../components/ResetPasswordPage";
 import SettingsPage from "../components/SettingsPage";
-import Homepage from "../components/Homepage";
+import Homepage from "../components/Homepage/Homepage";
 
 // export const history = createHistory();
 

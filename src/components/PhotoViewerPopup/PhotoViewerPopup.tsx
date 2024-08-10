@@ -8,7 +8,7 @@ import {
 import CloseIcon from "../../icons/CloseIcon";
 import ActionsIcon from "../../icons/ActionsIcon";
 import { useContextMenu } from "../../hooks/contextMenu";
-import ContextMenu from "../ContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 import { resetPopupSelect, setPopupSelect } from "../../reducers/selected";
 import CircleLeftIcon from "../../icons/CircleLeftIcon";
 import CircleRightIcon from "../../icons/CircleRightIcon";
@@ -16,7 +16,7 @@ import { useFiles, useFullThumbnail, useQuickFiles } from "../../hooks/files";
 import { FileInterface } from "../../types/file";
 import { InfiniteData } from "react-query";
 import { getFileColor, getFileExtension } from "../../utils/files";
-import Spinner from "../Spinner";
+import Spinner from "../Spinner/Spinner";
 import { toast } from "react-toastify";
 
 interface PhotoViewerPopupProps {

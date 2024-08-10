@@ -1,15 +1,15 @@
-import QuickAccess from "../QuickAccess";
-import Folders from "../Folders";
+import QuickAccess from "../QuickAccess/QuickAccess";
+import Folders from "../Folders/Folders";
 import { useFiles, useQuickFiles, useUploader } from "../../hooks/files";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
-import Files from "../Files";
+import Files from "../Files/Files";
 import { memo, useCallback, useEffect, useState } from "react";
-import Spinner from "../Spinner";
+import Spinner from "../Spinner/Spinner";
 import { useAppDispatch } from "../../hooks/store";
 import { useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useDragAndDrop } from "../../hooks/utils";
-import MultiSelectBar from "../MultiSelectBar";
+import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
 import { useFolders } from "../../hooks/folders";
 
 const DataForm = memo(() => {

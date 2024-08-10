@@ -3,7 +3,7 @@ import CloseIcon from "../../icons/CloseIcon";
 import MinimizeIcon from "../../icons/MinimizeIcon";
 import { resetUploads } from "../../reducers/uploader";
 import { cancelAllFileUploads } from "../../utils/cancelTokenManager";
-import UploadItem from "../UploadItem";
+import UploadItem from "../UploadItem/UploadItem";
 import { memo, useMemo, useState } from "react";
 
 const Uploader = memo(() => {

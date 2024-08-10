@@ -4,7 +4,7 @@ import { downloadFileAPI } from "../../api/filesAPI";
 import CloseIcon from "../../icons/CloseIcon";
 import ActionsIcon from "../../icons/ActionsIcon";
 import { useContextMenu } from "../../hooks/contextMenu";
-import ContextMenu from "../ContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 import { resetPopupSelect } from "../../reducers/selected";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import bytes from "bytes";

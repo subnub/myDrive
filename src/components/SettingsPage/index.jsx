@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../Header";
+import Header from "../Header/Header";
 import axios from "../../axiosInterceptor";
 import env from "../../enviroment/envFrontEnd";
 import Swal from "sweetalert2";
@@ -16,7 +16,7 @@ import { connect } from "react-redux";
 import { setParent } from "../../actions/parent";
 import uuid from "uuid";
 import { setUpdateSettingsID } from "../../utils/updateSettings";
-import HomepageSpinner from "../HomepageSpinner";
+import HomepageSpinner from "../HomepageSpinner/HomepageSpinner";
 import { setLoading } from "../../actions/main";
 import withNavigate from "../HocComponent";
 // import {updateSettingsID} from "../MainSection"

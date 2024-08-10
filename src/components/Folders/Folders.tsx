@@ -1,5 +1,5 @@
 import { useFolders } from "../../hooks/folders";
-import FolderItem from "../FolderItem";
+import FolderItem from "../FolderItem/FolderItem";
 import { memo, useCallback } from "react";
 import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";

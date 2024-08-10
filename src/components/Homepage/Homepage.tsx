@@ -1,6 +1,6 @@
-import Header from "../Header";
-import MainSection from "../MainSection";
-import Uploader from "../Uploader";
+import Header from "../Header/Header";
+import MainSection from "../MainSection/MainSection";
+import Uploader from "../Uploader/Uploader";
 import { useAppSelector } from "../../hooks/store";
 import { ToastContainer } from "react-toastify";
 

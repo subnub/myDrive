@@ -1,13 +1,13 @@
-import DataForm from "../Dataform";
-import RightSection from "../RightSection";
+import DataForm from "../Dataform/Dataform";
+import RightSection from "../RightSection/RightSection";
 import { memo } from "react";
-import LeftSection from "../LeftSection";
+import LeftSection from "../LeftSection/LeftSection";
 import { useUtils } from "../../hooks/utils";
-import Medias from "../Medias";
+import Medias from "../Medias/Medias";
 import { useAppSelector } from "../../hooks/store";
-import PhotoViewerPopup from "../PhotoViewerPopup";
-import FileInfoPopup from "../FileInfoPopup";
-import SharePopup from "../SharePopup";
+import PhotoViewerPopup from "../PhotoViewerPopup/PhotoViewerPopup";
+import FileInfoPopup from "../FileInfoPopup/FileInfoPopup";
+import SharePopup from "../SharePopup/SharePopup";
 import MoverPopup from "../MoverPopup/MoverPopup";
 
 const MainSection = memo(() => {

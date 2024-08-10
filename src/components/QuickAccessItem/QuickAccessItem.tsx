@@ -1,7 +1,7 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
 import React, { memo, useMemo, useRef } from "react";
-import ContextMenu from "../ContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { useThumbnail } from "../../hooks/files";

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import SearchBar from "../SearchBar";
+import SearchBar from "../SearchBar/SearchBar";
 import MenuIcon from "../../icons/MenuIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { useCallback, useMemo } from "react";

@@ -1,7 +1,7 @@
 import bytes from "bytes";
 import moment from "moment";
 import { memo, useMemo } from "react";
-import ContextMenu from "../ContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
 import { useDispatch } from "react-redux";
 import { getFileExtension } from "../../utils/files";

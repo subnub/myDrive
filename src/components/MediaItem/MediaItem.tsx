@@ -10,7 +10,7 @@ import {
 import mobilecheck from "../../utils/mobileCheck";
 import classNames from "classnames";
 import { useContextMenu } from "../../hooks/contextMenu";
-import ContextMenu from "../ContextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 import PlayButtonIcon from "../../icons/PlayIcon";
 
 type MediaItemType = {

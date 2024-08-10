@@ -1,4 +1,3 @@
-import SpinnerLogin from "../SpinnerLogin";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createAccountAPI, getUserAPI, loginAPI } from "../../api/user";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -6,7 +5,7 @@ import { setUser } from "../../reducers/user";
 import { useAppDispatch } from "../../hooks/store";
 import { capitalize } from "lodash";
 import AlertIcon from "../../icons/AlertIcon";
-import Spinner from "../Spinner";
+import Spinner from "../Spinner/Spinner";
 import classNames from "classnames";
 import { toast, ToastContainer } from "react-toastify";
 

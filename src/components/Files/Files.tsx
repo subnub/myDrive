@@ -1,8 +1,8 @@
 import { useFiles } from "../../hooks/files";
 import { useUtils } from "../../hooks/utils";
 import React, { memo } from "react";
-import FileItem from "../FileItem";
-import ParentBar from "../ParentBar";
+import FileItem from "../FileItem/FileItem";
+import ParentBar from "../ParentBar/ParentBar";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { toggleListView } from "../../reducers/filter";

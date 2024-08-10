@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React, { memo, useEffect, useState } from "react";
 import {
   deleteFileAPI,
@@ -9,9 +8,6 @@ import {
 } from "../../api/filesAPI";
 import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { useFoldersClient } from "../../hooks/folders";
-import { useDispatch } from "react-redux";
-import { setMoverID } from "../../actions/mover";
-import { setShareSelected } from "../../actions/selectedItem";
 import {
   deleteFolderAPI,
   renameFolder,
