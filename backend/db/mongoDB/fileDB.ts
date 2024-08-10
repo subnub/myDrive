@@ -1,8 +1,8 @@
-import mongoose from "../../mongoose";
+import mongoose from "../connections/mongoose";
 import { ObjectId } from "mongodb";
-import File from "../../../models/file";
-import { UserInterface } from "../../../models/user";
-import { QueryInterface } from "../../../utils/createQuery";
+import File from "../../models/file";
+import { UserInterface } from "../../models/user";
+import { QueryInterface } from "../../utils/createQuery";
 
 class DbUtil {
   constructor() {}

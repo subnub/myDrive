@@ -1,4 +1,4 @@
-import mongoose from "../../../db/mongoose";
+import mongoose from "../../../db/connections/mongoose";
 import crypto from "crypto";
 import Thumbnail from "../../../models/thumbnail";
 import sharp from "sharp";
@@ -6,7 +6,7 @@ import { FileInterface } from "../../../models/file";
 import { UserInterface } from "../../../models/user";
 import uuid from "uuid";
 import env from "../../../enviroment/env";
-import s3 from "../../../db/s3";
+import s3 from "../../../db/connections/s3";
 import { ObjectId } from "mongodb";
 
 const conn = mongoose.connection;

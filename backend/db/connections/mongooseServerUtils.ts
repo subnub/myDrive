@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import env from "../enviroment/env";
+import env from "../../enviroment/env";
 
 mongoose.connect(env.mongoURL!, {
   socketTimeoutMS: 30000000,

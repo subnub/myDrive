@@ -1,4 +1,4 @@
-import s3 from "../../../db/s3";
+import s3 from "../../../db/connections/s3";
 import env from "../../../enviroment/env";
 import { GenericParams, IStorageActions } from "./../StoreTypes";
 import internal from "stream";

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import env from "../enviroment/env";
+import env from "../../enviroment/env";
 import fs from "fs";
 
 const DBUrl = env.mongoURL as string;

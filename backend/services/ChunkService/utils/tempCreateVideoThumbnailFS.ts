@@ -1,4 +1,4 @@
-import mongoose from "../../../db/mongoose";
+import mongoose from "../../../db/connections/mongoose";
 import crypto from "crypto";
 import Thumbnail from "../../../models/thumbnail";
 import sharp from "sharp";

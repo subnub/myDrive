@@ -5,15 +5,15 @@ import jwt from "jsonwebtoken";
 import Folder, { FolderInterface } from "../../models/folder";
 import sortBySwitch from "../../utils/sortBySwitch";
 import createQuery from "../../utils/createQuery";
-import DbUtilFile from "../../db/utils/fileUtils/index";
-import DbUtilFolder from "../../db/utils/folderUtils";
+import FileDB from "../../db/mongoDB/fileDB";
+import FolderDB from "../../db/mongoDB/folderDB";
 import { UserInterface } from "../../models/user";
 import { FileInterface } from "../../models/file";
 import tempStorage from "../../tempStorage/tempStorage";
 import FolderService from "../FolderService";
 
-const dbUtilsFile = new DbUtilFile();
-const dbUtilsFolder = new DbUtilFolder();
+const fileDB = new FileDB();
+const folderDB = new FolderDB();
 const folderService = new FolderService();
 
 type userAccessType = {
@@ -31,12 +31,12 @@ class MongoFileService {
     if (!fileID) return;
 
     if (currentFile.metadata.linkType === "one") {
-      await dbUtilsFile.removeOneTimePublicLink(fileID);
+      await fileDB.removeOneTimePublicLink(fileID);
     }
   };
 
   removeLink = async (userID: string, fileID: string) => {
-    const file = await dbUtilsFile.removeLink(fileID, userID);
+    const file = await fileDB.removeLink(fileID, userID);
 
     if (!file) throw new NotFoundError("Remove Link File Not Found Error");
 
@@ -46,7 +46,7 @@ class MongoFileService {
   makePublic = async (userID: string, fileID: string) => {
     const token = jwt.sign({ _id: userID.toString() }, env.passwordAccess!);
 
-    const file = await dbUtilsFile.makePublic(fileID, userID, token);
+    const file = await fileDB.makePublic(fileID, userID, token);
 
     if (!file) throw new NotFoundError("Make Public File Not Found Error");
 
@@ -54,7 +54,7 @@ class MongoFileService {
   };
 
   getPublicInfo = async (fileID: string, tempToken: string) => {
-    const file = await dbUtilsFile.getPublicInfo(fileID, tempToken);
+    const file = await fileDB.getPublicInfo(fileID, tempToken);
 
     if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
       throw new NotFoundError("Public Info Not Found");
@@ -66,7 +66,7 @@ class MongoFileService {
   makeOneTimePublic = async (userID: string, fileID: string) => {
     const token = jwt.sign({ _id: userID.toString() }, env.passwordAccess!);
 
-    const file = await dbUtilsFile.makeOneTimePublic(fileID, userID, token);
+    const file = await fileDB.makeOneTimePublic(fileID, userID, token);
 
     if (!file) throw new NotFoundError("Make One Time Public Not Found Error");
 
@@ -74,7 +74,7 @@ class MongoFileService {
   };
 
   getFileInfo = async (userID: string, fileID: string) => {
-    let currentFile = await dbUtilsFile.getFileInfo(fileID, userID);
+    let currentFile = await fileDB.getFileInfo(fileID, userID);
 
     if (!currentFile) throw new NotFoundError("Get File Info Not Found Error");
 
@@ -106,7 +106,7 @@ class MongoFileService {
   ) => {
     const userID = user._id;
 
-    const quickList = await dbUtilsFile.getQuickList(userID.toString(), +limit);
+    const quickList = await fileDB.getQuickList(userID.toString(), +limit);
 
     if (!quickList) throw new NotFoundError("Quick List Not Found Error");
 
@@ -148,7 +148,7 @@ class MongoFileService {
       mediaMode
     );
 
-    const fileList = await dbUtilsFile.getList(queryObj, sortBy, limit);
+    const fileList = await fileDB.getList(queryObj, sortBy, limit);
 
     if (!fileList) throw new NotFoundError("File List Not Found");
 
@@ -190,10 +190,7 @@ class MongoFileService {
 
     const encryptedToken = user.encryptToken(tempToken, key, publicKey);
 
-    const removedTokenUser = await dbUtilsFile.removeTempToken(
-      user,
-      encryptedToken
-    );
+    const removedTokenUser = await fileDB.removeTempToken(user, encryptedToken);
 
     if (!removedTokenUser)
       throw new NotFoundError("Remove Temp Token User Not Found Errors");
@@ -211,7 +208,7 @@ class MongoFileService {
   ) => {
     searchQuery = new RegExp(searchQuery, "i");
 
-    const fileList = await dbUtilsFile.getFileSearchList(
+    const fileList = await fileDB.getFileSearchList(
       userID,
       searchQuery,
       trashMode,
@@ -227,7 +224,7 @@ class MongoFileService {
       };
     }
 
-    const folderList = await dbUtilsFolder.getFolderSearchList(
+    const folderList = await folderDB.getFolderSearchList(
       userID,
       searchQuery,
       trashMode
@@ -242,7 +239,7 @@ class MongoFileService {
   };
 
   trashFile = async (userID: string, fileID: string) => {
-    const trashedFile = await dbUtilsFile.trashFile(fileID, userID);
+    const trashedFile = await fileDB.trashFile(fileID, userID);
     if (!trashedFile) throw new NotFoundError("Trash File Not Found Error");
     return trashedFile;
   };
@@ -275,7 +272,7 @@ class MongoFileService {
   };
 
   restoreFile = async (userID: string, fileID: string) => {
-    const restoredFile = await dbUtilsFile.restoreFile(fileID, userID);
+    const restoredFile = await fileDB.restoreFile(fileID, userID);
     if (!restoredFile) throw new NotFoundError("Restore File Not Found Error");
     return restoredFile;
   };
@@ -308,7 +305,7 @@ class MongoFileService {
   };
 
   renameFile = async (userID: string, fileID: string, title: string) => {
-    const file = await dbUtilsFile.renameFile(fileID, userID, title);
+    const file = await fileDB.renameFile(fileID, userID, title);
 
     if (!file) throw new NotFoundError("Rename File Not Found Error");
 
@@ -316,14 +313,14 @@ class MongoFileService {
   };
 
   moveFile = async (userID: string, fileID: string, parentID: string) => {
-    const file = await dbUtilsFile.getFileInfo(fileID, userID);
+    const file = await fileDB.getFileInfo(fileID, userID);
 
     if (!file) throw new NotFoundError("Move File Not Found Error");
 
     const newParentList = [];
 
     if (parentID !== "/") {
-      const folder = await dbUtilsFolder.getFolderInfo(parentID, userID);
+      const folder = await folderDB.getFolderInfo(parentID, userID);
 
       if (!folder) throw new NotFoundError("Move Folder Not Found Error");
 
@@ -334,7 +331,7 @@ class MongoFileService {
 
     console.log("new parent list", newParentList, parentID);
 
-    const updatedFile = await dbUtilsFile.moveFile(
+    const updatedFile = await fileDB.moveFile(
       fileID,
       userID,
       parentID,

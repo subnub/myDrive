@@ -7,8 +7,8 @@ import getBusboyData from "./utils/getBusboyData";
 import videoChecker from "../../utils/videoChecker";
 import uuid from "uuid";
 import File, { FileInterface } from "../../models/file";
-import DbUtilFile from "../../db/utils/fileUtils/index";
-import DbUtilFolder from "../../db/utils/folderUtils/index";
+import FileDB from "../../db/mongoDB/fileDB";
+import FolderDB from "../../db/mongoDB/folderDB";
 import Thumbnail, { ThumbnailInterface } from "../../models/thumbnail";
 import User from "../../models/user";
 import env from "../../enviroment/env";
@@ -20,8 +20,8 @@ import { S3Actions } from "./Actions/S3Actions";
 import { FilesystemActions } from "./Actions/FileSystemActions";
 import { createGenericParams } from "./utils/storageHelper";
 
-const dbUtilsFile = new DbUtilFile();
-const dbUtilsFolder = new DbUtilFolder();
+const fileDB = new FileDB();
+const folderDB = new FolderDB();
 
 const storageActions =
   env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
@@ -52,7 +52,7 @@ class StorageService {
     const parentList = [];
 
     if (parent !== "/") {
-      const parentFolder = await dbUtilsFolder.getFolderInfo(
+      const parentFolder = await folderDB.getFolderInfo(
         parent,
         user._id.toString()
       );
@@ -96,10 +96,7 @@ class StorageService {
   };
 
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {
-    const currentFile = await dbUtilsFile.getFileInfo(
-      fileID,
-      user._id.toString()
-    );
+    const currentFile = await fileDB.getFileInfo(fileID, user._id.toString());
 
     if (!currentFile) throw new NotFoundError("Download File Not Found");
 
@@ -162,7 +159,7 @@ class StorageService {
   getFullThumbnail = async (user: UserInterface, fileID: string) => {
     const userID = user._id;
 
-    const file = await dbUtilsFile.getFileInfo(fileID, userID.toString());
+    const file = await fileDB.getFileInfo(fileID, userID.toString());
 
     if (!file) throw new NotFoundError("File Thumbnail Not Found");
 
@@ -192,10 +189,7 @@ class StorageService {
 
   streamVideo = async (user: UserInterface, fileID: string, headers: any) => {
     const userID = user._id;
-    const currentFile = await dbUtilsFile.getFileInfo(
-      fileID,
-      userID.toString()
-    );
+    const currentFile = await fileDB.getFileInfo(fileID, userID.toString());
 
     if (!currentFile) throw new NotFoundError("Video File Not Found");
 
@@ -268,14 +262,14 @@ class StorageService {
   };
 
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {
-    const file = await dbUtilsFile.getPublicFile(fileID);
+    const file = await fileDB.getPublicFile(fileID);
 
     if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
       throw new NotAuthorizedError("File Not Public");
     }
 
     if (file.metadata.linkType === "one") {
-      await dbUtilsFile.removeOneTimePublicLink(fileID);
+      await fileDB.removeOneTimePublicLink(fileID);
     }
 
     const user = (await User.findById(file.metadata.owner)) as UserInterface;
@@ -332,7 +326,7 @@ class StorageService {
   };
 
   deleteFile = async (userID: string, fileID: string) => {
-    const file = await dbUtilsFile.getFileInfo(fileID, userID);
+    const file = await fileDB.getFileInfo(fileID, userID);
 
     if (!file) throw new NotFoundError("Delete File Not Found Error");
 
@@ -361,7 +355,7 @@ class StorageService {
   };
 
   deleteFolder = async (userID: string, folderID: string) => {
-    const folder = await dbUtilsFolder.getFolderInfo(folderID, userID);
+    const folder = await folderDB.getFolderInfo(folderID, userID);
 
     if (!folder) throw new NotFoundError("Delete Folder Not Found Error");
 
@@ -373,7 +367,7 @@ class StorageService {
     });
     await Folder.deleteMany({ owner: userID, _id: folderID });
 
-    const fileList = await dbUtilsFile.getFileListByIncludedParent(
+    const fileList = await fileDB.getFileListByIncludedParent(
       userID,
       parentList.toString()
     );
@@ -419,7 +413,7 @@ class StorageService {
   deleteAll = async (userID: string) => {
     await Folder.deleteMany({ owner: userID });
 
-    const fileList = await dbUtilsFile.getFileListByOwner(userID);
+    const fileList = await fileDB.getFileListByOwner(userID);
 
     if (!fileList)
       throw new NotFoundError("Delete All File List Not Found Error");

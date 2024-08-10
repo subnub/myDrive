@@ -1,8 +1,8 @@
 import Folder, { FolderInterface } from "../../models/folder";
 import InternalServerError from "../../utils/InternalServerError";
 import NotFoundError from "../../utils/NotFoundError";
-import UtilsFile from "../../db/utils/fileUtils";
-import UtilsFolder from "../../db/utils/folderUtils";
+import FileDB from "../../db/mongoDB/fileDB";
+import FolderDB from "../../db/mongoDB/folderDB";
 import sortBySwitch from "../../utils/sortBySwitchFolder";
 import { UserInterface } from "../../models/user";
 
@@ -13,14 +13,14 @@ type userAccessType = {
   s3Enabled: boolean;
 };
 
-const utilsFile = new UtilsFile();
-const utilsFolder = new UtilsFolder();
+const fileDB = new FileDB();
+const folderDB = new FolderDB();
 
 class FolderService {
   createFolder = async (userID: string, name: string, parent: string) => {
     const newFolderParentList = [];
     if (parent && parent !== "/") {
-      const parentFolder = await utilsFolder.getFolderInfo(parent, userID);
+      const parentFolder = await folderDB.getFolderInfo(parent, userID);
 
       if (!parentFolder) throw new Error("Parent not found");
       newFolderParentList.push(
@@ -46,13 +46,13 @@ class FolderService {
   };
 
   getFolderInfo = async (userID: string, folderID: string) => {
-    const currentFolder = await utilsFolder.getFolderInfo(folderID, userID);
+    const currentFolder = await folderDB.getFolderInfo(folderID, userID);
     if (!currentFolder) throw new NotFoundError("Folder Info Not Found Error");
     return currentFolder;
   };
 
   getFolderSublist = async (userID: string, folderID: string) => {
-    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+    const folder = await folderDB.getFolderInfo(folderID, userID);
 
     if (!folder) throw new NotFoundError("Folder Sublist Not Found Error");
 
@@ -68,7 +68,7 @@ class FolderService {
         folderIDList.push("/");
         folderNameList.push("Home");
       } else {
-        const currentFolder = await utilsFolder.getFolderInfo(
+        const currentFolder = await folderDB.getFolderInfo(
           currentSubFolderID,
           userID
         );
@@ -105,7 +105,7 @@ class FolderService {
     const s3Enabled = user.s3Enabled ? true : false;
 
     if (searchQuery.length === 0) {
-      const folderList = await utilsFolder.getFolderListByParent(
+      const folderList = await folderDB.getFolderListByParent(
         userID.toString(),
         parent,
         sortBy,
@@ -121,7 +121,7 @@ class FolderService {
       return folderList;
     } else {
       searchQuery = new RegExp(searchQuery, "i");
-      const folderList = await utilsFolder.getFolderListBySearch(
+      const folderList = await folderDB.getFolderListBySearch(
         userID.toString(),
         searchQuery,
         sortBy,
@@ -141,7 +141,7 @@ class FolderService {
   };
 
   renameFolder = async (userID: string, folderID: string, title: string) => {
-    const folder = await utilsFolder.renameFolder(folderID, userID, title);
+    const folder = await folderDB.renameFolder(folderID, userID, title);
 
     if (!folder) throw new NotFoundError("Rename Folder Not Found");
   };
@@ -149,7 +149,7 @@ class FolderService {
   getSubfolderFullList = async (user: userAccessType, id: string) => {
     const userID = user._id;
 
-    const folder = await utilsFolder.getFolderInfo(id, userID);
+    const folder = await folderDB.getFolderInfo(id, userID);
 
     if (!folder) throw new NotFoundError("Folder Info Not Found");
 
@@ -190,7 +190,7 @@ class FolderService {
   };
 
   trashFolder = async (userID: string, folderID: string) => {
-    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+    const folder = await folderDB.getFolderInfo(folderID, userID);
 
     if (!folder) throw new NotFoundError("Trash Folder Not Found Error");
 
@@ -199,13 +199,13 @@ class FolderService {
 
     const parentList = [...folder.parentList, folder._id!.toString()];
 
-    await utilsFolder.trashFoldersByParent(parentList, userID);
+    await folderDB.trashFoldersByParent(parentList, userID);
 
-    await utilsFile.trashFilesByParent(parentList.toString(), userID);
+    await fileDB.trashFilesByParent(parentList.toString(), userID);
   };
 
   restoreFolder = async (userID: string, folderID: string) => {
-    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+    const folder = await folderDB.getFolderInfo(folderID, userID);
 
     if (!folder) throw new NotFoundError("Restore Folder Not Found Error");
 
@@ -214,13 +214,13 @@ class FolderService {
 
     const parentList = [...folder.parentList, folder._id!.toString()];
 
-    await utilsFolder.restoreFoldersByParent(parentList, userID);
+    await folderDB.restoreFoldersByParent(parentList, userID);
 
-    await utilsFile.restoreFilesByParent(parentList.toString(), userID);
+    await fileDB.restoreFilesByParent(parentList.toString(), userID);
   };
 
   renameFolder2 = async (folderID: string, userID: string, title: string) => {
-    const folder = await utilsFolder.getFolderInfo(folderID, userID);
+    const folder = await folderDB.getFolderInfo(folderID, userID);
 
     if (!folder) throw new NotFoundError("Rename Folder Not Found");
 
@@ -236,7 +236,7 @@ class FolderService {
     folderID?: string,
     currentParent?: string
   ) => {
-    const folderList = await utilsFolder.getMoveFolderList(
+    const folderList = await folderDB.getMoveFolderList(
       userID,
       parent,
       search,
@@ -249,12 +249,12 @@ class FolderService {
 
   moveFolder = async (userID: string, folderID: string, parentID: string) => {
     const foldersByIncludedParent =
-      await utilsFolder.getFolderListByIncludedParent(userID, folderID);
+      await folderDB.getFolderListByIncludedParent(userID, folderID);
 
     const startParentList = [];
 
     if (parentID !== "/") {
-      const folderToMoveTo = await utilsFolder.getFolderInfo(parentID, userID);
+      const folderToMoveTo = await folderDB.getFolderInfo(parentID, userID);
       if (!folderToMoveTo) {
         throw new NotFoundError("Move Folder Not Found Error");
       }
@@ -279,8 +279,8 @@ class FolderService {
       );
 
       await Promise.all([
-        utilsFolder.moveFolder(folderID, userID, parentID, newParentList),
-        utilsFile.moveMultipleFiles(
+        folderDB.moveFolder(folderID, userID, parentID, newParentList),
+        fileDB.moveMultipleFiles(
           userID,
           currentFolder._id.toString(),
           parentID,
