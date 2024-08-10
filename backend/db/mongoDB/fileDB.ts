@@ -2,7 +2,9 @@ import mongoose from "../connections/mongoose";
 import { ObjectId } from "mongodb";
 import File from "../../models/file-model";
 import { UserInterface } from "../../models/user-model";
-import { QueryInterface } from "../../utils/createQuery";
+import createQuery, { QueryInterface } from "../../utils/createQuery";
+import { FileListQueryType } from "../../types/file-types";
+import sortBySwitch from "../../utils/sortBySwitch";
 
 class DbUtil {
   constructor() {}
@@ -107,8 +109,18 @@ class DbUtil {
     return fileList;
   };
 
-  getList = async (queryObj: QueryInterface, sortBy: string, limit: number) => {
-    const fileList = await File.find(queryObj).sort(sortBy).limit(limit);
+  getList = async (
+    queryData: FileListQueryType,
+    sortBy: string,
+    limit: number
+  ) => {
+    const formattedSortBy = sortBySwitch(sortBy);
+
+    const queryObj = createQuery(queryData);
+
+    const fileList = await File.find(queryObj)
+      .sort(formattedSortBy)
+      .limit(limit);
 
     return fileList;
   };

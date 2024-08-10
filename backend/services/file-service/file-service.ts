@@ -11,6 +11,7 @@ import { UserInterface } from "../../models/user-model";
 import { FileInterface } from "../../models/file-model";
 import tempStorage from "../../tempStorage/tempStorage";
 import FolderService from "../folder-service/folder-service";
+import { FileListQueryType } from "../../types/file-types";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -102,53 +103,23 @@ class MongoFileService {
 
   getQuickList = async (
     user: userAccessType | UserInterface,
-    limit: number | string = 12
+    limit: number
   ) => {
     const userID = user._id;
 
-    const quickList = await fileDB.getQuickList(userID.toString(), +limit);
+    const quickList = await fileDB.getQuickList(userID.toString(), limit);
 
     if (!quickList) throw new NotFoundError("Quick List Not Found Error");
 
     return quickList;
   };
 
-  getList = async (user: userAccessType | UserInterface, query: any) => {
-    const userID = user._id;
-
-    let searchQuery = query.search || "";
-    const parent = query.parent || "/";
-    let limit = query.limit || 50;
-    let sortBy = query.sortBy || "DEFAULT";
-    const startAt = query.startAt || undefined;
-    const startAtDate = query.startAtDate || "0";
-    const startAtName = query.startAtName || "";
-    const storageType = query.storageType || undefined;
-    const folderSearch = query.folder_search || undefined;
-    const trashMode = query.trashMode === "true";
-    const mediaMode = query.mediaMode === "true";
-    sortBy = sortBySwitch(sortBy);
-    limit = parseInt(limit);
-    console.log("sortBy", sortBy, query.sortBy);
-
-    const s3Enabled = user.s3Enabled ? true : false;
-
-    const queryObj = createQuery(
-      userID.toString(),
-      parent,
-      query.sortBy,
-      startAt,
-      startAtDate,
-      searchQuery,
-      s3Enabled,
-      startAtName,
-      storageType,
-      folderSearch,
-      trashMode,
-      mediaMode
-    );
-
-    const fileList = await fileDB.getList(queryObj, sortBy, limit);
+  getList = async (
+    queryData: FileListQueryType,
+    sortBy: string,
+    limit: number
+  ) => {
+    const fileList = await fileDB.getList(queryData, sortBy, limit);
 
     if (!fileList) throw new NotFoundError("File List Not Found");
 

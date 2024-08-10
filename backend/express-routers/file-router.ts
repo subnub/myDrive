@@ -3,6 +3,13 @@ import auth from "../middleware/auth";
 import FileController from "../controllers/file-controller";
 import authFullUser from "../middleware/authFullUser";
 import authStreamVideo from "../middleware/authStreamVideo";
+import {
+  getFileInfoValidationRules,
+  getListValidationRules,
+  getPublicDownloadValidationRules,
+  getQuickListValidationRules,
+  getThumbnailValidationRules,
+} from "../middleware/files/files-middleware";
 
 const fileController = new FileController();
 
@@ -13,30 +20,49 @@ router.post("/file-service/upload", authFullUser, fileController.uploadFile);
 router.get(
   "/file-service/thumbnail/:id",
   authFullUser,
+  getThumbnailValidationRules,
   fileController.getThumbnail
 );
 
 router.get(
   "/file-service/full-thumbnail/:id",
   authFullUser,
+  getThumbnailValidationRules,
   fileController.getFullThumbnail
 );
 
 router.get(
   "/file-service/public/download/:id/:tempToken",
+  getPublicDownloadValidationRules,
   fileController.getPublicDownload
 );
 
 router.get(
   "/file-service/public/info/:id/:tempToken",
+  getPublicDownloadValidationRules,
   fileController.getPublicInfo
 );
 
-router.get("/file-service/info/:id", auth, fileController.getFileInfo);
+router.get(
+  "/file-service/info/:id",
+  auth,
+  getFileInfoValidationRules,
+  fileController.getFileInfo
+);
 
-router.get("/file-service/quick-list", auth, fileController.getQuickList);
+router.get(
+  "/file-service/quick-list",
+  auth,
+  getQuickListValidationRules,
+  fileController.getQuickList
+);
 
-router.get("/file-service/list", auth, fileController.getList);
+router.get(
+  "/file-service/list",
+  auth,
+  getListValidationRules,
+  fileController.getList
+);
 
 router.get(
   "/file-service/download/access-token-stream-video",

@@ -1,5 +1,6 @@
-import s3 from "../db/s3";
+import s3 from "../db/connections/s3";
 import { ObjectId } from "mongodb";
+import { FileListQueryType } from "../types/file-types";
 
 export interface QueryInterface {
   "metadata.owner": ObjectId | string;
@@ -20,51 +21,32 @@ export interface QueryInterface {
   "metadata.hasThumbnail"?: boolean | null;
 }
 
-const createQuery = (
-  owner: string,
-  parent: string,
-  sortBy: string,
-  startAt: number,
-  startAtDate: number,
-  searchQuery: string | RegExp,
-  s3Enabled: boolean,
-  startAtName: string,
-  storageType: string,
-  folderSearch: boolean,
-  trashMode: boolean,
-  mediaMode: boolean
-) => {
-  let query: QueryInterface = { "metadata.owner": owner };
+const createQuery = ({
+  userID,
+  search,
+  parent,
+  startAtDate,
+  startAtName,
+  trashMode,
+  mediaMode,
+  sortBy,
+}: FileListQueryType) => {
+  let query: QueryInterface = { "metadata.owner": userID };
 
-  if (searchQuery !== "") {
-    searchQuery = new RegExp(searchQuery, "i");
-
-    query = { ...query, filename: searchQuery };
-
-    if (parent !== "/" || folderSearch)
-      query = { ...query, "metadata.parent": parent };
-    //if (parent === "home") query = {...query, "metadata.parent": "/"};
+  if (search && search !== "") {
+    query = { ...query, filename: new RegExp(search, "i") };
   } else {
     query = { ...query, "metadata.parent": parent };
   }
 
-  if (startAt) {
-    if (sortBy === "date_desc" || sortBy === "DEFAULT") {
-      query = { ...query, uploadDate: { $lt: new Date(startAtDate) } };
-    } else if (sortBy === "date_asc") {
-      query = { ...query, uploadDate: { $gt: new Date(startAtDate) } };
-    } else if (sortBy === "alp_desc") {
-      query = { ...query, filename: { $lt: startAtName } };
-    } else {
-      query = { ...query, filename: { $gt: startAtName } };
-    }
-  }
-
-  // if (s3Enabled) {
-  //     query = {...query, "metadata.personalFile": true}
-  // } else
-  if (!s3Enabled) {
-    query = { ...query, "metadata.personalFile": null };
+  if (sortBy === "date_desc" && startAtDate) {
+    query = { ...query, uploadDate: { $lt: new Date(startAtDate) } };
+  } else if (sortBy === "date_asc" && startAtDate) {
+    query = { ...query, uploadDate: { $gt: new Date(startAtDate) } };
+  } else if (sortBy === "alp_desc" && startAtName) {
+    query = { ...query, filename: { $lt: startAtName } };
+  } else if (sortBy === "alp_asc" && startAtName) {
+    query = { ...query, filename: { $gt: startAtName } };
   }
 
   if (trashMode) {
@@ -76,11 +58,6 @@ const createQuery = (
   if (mediaMode) {
     query = { ...query, "metadata.hasThumbnail": true };
   }
-
-  // if (storageType === "s3") {
-  //     query = {...query, "metadata.personalFile": true}
-  // }
-
   return query;
 };
 

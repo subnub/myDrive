@@ -18,6 +18,7 @@ import { FilesystemActions } from "../services/chunk-service/actions/file-system
 import createVideoThumbnail from "../services/chunk-service/utils/createVideoThumbnail";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
 import createThumbnail from "../services/chunk-service/utils/createImageThumbnail";
+import { FileListQueryType } from "../types/file-types";
 
 const fileService = new FileService();
 type userAccessType = {
@@ -393,7 +394,7 @@ class FileController {
 
     try {
       const user = req.user;
-      const limit = req.query.limit?.toString();
+      const limit = Number.parseInt(req.query.limit as string) || 20;
 
       const quickList = await fileService.getQuickList(user, limit);
 
@@ -413,10 +414,30 @@ class FileController {
     }
 
     try {
-      const user = req.user;
+      const userID = req.user._id;
       const query = req.query;
 
-      const fileList = await fileService.getList(user, query);
+      const search = (query.search as string) || undefined;
+      const parent = (query.parent as string) || "/";
+      const limit = Number.parseInt(query.limit as string) || 50;
+      const sortBy = (query.sortBy as string) || "date_desc";
+      const startAtDate = (query.startAtDate as string) || undefined;
+      const startAtName = (query.startAtName as string) || undefined;
+      const trashMode = query.trashMode === "true";
+      const mediaMode = query.mediaMode === "true";
+
+      const queryData: FileListQueryType = {
+        userID,
+        search,
+        parent,
+        startAtDate,
+        startAtName,
+        trashMode,
+        mediaMode,
+        sortBy,
+      };
+
+      const fileList = await fileService.getList(queryData, sortBy, limit);
 
       res.send(fileList);
     } catch (e: unknown) {
