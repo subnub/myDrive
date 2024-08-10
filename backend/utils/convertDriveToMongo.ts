@@ -1,5 +1,5 @@
 import videoChecker from "./videoChecker";
-import { FileInterface } from "../models/fileModel";
+import { FileInterface } from "../models/file-model";
 
 const convertDriveToMongo = (
   driveObj: any,

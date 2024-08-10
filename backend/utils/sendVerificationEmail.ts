@@ -1,6 +1,6 @@
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import env from "../enviroment/env";
-import { UserInterface } from "../models/userModel";
+import { UserInterface } from "../models/user-model";
 import nodemailer from "nodemailer";
 
 type MailOptionsType = {

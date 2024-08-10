@@ -1,4 +1,4 @@
-import { FileInterface } from "../models/fileModel";
+import { FileInterface } from "../models/file-model";
 
 const sortGoogleMongoList = (fileList: FileInterface[], query: any) => {
   let combinedList = fileList;

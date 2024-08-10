@@ -1,4 +1,4 @@
-import { FolderInterface } from "../models/folderModel";
+import { FolderInterface } from "../models/folder-model";
 
 const sortGoogleMongoFolderList = (
   combinedList: FolderInterface[],

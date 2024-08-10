@@ -1,8 +1,8 @@
-import User, { UserInterface } from "../models/userModel";
+import User, { UserInterface } from "../models/user-model";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import NotFoundError from "./NotFoundError";
-import { createLoginCookie } from "../cookies/createCookies";
+import { createLoginCookie } from "../cookies/create-cookies";
 
 // interface RequestType extends Request {
 //     user?: userAccessType,

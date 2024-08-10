@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import path from "path";
-import userRouter from "../express-routers/userRouter";
-import fileRouter from "../express-routers/fileRouter";
-import folderRouter from "../express-routers/folderRouter";
+import userRouter from "../express-routers/user-router";
+import fileRouter from "../express-routers/file-router";
+import folderRouter from "../express-routers/folder-router";
 import bodyParser from "body-parser";
 import https from "https";
 import fs from "fs";

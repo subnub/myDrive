@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import env from "../enviroment/env";
 import { Request, Response, NextFunction } from "express";
-import { createLogoutCookie } from "../cookies/createCookies";
+import { createLogoutCookie } from "../cookies/create-cookies";
 
 interface RequestType extends Request {
   user?: userAccessType;

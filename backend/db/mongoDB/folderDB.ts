@@ -1,4 +1,4 @@
-import Folder, { FolderInterface } from "../../models/folderModel";
+import Folder, { FolderInterface } from "../../models/folder-model";
 import { ObjectId } from "mongodb";
 
 class DbUtil {
