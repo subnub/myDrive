@@ -1,7 +1,7 @@
-import { UserInterface } from "../../../models/user";
-import { FileInterface } from "../../../models/file";
+import { UserInterface } from "../../../models/userModel";
+import { FileInterface } from "../../../models/fileModel";
 import { Request, Response } from "express";
-import { FolderInterface } from "../../../models/folder";
+import { FolderInterface } from "../../../models/folderModel";
 import crypto from "crypto";
 
 interface ChunkInterface {

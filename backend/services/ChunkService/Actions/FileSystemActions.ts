@@ -1,6 +1,6 @@
 import fs from "fs";
-import { UserInterface } from "../../../models/user";
-import { GenericParams, IStorageActions } from "../StoreTypes";
+import { UserInterface } from "../../../models/userModel";
+import { GenericParams, IStorageActions } from "../storeTypes";
 import env from "../../../enviroment/env";
 
 class FilesystemActions implements IStorageActions {

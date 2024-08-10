@@ -1,7 +1,7 @@
 import env from "../enviroment/env";
-import UserService from "../services/UserService";
+import UserService from "../services/userService/userService";
 import { Request, Response } from "express";
-import { UserInterface } from "../models/user";
+import { UserInterface } from "../models/userModel";
 import {
   createLoginCookie,
   createLogoutCookie,

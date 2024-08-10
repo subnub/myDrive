@@ -1,6 +1,6 @@
 import s3 from "../../../db/s3";
 import env from "../../../enviroment/env";
-import { UserInterface } from "../../../models/user";
+import { UserInterface } from "../../../models/userModel";
 
 const getPrevIV = (
   start: number,

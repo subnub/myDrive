@@ -1,10 +1,10 @@
-import Folder, { FolderInterface } from "../../models/folder";
+import Folder, { FolderInterface } from "../../models/folderModel";
 import InternalServerError from "../../utils/InternalServerError";
 import NotFoundError from "../../utils/NotFoundError";
 import FileDB from "../../db/mongoDB/fileDB";
 import FolderDB from "../../db/mongoDB/folderDB";
 import sortBySwitch from "../../utils/sortBySwitchFolder";
-import { UserInterface } from "../../models/user";
+import { UserInterface } from "../../models/userModel";
 
 type userAccessType = {
   _id: string;

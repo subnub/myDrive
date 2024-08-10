@@ -1,5 +1,5 @@
-import { FileInterface } from "../../../models/file";
-import { UserInterface } from "../../../models/user";
+import { FileInterface } from "../../../models/fileModel";
+import { UserInterface } from "../../../models/userModel";
 import createThumbnailS3 from "./createThumbnailS3";
 import createThumbnailFilesystem from "./createThumbnailFS";
 import env from "../../../enviroment/env";

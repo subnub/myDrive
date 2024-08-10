@@ -1,5 +1,5 @@
 import env from "../enviroment/env";
-import { UserInterface } from "../models/user";
+import { UserInterface } from "../models/userModel";
 // import sgMail from "@sendgrid/mail";
 
 const sendPasswordResetEmail = async (

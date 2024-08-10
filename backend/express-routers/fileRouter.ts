@@ -1,6 +1,6 @@
 import { Router } from "express";
 import auth from "../middleware/auth";
-import FileController from "../controllers/file";
+import FileController from "../controllers/fileController";
 import authFullUser from "../middleware/authFullUser";
 import authStreamVideo from "../middleware/authStreamVideo";
 

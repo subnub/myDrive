@@ -1,14 +1,14 @@
 import mongoose from "../../../db/connections/mongoose";
 import crypto from "crypto";
-import Thumbnail from "../../../models/thumbnail";
+import Thumbnail from "../../../models/thumbnailModel";
 import sharp from "sharp";
-import { FileInterface } from "../../../models/file";
-import { UserInterface } from "../../../models/user";
+import { FileInterface } from "../../../models/fileModel";
+import { UserInterface } from "../../../models/userModel";
 import fs from "fs";
 import uuid from "uuid";
 import env from "../../../enviroment/env";
 import { ObjectId } from "mongodb";
-import File from "../../../models/file";
+import File from "../../../models/fileModel";
 import ffmpeg from "fluent-ffmpeg";
 
 const tempCreateVideoThumbnailFS = (

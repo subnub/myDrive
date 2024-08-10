@@ -1,6 +1,6 @@
-import FolderService from "../services/FolderService";
+import FolderService from "../services/folderService/folderService";
 import { Request, Response } from "express";
-import ChunkService from "../services/ChunkService";
+import ChunkService from "../services/chunkService/chunkService";
 
 const folderService = new FolderService();
 

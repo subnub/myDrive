@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express";
 import path from "path";
-import userRouter from "../express-routers/user";
-import fileRouter from "../express-routers/file";
-import folderRouter from "../express-routers/folder";
-import storageRouter from "../express-routers/storage";
+import userRouter from "../express-routers/userRouter";
+import fileRouter from "../express-routers/fileRouter";
+import folderRouter from "../express-routers/folderRouter";
 import bodyParser from "body-parser";
 import https from "https";
 import fs from "fs";
@@ -60,7 +59,7 @@ app.use(
   })
 );
 
-app.use(userRouter, fileRouter, folderRouter, storageRouter);
+app.use(userRouter, fileRouter, folderRouter);
 
 //const nodeMode = process.env.NODE_ENV ? "Production" : "Development/Testing";
 

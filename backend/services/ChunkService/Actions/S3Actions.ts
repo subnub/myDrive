@@ -1,6 +1,6 @@
 import s3 from "../../../db/connections/s3";
 import env from "../../../enviroment/env";
-import { GenericParams, IStorageActions } from "./../StoreTypes";
+import { GenericParams, IStorageActions } from "../storeTypes";
 import internal from "stream";
 import { PassThrough } from "stream";
 

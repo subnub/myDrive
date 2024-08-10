@@ -1,13 +1,11 @@
-import { UserInterface } from "../../../models/user";
+import { UserInterface } from "../../../models/userModel";
 
-const removeTempToken = async(user: UserInterface, tempToken: any,) => {
+const removeTempToken = async (user: UserInterface, tempToken: any) => {
+  user.tempTokens = user.tempTokens.filter((filterToken) => {
+    return filterToken.token !== tempToken;
+  });
 
-    user.tempTokens = user.tempTokens.filter((filterToken) => {
-            
-        return filterToken.token !== tempToken;
-    })
-            
-    await user.save();
-}
+  await user.save();
+};
 
 export default removeTempToken;

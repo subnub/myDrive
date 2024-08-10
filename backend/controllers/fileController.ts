@@ -1,23 +1,23 @@
 import { Request, Response } from "express";
-import FileService from "../services/FileService";
-import User, { UserInterface } from "../models/user";
+import FileService from "../services/fileService/fileService";
+import User, { UserInterface } from "../models/userModel";
 import sendShareEmail from "../utils/sendShareEmail";
 import {
   createStreamVideoCookie,
   removeStreamVideoCookie,
 } from "../cookies/createCookies";
-import ChunkService from "../services/ChunkService";
+import ChunkService from "../services/chunkService/chunkService";
 import streamToBuffer from "../utils/streamToBuffer";
 import env from "../enviroment/env";
-import getFileSize from "../services/ChunkService/utils/getFileSize";
-import File, { FileMetadateInterface } from "../models/file";
+import getFileSize from "../services/chunkService/utils/getFileSize";
+import File, { FileMetadateInterface } from "../models/fileModel";
 import imageChecker from "../utils/imageChecker";
 import videoChecker from "../utils/videoChecker";
-import { S3Actions } from "../services/ChunkService/Actions/S3Actions";
-import { FilesystemActions } from "../services/ChunkService/Actions/FileSystemActions";
-import createVideoThumbnail from "../services/ChunkService/utils/createVideoThumbnail";
+import { S3Actions } from "../services/chunkService/actions/S3Actions";
+import { FilesystemActions } from "../services/chunkService/actions/fileSystemActions";
+import createVideoThumbnail from "../services/chunkService/utils/createVideoThumbnail";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
-import createThumbnail from "../services/ChunkService/utils/createImageThumbnail";
+import createThumbnail from "../services/chunkService/utils/createImageThumbnail";
 
 const fileService = new FileService();
 type userAccessType = {

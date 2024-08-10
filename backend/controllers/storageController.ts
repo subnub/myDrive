@@ -1,7 +1,7 @@
 import disk from "diskusage";
 import env from "../enviroment/env";
 import { Request, Response } from "express";
-import { UserInterface } from "../models/user";
+import { UserInterface } from "../models/userModel";
 
 type userAccessType = {
   _id: string;

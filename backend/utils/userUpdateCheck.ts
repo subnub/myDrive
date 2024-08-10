@@ -1,4 +1,4 @@
-import User, { UserInterface } from "../models/user";
+import User, { UserInterface } from "../models/userModel";
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import NotFoundError from "./NotFoundError";

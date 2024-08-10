@@ -1,9 +1,9 @@
-import User, { UserInterface } from "../../models/user";
+import User, { UserInterface } from "../../models/userModel";
 import bcrypt from "bcrypt";
 import NotFoundError from "../../utils/NotFoundError";
 import InternalServerError from "../../utils/InternalServerError";
 import sendEmailVerification from "../../utils/sendVerificationEmail";
-import File from "../../models/file";
+import File from "../../models/fileModel";
 import env from "../../enviroment/env";
 import jwt from "jsonwebtoken";
 import sendVerificationEmail from "../../utils/sendVerificationEmail";

@@ -1,21 +1,9 @@
 import { Router } from "express";
 import auth from "../middleware/auth";
-import env from "../enviroment/env";
-import FileSystemService from "../services/ChunkService/FileSystemService";
-import S3Service from "../services/ChunkService/S3Service";
-import FolderController from "../controllers/folder";
-import { moveFolderListValidationRules } from "../middleware/Folders/FolderMiddleware";
+import FolderController from "../controllers/folderController";
+import { moveFolderListValidationRules } from "../middleware/folders/folderMiddleware";
 
-let folderController: FolderController;
-
-if (env.dbType === "fs") {
-  const fileSystemService = new FileSystemService();
-  folderController = new FolderController();
-} else {
-  const s3Service = new S3Service();
-  folderController = new FolderController();
-}
-
+const folderController = new FolderController();
 const router = Router();
 
 router.post("/folder-service/create", auth, folderController.createFolder);

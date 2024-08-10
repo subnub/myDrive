@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User, { UserInterface } from "../models/user";
+import User, { UserInterface } from "../models/userModel";
 import env from "../enviroment/env";
 import { Request, Response, NextFunction } from "express";
 import userUpdateCheck from "../utils/userUpdateCheck";
