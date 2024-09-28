@@ -19,7 +19,7 @@ const Homepage = () => {
         </div>
       </div>
 
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="bottom-left" />
     </div>
   );
 };

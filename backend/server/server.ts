@@ -36,7 +36,7 @@ if (process.env.SSL === "true") {
 
 server = http.createServer(app);
 
-require("../db/mongoose");
+require("../db/connections/mongoose");
 
 app.use(cookieParser(env.passwordCookie));
 app.use(helmet());

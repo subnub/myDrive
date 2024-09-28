@@ -1,12 +1,13 @@
 class InternalServerError extends Error {
+  code: number;
+  isCustomError: boolean;
 
-    code: number;
-    
-    constructor(args: any) {
-        super(args);
+  constructor(args: any) {
+    super(args);
 
-        this.code = 500;
-    }
+    this.code = 500;
+    this.isCustomError = true;
+  }
 }
 
 export default InternalServerError;

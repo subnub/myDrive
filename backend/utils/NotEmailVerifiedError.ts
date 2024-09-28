@@ -1,12 +1,13 @@
 class NotEmailVerifiedError extends Error {
+  code: number;
+  isCustomError: boolean;
 
-    code: number;
-    
-    constructor(args: any) {
-        super(args);
+  constructor(args: any) {
+    super(args);
 
-        this.code = 404;
-    }
+    this.code = 404;
+    this.isCustomError = true;
+  }
 }
 
 export default NotEmailVerifiedError;

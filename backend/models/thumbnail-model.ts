@@ -42,6 +42,8 @@ export interface ThumbnailInterface extends Document {
   updatedAt: Date;
 }
 
+thumbnailSchema.index({ owner: 1 });
+
 const Thumbnail = mongoose.model<ThumbnailInterface>(
   "Thumbnail",
   thumbnailSchema

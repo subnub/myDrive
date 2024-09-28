@@ -6,7 +6,10 @@ import crypto from "crypto";
 import getBusboyData from "./utils/getBusboyData";
 import videoChecker from "../../utils/videoChecker";
 import uuid from "uuid";
-import File, { FileInterface } from "../../models/file-model";
+import File, {
+  FileInterface,
+  FileMetadateInterface,
+} from "../../models/file-model";
 import FileDB from "../../db/mongoDB/fileDB";
 import FolderDB from "../../db/mongoDB/folderDB";
 import Thumbnail, { ThumbnailInterface } from "../../models/thumbnail-model";
@@ -19,6 +22,8 @@ import { ObjectId } from "mongodb";
 import { S3Actions } from "./actions/S3-actions";
 import { FilesystemActions } from "./actions/file-system-actions";
 import { createGenericParams } from "./utils/storageHelper";
+import { check } from "express-validator";
+import { Readable } from "stream";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -44,10 +49,38 @@ class StorageService {
 
     const filename = fileInfo.filename;
     const parent = formData.get("parent") || "/";
-    const size = formData.get("size") || "";
-    let hasThumbnail = false;
-    let thumbnailID = "";
+    const size = +formData.get("size");
+    const hasThumbnail = false;
+    const thumbnailID = "";
     const isVideo = videoChecker(filename);
+
+    const errors = [];
+
+    if (!filename || filename.length === 0 || filename.length > 255) {
+      errors.push({
+        msg: "Filename is required and length must be greater than 0 and less than 255",
+        param: "filename",
+      });
+    }
+
+    if (!file) {
+      errors.push({ msg: "File is required", param: "file" });
+    }
+
+    // @prettier-ignore
+    if (!(file instanceof Readable)) {
+      errors.push({ msg: "File must be a readable stream", param: "file" });
+    }
+
+    if (!size || size < 0) {
+      errors.push({ msg: "Size must be a positive integer", param: "size" });
+    }
+
+    if (errors.length > 0) {
+      throw new Error(
+        `Invalid request parameters ${errors.map((e) => e.msg).join(", ")}`
+      );
+    }
 
     const parentList = [];
 
@@ -65,7 +98,7 @@ class StorageService {
     const randomFilenameID = uuid.v4();
 
     const metadata = {
-      owner: user._id,
+      owner: user._id.toString(),
       parent,
       parentList: parentList.toString(),
       hasThumbnail,
@@ -73,7 +106,7 @@ class StorageService {
       isVideo,
       size,
       IV: initVect,
-    } as any;
+    } as FileMetadateInterface;
 
     if (env.dbType === "fs") {
       metadata.filePath = env.fsDirectory + randomFilenameID;

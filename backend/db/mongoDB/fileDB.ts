@@ -118,11 +118,20 @@ class DbUtil {
 
     const queryObj = createQuery(queryData);
 
-    const fileList = await File.find(queryObj)
-      .sort(formattedSortBy)
-      .limit(limit);
+    if (sortBy.includes("alp_")) {
+      const fileList = await File.find(queryObj)
+        .collation({ locale: "en", strength: 2 })
+        .sort(formattedSortBy)
+        .limit(limit);
 
-    return fileList;
+      return fileList;
+    } else {
+      const fileList = await File.find(queryObj)
+        .sort(formattedSortBy)
+        .limit(limit);
+
+      return fileList;
+    }
   };
 
   removeTempToken = async (user: UserInterface, tempToken: string) => {

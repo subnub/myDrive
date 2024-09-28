@@ -86,6 +86,72 @@ export interface FileInterface
   metadata: FileMetadateInterface;
 }
 
+fileSchema.index(
+  { "metadata.owner": 1, "metadata.parent": 1, filename: 1 },
+  { background: true }
+);
+
+fileSchema.index(
+  { "metadata.owner": 1, "metadata.parent": 1, uploadDate: 1 },
+  { background: true }
+);
+
+fileSchema.index(
+  { "metadata.owner": 1, "metadata.parent": 1, filename: 1 },
+  { background: true }
+);
+
+fileSchema.index(
+  { "metadata.owner": 1, "metadata.parent": 1, uploadDate: 1 },
+  { collation: { locale: "en", strength: 2 }, background: true }
+);
+
+fileSchema.index(
+  { "metadata.owner": 1, "metadata.parent": 1, filename: 1 },
+  { collation: { locale: "en", strength: 2 }, background: true }
+);
+
+fileSchema.index({ "metadata.owner": 1 }, { background: true });
+
+fileSchema.index({ "metadata.parent": 1 }, { background: true });
+
+fileSchema.index({ uploadDate: 1 }, { background: true });
+
+fileSchema.index({ "metadata.trashed": 1 }, { background: true });
+
+fileSchema.index({ "metadata.hasThumbnail": 1 }, { background: true });
+
+fileSchema.index(
+  { filename: 1 },
+  { collation: { locale: "en", strength: 2 }, background: true }
+);
+
+fileSchema.index(
+  { "metadata.parent": 1 },
+  { collation: { locale: "en", strength: 2 }, background: true }
+);
+
+fileSchema.index(
+  { "metadata.owner": 1 },
+  { collation: { locale: "en", strength: 2 }, background: true }
+);
+
+// fileSchema.index(
+//   { filename: 1 },
+//   { collation: { locale: "en", strength: 2 }, background: true }
+// );
+// fileSchema.index(
+//   { filename: -1 },
+//   { collation: { locale: "en", strength: 2 }, background: true }
+// );
+// fileSchema.index({ uploadDate: 1 }, { background: true });
+// fileSchema.index({ uploadDate: -1 }, { background: true });
+// fileSchema.index({ "metadata.parent": 1 }, { background: true });
+// fileSchema.index({ "metadata.owner": 1 }, { background: true });
+// fileSchema.index({ "metadata.isVideo": 1 }, { background: true });
+// fileSchema.index({ "metadata.hasThumbnail": 1 }, { background: true });
+// fileSchema.index({ "metadata.trashed": 1 }, { background: true });
+
 const File = mongoose.model<FileInterface>("fs.files", fileSchema);
 
 export default File;

@@ -8,6 +8,7 @@ import {
   getListValidationRules,
   getPublicDownloadValidationRules,
   getQuickListValidationRules,
+  getSuggestedListValidationRules,
   getThumbnailValidationRules,
 } from "../middleware/files/files-middleware";
 
@@ -91,6 +92,7 @@ router.get(
 router.get(
   "/file-service/suggested-list",
   auth,
+  getSuggestedListValidationRules,
   fileController.getSuggestedList
 );
 

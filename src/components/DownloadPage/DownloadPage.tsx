@@ -42,7 +42,7 @@ const PublicDownloadPage = () => {
     return (
       <div className="w-screen h-screen flex justify-center items-center">
         <Spinner />
-        <ToastContainer position="bottom-right" />
+        <ToastContainer position="bottom-left" />
       </div>
     );
   }
@@ -121,7 +121,7 @@ const PublicDownloadPage = () => {
           </div>
         </div>
       </div>
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="bottom-left" />
     </div>
   );
 };

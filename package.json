@@ -19,7 +19,7 @@
     "test": "NODE_ENV=test env-cmd -f ./config/test.env jest --config=jest.config.json --runInBand",
     "start:dev": "NODE_ENV=development node dist/server/serverStart.js",
     "start:debug": "NODE_ENV=development node --inspect dist/server/serverStart.js",
-    "start": "cross-env NODE_ENV=production node dist/server/serverStart.js",
+    "start": "cross-env NODE_ENV=production node dist/server/server-start.js",
     "create-indexes-database": "node serverUtils/createIndexes.js",
     "increase-node-memory": "export NODE_OPTIONS=--max_old_space_size=8000",
     "create-indexes-database:dev": "node serverUtils/createIndexes.js",
@@ -34,7 +34,7 @@
     "vite-test": "vite",
     "dev-test": "concurrently \"vite\" \"nodemon server.js\"",
     "dev-hot": "concurrently \"vite\" \"tsc -w -p ./backend/tsconfig.json\" \"npm run dev:backend\"",
-    "dev:backend": "nodemon dist/server/serverStart.js",
+    "dev:backend": "nodemon dist/server/server-start.js",
     "vite-build": "vite build",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'"
   },

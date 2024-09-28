@@ -235,12 +235,15 @@ class FileController {
         handleFinish(filename, metadata);
       });
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nUploading File Error File Route:", e.message);
-      }
       if (!responseSent) {
         res.writeHead(500, { Connection: "close" });
-        res.end();
+        if (e instanceof Error) {
+          console.log("\nUploading File Error File Route:", e.message);
+          res.end(e.message);
+        } else {
+          console.log("\nUploading File Error File Route:", e);
+          res.end("Server error uploading file");
+        }
       }
     }
   };
@@ -510,6 +513,10 @@ class FileController {
 
       const accessTokenStreamVideo = req.accessTokenStreamVideo!;
 
+      if (!accessTokenStreamVideo) {
+        throw new NotAuthorizedError("No Access Token");
+      }
+
       await User.updateOne(
         { _id: userID },
         { $pull: { tempTokens: { token: accessTokenStreamVideo } } }
@@ -674,7 +681,7 @@ class FileController {
 
     try {
       const userID = req.user._id;
-      let searchQuery = req.query.search || "";
+      const searchQuery = req.query.search as string;
       const trashMode = req.query.trashMode === "true";
       const mediaMode = req.query.mediaMode === "true";
 

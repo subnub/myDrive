@@ -51,3 +51,20 @@ export const moveFileValidationRules = [
   query("parentID").isString().withMessage("Parent must be a string"),
   middlewareValidationFunction,
 ];
+
+export const getSuggestedListValidationRules = [
+  query("search")
+    .optional()
+    .isString()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("Search must be a string"),
+  query("trashMode")
+    .optional()
+    .isBoolean()
+    .withMessage("Trash Mode must be a boolean"),
+  query("mediaMode")
+    .optional()
+    .isBoolean()
+    .withMessage("Media Mode must be a boolean"),
+  middlewareValidationFunction,
+];

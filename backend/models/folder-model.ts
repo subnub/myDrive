@@ -42,6 +42,14 @@ export interface FolderInterface
   trashed: boolean | null;
 }
 
+folderSchema.index({ owner: 1, parent: 1, name: 1 }, { background: true });
+folderSchema.index({ owner: 1, parent: 1, createdAt: 1 }, { background: true });
+folderSchema.index({ createdAt: 1 }, { background: true });
+folderSchema.index({ owner: 1 }, { background: true });
+folderSchema.index({ trashed: 1 }, { background: true });
+folderSchema.index({ parent: 1 }, { background: true });
+folderSchema.index({ name: 1 }, { background: true });
+
 const Folder = mongoose.model<FolderInterface>("Folder", folderSchema);
 
 export default Folder;
