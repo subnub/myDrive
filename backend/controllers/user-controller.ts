@@ -1,6 +1,6 @@
 import env from "../enviroment/env";
 import UserService from "../services/user-service/user-service";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { UserInterface } from "../models/user-model";
 import {
   createLoginCookie,
@@ -33,21 +33,17 @@ interface RequestType extends Request {
 class UserController {
   constructor() {}
 
-  getUser = async (req: RequestType, res: Response) => {
+  getUser = async (req: RequestType, res: Response, next: NextFunction) => {
     try {
       const user = req.user!;
 
       res.send(user);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error getting user info");
+    } catch (e) {
+      next(e);
     }
   };
 
-  login = async (req: RequestType, res: Response) => {
+  login = async (req: RequestType, res: Response, next: NextFunction) => {
     try {
       const body = req.body;
 
@@ -61,16 +57,16 @@ class UserController {
       createLoginCookie(res, accessToken, refreshToken);
 
       res.status(200).send({ user });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nLogin User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error attempting to login");
+    } catch (e) {
+      next(e);
     }
   };
 
-  getToken = async (req: RequestTypeRefresh, res: Response) => {
+  getToken = async (
+    req: RequestTypeRefresh,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const user = req.user;
 
@@ -89,16 +85,12 @@ class UserController {
       createLoginCookie(res, accessToken, refreshToken);
 
       res.status(201).send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Refresh Token User Route Error:", e.message);
-      }
-
-      res.status(500).send("");
+    } catch (e) {
+      next(e);
     }
   };
 
-  logout = async (req: RequestType, res: Response) => {
+  logout = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -112,16 +104,13 @@ class UserController {
       createLogoutCookie(res);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nLogout User Route Error:", e.message);
-      }
+    } catch (e) {
       createLogoutCookie(res);
-      res.status(500).send("Server error attempting to logout");
+      next(e);
     }
   };
 
-  logoutAll = async (req: RequestType, res: Response) => {
+  logoutAll = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) return;
 
     try {
@@ -132,16 +121,12 @@ class UserController {
       createLogoutCookie(res);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nLogout All User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error attempting to logout all");
+    } catch (e) {
+      next(e);
     }
   };
 
-  createUser = async (req: RequestType, res: Response) => {
+  createUser = async (req: RequestType, res: Response, next: NextFunction) => {
     if (env.createAcctBlocked) {
       res.status(401).send();
       return;
@@ -156,16 +141,16 @@ class UserController {
       createLoginCookie(res, accessToken, refreshToken);
 
       res.status(201).send({ user, emailSent });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nCreate User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error creating user");
+    } catch (e) {
+      next(e);
     }
   };
 
-  changePassword = async (req: RequestType, res: Response) => {
+  changePassword = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -189,16 +174,16 @@ class UserController {
       createLoginCookie(res, accessToken, refreshToken);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nChange Password User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error changing password");
+    } catch (e) {
+      next(e);
     }
   };
 
-  refreshStorageSize = async (req: RequestType, res: Response) => {
+  refreshStorageSize = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -209,16 +194,16 @@ class UserController {
       await UserProvider.refreshStorageSize(userID);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nRefresh Storage Size User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error refreshing storage size");
+    } catch (e) {
+      next(e);
     }
   };
 
-  getUserDetailed = async (req: RequestType, res: Response) => {
+  getUserDetailed = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -229,16 +214,12 @@ class UserController {
       const userDetailed = await UserProvider.getUserDetailed(userID);
 
       res.send(userDetailed);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet User Detailed User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error getting full user info");
+    } catch (e) {
+      next(e);
     }
   };
 
-  verifyEmail = async (req: RequestType, res: Response) => {
+  verifyEmail = async (req: RequestType, res: Response, next: NextFunction) => {
     try {
       const verifyToken = req.body.emailToken;
 
@@ -253,16 +234,16 @@ class UserController {
       createLoginCookie(res, accessToken, refreshToken);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nVerify Email User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error verifying email");
+    } catch (e) {
+      next(e);
     }
   };
 
-  resendVerifyEmail = async (req: RequestType, res: Response) => {
+  resendVerifyEmail = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -273,32 +254,32 @@ class UserController {
       await UserProvider.resendVerifyEmail(userID);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nResend Email User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error resending verify email");
+    } catch (e) {
+      next(e);
     }
   };
 
-  sendPasswordReset = async (req: RequestType, res: Response) => {
+  sendPasswordReset = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const email = req.body.email;
 
       await UserProvider.sendPasswordReset(email);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nSend Password Reset Email User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error sending password reset");
+    } catch (e) {
+      next(e);
     }
   };
 
-  resetPassword = async (req: RequestType, res: Response) => {
+  resetPassword = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const verifyToken = req.body.passwordToken;
       const newPassword = req.body.password;
@@ -306,16 +287,12 @@ class UserController {
       await UserProvider.resetPassword(newPassword, verifyToken);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nReset Password User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error resetting password");
+    } catch (e) {
+      next(e);
     }
   };
 
-  addName = async (req: RequestType, res: Response) => {
+  addName = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -327,12 +304,8 @@ class UserController {
       await UserProvider.addName(userID, name);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nAdd Name User Route Error:", e.message);
-      }
-
-      res.status(500).send("Server error adding name");
+    } catch (e) {
+      next(e);
     }
   };
 }

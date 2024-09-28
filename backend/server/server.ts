@@ -12,6 +12,7 @@ import compression from "compression";
 import http from "http";
 import cookieParser from "cookie-parser";
 import env from "../enviroment/env";
+import { middlewareErrorHandler } from "../middleware/utils/middleware-utils";
 // import requestIp from "request-ip";
 
 const app = express();
@@ -60,6 +61,8 @@ app.use(
 );
 
 app.use(userRouter, fileRouter, folderRouter);
+
+app.use(middlewareErrorHandler);
 
 //const nodeMode = process.env.NODE_ENV ? "Production" : "Development/Testing";
 

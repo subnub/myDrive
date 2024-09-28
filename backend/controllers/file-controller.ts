@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import FileService from "../services/file-service/file-service";
 import User, { UserInterface } from "../models/user-model";
 import sendShareEmail from "../utils/sendShareEmail";
@@ -292,7 +292,7 @@ class FileController {
     }
   };
 
-  removeLink = async (req: RequestType, res: Response) => {
+  removeLink = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -304,15 +304,12 @@ class FileController {
       const file = await fileService.removeLink(userID, id);
 
       res.send(file);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nRemove Public Link Error File Route:", e.message);
-      }
-      res.status(500).send("Server error removing link");
+    } catch (e) {
+      next(e);
     }
   };
 
-  makePublic = async (req: RequestType, res: Response) => {
+  makePublic = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -324,15 +321,16 @@ class FileController {
       const { file, token } = await fileService.makePublic(userID, fileID);
 
       res.send({ file, token });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nMake Public Error File Route:", e.message);
-      }
-      res.status(500).send("Server error making public");
+    } catch (e) {
+      next(e);
     }
   };
 
-  getPublicInfo = async (req: RequestType, res: Response) => {
+  getPublicInfo = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const id = req.params.id;
       const tempToken = req.params.tempToken;
@@ -340,15 +338,16 @@ class FileController {
       const file = await fileService.getPublicInfo(id, tempToken);
 
       res.send(file);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Public Info Error File Route:", e.message);
-      }
-      res.status(500).send("Server error getting public info");
+    } catch (e) {
+      next(e);
     }
   };
 
-  makeOneTimePublic = async (req: RequestType, res: Response) => {
+  makeOneTimePublic = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -360,16 +359,12 @@ class FileController {
       const { file, token } = await fileService.makeOneTimePublic(userID, id);
 
       res.send({ file, token });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nMake One Time Public Link Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error making public");
+    } catch (e) {
+      next(e);
     }
   };
 
-  getFileInfo = async (req: RequestType, res: Response) => {
+  getFileInfo = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -381,16 +376,16 @@ class FileController {
       const file = await fileService.getFileInfo(userID, fileID);
 
       res.send(file);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet File Info Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error getting file info");
+    } catch (e) {
+      next(e);
     }
   };
 
-  getQuickList = async (req: RequestType, res: Response) => {
+  getQuickList = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -402,16 +397,12 @@ class FileController {
       const quickList = await fileService.getQuickList(user, limit);
 
       res.send(quickList);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Quick List Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error getting quick list");
+    } catch (e) {
+      next(e);
     }
   };
 
-  getList = async (req: RequestType, res: Response) => {
+  getList = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -443,16 +434,16 @@ class FileController {
       const fileList = await fileService.getList(queryData, sortBy, limit);
 
       res.send(fileList);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet File List Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error getting file list");
+    } catch (e) {
+      next(e);
     }
   };
 
-  getDownloadToken = async (req: RequestTypeFullUser, res: Response) => {
+  getDownloadToken = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -463,18 +454,15 @@ class FileController {
       const tempToken = await fileService.getDownloadToken(user);
 
       res.send({ tempToken });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Download Token Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error getting download token");
+    } catch (e) {
+      next(e);
     }
   };
 
   getAccessTokenStreamVideo = async (
     req: RequestTypeFullUser,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) => {
     if (!req.user) return;
 
@@ -490,21 +478,15 @@ class FileController {
       createStreamVideoCookie(res, streamVideoAccessToken);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log(
-          "\nGet Access Token Stream Video Fle Route Error:",
-          e.message
-        );
-      }
-
-      res.status(500).send("Server error getting video stream token");
+    } catch (e) {
+      next(e);
     }
   };
 
   removeStreamVideoAccessToken = async (
     req: RequestTypeFullUser,
-    res: Response
+    res: Response,
+    next: NextFunction
   ) => {
     if (!req.user) return;
 
@@ -525,16 +507,16 @@ class FileController {
       removeStreamVideoCookie(res);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nRemove Video Token File Router Error:", e.message);
-      }
-
-      res.status(500).send("Server error removing video stream token");
+    } catch (e) {
+      next(e);
     }
   };
 
-  removeTempToken = async (req: RequestTypeFullUser, res: Response) => {
+  removeTempToken = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -547,12 +529,8 @@ class FileController {
       await fileService.removeTempToken(user, tempToken, currentUUID);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nRemove Temp Token Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error removing temp token");
+    } catch (e) {
+      next(e);
     }
   };
 
@@ -674,7 +652,11 @@ class FileController {
     }
   };
 
-  getSuggestedList = async (req: RequestType, res: Response) => {
+  getSuggestedList = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -693,16 +675,12 @@ class FileController {
       );
 
       return res.send({ folderList, fileList });
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Suggested List Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error getting suggested list");
+    } catch (e) {
+      next(e);
     }
   };
 
-  renameFile = async (req: RequestType, res: Response) => {
+  renameFile = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -715,16 +693,16 @@ class FileController {
       await fileService.renameFile(userID, fileID, title);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nRename File Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error renaming file");
+    } catch (e) {
+      next(e);
     }
   };
 
-  sendEmailShare = async (req: RequestType, res: Response) => {
+  sendEmailShare = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -740,16 +718,12 @@ class FileController {
       await sendShareEmail(file, respient);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nSend Share Email Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error sending email link");
+    } catch (e) {
+      next(e);
     }
   };
 
-  moveFile = async (req: RequestType, res: Response) => {
+  moveFile = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -762,16 +736,12 @@ class FileController {
       await fileService.moveFile(userID, fileID, parentID);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nMove File Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error moving file");
+    } catch (e) {
+      next(e);
     }
   };
 
-  trashFile = async (req: RequestType, res: Response) => {
+  trashFile = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -783,16 +753,12 @@ class FileController {
       const trashedFile = await fileService.trashFile(userID, fileID);
 
       res.send(trashedFile.toObject());
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nTrash File Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error trashing file");
+    } catch (e) {
+      next(e);
     }
   };
 
-  restoreFile = async (req: RequestType, res: Response) => {
+  restoreFile = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -804,16 +770,12 @@ class FileController {
       const file = await fileService.restoreFile(userID, fileID);
 
       res.send(file);
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nRestore File Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error restoring file");
+    } catch (e) {
+      next(e);
     }
   };
 
-  deleteFile = async (req: RequestType, res: Response) => {
+  deleteFile = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -825,16 +787,12 @@ class FileController {
       await this.chunkService.deleteFile(userID, fileID);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nDelete File Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error deleting file");
+    } catch (e) {
+      next(e);
     }
   };
 
-  deleteMulti = async (req: RequestType, res: Response) => {
+  deleteMulti = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -843,21 +801,15 @@ class FileController {
       const userID = req.user._id;
       const items = req.body.items;
 
-      console.log("items", req.body);
-
       await this.chunkService.deleteMulti(userID, items);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("Delete Multi Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error deleting multi");
+    } catch (e) {
+      next(e);
     }
   };
 
-  trashMulti = async (req: RequestType, res: Response) => {
+  trashMulti = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
     }
@@ -869,16 +821,16 @@ class FileController {
       await fileService.trashMulti(userID, items);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nTrash Multi Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error trashing multi");
+    } catch (e) {
+      next(e);
     }
   };
 
-  restoreMulti = async (req: RequestType, res: Response) => {
+  restoreMulti = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -890,12 +842,8 @@ class FileController {
       await fileService.restoreMulti(userID, items);
 
       res.send();
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nRestore Multi Error File Route:", e.message);
-      }
-
-      res.status(500).send("Server error restoring multi");
+    } catch (e) {
+      next(e);
     }
   };
 }
