@@ -63,7 +63,12 @@ class DbUtil {
     return file;
   };
 
-  trashFile = async (fileID: string, userID: string) => {
+  trashFile = async (
+    fileID: string,
+    parent: string,
+    parentList: string,
+    userID: string
+  ) => {
     const result = await File.findByIdAndUpdate(
       {
         _id: new ObjectId(fileID),
@@ -72,6 +77,8 @@ class DbUtil {
       {
         $set: {
           "metadata.trashed": true,
+          "metadata.parent": parent,
+          "metadata.parentList": parentList,
         },
       }
     );

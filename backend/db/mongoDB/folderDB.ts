@@ -183,6 +183,21 @@ class DbUtil {
     return result;
   };
 
+  trashFolder = async (folderID: string, userID: string) => {
+    const result = await Folder.findByIdAndUpdate(
+      {
+        _id: new ObjectId(folderID),
+        owner: userID,
+      },
+      {
+        $set: {
+          trashed: true,
+        },
+      }
+    );
+    return result;
+  };
+
   getMoveFolderList = async (
     userID: string,
     parent = "/",

@@ -194,10 +194,16 @@ class FolderService {
 
     if (!folder) throw new NotFoundError("Trash Folder Not Found Error");
 
-    folder.trashed = true;
-    await folder.save();
+    const parentList = [];
 
-    const parentList = [...folder.parentList, folder._id!.toString()];
+    if (folder.parent !== "/") {
+      await folderDB.moveFolder(folderID, userID, "/", ["/"]);
+      parentList.push("/", folder._id!.toString());
+    } else {
+      parentList.push(...folder.parentList, folder._id!.toString());
+    }
+
+    await folderDB.trashFolder(folderID, userID);
 
     await folderDB.trashFoldersByParent(parentList, userID);
 

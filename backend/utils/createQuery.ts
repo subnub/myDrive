@@ -49,7 +49,7 @@ const createQuery = ({
     query = { ...query, filename: { $gt: startAtName } };
   }
 
-  if (trashMode) {
+  if (trashMode && parent === "/") {
     query = { ...query, "metadata.trashed": true };
   } else {
     query = { ...query, "metadata.trashed": null };

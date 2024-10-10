@@ -10,6 +10,11 @@ import {
   getQuickListValidationRules,
   getSuggestedListValidationRules,
   getThumbnailValidationRules,
+  moveFileValidationRules,
+  renameFileValidationRules,
+  restoreFileValidationRules,
+  trashFileValidationRules,
+  trashMultiValidationRules,
 } from "../middleware/files/files-middleware";
 
 const fileController = new FileController();
@@ -108,15 +113,40 @@ router.patch(
   fileController.makeOneTimePublic
 );
 
-router.patch("/file-service/rename", auth, fileController.renameFile);
+router.patch(
+  "/file-service/rename",
+  auth,
+  renameFileValidationRules,
+  fileController.renameFile
+);
 
-router.patch("/file-service/move", auth, fileController.moveFile);
+router.patch(
+  "/file-service/move",
+  auth,
+  moveFileValidationRules,
+  fileController.moveFile
+);
 
-router.patch("/file-service/trash", auth, fileController.trashFile);
+router.patch(
+  "/file-service/trash",
+  auth,
+  trashFileValidationRules,
+  fileController.trashFile
+);
 
-router.patch("/file-service/trash-multi", auth, fileController.trashMulti);
+router.patch(
+  "/file-service/trash-multi",
+  auth,
+  trashMultiValidationRules,
+  fileController.trashMulti
+);
 
-router.patch("/file-service/restore", auth, fileController.restoreFile);
+router.patch(
+  "/file-service/restore",
+  auth,
+  restoreFileValidationRules,
+  fileController.restoreFile
+);
 
 router.patch("/file-service/restore-multi", auth, fileController.restoreMulti);
 
@@ -139,11 +169,3 @@ router.post(
 );
 
 export default router;
-
-// NO longer needed left for reference
-
-//router.delete("/file-service/remove/token-video/:tempToken/:uuid", auth, fileController.removeTempToken);
-//router.get("/file-service/stream-video/:id/:tempToken/:uuid", auth, fileController.streamVideo);
-//router.get("/file-service/stream-video/:id", auth, fileController.streamVideo);
-//router.get("/file-service/download/get-token", authFullUser, fileController.getDownloadToken);
-//router.get("/file-service/download/get-token-video", auth, fileController.getDownloadTokenVideo);

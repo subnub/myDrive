@@ -210,7 +210,24 @@ class MongoFileService {
   };
 
   trashFile = async (userID: string, fileID: string) => {
-    const trashedFile = await fileDB.trashFile(fileID, userID);
+    const file = await fileDB.getFileInfo(fileID, userID);
+
+    if (!file) throw new NotFoundError("Trash File Not Found Error");
+
+    let parent = file.metadata.parent;
+    let parentList = file.metadata.parentList;
+
+    if (file.metadata.parent !== "/") {
+      parent = "/";
+      parentList = ["/"].toString();
+    }
+
+    const trashedFile = await fileDB.trashFile(
+      fileID,
+      parent,
+      parentList,
+      userID
+    );
     if (!trashedFile) throw new NotFoundError("Trash File Not Found Error");
     return trashedFile;
   };

@@ -1,6 +1,8 @@
-import { param, query, validationResult } from "express-validator";
+import { body, param, query, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import { middlewareValidationFunction } from "../utils/middleware-utils";
+
+// GET
 
 export const getThumbnailValidationRules = [
   param("id").isString().withMessage("ID must be a string"),
@@ -46,12 +48,6 @@ export const getListValidationRules = [
   middlewareValidationFunction,
 ];
 
-export const moveFileValidationRules = [
-  query("fileID").isString().withMessage("Parent must be a string"),
-  query("parentID").isString().withMessage("Parent must be a string"),
-  middlewareValidationFunction,
-];
-
 export const getSuggestedListValidationRules = [
   query("search")
     .optional()
@@ -66,5 +62,34 @@ export const getSuggestedListValidationRules = [
     .optional()
     .isBoolean()
     .withMessage("Media Mode must be a boolean"),
+  middlewareValidationFunction,
+];
+
+// PATCH
+
+export const renameFileValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
+  body("title").isString().withMessage("Title must be a string"),
+  middlewareValidationFunction,
+];
+
+export const moveFileValidationRules = [
+  body("id").isString().withMessage("FileID must be a string"),
+  body("parentID").isString().optional().withMessage("Parent must be a string"),
+  middlewareValidationFunction,
+];
+
+export const trashFileValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const trashMultiValidationRules = [
+  body("items").isArray().withMessage("Items must be an array"),
+  middlewareValidationFunction,
+];
+
+export const restoreFileValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
   middlewareValidationFunction,
 ];
