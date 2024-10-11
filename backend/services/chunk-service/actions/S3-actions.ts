@@ -76,7 +76,7 @@ class S3Actions implements IStorageActions {
 
     s3Storage.upload({ Bucket: bucket, Body: stream, Key: randomID }, (err) => {
       if (err) {
-        console.log("Amazon upload err", err);
+        console.log("S3 upload err", err);
         pass.emit("error", err);
       }
     });

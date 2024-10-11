@@ -76,6 +76,8 @@ class DbUtil {
       query.name = new RegExp(search, "i");
     }
 
+    query.trashed = null;
+
     const result = await Folder.find(query).sort({ createdAt: -1 });
 
     return result;
@@ -209,9 +211,36 @@ class DbUtil {
     owner: string;
   }) => {
     const folder = new Folder(folderData);
-    await await folder.save();
+
+    await folder.save();
 
     return folder;
+  };
+
+  // DELETE
+
+  deleteFolder = async (folderID: string, userID: string) => {
+    const result = await Folder.deleteOne({
+      _id: new ObjectId(folderID),
+      owner: userID,
+    });
+    return result;
+  };
+
+  deleteFoldersByParentList = async (
+    parentList: (string | ObjectId)[],
+    userID: string
+  ) => {
+    const result = await Folder.deleteMany({
+      owner: userID,
+      parentList: { $all: parentList },
+    });
+    return result;
+  };
+
+  deleteFoldersByOwner = async (userID: string) => {
+    const result = await Folder.deleteMany({ owner: userID });
+    return result;
   };
 }
 

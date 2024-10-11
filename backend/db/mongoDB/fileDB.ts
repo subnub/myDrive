@@ -301,6 +301,16 @@ class DbUtil {
       { new: true }
     );
   };
+
+  // DELETE
+
+  deleteFile = async (fileID: string, userID: string) => {
+    const result = await File.deleteOne({
+      _id: new ObjectId(fileID),
+      "metadata.owner": userID,
+    });
+    return result;
+  };
 }
 
 export default DbUtil;

@@ -2,6 +2,8 @@ import { body, param, query, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 import { middlewareValidationFunction } from "../utils/middleware-utils";
 
+// GET
+
 export const moveFolderListValidationRules = [
   query("parent").optional().isString().withMessage("Parent must be a string"),
   query("search").optional().isString().withMessage("Search must be a string"),
@@ -13,9 +15,52 @@ export const getFolderInfoValidationRules = [
   middlewareValidationFunction,
 ];
 
-const getFolderListValidationRules = [
+export const getFolderListValidationRules = [
   query("search").optional().isString().withMessage("Search must be a string"),
   query("parent").optional().isString().withMessage("Parent must be a string"),
   query("sortBy").optional().isString().withMessage("Sort By must be a string"),
-  query("type").optional().isString().withMessage("Type must be a string"),
+  query("trashMode")
+    .optional()
+    .isBoolean()
+    .withMessage("Trash Mode must be a boolean"),
+  middlewareValidationFunction,
+];
+
+// PATCH
+
+export const renameFolderValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
+  body("title").isString().withMessage("Title must be a string"),
+  middlewareValidationFunction,
+];
+
+export const moveFolderValidationRules = [
+  body("parentID").isString().withMessage("Parent must be a string"),
+  body("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const trashFolderValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const restoreFolderValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+// DELETE
+
+export const deleteFolderValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+// POST
+
+export const createFolderValidationRules = [
+  body("name").isString().withMessage("Name must be a string"),
+  body("parent").optional().isString().withMessage("Parent must be a string"),
+  middlewareValidationFunction,
 ];

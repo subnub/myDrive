@@ -34,7 +34,7 @@ class FolderController {
     try {
       const userID = req.user._id;
       const name = req.body.name;
-      const parent = req.body.parent;
+      const parent = req.body.parent || "/";
 
       const folder = await folderService.createFolder(userID, name, parent);
 
@@ -56,7 +56,6 @@ class FolderController {
     try {
       const userID = req.user._id;
       const folderID = req.body.id;
-      const parentList = req.body.parentList;
 
       await chunkService.deleteFolder(userID, folderID);
 

@@ -27,7 +27,11 @@ export const useUtils = () => {
     return location.pathname === "/settings";
   }, [location.pathname]);
 
-  return { isHome, isTrash, isMedia, isSettings };
+  const isHomeFolder = useMemo(() => {
+    return location.pathname.includes("/folder/");
+  }, [location.pathname]);
+
+  return { isHome, isTrash, isMedia, isSettings, isHomeFolder };
 };
 
 export const useClickOutOfBounds = (

@@ -230,6 +230,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const reloadItems = () => {
     invalidateFilesCache();
     invalidateQuickFilesCache();
+    invalidateFoldersCache();
     dispatch(resetSelected());
   };
 

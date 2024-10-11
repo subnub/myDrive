@@ -14,7 +14,7 @@ import HomeIconOutline from "../../icons/HomeIconOutline";
 const LeftSection = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const leftSectionOpen = useAppSelector((state) => state.leftSection.drawOpen);
-  const { isHome, isTrash, isMedia, isSettings } = useUtils();
+  const { isHome, isHomeFolder, isTrash, isMedia, isSettings } = useUtils();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const addNewDisabled = useRef(false);
@@ -100,7 +100,9 @@ const LeftSection = () => {
         <div
           className={classNames(
             "pl-2 mr-5 py-2 hover:bg-white-hover rounded-md cursor-pointer animate flex flex-row items-center w-full",
-            isHome ? "text-primary bg-white-hover" : "text-gray-primary"
+            isHome || isHomeFolder
+              ? "text-primary bg-white-hover"
+              : "text-gray-primary"
           )}
           onClick={goHome}
         >

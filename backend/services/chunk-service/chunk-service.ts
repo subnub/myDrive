@@ -6,27 +6,24 @@ import crypto from "crypto";
 import getBusboyData from "./utils/getBusboyData";
 import videoChecker from "../../utils/videoChecker";
 import uuid from "uuid";
-import File, {
-  FileInterface,
-  FileMetadateInterface,
-} from "../../models/file-model";
+import { FileInterface, FileMetadateInterface } from "../../models/file-model";
 import FileDB from "../../db/mongoDB/fileDB";
 import FolderDB from "../../db/mongoDB/folderDB";
-import Thumbnail, { ThumbnailInterface } from "../../models/thumbnail-model";
-import User from "../../models/user-model";
 import env from "../../enviroment/env";
 import fixStartChunkLength from "./utils/fixStartChunkLength";
-import Folder, { FolderInterface } from "../../models/folder-model";
+import { FolderInterface } from "../../models/folder-model";
 import ForbiddenError from "../../utils/ForbiddenError";
-import { ObjectId } from "mongodb";
 import { S3Actions } from "./actions/S3-actions";
 import { FilesystemActions } from "./actions/file-system-actions";
 import { createGenericParams } from "./utils/storageHelper";
-import { check } from "express-validator";
 import { Readable } from "stream";
+import ThumbnailDB from "../../db/mongoDB/thumbnailDB";
+import UserDB from "../../db/mongoDB/userDB";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
+const thumbnailDB = new ThumbnailDB();
+const userDB = new UserDB();
 
 const storageActions =
   env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
@@ -162,13 +159,12 @@ class StorageService {
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
-    const thumbnail = (await Thumbnail.findById(
-      new ObjectId(id)
-    )) as ThumbnailInterface;
+    const thumbnail = await thumbnailDB.getThumbnailInfo(
+      user._id.toString(),
+      id
+    );
 
-    if (thumbnail.owner !== user._id.toString()) {
-      throw new ForbiddenError("Thumbnail Unauthorized Error");
-    }
+    if (!thumbnail) throw new NotFoundError("Thumbnail Not Found");
 
     const iv = thumbnail.IV;
 
@@ -305,7 +301,9 @@ class StorageService {
       await fileDB.removeOneTimePublicLink(fileID);
     }
 
-    const user = (await User.findById(file.metadata.owner)) as UserInterface;
+    const user = await userDB.getUserInfo(file.metadata.owner);
+
+    if (!user) throw new NotFoundError("User Not Found");
 
     const password = user.getEncryptionKey();
 
@@ -364,9 +362,12 @@ class StorageService {
     if (!file) throw new NotFoundError("Delete File Not Found Error");
 
     if (file.metadata.thumbnailID) {
-      const thumbnail = (await Thumbnail.findById(
+      const thumbnail = await thumbnailDB.getThumbnailInfo(
+        userID,
         file.metadata.thumbnailID
-      )) as ThumbnailInterface;
+      );
+
+      if (!thumbnail) throw new NotFoundError("Thumbnail Not Found");
 
       const removeChunksParams = createGenericParams({
         filePath: thumbnail.path,
@@ -375,7 +376,7 @@ class StorageService {
 
       await storageActions.removeChunks(removeChunksParams);
 
-      await Thumbnail.deleteOne({ _id: file.metadata.thumbnailID });
+      await thumbnailDB.removeThumbnail(userID, thumbnail._id);
     }
 
     const removeChunksParams = createGenericParams({
@@ -384,7 +385,7 @@ class StorageService {
     });
 
     await storageActions.removeChunks(removeChunksParams);
-    await File.deleteOne({ _id: file._id });
+    await fileDB.deleteFile(fileID, userID);
   };
 
   deleteFolder = async (userID: string, folderID: string) => {
@@ -394,11 +395,8 @@ class StorageService {
 
     const parentList = [...folder.parentList, folder._id];
 
-    await Folder.deleteMany({
-      owner: userID,
-      parentList: { $all: parentList },
-    });
-    await Folder.deleteMany({ owner: userID, _id: folderID });
+    await folderDB.deleteFoldersByParentList(parentList, userID);
+    await folderDB.deleteFolder(folderID, userID);
 
     const fileList = await fileDB.getFileListByIncludedParent(
       userID,
@@ -412,9 +410,12 @@ class StorageService {
 
       try {
         if (currentFile.metadata.thumbnailID) {
-          const thumbnail = (await Thumbnail.findById(
+          const thumbnail = await thumbnailDB.getThumbnailInfo(
+            userID,
             currentFile.metadata.thumbnailID
-          )) as ThumbnailInterface;
+          );
+
+          if (!thumbnail) throw new NotFoundError("Thumbnail Not Found");
 
           const removeChunksParams = createGenericParams({
             filePath: thumbnail.path,
@@ -423,7 +424,7 @@ class StorageService {
 
           await storageActions.removeChunks(removeChunksParams);
 
-          await Thumbnail.deleteOne({ _id: currentFile.metadata.thumbnailID });
+          await thumbnailDB.removeThumbnail(userID, thumbnail._id);
         }
 
         const removeChunksParams = createGenericParams({
@@ -432,7 +433,7 @@ class StorageService {
         });
 
         await storageActions.removeChunks(removeChunksParams);
-        await File.deleteOne({ _id: currentFile._id });
+        await fileDB.deleteFile(currentFile._id.toString(), userID);
       } catch (e) {
         console.log(
           "Could not delete file",
@@ -444,7 +445,7 @@ class StorageService {
   };
 
   deleteAll = async (userID: string) => {
-    await Folder.deleteMany({ owner: userID });
+    await folderDB.deleteFoldersByOwner(userID);
 
     const fileList = await fileDB.getFileListByOwner(userID);
 
@@ -456,9 +457,13 @@ class StorageService {
 
       try {
         if (currentFile.metadata.thumbnailID) {
-          const thumbnail = (await Thumbnail.findById(
+          const thumbnail = await thumbnailDB.getThumbnailInfo(
+            userID,
             currentFile.metadata.thumbnailID
-          )) as ThumbnailInterface;
+          );
+
+          if (!thumbnail) throw new NotFoundError("Thumbnail Not Found");
+
           const removeChunksParams = createGenericParams({
             filePath: thumbnail.path,
             Key: thumbnail.s3ID,
@@ -466,7 +471,7 @@ class StorageService {
 
           await storageActions.removeChunks(removeChunksParams);
 
-          await Thumbnail.deleteOne({ _id: currentFile.metadata.thumbnailID });
+          await thumbnailDB.removeThumbnail(userID, thumbnail._id);
         }
 
         const removeChunksParams = createGenericParams({
@@ -475,7 +480,7 @@ class StorageService {
         });
 
         await storageActions.removeChunks(removeChunksParams);
-        await File.deleteOne({ _id: currentFile._id });
+        await fileDB.deleteFile(currentFile._id.toString(), userID);
       } catch (e) {
         console.log(
           "Could Not Remove File",

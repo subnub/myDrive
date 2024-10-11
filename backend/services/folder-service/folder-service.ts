@@ -20,7 +20,7 @@ const folderDB = new FolderDB();
 class FolderService {
   createFolder = async (userID: string, name: string, parent: string) => {
     const newFolderParentList = [];
-    if (parent && parent !== "/") {
+    if (parent !== "/") {
       const parentFolder = await folderDB.getFolderInfo(parent, userID);
 
       if (!parentFolder) throw new Error("Parent not found");

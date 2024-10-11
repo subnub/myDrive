@@ -2,8 +2,15 @@ import { Router } from "express";
 import auth from "../middleware/auth";
 import FolderController from "../controllers/folder-controller";
 import {
+  createFolderValidationRules,
+  deleteFolderValidationRules,
   getFolderInfoValidationRules,
+  getFolderListValidationRules,
   moveFolderListValidationRules,
+  moveFolderValidationRules,
+  renameFolderValidationRules,
+  restoreFolderValidationRules,
+  trashFolderValidationRules,
 } from "../middleware/folders/folder-middleware";
 
 const folderController = new FolderController();
@@ -18,7 +25,12 @@ router.get(
   folderController.getInfo
 );
 
-router.get("/folder-service/list", auth, folderController.getFolderList);
+router.get(
+  "/folder-service/list",
+  auth,
+  getFolderListValidationRules,
+  folderController.getFolderList
+);
 
 router.get(
   "/folder-service/move-folder-list",
@@ -29,22 +41,52 @@ router.get(
 
 // PATCH
 
-router.patch("/folder-service/rename", auth, folderController.renameFolder);
+router.patch(
+  "/folder-service/rename",
+  auth,
+  renameFolderValidationRules,
+  folderController.renameFolder
+);
 
-router.patch("/folder-service/move", auth, folderController.moveFolder);
+router.patch(
+  "/folder-service/move",
+  auth,
+  moveFolderValidationRules,
+  folderController.moveFolder
+);
 
-router.patch("/folder-service/trash", auth, folderController.trashFolder);
+router.patch(
+  "/folder-service/trash",
+  auth,
+  trashFolderValidationRules,
+  folderController.trashFolder
+);
 
-router.patch("/folder-service/restore", auth, folderController.restoreFolder);
+router.patch(
+  "/folder-service/restore",
+  auth,
+  restoreFolderValidationRules,
+  folderController.restoreFolder
+);
 
 // DELETE
 
-router.delete("/folder-service/remove", auth, folderController.deleteFolder);
+router.delete(
+  "/folder-service/remove",
+  auth,
+  deleteFolderValidationRules,
+  folderController.deleteFolder
+);
 
 router.delete("/folder-service/remove-all", auth, folderController.deleteAll);
 
 // POST
 
-router.post("/folder-service/create", auth, folderController.createFolder);
+router.post(
+  "/folder-service/create",
+  auth,
+  createFolderValidationRules,
+  folderController.createFolder
+);
 
 export default router;
