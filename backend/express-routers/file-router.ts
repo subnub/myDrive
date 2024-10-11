@@ -4,15 +4,23 @@ import FileController from "../controllers/file-controller";
 import authFullUser from "../middleware/authFullUser";
 import authStreamVideo from "../middleware/authStreamVideo";
 import {
+  deleteFileValidationRules,
+  deleteMultiValidationRules,
+  downloadFileValidationRules,
   getFileInfoValidationRules,
   getListValidationRules,
   getPublicDownloadValidationRules,
   getQuickListValidationRules,
   getSuggestedListValidationRules,
   getThumbnailValidationRules,
+  makePrivateValidationRules,
+  makePublicValidationRules,
   moveFileValidationRules,
+  removeVideoStreamTokenValidationRules,
   renameFileValidationRules,
   restoreFileValidationRules,
+  restoreMultiValidationRules,
+  streamVideoValidationRules,
   trashFileValidationRules,
   trashMultiValidationRules,
 } from "../middleware/files/files-middleware";
@@ -21,7 +29,7 @@ const fileController = new FileController();
 
 const router = Router();
 
-router.post("/file-service/upload", authFullUser, fileController.uploadFile);
+// GET
 
 router.get(
   "/file-service/thumbnail/:id",
@@ -79,6 +87,7 @@ router.get(
 router.get(
   "/file-service/stream-video/:id",
   authStreamVideo,
+  streamVideoValidationRules,
   fileController.streamVideo
 );
 
@@ -91,6 +100,7 @@ router.delete(
 router.get(
   "/file-service/download/:id",
   authFullUser,
+  downloadFileValidationRules,
   fileController.downloadFile
 );
 
@@ -101,15 +111,19 @@ router.get(
   fileController.getSuggestedList
 );
 
+// PATCH
+
 router.patch(
   "/file-service/make-public/:id",
   authFullUser,
+  makePublicValidationRules,
   fileController.makePublic
 );
 
 router.patch(
   "/file-service/make-one/:id",
   auth,
+  makePublicValidationRules,
   fileController.makeOneTimePublic
 );
 
@@ -148,24 +162,45 @@ router.patch(
   fileController.restoreFile
 );
 
-router.patch("/file-service/restore-multi", auth, fileController.restoreMulti);
+router.patch(
+  "/file-service/restore-multi",
+  auth,
+  restoreMultiValidationRules,
+  fileController.restoreMulti
+);
 
-router.patch("/file-service/remove-link/:id", auth, fileController.removeLink);
+router.patch(
+  "/file-service/remove-link/:id",
+  auth,
+  makePrivateValidationRules,
+  fileController.removeLink
+);
+
+// DELETE
 
 router.delete(
   "/file-service/remove/token-video/:id",
   auth,
+  removeVideoStreamTokenValidationRules,
   fileController.removeTempToken
 );
 
-router.delete("/file-service/remove", auth, fileController.deleteFile);
-
-router.delete("/file-service/remove-multi", auth, fileController.deleteMulti);
-
-router.post(
-  "/file-service/send-share-email",
+router.delete(
+  "/file-service/remove",
   auth,
-  fileController.sendEmailShare
+  deleteFileValidationRules,
+  fileController.deleteFile
 );
+
+router.delete(
+  "/file-service/remove-multi",
+  auth,
+  deleteMultiValidationRules,
+  fileController.deleteMulti
+);
+
+// POST
+
+router.post("/file-service/upload", authFullUser, fileController.uploadFile);
 
 export default router;

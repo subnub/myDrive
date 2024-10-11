@@ -112,8 +112,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Renamed",
           error: "Error Renaming",
         });
-        invalidateFilesCache();
-        invalidateQuickFilesCache();
+        reloadItems();
       } catch (e) {
         console.log("Error renaming file", e);
       }
@@ -126,7 +125,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Renamed",
           error: "Error Renaming",
         });
-        invalidateFoldersCache();
+        reloadItems();
       } catch (e) {
         console.log("Error renaming folder", e);
       }
@@ -145,9 +144,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Trashed",
           error: "Error Trashing",
         });
-        invalidateFilesCache();
-        invalidateQuickFilesCache();
-        dispatch(resetSelected());
+        reloadItems();
       } catch (e) {
         console.log("Error trashing file", e);
       }
@@ -161,8 +158,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Trashed",
           error: "Error Trashing",
         });
-        invalidateFoldersCache();
-        dispatch(resetSelected());
+        reloadItems();
       } catch (e) {
         console.log("Error trashing folder", e);
       }
@@ -181,9 +177,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Deleted",
           error: "Error Deleting",
         });
-        invalidateFilesCache();
-        invalidateQuickFilesCache();
-        dispatch(resetSelected());
+        reloadItems();
       } catch (e) {
         console.log("Error deleting file", e);
       }
@@ -197,8 +191,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Deleted",
           error: "Error Deleting",
         });
-        invalidateFoldersCache();
-        dispatch(resetSelected());
+        reloadItems();
       } catch (e) {
         console.log("Error deleting folder", e);
       }
@@ -216,7 +209,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Restored",
           error: "Error Restoring",
         });
-        invalidateFilesCache();
+        reloadItems();
       } catch (e) {
         console.log("Error restoring file", e);
       }
@@ -227,11 +220,17 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           success: "Restored",
           error: "Error Restoring",
         });
-        invalidateFoldersCache();
+        reloadItems();
       } catch (e) {
         console.log("Error restoring folder", e);
       }
     }
+  };
+
+  const reloadItems = () => {
+    invalidateFilesCache();
+    invalidateQuickFilesCache();
+    dispatch(resetSelected());
   };
 
   const openMoveItemModal = async () => {

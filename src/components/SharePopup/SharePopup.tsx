@@ -14,7 +14,7 @@ import {
   makePublicAPI,
   removeLinkAPI,
 } from "../../api/filesAPI";
-import { useFilesClient } from "../../hooks/files";
+import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import {
   resetShareModal,
   setMainSelect,
@@ -28,6 +28,7 @@ const SharePopup = memo(() => {
   const [shareLink, setShareLink] = useState("");
   const dispatch = useAppDispatch();
   const { invalidateFilesCache } = useFilesClient();
+  const { invalidateQuickFilesCache } = useQuickFilesClient();
 
   const imageColor = useMemo(
     () => getFileColor(file.filename),
@@ -70,6 +71,7 @@ const SharePopup = memo(() => {
       );
       dispatch(setShareModal(updatedFile));
       invalidateFilesCache();
+      invalidateQuickFilesCache();
     } catch (e) {
       console.log("Error making file public", e);
     } finally {
@@ -100,6 +102,7 @@ const SharePopup = memo(() => {
       );
       dispatch(setShareModal(updatedFile));
       invalidateFilesCache();
+      invalidateQuickFilesCache();
     } catch (e) {
       console.log("Error making file public", e);
     } finally {
@@ -127,6 +130,7 @@ const SharePopup = memo(() => {
       );
       dispatch(setShareModal(updatedFile));
       invalidateFilesCache();
+      invalidateQuickFilesCache();
       setShareLink("");
     } catch (e) {
       console.log("Error removing link", e);
@@ -152,7 +156,6 @@ const SharePopup = memo(() => {
   useEffect(() => {
     if (!file.metadata.link) return;
     const url = `${window.location.origin}/public-download/${file._id}/${file.metadata.link}`;
-    console.log("url", url);
     setShareLink(url);
   }, [file.metadata.link]);
 

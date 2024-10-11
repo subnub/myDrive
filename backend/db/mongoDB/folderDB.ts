@@ -1,8 +1,13 @@
 import Folder, { FolderInterface } from "../../models/folder-model";
 import { ObjectId } from "mongodb";
+import { FolderListQueryType } from "../../types/folder-types";
+import { createFolderQuery } from "../../utils/createQuery";
+import sortBySwitch from "../../utils/sortBySwitchFolder";
 
 class DbUtil {
   constructor() {}
+
+  // READ
 
   getFolderSearchList = async (
     userID: string,
@@ -29,173 +34,14 @@ class DbUtil {
     return folder;
   };
 
-  getFolderListByParent = async (
-    userID: string,
-    parent: string,
-    sortBy: string,
-    s3Enabled: boolean,
-    type: string,
-    storageType: string,
-    itemType: string,
-    trashMode: boolean
-  ) => {
-    let query: any = { owner: userID, parent: parent };
+  getFolderList = async (queryData: FolderListQueryType, sortBy: string) => {
+    const query = createFolderQuery(queryData);
 
-    if (!s3Enabled) {
-      query = { ...query, personalFolder: null };
-    }
+    const sortByQuery = sortBySwitch(sortBy);
 
-    if (type) {
-      if (type === "mongo") {
-        query = { ...query, personalFolder: null };
-      } else if (type === "s3") {
-        query = { ...query, personalFolder: true };
-      }
-    }
-
-    if (itemType) {
-      if (itemType === "personal") query = { ...query, personalFolder: true };
-      if (itemType === "nonpersonal")
-        query = { ...query, personalFolder: null };
-    }
-
-    if (trashMode) {
-      query = { ...query, trashed: true };
-    } else {
-      query = { ...query, trashed: null };
-    }
-
-    const folderList = await Folder.find(query).sort(sortBy);
+    const folderList = await Folder.find(query).sort(sortByQuery);
 
     return folderList;
-  };
-
-  getFolderListBySearch = async (
-    userID: string,
-    searchQuery: string,
-    sortBy: string,
-    type: string,
-    parent: string,
-    storageType: string,
-    folderSearch: boolean,
-    itemType: string,
-    s3Enabled: boolean,
-    trashMode: boolean
-  ) => {
-    let query: any = { name: searchQuery, owner: userID };
-
-    if (type) {
-      if (type === "mongo") {
-        query = { ...query, personalFolder: null };
-      } else {
-        query = { ...query, personalFolder: true };
-      }
-    }
-
-    if (storageType === "s3") {
-      query = { ...query, personalFolder: true };
-    }
-
-    if (parent && (parent !== "/" || folderSearch)) {
-      query = { ...query, parent };
-    }
-
-    if (!s3Enabled) {
-      query = { ...query, personalFolder: null };
-    }
-
-    if (itemType) {
-      if (itemType === "personal") query = { ...query, personalFolder: true };
-      if (itemType === "nonpersonal")
-        query = { ...query, personalFolder: null };
-    }
-
-    if (trashMode) {
-      query = { ...query, trashed: true };
-    } else {
-      query = { ...query, trashed: null };
-    }
-
-    const folderList = await Folder.find(query).sort(sortBy);
-
-    return folderList;
-  };
-
-  moveFolder = async (
-    folderID: string,
-    userID: string,
-    parent: string,
-    parentList: string[]
-  ) => {
-    const folder = (await Folder.findOneAndUpdate(
-      { _id: new ObjectId(folderID), owner: userID },
-      { $set: { parent: parent, parentList: parentList }, new: true }
-    )) as FolderInterface;
-
-    return folder;
-  };
-
-  renameFolder = async (folderID: string, userID: string, title: string) => {
-    const folder = await Folder.findOneAndUpdate(
-      { _id: new ObjectId(folderID), owner: userID },
-      { $set: { name: title } }
-    );
-
-    return folder;
-  };
-
-  findAllFoldersByParent = async (parentID: string, userID: string) => {
-    const folderList = await Folder.find({
-      parentList: parentID,
-      owner: userID,
-    });
-
-    return folderList;
-  };
-
-  trashFoldersByParent = async (parentList: string[], userID: string) => {
-    const result = await Folder.updateMany(
-      {
-        owner: userID,
-        parentList: { $all: parentList },
-      },
-      {
-        $set: {
-          trashed: true,
-        },
-      }
-    );
-    return result;
-  };
-
-  restoreFoldersByParent = async (parentList: string[], userID: string) => {
-    const result = await Folder.updateMany(
-      {
-        owner: userID,
-        parentList: { $all: parentList },
-      },
-      {
-        $set: {
-          trashed: null,
-        },
-      }
-    );
-    return result;
-  };
-
-  trashFolder = async (folderID: string, userID: string) => {
-    const result = await Folder.findByIdAndUpdate(
-      {
-        _id: new ObjectId(folderID),
-        owner: userID,
-      },
-      {
-        $set: {
-          trashed: true,
-        },
-      }
-    );
-    return result;
   };
 
   getMoveFolderList = async (
@@ -245,6 +91,127 @@ class DbUtil {
     });
 
     return folderList;
+  };
+
+  findAllFoldersByParent = async (parentID: string, userID: string) => {
+    const folderList = await Folder.find({
+      parentList: parentID,
+      owner: userID,
+    });
+
+    return folderList;
+  };
+
+  // UPDATE
+
+  moveFolder = async (
+    folderID: string,
+    userID: string,
+    parent: string,
+    parentList: string[]
+  ) => {
+    const folder = await Folder.findOne({
+      _id: new ObjectId(folderID),
+      owner: userID,
+    });
+
+    if (!folder) return null;
+
+    folder.parent = parent;
+    folder.parentList = parentList;
+
+    await folder.save();
+
+    return folder;
+  };
+
+  renameFolder = async (folderID: string, userID: string, title: string) => {
+    const folder = await Folder.findOne({
+      _id: new ObjectId(folderID),
+      owner: userID,
+    });
+
+    if (!folder) return null;
+
+    folder.name = title;
+
+    await folder.save();
+
+    return folder;
+  };
+
+  trashFoldersByParent = async (parentList: string[], userID: string) => {
+    const result = await Folder.updateMany(
+      {
+        owner: userID,
+        parentList: { $all: parentList },
+      },
+      {
+        $set: {
+          trashed: true,
+        },
+      }
+    );
+    return result;
+  };
+
+  restoreFolder = async (folderID: string, userID: string) => {
+    const folder = await Folder.findOne({
+      _id: new ObjectId(folderID),
+      owner: userID,
+    });
+
+    if (!folder) return null;
+
+    folder.trashed = null;
+
+    await folder.save();
+
+    return folder;
+  };
+
+  restoreFoldersByParent = async (parentList: string[], userID: string) => {
+    const result = await Folder.updateMany(
+      {
+        owner: userID,
+        parentList: { $all: parentList },
+      },
+      {
+        $set: {
+          trashed: null,
+        },
+      }
+    );
+    return result;
+  };
+
+  trashFolder = async (folderID: string, userID: string) => {
+    const folder = await Folder.findOne({
+      _id: new ObjectId(folderID),
+      owner: userID,
+    });
+
+    if (!folder) return null;
+
+    folder.trashed = true;
+
+    await folder.save();
+
+    return folder;
+  };
+
+  // CREATE
+
+  createFolder = async (folderData: {
+    name: string;
+    parent: string;
+    parentList: string[];
+    owner: string;
+  }) => {
+    const folder = new Folder(folderData);
+    await await folder.save();
+
+    return folder;
   };
 }
 

@@ -4,7 +4,6 @@ import env from "../../enviroment/env";
 import jwt from "jsonwebtoken";
 import Folder, { FolderInterface } from "../../models/folder-model";
 import sortBySwitch from "../../utils/sortBySwitch";
-import createQuery from "../../utils/createQuery";
 import FileDB from "../../db/mongoDB/fileDB";
 import FolderDB from "../../db/mongoDB/folderDB";
 import { UserInterface } from "../../models/user-model";

@@ -1,8 +1,8 @@
-import s3 from "../db/connections/s3";
 import { ObjectId } from "mongodb";
 import { FileListQueryType } from "../types/file-types";
+import { FolderListQueryType } from "../types/folder-types";
 
-export interface QueryInterface {
+export interface FileQueryInterface {
   "metadata.owner": ObjectId | string;
   "metadata.parent"?: string;
   filename?:
@@ -21,7 +21,7 @@ export interface QueryInterface {
   "metadata.hasThumbnail"?: boolean | null;
 }
 
-const createQuery = ({
+export const createFileQuery = ({
   userID,
   search,
   parent,
@@ -31,34 +31,62 @@ const createQuery = ({
   mediaMode,
   sortBy,
 }: FileListQueryType) => {
-  let query: QueryInterface = { "metadata.owner": userID };
+  const query: FileQueryInterface = { "metadata.owner": userID };
 
   if (search && search !== "") {
-    query = { ...query, filename: new RegExp(search, "i") };
+    query["filename"] = new RegExp(search, "i");
   } else {
-    query = { ...query, "metadata.parent": parent };
+    query["metadata.parent"] = parent;
   }
 
   if (sortBy === "date_desc" && startAtDate) {
-    query = { ...query, uploadDate: { $lt: new Date(startAtDate) } };
+    query.uploadDate = { $lt: new Date(startAtDate) };
   } else if (sortBy === "date_asc" && startAtDate) {
-    query = { ...query, uploadDate: { $gt: new Date(startAtDate) } };
+    query.uploadDate = { $gt: new Date(startAtDate) };
   } else if (sortBy === "alp_desc" && startAtName) {
-    query = { ...query, filename: { $lt: startAtName } };
+    query.filename = { $lt: startAtName };
   } else if (sortBy === "alp_asc" && startAtName) {
-    query = { ...query, filename: { $gt: startAtName } };
+    query.filename = { $gt: startAtName };
   }
 
   if (trashMode && parent === "/") {
-    query = { ...query, "metadata.trashed": true };
+    query["metadata.trashed"] = true;
   } else {
-    query = { ...query, "metadata.trashed": null };
+    query["metadata.trashed"] = null;
   }
 
   if (mediaMode) {
-    query = { ...query, "metadata.hasThumbnail": true };
+    query["metadata.hasThumbnail"] = true;
   }
   return query;
 };
 
-export default createQuery;
+export interface FolderQueryInterface {
+  owner: ObjectId | string;
+  parent?: string;
+  name?: string | RegExp;
+  trashed?: boolean | null;
+}
+
+export const createFolderQuery = ({
+  userID,
+  search,
+  parent,
+  trashMode,
+}: FolderListQueryType) => {
+  const query: FolderQueryInterface = { owner: userID };
+
+  if (search && search !== "") {
+    query["name"] = new RegExp(search, "i");
+  } else {
+    query["parent"] = parent;
+  }
+
+  if (trashMode) {
+    query["trashed"] = true;
+  } else {
+    query["trashed"] = null;
+  }
+
+  return query;
+};

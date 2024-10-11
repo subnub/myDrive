@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import FileService from "../services/file-service/file-service";
 import User, { UserInterface } from "../models/user-model";
-import sendShareEmail from "../utils/sendShareEmail";
 import {
   createStreamVideoCookie,
   removeStreamVideoCookie,
@@ -13,8 +12,6 @@ import getFileSize from "../services/chunk-service/utils/getFileSize";
 import File, { FileMetadateInterface } from "../models/file-model";
 import imageChecker from "../utils/imageChecker";
 import videoChecker from "../utils/videoChecker";
-import { S3Actions } from "../services/chunk-service/actions/S3-actions";
-import { FilesystemActions } from "../services/chunk-service/actions/file-system-actions";
 import createVideoThumbnail from "../services/chunk-service/utils/createVideoThumbnail";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
 import createThumbnail from "../services/chunk-service/utils/createImageThumbnail";
@@ -691,31 +688,6 @@ class FileController {
       const userID = req.user._id;
 
       await fileService.renameFile(userID, fileID, title);
-
-      res.send();
-    } catch (e) {
-      next(e);
-    }
-  };
-
-  sendEmailShare = async (
-    req: RequestType,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if (!req.user) {
-      return;
-    }
-
-    try {
-      const user = req.user!;
-
-      const fileID = req.body.file._id;
-      const respient = req.body.file.resp;
-
-      const file = await fileService.getFileInfo(user._id, fileID);
-
-      await sendShareEmail(file, respient);
 
       res.send();
     } catch (e) {

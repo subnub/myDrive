@@ -65,6 +65,16 @@ export const getSuggestedListValidationRules = [
   middlewareValidationFunction,
 ];
 
+export const streamVideoValidationRules = [
+  param("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const downloadFileValidationRules = [
+  param("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
 // PATCH
 
 export const renameFileValidationRules = [
@@ -91,5 +101,37 @@ export const trashMultiValidationRules = [
 
 export const restoreFileValidationRules = [
   body("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const restoreMultiValidationRules = [
+  body("items").isArray().withMessage("Items must be an array"),
+  middlewareValidationFunction,
+];
+
+export const makePublicValidationRules = [
+  param("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const makePrivateValidationRules = [
+  param("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const removeVideoStreamTokenValidationRules = [
+  param("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+// DELETE
+
+export const deleteFileValidationRules = [
+  body("id").isString().withMessage("ID must be a string"),
+  middlewareValidationFunction,
+];
+
+export const deleteMultiValidationRules = [
+  body("items").isArray().withMessage("Items must be an array"),
   middlewareValidationFunction,
 ];

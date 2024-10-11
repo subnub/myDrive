@@ -73,7 +73,7 @@ export interface FileMetadateInterface {
   filePath?: string;
   s3ID?: string;
   personalFile?: boolean;
-  trashed?: boolean;
+  trashed?: boolean | null;
 }
 
 export interface FileInterface

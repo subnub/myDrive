@@ -1,6 +1,7 @@
 import FolderService from "../services/folder-service/folder-service";
 import { NextFunction, Request, Response } from "express";
 import ChunkService from "../services/chunk-service/chunk-service";
+import { FolderListQueryType } from "../types/folder-types";
 
 const folderService = new FolderService();
 
@@ -65,27 +66,6 @@ class FolderController {
     }
   };
 
-  getSubfolderFullList = async (
-    req: RequestType,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if (!req.user) {
-      return;
-    }
-
-    try {
-      const user = req.user;
-      const id: any = req.query.id;
-
-      const subfolderList = await folderService.getSubfolderFullList(user, id);
-
-      res.send(subfolderList);
-    } catch (e) {
-      next(e);
-    }
-  };
-
   deleteAll = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
@@ -119,28 +99,6 @@ class FolderController {
     }
   };
 
-  getSubfolderList = async (
-    req: RequestType,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if (!req.user) {
-      return;
-    }
-
-    try {
-      const userID = req.user._id;
-      const folderID = req.query.id as string;
-
-      const { folderIDList, folderNameList } =
-        await folderService.getFolderSublist(userID, folderID);
-
-      res.send({ folderIDList, folderNameList });
-    } catch (e) {
-      next(e);
-    }
-  };
-
   getFolderList = async (
     req: RequestType,
     res: Response,
@@ -154,7 +112,19 @@ class FolderController {
       const user = req.user;
       const query = req.query;
 
-      const folderList = await folderService.getFolderList(user, query);
+      const search = (query.search as string) || undefined;
+      const parent = (query.parent as string) || "/";
+      const sortBy = (query.sortBy as string) || "date_desc";
+      const trashMode = query.trashMode === "true";
+
+      const queryData: FolderListQueryType = {
+        userID: user._id.toString(),
+        search,
+        parent,
+        trashMode,
+      };
+
+      const folderList = await folderService.getFolderList(queryData, sortBy);
 
       res.send(folderList);
     } catch (e) {
@@ -255,8 +225,6 @@ class FolderController {
       const search = (req.query.search as string) || undefined;
       const folderID = (req.query.folderID as string) || undefined;
       const currentParent = (req.query.currentParent as string) || undefined;
-
-      console.log("folderID", folderID);
 
       const folderList = await folderService.getMoveFolderList(
         userID,

@@ -2,46 +2,17 @@ import mongoose from "../connections/mongoose";
 import { ObjectId } from "mongodb";
 import File from "../../models/file-model";
 import { UserInterface } from "../../models/user-model";
-import createQuery, { QueryInterface } from "../../utils/createQuery";
+import { createFileQuery } from "../../utils/createQuery";
 import { FileListQueryType } from "../../types/file-types";
 import sortBySwitch from "../../utils/sortBySwitch";
 
 class DbUtil {
   constructor() {}
 
+  // READ
+
   getPublicFile = async (fileID: string) => {
     const file = await File.findOne({ _id: new ObjectId(fileID) });
-    return file;
-  };
-
-  removeOneTimePublicLink = async (
-    fileID: string | mongoose.Types.ObjectId
-  ) => {
-    const file = await File.findOneAndUpdate(
-      { _id: new ObjectId(fileID) },
-      {
-        $unset: { "metadata.linkType": "", "metadata.link": "" },
-      }
-    );
-  };
-
-  removeLink = async (fileID: string, userID: string) => {
-    const file = await File.findOneAndUpdate(
-      { _id: new ObjectId(fileID), "metadata.owner": userID },
-      { $unset: { "metadata.linkType": "", "metadata.link": "" } },
-      { new: true }
-    );
-
-    return file;
-  };
-
-  makePublic = async (fileID: string, userID: string, token: string) => {
-    const file = await File.findOneAndUpdate(
-      { _id: new ObjectId(fileID), "metadata.owner": userID },
-      { $set: { "metadata.linkType": "public", "metadata.link": token } },
-      { new: true }
-    );
-
     return file;
   };
 
@@ -51,50 +22,6 @@ class DbUtil {
       "metadata.link": tempToken,
     });
     return file;
-  };
-
-  makeOneTimePublic = async (fileID: string, userID: string, token: string) => {
-    const file = await File.findOneAndUpdate(
-      { _id: new ObjectId(fileID), "metadata.owner": userID },
-      { $set: { "metadata.linkType": "one", "metadata.link": token } },
-      { new: true }
-    );
-
-    return file;
-  };
-
-  trashFile = async (
-    fileID: string,
-    parent: string,
-    parentList: string,
-    userID: string
-  ) => {
-    const result = await File.findByIdAndUpdate(
-      {
-        _id: new ObjectId(fileID),
-        "metadata.owner": userID,
-      },
-      {
-        $set: {
-          "metadata.trashed": true,
-          "metadata.parent": parent,
-          "metadata.parentList": parentList,
-        },
-      }
-    );
-    return result;
-  };
-
-  restoreFile = async (fileID: string, userID: string) => {
-    const result = await File.updateOne(
-      { _id: new ObjectId(fileID), "metadata.owner": userID },
-      {
-        $set: {
-          "metadata.trashed": null,
-        },
-      }
-    );
-    return result;
   };
 
   getFileInfo = async (fileID: string, userID: string) => {
@@ -123,7 +50,7 @@ class DbUtil {
   ) => {
     const formattedSortBy = sortBySwitch(sortBy);
 
-    const queryObj = createQuery(queryData);
+    const queryObj = createFileQuery(queryData);
 
     if (sortBy.includes("alp_")) {
       const fileList = await File.find(queryObj)
@@ -139,14 +66,6 @@ class DbUtil {
 
       return fileList;
     }
-  };
-
-  removeTempToken = async (user: UserInterface, tempToken: string) => {
-    user.tempTokens = user.tempTokens.filter((filterToken) => {
-      return filterToken.token !== tempToken;
-    });
-
-    return user;
   };
 
   getFileSearchList = async (
@@ -166,6 +85,137 @@ class DbUtil {
     const fileList = await File.find(query).limit(10);
 
     return fileList;
+  };
+
+  getFileListByIncludedParent = async (
+    userID: string | mongoose.Types.ObjectId,
+    parentListString: string
+  ) => {
+    const fileList = await File.find({
+      "metadata.owner": userID,
+      "metadata.parentList": { $regex: `.*${parentListString}.*` },
+    });
+
+    return fileList;
+  };
+
+  getFileListByOwner = async (userID: string) => {
+    const fileList = await File.find({ "metadata.owner": userID });
+
+    return fileList;
+  };
+
+  getFileListByParent = async (userID: string, parent: string) => {
+    const fileList = await File.find({
+      owner: userID,
+      "metadata.parent": parent,
+    });
+
+    return fileList;
+  };
+
+  // UPDATE
+
+  removeOneTimePublicLink = async (
+    fileID: string | mongoose.Types.ObjectId
+  ) => {
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID) },
+      {
+        $unset: { "metadata.linkType": "", "metadata.link": "" },
+      }
+    );
+
+    return file;
+  };
+
+  removeLink = async (fileID: string, userID: string) => {
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      { $unset: { "metadata.linkType": "", "metadata.link": "" } },
+      { new: true }
+    );
+
+    return file;
+  };
+
+  makePublic = async (fileID: string, userID: string, token: string) => {
+    const file = await File.findOne({
+      _id: new ObjectId(fileID),
+      "metadata.owner": userID,
+    });
+
+    if (!file) return null;
+
+    file.metadata.linkType = "public";
+    file.metadata.link = token;
+
+    await file.save();
+
+    return file;
+  };
+
+  makeOneTimePublic = async (fileID: string, userID: string, token: string) => {
+    const file = await File.findOne({
+      _id: new ObjectId(fileID),
+      "metadata.owner": userID,
+    });
+
+    if (!file) return null;
+
+    file.metadata.linkType = "one";
+    file.metadata.link = token;
+
+    await file.save();
+
+    return file;
+  };
+
+  trashFile = async (
+    fileID: string,
+    parent: string,
+    parentList: string,
+    userID: string
+  ) => {
+    const file = await File.findOne({
+      _id: new ObjectId(fileID),
+      "metadata.owner": userID,
+    });
+
+    if (!file) return null;
+
+    file.metadata.trashed = true;
+    file.metadata.parent = parent;
+    file.metadata.parentList = parentList;
+
+    await file.save();
+
+    return file;
+  };
+
+  restoreFile = async (fileID: string, userID: string) => {
+    const file = await File.findOne({
+      _id: new ObjectId(fileID),
+      "metadata.owner": userID,
+    });
+
+    if (!file) return null;
+
+    file.metadata.trashed = null;
+
+    await file.save();
+
+    console.log("file", file);
+
+    return file;
+  };
+
+  removeTempToken = async (user: UserInterface, tempToken: string) => {
+    user.tempTokens = user.tempTokens.filter((filterToken) => {
+      return filterToken.token !== tempToken;
+    });
+
+    return user;
   };
 
   trashFilesByParent = async (parentList: string, userID: string) => {
@@ -199,11 +249,18 @@ class DbUtil {
   };
 
   renameFile = async (fileID: string, userID: string, title: string) => {
-    const updateFileResponse = await File.findOneAndUpdate(
-      { _id: new ObjectId(fileID), "metadata.owner": userID },
-      { $set: { filename: title } }
-    );
-    return updateFileResponse;
+    const file = await File.findOne({
+      _id: new ObjectId(fileID),
+      "metadata.owner": userID,
+    });
+
+    if (!file) return null;
+
+    file.filename = title;
+
+    await file.save();
+
+    return file;
   };
 
   moveFile = async (
@@ -212,45 +269,19 @@ class DbUtil {
     parent: string,
     parentList: string
   ) => {
-    const file = await File.findOneAndUpdate(
-      { _id: new ObjectId(fileID), "metadata.owner": userID },
-      {
-        $set: {
-          "metadata.parent": parent,
-          "metadata.parentList": parentList,
-        },
-      },
-      { new: true }
-    );
+    const file = await File.findOne({
+      _id: new ObjectId(fileID),
+      "metadata.owner": userID,
+    });
+
+    if (!file) return null;
+
+    file.metadata.parent = parent;
+    file.metadata.parentList = parentList;
+
+    await file.save();
 
     return file;
-  };
-
-  getFileListByIncludedParent = async (
-    userID: string | mongoose.Types.ObjectId,
-    parentListString: string
-  ) => {
-    const fileList = await File.find({
-      "metadata.owner": userID,
-      "metadata.parentList": { $regex: `.*${parentListString}.*` },
-    });
-
-    return fileList;
-  };
-
-  getFileListByOwner = async (userID: string) => {
-    const fileList = await File.find({ "metadata.owner": userID });
-
-    return fileList;
-  };
-
-  getFileListByParent = async (userID: string, parent: string) => {
-    const fileList = await File.find({
-      owner: userID,
-      "metadata.parent": parent,
-    });
-
-    return fileList;
   };
 
   moveMultipleFiles = async (
