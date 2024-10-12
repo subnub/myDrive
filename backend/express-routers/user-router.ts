@@ -4,10 +4,13 @@ import authNoEmailVerification from "../middleware/authNoEmailVerificication";
 import UserController from "../controllers/user-controller";
 import authRefresh from "../middleware/authRefresh";
 import authLogout from "../middleware/authLogout";
+import { changePasswordValidationRules } from "../middleware/user/user-middleware";
 
 const userController = new UserController();
 
 const router = Router();
+
+// GET
 
 router.get(
   "/user-service/user",
@@ -15,13 +18,9 @@ router.get(
   userController.getUser
 );
 
-router.patch(
-  "/user-service/refresh-storage-size",
-  auth,
-  userController.refreshStorageSize
-);
-
 router.get("/user-service/user-detailed", auth, userController.getUserDetailed);
+
+// POST
 
 router.post("/user-service/login", userController.login);
 
@@ -30,12 +29,6 @@ router.post("/user-service/logout", authLogout, userController.logout);
 router.post("/user-service/logout-all", authLogout, userController.logoutAll);
 
 router.post("/user-service/create", userController.createUser);
-
-router.post(
-  "/user-service/change-password",
-  auth,
-  userController.changePassword
-);
 
 router.post("/user-service/verify-email", userController.verifyEmail);
 
@@ -52,8 +45,23 @@ router.post(
 
 router.post("/user-service/reset-password", userController.resetPassword);
 
+router.post("/user-service/get-token", authRefresh, userController.getToken);
+
+// PATCH
+
+router.patch(
+  "/user-service/refresh-storage-size",
+  auth,
+  userController.refreshStorageSize
+);
+
 router.patch("/user-service/add-name", auth, userController.addName);
 
-router.post("/user-service/get-token", authRefresh, userController.getToken);
+router.patch(
+  "/user-service/change-password",
+  auth,
+  changePasswordValidationRules,
+  userController.changePassword
+);
 
 export default router;

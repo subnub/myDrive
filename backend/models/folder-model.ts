@@ -5,18 +5,22 @@ const folderSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      validate(value: any) {
+        if (!value || value.length === 0 || value.length >= 256) {
+          throw new Error(
+            "Name is required and length must be greater than 0 and 256 characters max"
+          );
+        }
+      },
     },
-
     parent: {
       type: String,
       required: true,
     },
-
     owner: {
       type: String,
       required: true,
     },
-
     parentList: {
       type: Array,
       required: true,

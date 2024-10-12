@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import SettingsGeneralSection from "./SettingsGeneralSection";
 import { useClickOutOfBounds } from "../../hooks/utils";
 import MenuIcon from "../../icons/MenuIcon";
+import { ToastContainer } from "react-toastify";
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
@@ -125,6 +126,7 @@ const SettingsPage = () => {
           {tab === "general" && <SettingsGeneralSection />}
         </div>
       </div>
+      <ToastContainer position="bottom-left" />
     </div>
   );
 };

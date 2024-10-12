@@ -121,8 +121,7 @@ class UserService {
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
-    if (!isMatch)
-      throw new ForbiddenError("Change Passwords Do Not Match Error");
+    if (!isMatch) throw new ForbiddenError("Old Password Is Incorrect");
 
     const encryptionKey = user.getEncryptionKey();
 

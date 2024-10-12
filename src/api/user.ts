@@ -34,3 +34,26 @@ export const createAccountAPI = async (email: string, password: string) => {
   });
   return response.data;
 };
+
+export const logoutAPI = async () => {
+  const response = await axios.post("/user-service/logout");
+  return response.data;
+};
+
+export const logoutAllAPI = async () => {
+  const response = await axios.post("/user-service/logout-all");
+  return response.data;
+};
+
+// PATCH
+
+export const changePasswordAPI = async (
+  oldPassword: string,
+  newPassword: string
+) => {
+  const response = await axios.patch("/user-service/change-password", {
+    oldPassword,
+    newPassword,
+  });
+  return response.data;
+};

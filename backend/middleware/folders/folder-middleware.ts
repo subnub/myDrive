@@ -30,7 +30,15 @@ export const getFolderListValidationRules = [
 
 export const renameFolderValidationRules = [
   body("id").isString().withMessage("ID must be a string"),
-  body("title").isString().withMessage("Title must be a string"),
+  body("title")
+    .exists()
+    .withMessage("Title is required")
+    .isString()
+    .withMessage("Title must be a string")
+    .isLength({ min: 1, max: 256 })
+    .withMessage(
+      "Title must be at least 1 character and at most 256 characters"
+    ),
   middlewareValidationFunction,
 ];
 
@@ -60,7 +68,15 @@ export const deleteFolderValidationRules = [
 // POST
 
 export const createFolderValidationRules = [
-  body("name").isString().withMessage("Name must be a string"),
+  body("name")
+    .exists()
+    .withMessage("Name is required")
+    .isString()
+    .withMessage("Name must be a string")
+    .isLength({ min: 1, max: 256 })
+    .withMessage(
+      "Name must be at least 1 character and at most 256 characters"
+    ),
   body("parent").optional().isString().withMessage("Parent must be a string"),
   middlewareValidationFunction,
 ];
