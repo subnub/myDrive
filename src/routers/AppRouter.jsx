@@ -14,9 +14,8 @@ import DownloadPage from "../components/DownloadPage/DownloadPage";
 import VerifyEmailPage from "../components/VerifyEmailPage";
 import uuid from "uuid";
 import ResetPasswordPage from "../components/ResetPasswordPage";
-import SettingsPage from "../components/SettingsPage";
+import SettingsPage from "../components/SettingsPage/SettingsPage";
 import Homepage from "../components/Homepage/Homepage";
-import SettingsPage2 from "../components/SettingsPage/SettingsPage";
 
 // export const history = createHistory();
 
@@ -103,13 +102,11 @@ const AppRouter = () => {
         />
         <Route path="/verify-email/:id" element={<VerifyEmailPage />} />
         <Route path="/reset-password/:id" element={<ResetPasswordPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
         <Route
-          key={1}
-          path="/settings2"
+          path="/settings"
           element={
             <PrivateRoute>
-              <SettingsPage2 />
+              <SettingsPage />
             </PrivateRoute>
           }
         />
