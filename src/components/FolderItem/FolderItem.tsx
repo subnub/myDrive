@@ -88,9 +88,9 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
   return (
     <div
       className={classNames(
-        "p-[12px] border border-gray-third rounded-[4px] overflow-hidden cursor-pointer animate hover:border-[#3c85ee]",
+        "p-3 border border-gray-third rounded-md overflow-hidden cursor-pointer animate hover:border-primary",
         {
-          "bg-[#3c85ee]": elementSelected || elementMultiSelected,
+          "bg-primary": elementSelected || elementMultiSelected,
         }
       )}
       onClick={folderClick}
@@ -114,7 +114,7 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
       <div>
         <svg
           className={classNames(
-            "w-[40px] h-[40px]",
+            "w-10 h-10",
             elementSelected || elementMultiSelected
               ? "text-white"
               : "text-[#3c85ee]"
@@ -136,15 +136,15 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
       </div>
       <div
         className={classNames(
-          "overflow-hidden text-ellipsis block w-full animate mt-2",
+          "overflow-hidden text-ellipsis block w-full animate",
           elementSelected || elementMultiSelected
-            ? "bg-[#3c85ee] text-white"
-            : "bg-white text-[#637381]"
+            ? "bg-primary text-white"
+            : "bg-white text-gray-primary"
         )}
       >
         <p
           className={classNames(
-            "m-0 text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
+            "m-0 text-sm font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate",
             elementSelected || elementMultiSelected
               ? "text-white"
               : "text-black"
@@ -157,7 +157,7 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
             "m-0 font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
             elementSelected || elementMultiSelected
               ? "text-white"
-              : "text-[#637381]"
+              : "text-gray-primary"
           )}
         >
           Created {moment(folder.createdAt).format("MM/DD/YY hh:mma")}

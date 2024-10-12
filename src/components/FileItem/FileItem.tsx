@@ -119,7 +119,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
           <div className="flex items-center fileTextXL:w-[560px] w-[60px] xxs:w-[160px] xs:w-[260px] fileTextXSM:w-[460px] fileTextLG:w-[440px] fileTextMD:w-[240px] desktopMode:w-[160px]">
             <span className="inline-flex items-center mr-[15px] max-w-[27px] min-w-[27px] min-h-[27px] max-h-[27px]">
               <div
-                className="h-[27px] w-[27px] bg-red-500 rounded-[3px] flex flex-row justify-center items-center"
+                className="h-7 w-7 bg-red-500 rounded-md flex flex-row justify-center items-center"
                 style={{ background: imageColor }}
               >
                 <span className="font-semibold text-[9.5px] text-white">
@@ -173,9 +173,9 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
     return (
       <div
         className={classNames(
-          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[130px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden bg-white ",
+          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[130px] sm:h-[150px] animiate hover:border-primary overflow-hidden bg-white ",
           elementSelected || elementMultiSelected
-            ? "border-[#3c85ee]"
+            ? "border-primary"
             : "border-gray-third"
         )}
         onClick={fileClick}
@@ -237,8 +237,8 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
           className={classNames(
             "p-3 overflow-hidden text-ellipsis block w-full animate",
             elementSelected || elementMultiSelected
-              ? "bg-[#3c85ee] text-white"
-              : "bg-white text-[#637381]"
+              ? "bg-primary text-white"
+              : "bg-white text-gray-primary"
           )}
         >
           <p
@@ -253,10 +253,10 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
           </p>
           <span
             className={classNames(
-              "m-0 text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
+              "m-0 font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
               elementSelected || elementMultiSelected
                 ? "text-white"
-                : "text-[#637381]"
+                : "text-gray-primary]"
             )}
           >
             Created {formattedCreatedDate}

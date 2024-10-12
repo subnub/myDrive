@@ -72,13 +72,13 @@ const FileInfoPopup = memo(() => {
       )}
 
       <div
-        className="absolute top-[20px] flex justify-between w-full"
+        className="absolute top-5 flex justify-between w-full"
         id="actions-wrapper"
       >
         <div className="ml-4 flex items-center">
-          <span className="inline-flex items-center mr-[15px] max-w-[27px] min-w-[27px] min-h-[27px] max-h-[27px]">
+          <span className="inline-flex items-center mr-4 max-w-7 min-w-7 min-h-7 max-h-7">
             <div
-              className="h-[27px] w-[27px] bg-red-500 rounded-[3px] flex flex-row justify-center items-center"
+              className="h-7 w-7 bg-red-500 rounded-md flex flex-row justify-center items-center"
               style={{ background: imageColor }}
             >
               <span className="font-semibold text-[9.5px] text-white">
@@ -93,63 +93,45 @@ const FileInfoPopup = memo(() => {
         <div className="flex mr-4">
           <div onClick={onContextMenu} id="action-context-wrapper">
             <ActionsIcon
-              className="pointer text-white w-[20px] h-[25px] mr-4 cursor-pointer"
+              className="pointer text-white w-h h-6 mr-4 cursor-pointer"
               id="action-context-icon"
             />
           </div>
 
           <div onClick={closePhotoViewer} id="action-close-wrapper">
             <CloseIcon
-              className="pointer text-white w-[25px] h-[25px] cursor-pointer"
+              className="pointer text-white w-6 h-6 cursor-pointer"
               id="action-close-icon"
             />
           </div>
         </div>
       </div>
-      <div className="w-[300px] p-4 bg-white rounded-md">
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Type
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-            {fileExtension}
-          </span>
+      <div className="w-[300px] p-4 bg-white rounded-md border shadow-lg text-xs flex flex-col space-y-3">
+        <div className="flex justify-between">
+          <span className="text-gray-primary font-normal">Type</span>
+          <span className="text-black font-normal ">{fileExtension}</span>
         </div>
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Size
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-            {fileSize}
-          </span>
+        <div className="flex justify-between">
+          <span className="text-gray-primary font-normal">Size</span>
+          <span className="text-black font-normal ">{fileSize}</span>
         </div>
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Created
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-            {formattedDate}
-          </span>
+        <div className="flex justify-between">
+          <span className="text-gray-primary font-normal ">Created</span>
+          <span className="text-black font-normal ">{formattedDate}</span>
         </div>
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Access
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+        <div className="flex justify-between">
+          <span className="text-gray-primary font-normal ">Access</span>
+          <span className="text-black font-normal ">
             {file.metadata.link ? "Public" : "Private"}
           </span>
         </div>
-        <div className="mt-[15px] flex justify-center">
+        <div className="flex justify-center">
           <a
             onClick={downloadItem}
-            className="w-[80px] h-[40px] inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate mr-4 cursor-pointer hover:bg-[#f6f5fd]"
+            className="px-5 py-2.5 inline-flex items-center justify-center border border-primary rounded-md text-primary text-sm font-medium no-underline animate mr-4 cursor-pointer hover:bg-white-hover"
           >
             Download
           </a>
-          <ActionsIcon
-            onClick={onContextMenu}
-            className="w-[20px] ml-4 cursor-pointer"
-          />
         </div>
       </div>
     </div>

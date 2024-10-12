@@ -20,10 +20,8 @@ const Files = memo(() => {
   return (
     <div className="mt-8">
       <div>
-        <div className="flex justify-between items-center mb-[20px]">
-          {isHome && (
-            <h2 className="m-0 text-[22px] font-medium">Home Files</h2>
-          )}
+        <div className="flex justify-between items-center mb-5">
+          {isHome && <h2 className="m-0 text-xl font-medium">Home Files</h2>}
           {!isHome && (
             <React.Fragment>
               <div className="block">
@@ -36,7 +34,10 @@ const Files = memo(() => {
             <ul className="flex items-center list-none m-0 p-0">
               <li className="mr-4" onClick={changeListViewMode}>
                 <a
-                  style={listView ? { color: "#919eab" } : { color: "#3c85ee" }}
+                  className={classNames({
+                    "text-gray-primary": listView,
+                    "text-primary": !listView,
+                  })}
                 >
                   <svg
                     className="w-4 h-4 cursor-pointer"
@@ -58,9 +59,10 @@ const Files = memo(() => {
               </li>
               <li className="mr-2" onClick={changeListViewMode}>
                 <a
-                  style={
-                    !listView ? { color: "#919eab" } : { color: "#3c85ee" }
-                  }
+                  className={classNames({
+                    "text-gray-primary": !listView,
+                    "text-primary": listView,
+                  })}
                 >
                   <svg
                     className="w-4 h-4 cursor-pointer"
@@ -107,23 +109,17 @@ const Files = memo(() => {
               <tr>
                 <th>
                   <div className="flex flex-row items-center mb-2">
-                    <p className="text-[#212b36] text-sm font-medium">Name</p>
+                    <p className="text-black text-sm font-medium">Name</p>
                   </div>
                 </th>
                 <th className="hidden fileListShowDetails:table-cell">
-                  <p className="text-[#212b36] text-sm font-medium mb-2">
-                    Size
-                  </p>
+                  <p className="text-black text-sm font-medium mb-2">Size</p>
                 </th>
                 <th className="hidden fileListShowDetails:table-cell">
-                  <p className="text-[#212b36] text-sm font-medium mb-2">
-                    Created
-                  </p>
+                  <p className="text-black text-sm font-medium mb-2">Created</p>
                 </th>
                 <th>
-                  <p className="text-[#212b36] text-sm font-medium mb-2">
-                    Actions
-                  </p>
+                  <p className="text-black text-sm font-medium mb-2">Actions</p>
                 </th>
               </tr>
             </thead>
@@ -138,13 +134,6 @@ const Files = memo(() => {
             </tbody>
           </table>
         )}
-
-        {/* <div
-          className="dataform-loadmore-files"
-          style={loadingMore ? {} : { display: "none" }}
-        >
-          <SpinnerImage />
-        </div> */}
       </div>
     </div>
   );

@@ -70,7 +70,7 @@ const Folders = memo(() => {
       <div className="flex flex-row mb-[20px] justify-between text-[#212b36] items-center">
         <h2
           className={classNames(
-            "m-0 text-[22px] font-medium",
+            "m-0 text-xl font-medium",
             isHome ? "block" : "invisible"
           )}
         >
