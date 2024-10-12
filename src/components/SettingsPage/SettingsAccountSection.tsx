@@ -10,7 +10,7 @@ interface SettingsPageAccountProps {
 const SettingsPageAccount: React.FC<SettingsPageAccountProps> = ({ user }) => {
   return (
     <div>
-      <div className="bg-white-hover p-3 flex items-center w-full">
+      <div className="bg-white-hover p-3 flex items-center w-full rounded-md">
         <p className="text-base">Account</p>
       </div>
       <div>
@@ -31,7 +31,7 @@ const SettingsPageAccount: React.FC<SettingsPageAccountProps> = ({ user }) => {
           </p>
         </div>
         <div className="px-3 py-4 flex flex-row justify-between items-center border-b border-gray-secondary">
-          <p className="text-gray-primary">Logout all account</p>
+          <p className="text-gray-primary">Logout all accounts</p>
           <p className="text-primary hover:text-primary-hover cursor-pointer">
             Logout all
           </p>

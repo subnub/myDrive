@@ -5,15 +5,18 @@ import classNames from "classnames";
 import AccountIcon from "../../icons/AccountIcon";
 import TuneIcon from "../../icons/TuneIcon";
 import { useNavigate } from "react-router-dom";
-import SettingsPageAccount from "./SettingsPageAccount";
+import SettingsAccountSection from "./SettingsAccountSection";
 import { getUserDetailedAPI } from "../../api/user";
 import Spinner from "../Spinner/Spinner";
 import Swal from "sweetalert2";
-import SettingsPageGeneral from "./SettingsPageGeneral";
+import SettingsGeneralSection from "./SettingsGeneralSection";
+import { useClickOutOfBounds } from "../../hooks/utils";
+import MenuIcon from "../../icons/MenuIcon";
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState("account");
+  const [showSidebarMobile, setShowSidebarMobile] = useState(false);
   const navigate = useNavigate();
 
   const goHome = () => {
@@ -46,6 +49,13 @@ const SettingsPage = () => {
     getUser();
   }, []);
 
+  const { wrapperRef } = useClickOutOfBounds(() => setShowSidebarMobile(false));
+
+  const changeTab = (tab: string) => {
+    setTab(tab);
+    setShowSidebarMobile(false);
+  };
+
   if (!user) {
     return (
       <div className="w-screen h-screen flex justify-center items-center">
@@ -56,9 +66,20 @@ const SettingsPage = () => {
 
   return (
     <div>
-      <Header />
-      <div className="mt-[70px] flex flex-row">
-        <div className="px-4 border-r border-gray-secondary w-64 h-screen">
+      <div className="hidden sm:block">
+        <Header />
+      </div>
+      <div className="flex flex-row sm:mt-[70px]">
+        <div
+          ref={wrapperRef}
+          className={classNames(
+            "fixed sm:relative px-4 border-r border-gray-secondary w-72 h-screen animate-movement bg-white",
+            {
+              "-ml-72 sm:ml-0": !showSidebarMobile,
+              "ml-0": showSidebarMobile,
+            }
+          )}
+        >
           <a
             onClick={goHome}
             className="text-gray-600 hover:text-primary cursor-pointer flex flex-row items-center space-x-1 pt-6"
@@ -74,7 +95,7 @@ const SettingsPage = () => {
                   ? "text-primary bg-white-hover"
                   : "text-gray-primary"
               )}
-              onClick={() => setTab("account")}
+              onClick={() => changeTab("account")}
             >
               <AccountIcon className="w-6 h-6" />
               <p className="ml-3">Account</p>
@@ -86,16 +107,22 @@ const SettingsPage = () => {
                   ? "text-primary bg-white-hover"
                   : "text-gray-primary"
               )}
-              onClick={() => setTab("general")}
+              onClick={() => changeTab("general")}
             >
               <TuneIcon className="w-6 h-6" />
               <p className="ml-3">General</p>
             </div>
           </div>
         </div>
-        <div className="mt-6 px-64 w-full">
-          {tab === "account" && <SettingsPageAccount user={user} />}
-          {tab === "general" && <SettingsPageGeneral />}
+        <div className="mt-6 px-2 sm:px-64 w-full">
+          <div className="block sm:hidden mb-2">
+            <MenuIcon
+              className="w-8 h-8"
+              onClick={() => setShowSidebarMobile(!showSidebarMobile)}
+            />
+          </div>
+          {tab === "account" && <SettingsAccountSection user={user} />}
+          {tab === "general" && <SettingsGeneralSection />}
         </div>
       </div>
     </div>
