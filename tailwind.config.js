@@ -12,6 +12,8 @@ module.exports = {
         "primary-hover": "#326bcc",
         "white-hover": "#f6f5fd",
         "gray-primary": "#637381",
+        "gray-secondary": "#e8eef2",
+        "gray-third": "#ebe9f9",
       },
     },
     screens: {

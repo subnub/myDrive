@@ -12,6 +12,11 @@ export const getUserAPI = async () => {
   return response.data;
 };
 
+export const getUserDetailedAPI = async () => {
+  const response = await axios.get("/user-service/user-detailed");
+  return response.data;
+};
+
 // POST
 
 export const loginAPI = async (email: string, password: string) => {

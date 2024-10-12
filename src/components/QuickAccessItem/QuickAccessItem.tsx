@@ -98,7 +98,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
         "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[130px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden bg-white",
         elementSelected || elementMultiSelected
           ? "border-[#3c85ee]"
-          : "border-[#ebe9f9]"
+          : "border-gray-third"
       )}
       onClick={quickItemClick}
       onContextMenu={onContextMenu}

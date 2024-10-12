@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useClickOutOfBounds, useUtils } from "../../hooks/utils";
-import AddNewDropdown from "../AddNewDropdown/AddNewDropedown";
+import AddNewDropdown from "../AddNewDropdown/AddNewDropdown";
 import TrashIcon from "../../icons/TrashIcon";
 import classNames from "classnames";
 import PhotoIcon from "../../icons/PhotoIcon";

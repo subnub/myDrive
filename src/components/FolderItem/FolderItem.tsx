@@ -88,7 +88,7 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
   return (
     <div
       className={classNames(
-        "p-[12px] border border-[#ebe9f9] rounded-[4px] overflow-hidden cursor-pointer animate hover:border-[#3c85ee]",
+        "p-[12px] border border-gray-third rounded-[4px] overflow-hidden cursor-pointer animate hover:border-[#3c85ee]",
         {
           "bg-[#3c85ee]": elementSelected || elementMultiSelected,
         }
