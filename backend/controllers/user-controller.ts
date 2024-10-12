@@ -179,26 +179,6 @@ class UserController {
     }
   };
 
-  refreshStorageSize = async (
-    req: RequestType,
-    res: Response,
-    next: NextFunction
-  ) => {
-    if (!req.user) {
-      return;
-    }
-
-    try {
-      const userID = req.user._id;
-
-      await UserProvider.refreshStorageSize(userID);
-
-      res.send();
-    } catch (e) {
-      next(e);
-    }
-  };
-
   getUserDetailed = async (
     req: RequestType,
     res: Response,
@@ -285,23 +265,6 @@ class UserController {
       const newPassword = req.body.password;
 
       await UserProvider.resetPassword(newPassword, verifyToken);
-
-      res.send();
-    } catch (e) {
-      next(e);
-    }
-  };
-
-  addName = async (req: RequestType, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return;
-    }
-
-    try {
-      const userID = req.user._id;
-      const name = req.body.name;
-
-      await UserProvider.addName(userID, name);
 
       res.send();
     } catch (e) {

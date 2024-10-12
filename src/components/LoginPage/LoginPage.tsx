@@ -14,7 +14,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [verifyPassword, setVerifyPassword] = useState("");
   const [mode, setMode] = useState<"login" | "create" | "reset">("login");
-  const [attemptingLogin, setAttemptingLogin] = useState(false);
+  const [attemptingLogin, setAttemptingLogin] = useState(true);
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [error, setError] = useState("");
   const dispatch = useAppDispatch();
@@ -30,7 +30,6 @@ const LoginPage = () => {
       const redirectPath = location.state?.from?.pathname || "/home";
       dispatch(setUser(userResponse));
       navigate(redirectPath);
-      setAttemptingLogin(false);
       window.localStorage.setItem("hasPreviouslyLoggedIn", "true");
     } catch (e) {
       setAttemptingLogin(false);
@@ -122,7 +121,12 @@ const LoginPage = () => {
   }, [mode, email, password, verifyPassword]);
 
   useEffect(() => {
-    attemptLoginWithToken();
+    const loggedIn = window.localStorage.getItem("hasPreviouslyLoggedIn");
+    if (loggedIn === "true") {
+      attemptLoginWithToken();
+    } else {
+      setAttemptingLogin(false);
+    }
   }, []);
 
   if (attemptingLogin) {

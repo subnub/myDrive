@@ -57,14 +57,6 @@ const SettingsPage = () => {
     setShowSidebarMobile(false);
   };
 
-  if (!user) {
-    return (
-      <div className="w-screen h-screen flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className="hidden sm:block">
@@ -115,16 +107,23 @@ const SettingsPage = () => {
             </div>
           </div>
         </div>
-        <div className="mt-6 px-2 sm:px-64 w-full">
-          <div className="block sm:hidden mb-2">
-            <MenuIcon
-              className="w-8 h-8"
-              onClick={() => setShowSidebarMobile(!showSidebarMobile)}
-            />
+        {user && (
+          <div className="mt-6 px-2 sm:px-64 w-full">
+            <div className="block sm:hidden mb-2">
+              <MenuIcon
+                className="w-8 h-8"
+                onClick={() => setShowSidebarMobile(!showSidebarMobile)}
+              />
+            </div>
+            {tab === "account" && <SettingsAccountSection user={user} />}
+            {tab === "general" && <SettingsGeneralSection />}
           </div>
-          {tab === "account" && <SettingsAccountSection user={user} />}
-          {tab === "general" && <SettingsGeneralSection />}
-        </div>
+        )}
+        {!user && (
+          <div className="w-full h-screen flex justify-center items-center">
+            <Spinner />
+          </div>
+        )}
       </div>
       <ToastContainer position="bottom-left" />
     </div>

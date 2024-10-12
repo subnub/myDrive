@@ -4,7 +4,10 @@ import authNoEmailVerification from "../middleware/authNoEmailVerificication";
 import UserController from "../controllers/user-controller";
 import authRefresh from "../middleware/authRefresh";
 import authLogout from "../middleware/authLogout";
-import { changePasswordValidationRules } from "../middleware/user/user-middleware";
+import {
+  changePasswordValidationRules,
+  createAccountValidationRules,
+} from "../middleware/user/user-middleware";
 
 const userController = new UserController();
 
@@ -28,7 +31,11 @@ router.post("/user-service/logout", authLogout, userController.logout);
 
 router.post("/user-service/logout-all", authLogout, userController.logoutAll);
 
-router.post("/user-service/create", userController.createUser);
+router.post(
+  "/user-service/create",
+  createAccountValidationRules,
+  userController.createUser
+);
 
 router.post("/user-service/verify-email", userController.verifyEmail);
 
@@ -48,14 +55,6 @@ router.post("/user-service/reset-password", userController.resetPassword);
 router.post("/user-service/get-token", authRefresh, userController.getToken);
 
 // PATCH
-
-router.patch(
-  "/user-service/refresh-storage-size",
-  auth,
-  userController.refreshStorageSize
-);
-
-router.patch("/user-service/add-name", auth, userController.addName);
 
 router.patch(
   "/user-service/change-password",

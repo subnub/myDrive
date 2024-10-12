@@ -139,50 +139,10 @@ class UserService {
     return { accessToken, refreshToken };
   };
 
-  refreshStorageSize = async (userID: string) => {
-    const user = await User.findById(userID);
-
-    if (!user) throw new NotFoundError("Cannot find user");
-
-    const fileList = await File.find({
-      "metadata.owner": user._id,
-      "metadata.personalFile": null,
-    });
-
-    let size = 0;
-
-    for (let currentFile of fileList) {
-      size += currentFile.length;
-    }
-
-    user.storageData = { storageSize: size, storageLimit: 0 };
-
-    await user.save();
-  };
-
   getUserDetailed = async (userID: string) => {
     const user = await User.findById(userID);
 
     if (!user) throw new NotFoundError("Cannot find user");
-
-    if (
-      !user.storageData ||
-      (!user.storageData.storageSize && !user.storageData.storageLimit)
-    )
-      user.storageData = { storageLimit: 0, storageSize: 0 };
-    if (
-      !user.storageDataPersonal ||
-      (!user.storageDataPersonal.storageSize &&
-        !user.storageDataPersonal.failed)
-    )
-      user.storageDataPersonal = { storageSize: 0 };
-    if (
-      !user.storageDataGoogle ||
-      (!user.storageDataGoogle.storageLimit &&
-        !user.storageDataGoogle.storageSize &&
-        !user.storageDataGoogle.failed)
-    )
-      user.storageDataGoogle = { storageLimit: 0, storageSize: 0 };
 
     return user;
   };
@@ -253,17 +213,6 @@ class UserService {
     } else {
       throw new ForbiddenError("Reset Password Token Do Not Match");
     }
-  };
-
-  addName = async (userID: string, name: string) => {
-    if (!name || name.length === 0) throw new ForbiddenError("No name");
-
-    const user = await User.findById(userID);
-
-    if (!user) throw new NotFoundError("Cannot find user");
-
-    user.name = name;
-    await user.save();
   };
 }
 
