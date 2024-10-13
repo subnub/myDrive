@@ -67,7 +67,7 @@ const Folders = memo(() => {
 
   return (
     <div className="mt-8">
-      <div className="flex flex-row mb-[20px] justify-between text-[#212b36] items-center">
+      <div className="flex flex-row mb-5 justify-between items-center">
         <h2
           className={classNames(
             "m-0 text-xl font-medium",

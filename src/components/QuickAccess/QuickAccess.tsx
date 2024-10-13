@@ -17,7 +17,7 @@ const QuickAccess = memo(() => {
       className="overflow-hidden"
       style={isHome ? { display: "block" } : { display: "none" }}
     >
-      <div className="flex flex-row items-center justify-between mb-4">
+      <div className="flex flex-row items-center justify-between mb-5">
         <h2 className=" text-[#212b36] text-xl font-medium">Quick Access</h2>
         <ChevronOutline
           onClick={() => setQuickAccessExpanded(!quickAccessExpanded)}

@@ -35,7 +35,7 @@ export const createFileQuery = ({
 
   if (search && search !== "") {
     query["filename"] = new RegExp(search, "i");
-  } else {
+  } else if (!mediaMode) {
     query["metadata.parent"] = parent;
   }
 
@@ -58,6 +58,7 @@ export const createFileQuery = ({
   if (mediaMode) {
     query["metadata.hasThumbnail"] = true;
   }
+
   return query;
 };
 

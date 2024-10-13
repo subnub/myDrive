@@ -10,6 +10,12 @@ import env from "../../../enviroment/env";
 import { ObjectId } from "mongodb";
 import File from "../../../models/file-model";
 import ffmpeg from "fluent-ffmpeg";
+import { S3Actions } from "../actions/S3-actions";
+import { FilesystemActions } from "../actions/file-system-actions";
+import { createGenericParams } from "./storageHelper";
+
+const storageActions =
+  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
 
 const tempCreateVideoThumbnailFS = (
   file: FileInterface,
@@ -23,13 +29,20 @@ const tempCreateVideoThumbnailFS = (
 
     const thumbnailFilename = uuid.v4();
 
-    const readStream = fs.createReadStream(file.metadata.filePath!);
-    console.log("env", env);
-    const writeStream = fs.createWriteStream(
-      env.fsDirectory + thumbnailFilename
+    const readStreamParams = createGenericParams({
+      filePath: file.metadata.filePath,
+      Key: file.metadata.s3ID,
+    });
+
+    const readStream = storageActions.createReadStream(readStreamParams);
+
+    const { writeStream } = storageActions.createWriteStream(
+      readStreamParams,
+      readStream,
+      thumbnailFilename
     );
 
-    const tempDirectory = env.fsDirectory + "temp/" + thumbnailFilename;
+    const tempDirectory = env.tempDirectory + thumbnailFilename;
     const tempWriteStream = fs.createWriteStream(tempDirectory);
     const decipher = crypto.createDecipheriv(
       "aes256",
@@ -49,105 +62,107 @@ const tempCreateVideoThumbnailFS = (
 
     decryptedReadStream.pipe(tempWriteStream, { end: true });
 
-    ffmpeg(tempDirectory, {
-      timeout: 60,
-    })
-      .seek(1)
-      .format("image2pipe")
-      .outputOptions([
-        "-f image2pipe",
-        "-vframes 1",
-        "-vf scale='if(gt(iw,ih),600,-1):if(gt(ih,iw),300,-1)'",
-      ])
-      .on("start", (command) => {
-        /**
-         * log
-         */
+    tempWriteStream.on("finish", () => {
+      ffmpeg(tempDirectory, {
+        timeout: 60,
       })
-      .on("end", async () => {
-        console.log("end");
-        const thumbnailModel = new Thumbnail({
-          name: filename,
-          owner: user._id,
-          IV: thumbnailIV,
-          path: env.fsDirectory + thumbnailFilename,
-        });
+        .seek(1)
+        .format("image2pipe")
+        .outputOptions([
+          "-f image2pipe",
+          "-vframes 1",
+          "-vf scale='if(gt(iw,ih),600,-1):if(gt(ih,iw),300,-1)'",
+        ])
+        .on("start", (command) => {
+          /**
+           * log
+           */
+        })
+        .on("end", async () => {
+          const thumbnailModel = new Thumbnail({
+            name: filename,
+            owner: user._id,
+            IV: thumbnailIV,
+            path: env.fsDirectory + thumbnailFilename,
+            s3ID: thumbnailFilename,
+          });
 
-        await thumbnailModel.save();
-        if (!file._id) {
-          return reject();
-        }
-        const updateFileResponse = await File.updateOne(
-          { _id: new ObjectId(file._id), "metadata.owner": user._id },
-          {
-            $set: {
-              "metadata.hasThumbnail": true,
-              "metadata.thumbnailID": thumbnailModel._id,
-            },
+          await thumbnailModel.save();
+          if (!file._id) {
+            return reject();
           }
-        );
-        if (updateFileResponse.modifiedCount === 0) {
-          return reject();
-        }
+          const updateFileResponse = await File.updateOne(
+            { _id: new ObjectId(file._id), "metadata.owner": user._id },
+            {
+              $set: {
+                "metadata.hasThumbnail": true,
+                "metadata.thumbnailID": thumbnailModel._id,
+              },
+            }
+          );
+          if (updateFileResponse.modifiedCount === 0) {
+            return reject();
+          }
 
-        const updatedFile = await File.findById({
-          _id: new ObjectId(file._id),
-          "metadata.owner": user._id,
-        });
+          const updatedFile = await File.findById({
+            _id: new ObjectId(file._id),
+            "metadata.owner": user._id,
+          });
 
-        if (!updatedFile) return reject();
+          if (!updatedFile) return reject();
 
-        fs.unlink(tempDirectory, (err) => {
-          resolve(updatedFile?.toObject());
-        });
-      })
-      .on("error", (err, _, stderr) => {
-        console.log("error", err, stderr);
-        resolve(file);
-        /**
-         * log
-         */
-      })
-      .pipe(thumbnailCipher)
-      .pipe(writeStream, { end: true });
+          fs.unlink(tempDirectory, (err) => {
+            resolve(updatedFile?.toObject());
+          });
+        })
+        .on("error", (err, _, stderr) => {
+          console.log("error", err, stderr);
+          resolve(file);
+          /**
+           * log
+           */
+        })
+        .pipe(thumbnailCipher)
+        .pipe(writeStream, { end: true });
 
-    // ffmpeg()
-    //   .input(readStream.pipe(decipher))
-    //   .seekInput("00:00:01.00")
-    //   .outputFormat("image2")
-    //   .pipe(writeStream, { end: true })
-    //   .on("end", async () => {
-    //     const thumbnailModel = new Thumbnail({
-    //       name: filename,
-    //       owner: user._id,
-    //       IV: thumbnailIV,
-    //       path: env.fsDirectory + thumbnailFilename,
-    //     });
+      // ffmpeg()
+      //   .input(readStream.pipe(decipher))
+      //   .seekInput("00:00:01.00")
+      //   .outputFormat("image2")
+      //   .pipe(writeStream, { end: true })
+      //   .on("end", async () => {
+      //     const thumbnailModel = new Thumbnail({
+      //       name: filename,
+      //       owner: user._id,
+      //       IV: thumbnailIV,
+      //       path: env.fsDirectory + thumbnailFilename,
+      //     });
 
-    //     await thumbnailModel.save();
-    //     resolve(file);
-    //   })
-    //   .on("error", (e) => {
-    //     console.log("error", e);
-    //     reject(e);
-    //   });
+      //     await thumbnailModel.save();
+      //     resolve(file);
+      //   })
+      //   .on("error", (e) => {
+      //     console.log("error", e);
+      //     reject(e);
+      //   });
 
-    // ffmpeg()
-    //   .input(readStream.pipe(decipher))
-    //   .size("300x?")
-    //   .outputOptions("-frames:v 1")
-    //   .on("end", async () => {
-    //     const thumbnailModel = new Thumbnail({
-    //       name: filename,
-    //       owner: user._id,
-    //       IV: thumbnailIV,
-    //       path: env.fsDirectory + thumbnailFilename,
-    //     });
+      // ffmpeg()
+      //   .input(readStream.pipe(decipher))
+      //   .size("300x?")
+      //   .outputOptions("-frames:v 1")
+      //   .on("end", async () => {
+      //     const thumbnailModel = new Thumbnail({
+      //       name: filename,
+      //       owner: user._id,
+      //       IV: thumbnailIV,
+      //       path: env.fsDirectory + thumbnailFilename,
+      //     });
 
-    //     await thumbnailModel.save();
-    //     resolve(file);
-    //   })
-    //   .output(writeStream);
+      //     await thumbnailModel.save();
+      //     resolve(file);
+      //   })
+      //   .output(writeStream);
+    });
   });
 };
 

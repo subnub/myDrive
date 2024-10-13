@@ -61,7 +61,10 @@ class FilesystemActions implements IStorageActions {
     randomID: string
   ) => {
     const path = `${env.fsDirectory}${randomID}`;
-    return fs.createWriteStream(path);
+    return {
+      writeStream: fs.createWriteStream(path),
+      emitter: null,
+    };
   };
 }
 

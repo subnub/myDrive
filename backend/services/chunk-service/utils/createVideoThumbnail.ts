@@ -38,7 +38,7 @@ const createVideoThumbnail = (
 
       const readStream = storageActions.createReadStream(readStreamParams);
 
-      const writeStream = storageActions.createWriteStream(
+      const { writeStream } = storageActions.createWriteStream(
         readStreamParams,
         readStream,
         thumbnailFilename
@@ -80,6 +80,7 @@ const createVideoThumbnail = (
             owner: user._id,
             IV: thumbnailIV,
             path: env.fsDirectory + thumbnailFilename,
+            s3ID: thumbnailFilename,
           });
 
           await thumbnailModel.save();
@@ -106,8 +107,6 @@ const createVideoThumbnail = (
 
           if (!updatedFile) return reject();
 
-          console.log("updated file", updatedFile, resolve);
-
           resolve(updatedFile?.toObject());
         } catch (e) {
           console.log("thumbnail error", e);
@@ -129,7 +128,7 @@ const createVideoThumbnail = (
         .on("end", async () => {
           await handleFinish();
         })
-        .on("error", async (err, _, stderr) => {
+        .on("error", async (err, sdf, stderr) => {
           console.log("thumbnail error attempting temp directory fix");
           if (env.tempDirectory) {
             const updatedFile = await tempCreateVideoThumbnailFS(
@@ -141,6 +140,7 @@ const createVideoThumbnail = (
           } else {
             resolve(file);
           }
+          // resolve(file);
         })
         .pipe(thumbnailCipher)
         .pipe(writeStream, { end: true });

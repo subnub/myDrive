@@ -141,7 +141,8 @@ class FileController {
     const handleError = () => {
       if (!responseSent) {
         responseSent = true;
-        res.status(500).send("Server error uploading file");
+        res.writeHead(500, { Connection: "close" });
+        res.end();
       }
     };
 
@@ -215,7 +216,7 @@ class FileController {
 
       req.pipe(busboy);
 
-      const { cipher, fileWriteStream, metadata, filename } =
+      const { cipher, fileWriteStream, emitter, metadata, filename } =
         await this.chunkService.uploadFile(user, busboy, req);
 
       cipher.on("error", (e: Error) => {
@@ -228,9 +229,17 @@ class FileController {
         handleError();
       });
 
-      cipher.pipe(fileWriteStream).on("finish", async () => {
-        handleFinish(filename, metadata);
-      });
+      if (emitter) {
+        emitter.on("finish", async () => {
+          await handleFinish(filename, metadata);
+        });
+      } else {
+        fileWriteStream.on("finish", async () => {
+          await handleFinish(filename, metadata);
+        });
+      }
+
+      cipher.pipe(fileWriteStream);
     } catch (e: unknown) {
       if (!responseSent) {
         res.writeHead(500, { Connection: "close" });
@@ -616,18 +625,10 @@ class FileController {
 
       readStream.on("error", (e: Error) => {
         console.log("read stream error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error downloading file");
-        }
       });
 
       decipher.on("error", (e: Error) => {
-        console.log("decipher stream error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error downloading file");
-        }
+        console.log("decipher stream errozr", e);
       });
 
       res.set("Content-Type", "binary/octet-stream");
@@ -641,10 +642,6 @@ class FileController {
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nDownload File Error File Route:", e.message);
-      }
-      if (!responseSent) {
-        responseSent = true;
-        res.status(500).send("Server error downloading file");
       }
     }
   };

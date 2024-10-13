@@ -1,8 +1,9 @@
 import s3 from "../../../db/connections/s3";
 import env from "../../../enviroment/env";
 import { GenericParams, IStorageActions } from "../store-types";
-import internal from "stream";
+import internal, { EventEmitter } from "stream";
 import { PassThrough } from "stream";
+import stream from "stream";
 
 class S3Actions implements IStorageActions {
   getAuth() {
@@ -65,23 +66,25 @@ class S3Actions implements IStorageActions {
   }
   createWriteStream = (
     params: GenericParams,
-    stream: NodeJS.ReadableStream,
+    readStream: NodeJS.ReadableStream,
     randomID: string
   ) => {
-    const pass = new PassThrough();
+    const passThrough = new stream.PassThrough();
+    const emitter = new EventEmitter();
 
-    const { Key } = params;
-    if (!Key) throw new Error("S3 not configured");
     const { s3Storage, bucket } = this.getAuth();
 
-    s3Storage.upload({ Bucket: bucket, Body: stream, Key: randomID }, (err) => {
-      if (err) {
-        console.log("S3 upload err", err);
-        pass.emit("error", err);
+    s3Storage.upload(
+      { Bucket: bucket, Body: passThrough, Key: randomID },
+      (err) => {
+        if (err) {
+          console.log("S3 upload err", err);
+        }
+        emitter.emit("finish");
       }
-    });
+    );
 
-    return pass;
+    return { writeStream: passThrough, emitter };
   };
 }
 

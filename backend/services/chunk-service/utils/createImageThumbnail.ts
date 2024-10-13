@@ -4,7 +4,7 @@ import Thumbnail from "../../../models/thumbnail-model";
 import sharp from "sharp";
 import { FileInterface } from "../../../models/file-model";
 import { UserInterface } from "../../../models/user-model";
-import fs from "fs";
+import fs, { write } from "fs";
 import uuid from "uuid";
 import env from "../../../enviroment/env";
 import { ObjectId } from "mongodb";
@@ -18,12 +18,20 @@ const conn = mongoose.connection;
 const storageActions =
   env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
 
+const waitTimer = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(null);
+    }, 5000);
+  });
+};
+
 const createThumbnail = (
   file: FileInterface,
   filename: string,
   user: UserInterface
 ) => {
-  return new Promise<FileInterface>((resolve, reject) => {
+  return new Promise<FileInterface>(async (resolve, reject) => {
     try {
       const password = user.getEncryptionKey();
 
@@ -33,6 +41,12 @@ const createThumbnail = (
 
       const thumbnailIV = crypto.randomBytes(16);
 
+      console.log("file metadata", file.metadata);
+
+      // if (env.dbType === "s3") {
+      //   await waitTimer();
+      // }
+
       const params = createGenericParams({
         filePath: file.metadata.filePath,
         Key: file.metadata.s3ID,
@@ -40,7 +54,7 @@ const createThumbnail = (
 
       const readStream = storageActions.createReadStream(params);
 
-      const writeStream = storageActions.createWriteStream(
+      const { writeStream, emitter } = storageActions.createWriteStream(
         params,
         readStream,
         thumbnailFilename
@@ -61,6 +75,7 @@ const createThumbnail = (
             owner: user._id,
             IV: thumbnailIV,
             path: env.fsDirectory + thumbnailFilename,
+            s3ID: thumbnailFilename,
           });
 
           await thumbnailModel.save();
@@ -119,9 +134,15 @@ const createThumbnail = (
         .pipe(thumbnailCipher)
         .pipe(writeStream);
 
-      writeStream.on("finish", async () => {
-        await handleFinish();
-      });
+      if (emitter) {
+        emitter.on("finish", async () => {
+          await handleFinish();
+        });
+      } else {
+        writeStream.on("finish", async () => {
+          await handleFinish();
+        });
+      }
     } catch (e) {
       console.log("File service upload thumbnail error", e);
       resolve(file);

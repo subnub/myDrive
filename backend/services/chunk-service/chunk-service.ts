@@ -19,6 +19,7 @@ import { createGenericParams } from "./utils/storageHelper";
 import { Readable } from "stream";
 import ThumbnailDB from "../../db/mongoDB/thumbnailDB";
 import UserDB from "../../db/mongoDB/userDB";
+import fixEndChunkLength from "./utils/fixEndChunkLength";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -111,7 +112,7 @@ class StorageService {
       metadata.s3ID = randomFilenameID;
     }
 
-    const fileWriteStream = storageActions.createWriteStream(
+    const { writeStream, emitter } = storageActions.createWriteStream(
       metadata,
       file.pipe(cipher),
       randomFilenameID
@@ -119,7 +120,8 @@ class StorageService {
 
     return {
       cipher,
-      fileWriteStream,
+      fileWriteStream: writeStream,
+      emitter,
       metadata,
       filename,
     };
@@ -245,7 +247,10 @@ class StorageService {
     let currentIV = IV;
 
     let fixedStart = 0;
-    let fixedEnd = currentFile.length;
+    let fixedEnd =
+      currentFile.length % 16 === 0
+        ? currentFile.length
+        : fixEndChunkLength(currentFile.length);
 
     if (start === 0 && end === 1) {
       fixedStart = 0;
