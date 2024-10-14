@@ -18,6 +18,21 @@ import { createGenericParams } from "./storageHelper";
 const storageActions =
   env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
 
+const attemptToRemoveChunks = async (
+  file: FileInterface,
+  thumbnailFilename: string
+) => {
+  try {
+    const readStreamParams = createGenericParams({
+      filePath: env.fsDirectory + thumbnailFilename,
+      Key: thumbnailFilename,
+    });
+    await storageActions.removeChunks(readStreamParams);
+  } catch (e) {
+    console.log("error removing chunks", e);
+  }
+};
+
 const createVideoThumbnail = (
   file: FileInterface,
   filename: string,
@@ -38,7 +53,7 @@ const createVideoThumbnail = (
 
       const readStream = storageActions.createReadStream(readStreamParams);
 
-      const { writeStream } = storageActions.createWriteStream(
+      const { writeStream, emitter } = storageActions.createWriteStream(
         readStreamParams,
         readStream,
         thumbnailFilename
@@ -73,8 +88,12 @@ const createVideoThumbnail = (
 
       const decryptedReadStream = readStream.pipe(decipher);
 
+      let error = false;
+
       const handleFinish = async () => {
         try {
+          if (error) return;
+
           const thumbnailModel = new Thumbnail({
             name: filename,
             owner: user._id,
@@ -114,6 +133,12 @@ const createVideoThumbnail = (
         }
       };
 
+      if (emitter) {
+        emitter.on("finish", async () => {
+          await handleFinish();
+        });
+      }
+
       ffmpeg(decryptedReadStream, {
         timeout: 60,
       })
@@ -125,11 +150,18 @@ const createVideoThumbnail = (
           "-vf scale='if(gt(iw,ih),600,-1):if(gt(ih,iw),300,-1)'",
         ])
         .on("start", (command) => {})
-        .on("end", async () => {
-          await handleFinish();
+        .on("end", async (err) => {
+          if (!emitter) {
+            await handleFinish();
+          }
         })
         .on("error", async (err, sdf, stderr) => {
           console.log("thumbnail error attempting temp directory fix");
+
+          error = true;
+
+          await attemptToRemoveChunks(file, thumbnailFilename);
+
           if (env.tempDirectory) {
             const updatedFile = await tempCreateVideoThumbnailFS(
               file,

@@ -265,18 +265,10 @@ class FileController {
 
       readStream.on("error", (e: Error) => {
         console.log("read stream error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error downloading publicfile");
-        }
       });
 
       decipher.on("error", (e: Error) => {
         console.log("decipher stream error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error downloading public file");
-        }
       });
 
       res.set("Content-Type", "binary/octet-stream");
@@ -290,10 +282,6 @@ class FileController {
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nGet Public Download Error File Route:", e.message);
-      }
-      if (!responseSent) {
-        responseSent = true;
-        res.status(500).send("Server error downloading public file");
       }
     }
   };
@@ -561,10 +549,6 @@ class FileController {
 
       const handleError = (e: Error) => {
         console.log("stream video read stream error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error streaming video");
-        }
         cleanUp();
       };
 
@@ -602,11 +586,6 @@ class FileController {
     } catch (e: unknown) {
       if (e instanceof Error) {
         console.log("\nStream Video Error File Route:", e.message);
-      }
-
-      if (!responseSent) {
-        responseSent = true;
-        res.status(500).send("Server error streaming video");
       }
     }
   };
