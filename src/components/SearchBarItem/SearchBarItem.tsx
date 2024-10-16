@@ -26,13 +26,13 @@ const SearchBarItem = (props: SearchBarItemProps) => {
   if (type === "folder" && folder) {
     return (
       <div
-        className="flex flex-row items-center p-2 overflow-hidden text-ellipsis hover:bg-[#f6f5fd] cursor-pointer border-y"
+        className="flex flex-row items-center py-2 px-4 overflow-hidden text-ellipsis hover:bg-gray-secondary cursor-pointer border-y"
         key={folder._id}
         onClick={() => folderClick(folder)}
       >
         <div>
           <svg
-            className="w-[30px] h-[30px] text-[#3c85ee]"
+            className="w-7 h-7 text-primary"
             aria-hidden="true"
             focusable="false"
             data-prefix="fas"
@@ -48,7 +48,7 @@ const SearchBarItem = (props: SearchBarItemProps) => {
             ></path>
           </svg>
         </div>
-        <span className="text-sm ml-4 text-ellipsis overflow-hidden whitespace-nowrap max-w-[50%]">
+        <span className="text-sm ml-3 text-ellipsis overflow-hidden whitespace-nowrap">
           {folder.name}
         </span>
       </div>
@@ -56,14 +56,14 @@ const SearchBarItem = (props: SearchBarItemProps) => {
   } else if (type === "file" && file) {
     return (
       <div
-        className="flex flex-row items-center p-2 overflow-hidden text-ellipsis hover:bg-[#f6f5fd] cursor-pointer border-y"
+        className="flex flex-row items-center py-2 px-4 overflow-hidden text-ellipsis hover:bg-gray-secondary cursor-pointer border-y"
         key={file._id}
         onClick={() => fileClick(file)}
       >
         <div>
-          <span className="inline-flex items-center max-w-[27px] min-w-[27px] min-h-[27px] max-h-[27px]">
+          <span className="inline-flex items-center">
             <div
-              className="h-[27px] w-[27px] bg-red-500 rounded-[3px] flex flex-row justify-center items-center"
+              className="h-7 w-7 bg-red-500 rounded-md flex flex-row justify-center items-center"
               style={{ background: imageColor }}
             >
               <span className="font-semibold text-[9.5px] text-white">
@@ -72,7 +72,7 @@ const SearchBarItem = (props: SearchBarItemProps) => {
             </div>
           </span>
         </div>
-        <span className="text-sm ml-4 text-ellipsis overflow-hidden whitespace-nowrap">
+        <span className="text-sm ml-3 text-ellipsis overflow-hidden whitespace-nowrap">
           {file.filename}
         </span>
       </div>

@@ -10,9 +10,13 @@ import { FileInterface } from "../../types/file";
 import classNames from "classnames";
 import { closeDrawer } from "../../reducers/leftSection";
 import { setPopupSelect } from "../../reducers/selected";
+import CloseIcon from "../../icons/CloseIcon";
+import Spinner from "../Spinner/Spinner";
+import SearchIcon from "../../icons/SearchIcon";
 
 const SearchBar = memo(() => {
   const [searchText, setSearchText] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const dispatch = useAppDispatch();
   const [debouncedSearchText, setDebouncedSearchText] = useState("");
   const { data: searchSuggestions, isLoading: isLoadingSearchSuggestions } =
@@ -39,6 +43,7 @@ const SearchBar = memo(() => {
 
   const outOfContainerClick = useCallback(() => {
     closeDrawer();
+    setShowSuggestions(false);
   }, []);
 
   const { wrapperRef } = useClickOutOfBounds(outOfContainerClick);
@@ -87,6 +92,7 @@ const SearchBar = memo(() => {
 
   const onFocus = () => {
     dispatch(closeDrawer());
+    setShowSuggestions(true);
   };
 
   const searchTextPlaceholder = useMemo(() => {
@@ -106,32 +112,30 @@ const SearchBar = memo(() => {
       // @ts-ignore
       ref={wrapperRef}
     >
-      <a
-        href="#"
-        className={classNames(
-          "absolute",
-          !isLoadingSearchSuggestions ? "left-[15px]" : "left-[5px]"
+      <div className="absolute left-1">
+        {searchText.length !== 0 && !isLoadingSearchSuggestions && (
+          <CloseIcon
+            className="w-5 h-5 ml-3 cursor-pointer text-primary hover:text-primary-hover"
+            onClick={resetState}
+          />
         )}
-      >
-        {isLoadingSearchSuggestions ? (
-          <div className="spinner-small"></div>
-        ) : (
-          <img src="/assets/searchicon.svg" alt="search" />
-        )}
-      </a>
+        {isLoadingSearchSuggestions && <div className="spinner-small"></div>}
+        {searchText.length === 0 && <SearchIcon className="w-5 h-5 ml-3" />}
+      </div>
       <input
         type="text"
         onChange={onChangeSearch}
         value={searchText}
         placeholder={searchTextPlaceholder}
-        className="w-full min-h-[42px] border border-[#BEC9D3] pl-[45px] pr-[15px] text-[16px] text-black rounded-[5px]"
+        className="w-full h-10 border border-gray-300 pl-11 pr-4 text-base text-black rounded-md"
         onFocus={onFocus}
         id="search-bar"
+        autoComplete="off"
       />
       <div
-        className="absolute left-0 bg-white shadow-xl rounded-[4px] w-full top-[42px] max-h-[400px] overflow-y-scroll border border-[#BEC9D3]"
+        className="absolute left-0 top-10 bg-white shadow-xl rounded-md w-full max-h-[400px] overflow-y-scroll border border-gray-secondary"
         style={
-          debouncedSearchText.length !== 0 && !isLoadingSearchSuggestions
+          debouncedSearchText.length !== 0 && showSuggestions
             ? { display: "block" }
             : { display: "none" }
         }
