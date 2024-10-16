@@ -37,13 +37,14 @@ const SearchBar = memo(() => {
     setDebouncedSearchText("");
   }, []);
 
-  const { wrapperRef } = useClickOutOfBounds(resetState);
+  const outOfContainerClick = useCallback(() => {
+    closeDrawer();
+  }, []);
 
-  // TODO: Fix any
+  const { wrapperRef } = useClickOutOfBounds(outOfContainerClick);
+
   const onSearch = (e: any) => {
     e.preventDefault();
-    setSearchText("");
-    setDebouncedSearchText("");
     if (isMedia) {
       if (searchText.length) {
         navigate(`/search-media/${searchText}`);

@@ -39,7 +39,6 @@ const updateDocs = async () => {
         /\.(mp4|mov|avi|mkv|webm|wmv|flv|mpg|mpeg|3gp|3g2|mxf|ogv|ogg|m4v)$/i,
     },
     "metadata.thumbnailID": "",
-    "metadata.owner": "670c8c321ebf0d4211617eb9",
   });
 
   console.log("Found", files.length, "files");

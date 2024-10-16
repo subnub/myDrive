@@ -14,7 +14,7 @@ const QuickAccess = memo(() => {
 
   return (
     <div
-      className="overflow-hidden"
+      className="overflow-hidden select-none"
       style={isHome ? { display: "block" } : { display: "none" }}
     >
       <div className="flex flex-row items-center justify-between mb-5">

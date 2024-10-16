@@ -9,11 +9,17 @@ type GenericParmasType = {
 export const createGenericParams = ({ filePath, Key }: GenericParmasType) => {
   // TODO: Remove file split after migration
   if (env.dbType === "fs") {
-    const filePathSplit = filePath!.split("/");
-    const fileName = filePathSplit[filePathSplit.length - 1];
-    return {
-      filePath: env.fsDirectory + fileName,
-    };
+    if (filePath?.includes("/")) {
+      const filePathSplit = filePath!.split("/");
+      const fileName = filePathSplit[filePathSplit.length - 1];
+      return {
+        filePath: env.fsDirectory + fileName,
+      };
+    } else {
+      return {
+        filePath: env.fsDirectory + Key!,
+      };
+    }
   } else {
     return {
       Key,

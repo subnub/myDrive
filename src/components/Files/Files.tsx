@@ -1,6 +1,6 @@
 import { useFiles } from "../../hooks/files";
 import { useUtils } from "../../hooks/utils";
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import FileItem from "../FileItem/FileItem";
 import ParentBar from "../ParentBar/ParentBar";
 import classNames from "classnames";
@@ -17,8 +17,18 @@ const Files = memo(() => {
   const changeListViewMode = () => {
     dispatch(toggleListView());
   };
+
+  const title = useMemo(() => {
+    const hasFiles = !!files?.pages.find((file) => file);
+    if (hasFiles) {
+      return "Files";
+    } else {
+      return "No Files";
+    }
+  }, [files?.pages]);
+
   return (
-    <div className="mt-8">
+    <div className="mt-8 select-none">
       <div>
         <div className="flex justify-between items-center mb-5">
           {isHome && <h2 className="m-0 text-xl font-medium">Home Files</h2>}

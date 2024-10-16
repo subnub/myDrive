@@ -81,7 +81,7 @@ const LeftSection = () => {
         }
       )}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full select-none">
         <div>
           <div className="relative mb-7">
             <a

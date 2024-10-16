@@ -7,4 +7,5 @@ export interface FileListQueryType {
   trashMode: boolean;
   mediaMode: boolean;
   sortBy: string;
+  mediaFilter: string;
 }

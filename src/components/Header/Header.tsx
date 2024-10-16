@@ -31,7 +31,7 @@ const Header = () => {
   );
 
   return (
-    <header id="header">
+    <header id="header" className="select-none">
       <div className="px-6 flex justify-between min-h-16 items-center py-3.5">
         <div className="items-center w-[260px] hidden desktopMode:flex">
           <a

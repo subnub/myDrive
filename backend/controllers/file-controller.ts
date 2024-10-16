@@ -413,6 +413,7 @@ class FileController {
       const startAtName = (query.startAtName as string) || undefined;
       const trashMode = query.trashMode === "true";
       const mediaMode = query.mediaMode === "true";
+      const mediaFilter = (query.mediaFilter as string) || "all";
 
       const queryData: FileListQueryType = {
         userID,
@@ -423,6 +424,7 @@ class FileController {
         trashMode,
         mediaMode,
         sortBy,
+        mediaFilter,
       };
 
       const fileList = await fileService.getList(queryData, sortBy, limit);

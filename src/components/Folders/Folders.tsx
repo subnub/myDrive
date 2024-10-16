@@ -1,6 +1,6 @@
 import { useFolders } from "../../hooks/folders";
 import FolderItem from "../FolderItem/FolderItem";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
@@ -8,7 +8,7 @@ import { setSortBy } from "../../reducers/filter";
 
 const Folders = memo(() => {
   const { data: folders } = useFolders(false);
-  const { isHome } = useUtils();
+  const { isHome, isTrash, isSearch } = useUtils();
   const sortBy = useAppSelector((state) => state.filter.sortBy);
   const dispatch = useAppDispatch();
 
@@ -65,16 +65,26 @@ const Folders = memo(() => {
     [sortBy]
   );
 
+  const title = useMemo(() => {
+    if (isTrash) {
+      return "Trash";
+    } else if (isSearch) {
+      return "Search";
+    } else {
+      return folders?.length === 0 ? "No Folders" : "Folders";
+    }
+  }, [isHome, isTrash, isSearch, folders?.length]);
+
   return (
-    <div className="mt-8">
+    <div className="mt-8 select-none">
       <div className="flex flex-row mb-5 justify-between items-center">
         <h2
           className={classNames(
-            "m-0 text-xl font-medium",
-            isHome ? "block" : "invisible"
+            "m-0 text-xl font-medium"
+            // isHome || isTrash ? "block" : "invisible"
           )}
         >
-          {folders?.length === 0 ? "No Folders" : "Folders"}
+          {title}
         </h2>
         <div className="flex flex-row items-center">
           <a className="mr-2" onClick={switchOrderSortBy}>

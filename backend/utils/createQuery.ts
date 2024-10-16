@@ -19,6 +19,7 @@ export interface FileQueryInterface {
   "metadata.personalFile"?: boolean | null;
   "metadata.trashed"?: boolean | null;
   "metadata.hasThumbnail"?: boolean | null;
+  "metadata.isVideo"?: boolean | null;
 }
 
 export const createFileQuery = ({
@@ -30,6 +31,7 @@ export const createFileQuery = ({
   trashMode,
   mediaMode,
   sortBy,
+  mediaFilter,
 }: FileListQueryType) => {
   const query: FileQueryInterface = { "metadata.owner": userID };
 
@@ -57,6 +59,12 @@ export const createFileQuery = ({
 
   if (mediaMode) {
     query["metadata.hasThumbnail"] = true;
+
+    if (mediaFilter === "photos") {
+      query["metadata.isVideo"] = false;
+    } else if (mediaFilter === "videos") {
+      query["metadata.isVideo"] = true;
+    }
   }
 
   return query;

@@ -4,12 +4,14 @@ import { memo, useMemo } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
 import { useDispatch } from "react-redux";
-import { getFileExtension } from "../../utils/files";
+import { getFileColor, getFileExtension } from "../../utils/files";
 import { useContextMenu } from "../../hooks/contextMenu";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../hooks/store";
 import { resetSelected, setPopupSelect } from "../../reducers/selected";
 import { useUtils } from "../../hooks/utils";
+import { useThumbnail } from "../../hooks/files";
+import CloseIcon from "../../icons/CloseIcon";
 
 const RightSection = memo(() => {
   const selectedItem = useAppSelector((state) => state.selected.mainSection);
@@ -77,10 +79,31 @@ const RightSection = memo(() => {
       navigate(`/folder-trash/${selectedItem.id}`);
     }
   };
+
+  const bannerBackgroundColor = useMemo(() => {
+    if (selectedItem.file) {
+      return getFileColor(selectedItem.file.filename);
+    } else if (selectedItem.folder) {
+      return "#3c85ee";
+    } else {
+      return "#3c85ee";
+    }
+  }, [selectedItem.file?.filename, selectedItem.folder?.name]);
+
+  const bannerText = useMemo(() => {
+    if (selectedItem.file) {
+      return getFileExtension(selectedItem.file.filename);
+    } else if (selectedItem.folder) {
+      return "Folder";
+    } else {
+      return "";
+    }
+  }, [selectedItem.file?.filename, selectedItem.folder?.name]);
+
   return (
     <div
       className={classNames(
-        "!hidden desktopMode:!flex min-w-[260px] max-w-[260px] border-l border-gray-secondary p-6 bg-white right-0 justify-center relative mt-1.5",
+        "!hidden desktopMode:!flex min-w-[260px] max-w-[260px] border-l border-gray-secondary bg-white right-0 justify-center relative mt-1.5",
         selectedItem.id === "" ? "flex justify-center items-center" : ""
       )}
     >
@@ -94,86 +117,97 @@ const RightSection = memo(() => {
           </p>
         </div>
       ) : (
-        <div className="w-[210px]">
+        <div className="w-full">
           <div className="flex flex-row">
-            <div>
+            {/* <div>
               <img
                 className="flex w-auto max-w-full"
                 src="/assets/typedetailed1.svg"
                 alt="typedetailed1"
               />
+            </div> */}
+            <div>
+              {/* <img className="object-cover w-full" src={thumbnail} /> */}
             </div>
-            <img
-              className="w-[30px] h-[30px] ml-8 cursor-pointer absolute right-3"
-              src="/images/close_icon.png"
+            <div className="w-full h-16 flex items-center relative">
+              <div
+                className="opacity-40 w-full h-full absolute"
+                style={{ background: bannerBackgroundColor }}
+              ></div>
+              <p className="text-sm ml-6 z-10">{bannerText}</p>
+            </div>
+            <CloseIcon
+              className="w-5 h-5 p-1 cursor-pointer absolute right-3 top-5 bg-white rounded-full shadow-lg z-10"
               onClick={reset}
             />
           </div>
 
-          <div className="m-[20px_0]">
-            <p className="m-0 text-[#212b36] text-[16px] font-bold max-h-[90px] overflow-hidden text-ellipsis block break-all">
-              {formattedName}
-            </p>
-          </div>
-          <div>
-            <div className="flex mb-[7px] justify-start">
-              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
-                Type
-              </span>
-              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-                {selectedItem.file ? fileExtension : "Folder"}
-              </span>
+          <div className="p-6">
+            <div className="mb-5">
+              <p className="m-0 text-[#212b36] text-[16px] font-bold max-h-[90px] overflow-hidden text-ellipsis block break-all">
+                {formattedName}
+              </p>
             </div>
-            <div
-              className="flex mb-[7px] justify-start"
-              style={
-                !selectedItem.file ? { display: "none" } : { display: "flex" }
-              }
-            >
-              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
-                Size
-              </span>
-              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-                {fileSize}
-              </span>
-            </div>
-            <div className="flex mb-[7px] justify-start">
-              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
-                Created
-              </span>
-              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-                {formattedDate}
-              </span>
-            </div>
-            <div
-              className="flex mb-[7px] justify-start"
-              style={
-                !selectedItem.file ? { display: "none" } : { display: "flex" }
-              }
-            >
-              <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
-                Access
-              </span>
-              <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-                {selectedItem.file?.metadata.link ? "Public" : "Private"}
-              </span>
-            </div>
-          </div>
-          <div className="mt-[15px] flex items-center">
-            <a
-              className="w-[80px] h-[40px] inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate cursor-pointer hover:bg-[#f6f5fd]"
-              onClick={openItem}
-            >
-              Open
-            </a>
-            <div className="ml-[15px] px-[20px]">
-              <a
-                className="w-[40px] h-[40px] rounded-[4px] inline-flex items-center justify-center border border-[#919eab] text-[#919eab] no-underline animate cursor-pointer"
-                // @ts-ignore
-                onClick={onContextMenu}
+            <div>
+              <div className="flex mb-[7px] justify-start">
+                <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                  Type
+                </span>
+                <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                  {selectedItem.file ? fileExtension : "Folder"}
+                </span>
+              </div>
+              <div
+                className="flex mb-[7px] justify-start"
+                style={
+                  !selectedItem.file ? { display: "none" } : { display: "flex" }
+                }
               >
-                <i className="fas fa-ellipsis-h" aria-hidden="true"></i>
+                <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                  Size
+                </span>
+                <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                  {fileSize}
+                </span>
+              </div>
+              <div className="flex mb-[7px] justify-start">
+                <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                  Created
+                </span>
+                <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                  {formattedDate}
+                </span>
+              </div>
+              <div
+                className="flex mb-[7px] justify-start"
+                style={
+                  !selectedItem.file ? { display: "none" } : { display: "flex" }
+                }
+              >
+                <span className="text-[#637381] text-[13px] font-normal mr-[35px] leading-[20px] min-w-[50px]">
+                  Access
+                </span>
+                <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
+                  {selectedItem.file?.metadata.link ? "Public" : "Private"}
+                </span>
+              </div>
+            </div>
+            <div className="mt-[15px] flex items-center">
+              <a
+                className="w-[80px] h-[40px] inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate cursor-pointer hover:bg-[#f6f5fd]"
+                onClick={openItem}
+              >
+                Open
               </a>
+              <div className="ml-[15px] px-[20px]">
+                <a
+                  className="w-[40px] h-[40px] rounded-[4px] inline-flex items-center justify-center border border-[#919eab] text-[#919eab] no-underline animate cursor-pointer"
+                  // @ts-ignore
+                  onClick={onContextMenu}
+                >
+                  <i className="fas fa-ellipsis-h" aria-hidden="true"></i>
+                </a>
+              </div>
             </div>
           </div>
           {contextMenuState.selected && (

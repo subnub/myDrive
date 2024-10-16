@@ -33,6 +33,7 @@ export const useFiles = (enabled = true) => {
   const params = useParams();
   // TODO: Remove any
   const sortBy = useAppSelector((state) => state.filter.sortBy);
+  const mediaFilter = useAppSelector((state) => state.filter.mediaFilter);
   const { isTrash, isMedia } = useUtils();
   const limit = isMedia ? 100 : 50;
   const filesReactQuery: UseInfiniteQueryResult<FileInterface[]> =
@@ -46,6 +47,7 @@ export const useFiles = (enabled = true) => {
           limit,
           trashMode: isTrash,
           mediaMode: isMedia,
+          mediaFilter: mediaFilter,
         },
       ],
       getFilesListAPI,

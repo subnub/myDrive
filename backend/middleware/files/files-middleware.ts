@@ -40,6 +40,10 @@ export const getListValidationRules = [
     .optional()
     .isBoolean()
     .withMessage("Trash Mode must be a boolean"),
+  query("mediaFilter")
+    .optional()
+    .isString()
+    .withMessage("Media Filter must be a string"),
   query("mediaMode")
     .optional()
     .isBoolean()

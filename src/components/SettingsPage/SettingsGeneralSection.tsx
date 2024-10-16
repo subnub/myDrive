@@ -10,10 +10,10 @@ const SettingsPageGeneral = () => {
   const fileListStyleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setListViewStyle(value);
-    if (value === "grid") {
-      window.localStorage.setItem("grid-mode", "true");
+    if (value === "list") {
+      window.localStorage.setItem("list-mode", "true");
     } else {
-      window.localStorage.removeItem("grid-mode");
+      window.localStorage.removeItem("list-mode");
     }
   };
 
@@ -63,8 +63,8 @@ const SettingsPageGeneral = () => {
   };
 
   useEffect(() => {
-    const gridModeLocalStorage = window.localStorage.getItem("grid-mode");
-    const gridModeEnabled = gridModeLocalStorage === "true";
+    const listModeLocalStorage = window.localStorage.getItem("list-mode");
+    const listModeEnabled = listModeLocalStorage === "true";
 
     const sortByLocalStorage = window.localStorage.getItem("sort-name");
     const sortByNameEnabled = sortByLocalStorage === "true";
@@ -82,7 +82,7 @@ const SettingsPageGeneral = () => {
     );
     const loadThumbnailsDisabled = loadThumbnailsLocalStorage === "true";
 
-    setListViewStyle(gridModeEnabled ? "grid" : "list");
+    setListViewStyle(listModeEnabled ? "list" : "grid");
     setSortBy(sortByNameEnabled ? "name" : "date");
     setOrderBy(orderByAscendingEnabled ? "ascending" : "descending");
     setDoubleClickFolders(doubleClickFoldersEnabled ? "enabled" : "disabled");
@@ -102,8 +102,8 @@ const SettingsPageGeneral = () => {
             onChange={fileListStyleChange}
             className="text-primary"
           >
-            <option value="list">List</option>
             <option value="grid">Grid</option>
+            <option value="list">List</option>
           </select>
         </div>
         <div className="px-3 py-4 flex flex-row justify-between items-center border-b border-gray-secondary">

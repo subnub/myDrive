@@ -216,6 +216,11 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
     dispatch(resetPopupSelect());
   }, [resetPopupSelect]);
 
+  const outterWrapperClick = (e: any) => {
+    if (e.target.id !== "outer-wrapper") return;
+    closePhotoViewer();
+  };
+
   useEffect(() => {
     if (file.metadata.isVideo) {
       getVideo();
@@ -227,10 +232,7 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
   }, [file.metadata.isVideo, getVideo, cleanUpVideo]);
 
   return (
-    <div
-      className="w-screen h-screen bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col"
-      id="outer-wrapper"
-    >
+    <div className="w-screen h-screen bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col">
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>
           <ContextMenu

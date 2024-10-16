@@ -78,6 +78,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
 
   useEffect(() => {
     if (!wrapperRef.current) return;
+
     const modalWidth = wrapperRef.current.clientWidth;
     const modalHeight = wrapperRef.current.clientHeight;
 
@@ -87,7 +88,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     let Y = contextSelected.Y;
 
     if (X + modalWidth > windowWidth) {
-      X = windowWidth - windowWidth;
+      X = windowWidth - modalWidth - 10;
     }
 
     if (Y + modalHeight > windowHeight) {
