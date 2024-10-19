@@ -7,6 +7,10 @@ import { middlewareValidationFunction } from "../utils/middleware-utils";
 export const moveFolderListValidationRules = [
   query("parent").optional().isString().withMessage("Parent must be a string"),
   query("search").optional().isString().withMessage("Search must be a string"),
+  query("folderIDs")
+    .isArray()
+    .isLength({ min: 1 })
+    .withMessage("FolderIDs must be an array of strings"),
   middlewareValidationFunction,
 ];
 

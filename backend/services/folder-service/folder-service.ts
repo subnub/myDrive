@@ -102,15 +102,13 @@ class FolderService {
     userID: string,
     parent?: string,
     search?: string,
-    folderID?: string,
-    currentParent?: string
+    folderIDs?: string[]
   ) => {
     const folderList = await folderDB.getMoveFolderList(
       userID,
       parent,
       search,
-      folderID,
-      currentParent
+      folderIDs
     );
 
     return folderList;

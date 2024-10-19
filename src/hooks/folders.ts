@@ -75,7 +75,7 @@ export const useFolder = () => {
 export const useMoveFolders = (
   parent: string,
   search: string,
-  folderID?: string
+  folderIDs?: string[]
 ) => {
   const params = useParams();
   const moveFoldersQuery = useQuery(
@@ -84,7 +84,7 @@ export const useMoveFolders = (
       {
         parent,
         search,
-        folderID,
+        folderIDs,
         currentParent: params.id || "/",
       },
     ],

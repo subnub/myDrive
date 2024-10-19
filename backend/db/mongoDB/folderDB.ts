@@ -48,25 +48,29 @@ class DbUtil {
     userID: string,
     parent = "/",
     search?: string,
-    folderID?: string,
-    currentParent?: string
+    folderIDs?: string[]
   ) => {
     let query: any = {
       owner: userID,
     };
 
-    const idQuery = [];
+    // const idQuery = [];
 
     // if (currentParent && currentParent !== "/") {
     //   idQuery.push(currentParent);
     // }
 
-    if (folderID) {
-      query.parentList = { $ne: folderID };
-      idQuery.push(folderID);
+    // if (folderID) {
+    //   query.parentList = { $ne: folderID };
+    //   idQuery.push(folderID);
+    // }
+
+    if (folderIDs && folderIDs.length > 0) {
+      query._id = { $nin: folderIDs };
+      query.parentList = { $nin: folderIDs };
     }
 
-    query._id = { $nin: idQuery };
+    // query._id = { $nin: idQuery };
 
     if (!search || search === "") {
       query.parent = parent;

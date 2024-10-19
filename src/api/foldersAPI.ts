@@ -41,15 +41,20 @@ export const getMoveFolderListAPI = async ({
 }: QueryFunctionContext<
   [
     string,
-    { parent: string; search: string; folderID?: string; currentParent: string }
+    {
+      parent: string;
+      search: string;
+      folderIDs?: string[];
+      currentParent: string;
+    }
   ]
 >) => {
-  const [_key, { parent, search, folderID, currentParent }] = queryKey;
+  const [_key, { parent, search, folderIDs, currentParent }] = queryKey;
   const response = await axios.get(`/folder-service/move-folder-list`, {
     params: {
       parent,
       search,
-      folderID,
+      folderIDs,
       currentParent,
     },
   });

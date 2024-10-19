@@ -222,15 +222,13 @@ class FolderController {
       const userID = req.user._id;
       const parent = (req.query.parent as string) || undefined;
       const search = (req.query.search as string) || undefined;
-      const folderID = (req.query.folderID as string) || undefined;
-      const currentParent = (req.query.currentParent as string) || undefined;
+      const folderIDs = (req.query.folderIDs as string[]) || [];
 
       const folderList = await folderService.getMoveFolderList(
         userID,
         parent,
         search,
-        folderID,
-        currentParent
+        folderIDs
       );
 
       res.send(folderList);

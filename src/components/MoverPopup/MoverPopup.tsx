@@ -37,10 +37,18 @@ const MoverPopup = () => {
     folderID: "",
   });
 
+  const foldersToMove = useAppSelector((state) => {
+    if (state.selected.multiSelectMode) {
+      return Object.keys(state.selected.multiSelectMap);
+    } else {
+      return [state.selected.mainSection.id];
+    }
+  });
+
   const { data: folderList, isLoading: isLoadingFolders } = useMoveFolders(
     parent?._id || "/",
     debouncedSearch,
-    folder?._id
+    foldersToMove
   );
 
   const debouncedSetSearchText = useMemo(
