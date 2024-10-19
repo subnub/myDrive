@@ -2,44 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "./base/settings";
 @import "./base/base";
-@import "./components/content-container";
-@import "./components/LoginPage";
-@import "./components/box-layout";
-@import "./components/button";
-@import "./components/Header";
-@import "./components/HomePage";
-@import "./components/Dataform";
-@import "./components/Folder";
-@import "./components/File";
-@import "./components/Filter";
-@import "./components/LeftSection";
-@import "./components/Subbar";
-@import "./components/RightSection";
-@import "./components/Uploader";
-@import "./components/loader";
 @import "./components/Spinner";
-@import "./components/QuickAccess";
-@import "./components/Spacer";
-@import "./components/Popup-window";
-@import "./components/ContentMenu";
-@import "./components/Sharemenu";
-@import "./components/DownloadPage";
-@import "./components/SettingsMenu";
 @import "./components/Swal";
-@import "./components/Photoviewer";
-@import "./components/MoverMenu";
-@import "./components/Folder-tree";
-@import "./components/VerifyEmailPage";
-@import "./components/ResetPasswordPage";
-@import "./components/AddGoogleAccountPage";
-@import "./components/AddStoragePage";
-@import "./components/AddStorageItems";
-@import "./components/UploadSwitcher";
-@import "./components/main.scss";
-@import "./components/settings.scss";
-@import "./components/MobileContextMenu";
 
 .animate {
   transition: 0.2s ease all;

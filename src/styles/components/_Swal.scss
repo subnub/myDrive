@@ -1,10 +1,15 @@
-
 .swal2-popup {
-    
-    font-size: 10px !important;
+  font-size: 10px !important;
 
-     @media (max-width: $desktop-breakpoint) {
-        
-        font-size: 13px !important;
-    }
+  @media (max-width: 480px) {
+    font-size: 13px !important;
+  }
+}
+
+.swal2-confirm {
+  background-color: #3c85ee !important;
+}
+
+.swal2-cancel {
+  background-color: red !important;
 }

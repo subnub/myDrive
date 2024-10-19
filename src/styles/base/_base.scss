@@ -3,8 +3,6 @@
 }
 
 html {
-  // font-size: 62.5%;
-  // --webkit-touch-callout: default;
 }
 
 input[type="text"],
@@ -15,11 +13,6 @@ textarea {
 }
 
 body {
-  // color: $dark-grey;
-  // font-family: Helvetica, Arial, sans-serif;
-  // font-size: $m-size;
-  // background-color: white;
-  // line-height: 1.6;
   height: 100vh;
   width: 100vw;
   overflow: hidden;
@@ -31,4 +24,19 @@ button {
 
 button:disabled {
   cursor: default;
+}
+body,
+html {
+  margin: 0px;
+  padding: 0px;
+  & input[type="text"],
+  & input[type="submit"] {
+    outline: none;
+  }
+}
+body {
+  & * {
+    box-sizing: border-box;
+    font-family: "Roboto", sans-serif;
+  }
 }
