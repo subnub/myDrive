@@ -4,7 +4,6 @@ export interface FileInterface {
   chunkSize: number;
   uploadDate: string;
   filename: string;
-  lastErrorObject: { updatedExisting: any };
   metadata: {
     owner: string;
     parent: string;

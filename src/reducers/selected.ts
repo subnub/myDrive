@@ -64,25 +64,36 @@ const selectedSlice = createSlice({
       state.mainSection = action.payload;
     },
     resetSelected: () => initialState,
-    setMultiSelectMode: (state, action: PayloadAction<MainSecionType>) => {
+    setMultiSelectMode: (state, action: PayloadAction<MainSecionType[]>) => {
+      const currentSelection = state.mainSection;
       state.mainSection = { type: "", id: "", file: null, folder: null };
-      if (
-        state.multiSelectMap[action.payload.id] &&
-        state.multiSelectMap[action.payload.id].type !== action.payload.type
-      ) {
-        state.multiSelectMode = true;
-        state.multiSelectMap[action.payload.id] = action.payload;
-      } else if (state.multiSelectMap[action.payload.id]) {
-        delete state.multiSelectMap[action.payload.id];
-        const newCount = state.multiSelectCount - 1;
-        if (newCount === 0) {
-          state.multiSelectMode = false;
-        }
-        state.multiSelectCount = newCount;
-      } else {
-        state.multiSelectMode = true;
-        state.multiSelectMap[action.payload.id] = action.payload;
+
+      const selects = action.payload;
+
+      if (currentSelection.id !== "") {
+        state.multiSelectMap[currentSelection.id] = currentSelection;
         state.multiSelectCount++;
+      }
+
+      for (const select of selects) {
+        if (
+          state.multiSelectMap[select.id] &&
+          state.multiSelectMap[select.id].type !== select.type
+        ) {
+          state.multiSelectMode = true;
+          state.multiSelectMap[select.id] = select;
+        } else if (state.multiSelectMap[select.id]) {
+          delete state.multiSelectMap[select.id];
+          const newCount = state.multiSelectCount - 1;
+          if (newCount === 0) {
+            state.multiSelectMode = false;
+          }
+          state.multiSelectCount = newCount;
+        } else {
+          state.multiSelectMode = true;
+          state.multiSelectMap[select.id] = select;
+          state.multiSelectCount++;
+        }
       }
     },
     resetMultiSelect: (state) => {

@@ -158,8 +158,9 @@ const MoverPopup = () => {
     setSelectedFolder(parentList[parentList.length - 1]);
   };
 
-  const closeMoverModal = (e: any) => {
-    if (e.target.id !== "outer-wrapper") return;
+  const closeMoverModal = (e: React.MouseEvent<HTMLElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.id !== "outer-wrapper") return;
     dispatch(resetMoveModal());
   };
 

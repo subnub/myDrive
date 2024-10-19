@@ -58,17 +58,18 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
     [file.filename]
   );
 
-  // TODO: See if we can memoize this and remove any
-  const quickItemClick = (e: any) => {
+  const quickItemClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const multiSelectKey = e.metaKey || e.ctrlKey;
     if (multiSelectMode || multiSelectKey) {
       dispatch(
-        setMultiSelectMode({
-          type: "quick-item",
-          id: file._id,
-          file: file,
-          folder: null,
-        })
+        setMultiSelectMode([
+          {
+            type: "quick-item",
+            id: file._id,
+            file: file,
+            folder: null,
+          },
+        ])
       );
       return;
     }

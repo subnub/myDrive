@@ -42,16 +42,18 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
   } = useContextMenu();
 
   const folderClick = useCallback(
-    (e: any) => {
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       const multiSelectKey = e.metaKey || e.ctrlKey;
       if (multiSelectMode || multiSelectKey) {
         dispatch(
-          setMultiSelectMode({
-            type: "folder",
-            id: folder._id,
-            file: null,
-            folder: folder,
-          })
+          setMultiSelectMode([
+            {
+              type: "folder",
+              id: folder._id,
+              file: null,
+              folder: folder,
+            },
+          ])
         );
         return;
       }

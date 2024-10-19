@@ -66,18 +66,19 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
     [file.uploadDate]
   );
 
-  // TODO: See if we can memoize this
-  const fileClick = (e: any) => {
+  const fileClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const multiSelectKey = e.metaKey || e.ctrlKey;
 
     if (multiSelectMode || multiSelectKey) {
       dispatch(
-        setMultiSelectMode({
-          type: "file",
-          id: file._id,
-          file: file,
-          folder: null,
-        })
+        setMultiSelectMode([
+          {
+            type: "file",
+            id: file._id,
+            file: file,
+            folder: null,
+          },
+        ])
       );
       return;
     }

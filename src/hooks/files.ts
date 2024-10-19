@@ -15,8 +15,6 @@ import {
   getSuggestedListAPI,
   uploadFileAPI,
 } from "../api/filesAPI";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
 import { useAppDispatch, useAppSelector } from "./store";
 import { useUtils } from "./utils";
 import { FileInterface } from "../types/file";
@@ -82,7 +80,7 @@ export const useFiles = (enabled = true) => {
 export const useFilesClient = () => {
   const params = useParams();
   // TODO: Remove any
-  const sortBy = useSelector((state: any) => state.filter.sortBy);
+  const sortBy = useAppSelector((state) => state.filter.sortBy);
   const filesReactClientQuery = useQueryClient();
   const { isTrash, isMedia } = useUtils();
   const limit = isMedia ? 100 : 50;

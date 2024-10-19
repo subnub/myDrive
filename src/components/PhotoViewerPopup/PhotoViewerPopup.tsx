@@ -216,11 +216,6 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
     dispatch(resetPopupSelect());
   }, [resetPopupSelect]);
 
-  const outterWrapperClick = (e: any) => {
-    if (e.target.id !== "outer-wrapper") return;
-    closePhotoViewer();
-  };
-
   useEffect(() => {
     if (file.metadata.isVideo) {
       getVideo();

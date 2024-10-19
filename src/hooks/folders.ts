@@ -5,13 +5,13 @@ import {
   getFoldersListAPI,
   getMoveFolderListAPI,
 } from "../api/foldersAPI";
-import { useSelector } from "react-redux";
 import { useUtils } from "./utils";
 import { FolderInterface } from "../types/folders";
+import { useAppSelector } from "./store";
 
 export const useFolders = (enabled = true) => {
   const params = useParams();
-  const sortBy = useSelector((state: any) => state.filter.sortBy);
+  const sortBy = useAppSelector((state) => state.filter.sortBy);
   const { isTrash } = useUtils();
   const foldersReactQuery: UseQueryResult<FolderInterface[]> = useQuery(
     [
@@ -33,7 +33,7 @@ export const useFolders = (enabled = true) => {
 
 export const useFoldersClient = () => {
   const params = useParams();
-  const sortBy = useSelector((state: any) => state.filter.sortBy);
+  const sortBy = useAppSelector((state) => state.filter.sortBy);
   const foldersReactClientQuery = useQueryClient();
   const { isTrash } = useUtils();
 

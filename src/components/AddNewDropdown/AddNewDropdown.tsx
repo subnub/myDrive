@@ -3,7 +3,7 @@ import { createFolderAPI } from "../../api/foldersAPI";
 import { useFoldersClient } from "../../hooks/folders";
 import { useClickOutOfBounds } from "../../hooks/utils";
 import { showCreateFolderPopup } from "../../popups/folder";
-import { RefObject, useRef } from "react";
+import React, { RefObject, useRef } from "react";
 import { useUploader } from "../../hooks/files";
 import UploadFileIcon from "../../icons/UploadFileIcon";
 import CreateFolderIcon from "../../icons/CreateFolderIcon";
@@ -31,7 +31,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
     invalidateFoldersCache();
   };
 
-  const handleUpload = (e: any) => {
+  const handleUpload = (e: React.FormEvent<HTMLInputElement>) => {
     e.preventDefault();
     props.closeDropdown();
 

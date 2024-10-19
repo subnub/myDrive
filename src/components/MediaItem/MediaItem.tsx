@@ -44,16 +44,18 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
   const { data: thumbnail } = useThumbnail(file.metadata.thumbnailID);
 
   // TODO: See if we can memoize this and remove any
-  const mediaItemClick = (e: any) => {
+  const mediaItemClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const multiSelectKey = e.metaKey || e.ctrlKey;
     if (multiSelectMode || multiSelectKey) {
       dispatch(
-        setMultiSelectMode({
-          type: "file",
-          id: file._id,
-          file: file,
-          folder: null,
-        })
+        setMultiSelectMode([
+          {
+            type: "file",
+            id: file._id,
+            file: file,
+            folder: null,
+          },
+        ])
       );
       return;
     }

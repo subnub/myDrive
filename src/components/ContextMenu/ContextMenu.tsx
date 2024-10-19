@@ -259,23 +259,28 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
 
   const selectItemMultiSelect = () => {
     closeContext();
+
     if (folderMode && folder) {
       dispatch(
-        setMultiSelectMode({
-          type: "folder",
-          id: folder._id,
-          file: null,
-          folder: folder,
-        })
+        setMultiSelectMode([
+          {
+            type: "folder",
+            id: folder._id,
+            file: null,
+            folder: folder,
+          },
+        ])
       );
     } else if (!folderMode && file) {
       dispatch(
-        setMultiSelectMode({
-          type: quickItemMode ? "quick-item" : "file",
-          id: file._id,
-          file: file,
-          folder: null,
-        })
+        setMultiSelectMode([
+          {
+            type: quickItemMode ? "quick-item" : "file",
+            id: file._id,
+            file: file,
+            folder: null,
+          },
+        ])
       );
     }
   };
