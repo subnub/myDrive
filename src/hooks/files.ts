@@ -132,9 +132,14 @@ export const useThumbnail = (
   thumbnailID: string | undefined,
   isQuickFile?: boolean
 ) => {
-  const listView = useAppSelector((state) => state.filter.listView);
+  const listView = useAppSelector((state) => state.general.listView);
+  const loadThumbnailsDisabled = useAppSelector(
+    (state) => state.general.loadThumbnailsDisabled
+  );
   const { isMedia } = useUtils();
-  const disabled = listView && !isMedia && !isQuickFile;
+  const disabled =
+    (listView && !isMedia && !isQuickFile) ||
+    (loadThumbnailsDisabled && !isMedia);
   const thumbnailQuery = useQuery(
     ["thumbnail", { thumbnailID }],
     () => {

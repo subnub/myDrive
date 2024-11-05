@@ -33,7 +33,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
-  const listView = useAppSelector((state) => state.filter.listView);
+  const listView = useAppSelector((state) => state.general.listView);
   const { data: thumbnail } = useThumbnail(file.metadata.thumbnailID);
   const dispatch = useAppDispatch();
   const lastSelected = useRef(0);

@@ -5,11 +5,11 @@ import FileItem from "../FileItem/FileItem";
 import ParentBar from "../ParentBar/ParentBar";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { toggleListView } from "../../reducers/filter";
+import { toggleListView } from "../../reducers/general";
 
 const Files = memo(() => {
   const { data: files } = useFiles(false);
-  const listView = useAppSelector((state) => state.filter.listView);
+  const listView = useAppSelector((state) => state.general.listView);
   const { isHome } = useUtils();
 
   const dispatch = useAppDispatch();
@@ -17,15 +17,6 @@ const Files = memo(() => {
   const changeListViewMode = () => {
     dispatch(toggleListView());
   };
-
-  const title = useMemo(() => {
-    const hasFiles = !!files?.pages.find((file) => file);
-    if (hasFiles) {
-      return "Files";
-    } else {
-      return "No Files";
-    }
-  }, [files?.pages]);
 
   return (
     <div className="mt-8 select-none">

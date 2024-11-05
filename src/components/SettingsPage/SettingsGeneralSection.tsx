@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { usePreferenceSetter } from "../../hooks/preferenceSetter";
 
 const SettingsPageGeneral = () => {
   const [listViewStyle, setListViewStyle] = useState("list");
   const [sortBy, setSortBy] = useState("date");
   const [orderBy, setOrderBy] = useState("descending");
-  const [doubleClickFolders, setDoubleClickFolders] = useState("disabled");
+  const [singleClickFolders, setSingleClickFolders] = useState("disabled");
   const [loadThumbnails, setLoadThumbnails] = useState("enabled");
+  const { setPreferences } = usePreferenceSetter();
 
   const fileListStyleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -15,6 +17,7 @@ const SettingsPageGeneral = () => {
     } else {
       window.localStorage.removeItem("list-mode");
     }
+    setPreferences();
   };
 
   const sortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -25,6 +28,7 @@ const SettingsPageGeneral = () => {
     } else {
       window.localStorage.removeItem("sort-name");
     }
+    setPreferences();
   };
 
   const orderByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -36,19 +40,21 @@ const SettingsPageGeneral = () => {
     } else {
       window.localStorage.removeItem("order-asc");
     }
+    setPreferences();
   };
 
-  const doubleClickFoldersChange = (
+  const singleClickFoldersChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const value = e.target.value;
-    setDoubleClickFolders(value);
+    setSingleClickFolders(value);
 
     if (value === "enabled") {
-      window.localStorage.setItem("double-click-folders", "true");
+      window.localStorage.setItem("single-click-folders", "true");
     } else {
-      window.localStorage.removeItem("double-click-folders");
+      window.localStorage.removeItem("single-click-folders");
     }
+    setPreferences();
   };
 
   const loadThumbnailsChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -60,6 +66,7 @@ const SettingsPageGeneral = () => {
     } else {
       window.localStorage.removeItem("not-load-thumbnails");
     }
+    setPreferences();
   };
 
   useEffect(() => {
@@ -72,10 +79,10 @@ const SettingsPageGeneral = () => {
     const orderByLocalStorage = window.localStorage.getItem("order-asc");
     const orderByAscendingEnabled = orderByLocalStorage === "true";
 
-    const doubleClickFoldersLocalStorage = window.localStorage.getItem(
-      "double-click-folders"
+    const singleClickFoldersLocalStorage = window.localStorage.getItem(
+      "single-click-folders"
     );
-    const doubleClickFoldersEnabled = doubleClickFoldersLocalStorage === "true";
+    const singleClickFoldersEnabled = singleClickFoldersLocalStorage === "true";
 
     const loadThumbnailsLocalStorage = window.localStorage.getItem(
       "not-load-thumbnails"
@@ -85,7 +92,7 @@ const SettingsPageGeneral = () => {
     setListViewStyle(listModeEnabled ? "list" : "grid");
     setSortBy(sortByNameEnabled ? "name" : "date");
     setOrderBy(orderByAscendingEnabled ? "ascending" : "descending");
-    setDoubleClickFolders(doubleClickFoldersEnabled ? "enabled" : "disabled");
+    setSingleClickFolders(singleClickFoldersEnabled ? "enabled" : "disabled");
     setLoadThumbnails(loadThumbnailsDisabled ? "disabled" : "enabled");
   }, []);
 
@@ -129,10 +136,10 @@ const SettingsPageGeneral = () => {
           </select>
         </div>
         <div className="px-3 py-4 flex flex-row justify-between items-center border-b border-gray-secondary">
-          <p className="text-gray-primary">Double click to enter folders</p>
+          <p className="text-gray-primary">Single click to enter folders</p>
           <select
-            value={doubleClickFolders}
-            onChange={doubleClickFoldersChange}
+            value={singleClickFolders}
+            onChange={singleClickFoldersChange}
             className="text-primary"
           >
             <option value="disabled">Disabled</option>

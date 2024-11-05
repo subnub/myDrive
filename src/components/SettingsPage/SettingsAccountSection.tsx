@@ -3,6 +3,7 @@ import SettingsChangePasswordPopup from "./SettingsChangePasswordPopup";
 import { toast } from "react-toastify";
 import { logoutAPI } from "../../api/user";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 interface SettingsPageAccountProps {
   user: {
@@ -13,6 +14,7 @@ interface SettingsPageAccountProps {
 
 const SettingsPageAccount: React.FC<SettingsPageAccountProps> = ({ user }) => {
   const [showChangePasswordPopup, setShowChangePasswordPopup] = useState(false);
+  const navigate = useNavigate();
 
   const logoutClick = async () => {
     try {
@@ -35,7 +37,7 @@ const SettingsPageAccount: React.FC<SettingsPageAccountProps> = ({ user }) => {
 
       window.localStorage.removeItem("hasPreviouslyLoggedIn");
 
-      window.location.assign("/");
+      navigate("/");
     } catch (e) {
       console.log("Error logging out", e);
     }
@@ -62,7 +64,7 @@ const SettingsPageAccount: React.FC<SettingsPageAccountProps> = ({ user }) => {
 
       window.localStorage.removeItem("hasPreviouslyLoggedIn");
 
-      window.location.assign("/");
+      navigate("/");
     } catch (e) {
       console.log("Error logging out", e);
     }

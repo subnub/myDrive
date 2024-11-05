@@ -16,16 +16,18 @@ import uuid from "uuid";
 import ResetPasswordPage from "../components/ResetPasswordPage";
 import SettingsPage from "../components/SettingsPage/SettingsPage";
 import Homepage from "../components/Homepage/Homepage";
+import { usePreferenceSetter } from "../hooks/preferenceSetter";
 
 // export const history = createHistory();
 
 const AppRouter = () => {
+  usePreferenceSetter();
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" exact={true} element={<LoginPage />} />
         <Route
-          key={1}
           path="/home"
           element={
             <PrivateRoute>
@@ -38,7 +40,6 @@ const AppRouter = () => {
           element={<DownloadPage />}
         />
         <Route
-          key={1}
           path="/folder/:id"
           element={
             <PrivateRoute>
@@ -47,7 +48,6 @@ const AppRouter = () => {
           }
         />
         <Route
-          key={1}
           path="/search/:query"
           element={
             <PrivateRoute>
@@ -56,7 +56,6 @@ const AppRouter = () => {
           }
         />
         <Route
-          key={1}
           path="/search-trash/:query"
           element={
             <PrivateRoute>
@@ -65,7 +64,6 @@ const AppRouter = () => {
           }
         />
         <Route
-          key={1}
           path="/media"
           element={
             <PrivateRoute>
@@ -74,7 +72,6 @@ const AppRouter = () => {
           }
         />
         <Route
-          key={1}
           path="/search-media/:query"
           element={
             <PrivateRoute>
@@ -83,7 +80,6 @@ const AppRouter = () => {
           }
         />
         <Route
-          key={1}
           path="/trash"
           element={
             <PrivateRoute>
@@ -92,7 +88,6 @@ const AppRouter = () => {
           }
         />
         <Route
-          key={1}
           path="/folder-trash/:id"
           element={
             <PrivateRoute>
@@ -116,16 +111,3 @@ const AppRouter = () => {
 };
 
 export default AppRouter;
-{
-  /* <Route key={1} path="/home" element={HomePage} />
-      <Route path="/download-page/:id/:tempToken" element={DownloadPage} />
-      <Route key={1} path="/folder/:id" element={HomePage} />
-      <Route key={1} path="/folder-google/:id" element={HomePage} />
-      <Route key={1} path="/folder-personal/:id" element={HomePage} />
-      <Route key={1} path="/search/:id" element={HomePage} />
-      <Route path="/verify-email/:id" element={VerifyEmailPage} />
-      <Route path="/reset-password/:id" element={ResetPasswordPage} />
-      <Route path="/add-google-account" element={GoogleAccountPage} />
-      <Route path="/add-storage" element={AddStoragePage} />
-      <Route path="/settings" element={SettingsPage} /> */
-}

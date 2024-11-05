@@ -27,6 +27,9 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
+  const singleClickFolders = useAppSelector(
+    (state) => state.general.singleClickFolders
+  );
   const { isTrash } = useUtils();
   const lastSelected = useRef(0);
   const navigate = useNavigate();
@@ -69,12 +72,11 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
           })
         );
         lastSelected.current = Date.now();
-        return;
+
+        if (!singleClickFolders) return;
       }
 
-      const isMobile = mobilecheck();
-
-      if (isMobile || currentDate - lastSelected.current < 1500) {
+      if (singleClickFolders || currentDate - lastSelected.current < 1500) {
         if (isTrash) {
           navigate(`/folder-trash/${folder._id}`);
         } else {
@@ -84,7 +86,15 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
 
       lastSelected.current = Date.now();
     },
-    [mobilecheck, navigate, folder._id, elementSelected, multiSelectMode]
+    [
+      mobilecheck,
+      navigate,
+      folder._id,
+      elementSelected,
+      multiSelectMode,
+      singleClickFolders,
+      isTrash,
+    ]
   );
 
   return (

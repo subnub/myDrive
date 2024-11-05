@@ -1,30 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const listView = window.localStorage.getItem("list-mode");
-
-const sortBy = window.localStorage.getItem("name-mode")
-  ? window.localStorage.getItem("asc-mode")
-    ? "alp_asc"
-    : "alp_desc"
-  : window.localStorage.getItem("asc-mode")
-  ? "date_asc"
-  : "date_desc";
-
 const initialState = {
-  sortBy: sortBy,
+  sortBy: "date_desc",
   limit: 50,
   search: "",
-  listView: listView === "true",
   mediaFilter: "all",
 };
 
-const leftSectionSlice = createSlice({
+const filterSlice = createSlice({
   name: "selected",
   initialState,
   reducers: {
-    toggleListView: (state) => {
-      state.listView = !state.listView;
-    },
     setSortBy: (state, action: PayloadAction<string>) => {
       state.sortBy = action.payload;
     },
@@ -34,7 +20,6 @@ const leftSectionSlice = createSlice({
   },
 });
 
-export const { toggleListView, setSortBy, setMediaFilter } =
-  leftSectionSlice.actions;
+export const { setSortBy, setMediaFilter } = filterSlice.actions;
 
-export default leftSectionSlice.reducer;
+export default filterSlice.reducer;
