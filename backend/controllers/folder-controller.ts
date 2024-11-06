@@ -219,23 +219,7 @@ class FolderController {
       const folderIDs = (req.query.folderIDs as string[]) || [];
       const fileIDs = (req.query.fileIDs as string[]) || [];
 
-      const { archive } = await chunkService.downloadZip(
-        userID,
-        folderIDs,
-        fileIDs
-      );
-
-      archive.on("error", (e: Error) => {
-        console.log("archive error", e);
-      });
-
-      res.set("Content-Type", "application/zip");
-      res.set(
-        "Content-Disposition",
-        `attachment; filename="myDrive-${new Date().toISOString()}.zip"`
-      );
-
-      archive.pipe(res);
+      await chunkService.downloadZip(userID, folderIDs, fileIDs, res);
     } catch (e) {
       next(e);
     }

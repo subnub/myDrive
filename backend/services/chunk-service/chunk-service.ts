@@ -21,6 +21,7 @@ import ThumbnailDB from "../../db/mongoDB/thumbnailDB";
 import UserDB from "../../db/mongoDB/userDB";
 import fixEndChunkLength from "./utils/fixEndChunkLength";
 import archiver from "archiver";
+import async from "async";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -128,6 +129,8 @@ class StorageService {
     };
   };
 
+  uploadFolder = async (user: UserInterface, busboy: any, req: Request) => {};
+
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {
     const currentFile = await fileDB.getFileInfo(fileID, user._id.toString());
 
@@ -160,7 +163,8 @@ class StorageService {
   downloadZip = async (
     userID: string,
     folderIDs: string[],
-    fileIDs: string[]
+    fileIDs: string[],
+    res: Response
   ) => {
     const archive = archiver("zip", {
       zlib: { level: 9 },
@@ -173,6 +177,18 @@ class StorageService {
     const password = user.getEncryptionKey();
 
     if (!password) throw new ForbiddenError("Invalid Encryption Key");
+
+    res.set("Content-Type", "application/zip");
+    res.set(
+      "Content-Disposition",
+      `attachment; filename="myDrive-${new Date().toISOString()}.zip"`
+    );
+
+    archive.on("error", (e: Error) => {
+      console.log("archive error", e);
+    });
+
+    archive.pipe(res);
 
     const parentInfoMap = new Map<string, { name: string }>();
     const previouslyUsedFileNames = new Map<string, number>();
@@ -220,42 +236,8 @@ class StorageService {
       return name.replace(/[/\\?%*:|"<>]/g, "-").trim();
     };
 
-    for (const folderID of folderIDs) {
-      const folder = await folderDB.getFolderInfo(folderID, userID);
-
-      if (!folder) throw new NotFoundError("Folder Info Not Found Error");
-
-      const parentList = [...folder.parentList, folder._id];
-
-      const files = await fileDB.getFileListByIncludedParent(
-        userID,
-        parentList.toString()
-      );
-
-      for (const file of files) {
-        const fileParent = await folderDB.getFolderInfo(
-          file.metadata.parent,
-          userID
-        );
-
-        if (!fileParent) throw new NotFoundError("File Parent Not Found Error");
-
-        let directory = "";
-
-        const parentSplit = file.metadata.parentList.split(",");
-
-        for (const parent of parentSplit) {
-          if (parent === "/") continue;
-
-          const parentInfo = await getParentInfo(parent);
-
-          directory += formatName(parentInfo.name) + "/";
-        }
-
-        const fileName = formatName(getFileName(file, file.metadata.parent));
-
-        directory += fileName;
-
+    const processFile = async (file: FileInterface, directory: string) => {
+      return new Promise<void>((resolve, reject) => {
         const IV = file.metadata.IV;
 
         const readStreamParams = createGenericParams({
@@ -265,9 +247,7 @@ class StorageService {
 
         const readStream = storageActions.createReadStream(readStreamParams);
 
-        readStream.on("error", (e: Error) => {
-          console.log("read stream error", e);
-        });
+        readStream.on("error", reject);
 
         const CIPHER_KEY = crypto
           .createHash("sha256")
@@ -276,44 +256,81 @@ class StorageService {
 
         const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
 
-        decipher.on("error", (e: Error) => {
-          console.log("decipher stream error", e);
-        });
+        decipher.on("error", reject);
 
         archive.append(readStream.pipe(decipher), { name: directory });
+
+        readStream.on("end", () => {
+          resolve();
+        });
+      });
+    };
+
+    const queue = async.queue(async (task: Function, callback: Function) => {
+      try {
+        await task();
+        callback();
+      } catch (e) {
+        console.log("queue error", e);
       }
+    }, 4);
+
+    for (const folderID of folderIDs) {
+      queue.push(async () => {
+        const folder = await folderDB.getFolderInfo(folderID, userID);
+
+        if (!folder) throw new NotFoundError("Folder Info Not Found Error");
+
+        const parentList = [...folder.parentList, folder._id];
+
+        const files = await fileDB.getFileListByIncludedParent(
+          userID,
+          parentList.toString()
+        );
+
+        for (const file of files) {
+          const fileParent = await folderDB.getFolderInfo(
+            file.metadata.parent,
+            userID
+          );
+
+          if (!fileParent)
+            throw new NotFoundError("File Parent Not Found Error");
+
+          let directory = "";
+
+          const parentSplit = file.metadata.parentList.split(",");
+
+          for (const parent of parentSplit) {
+            if (parent === "/") continue;
+
+            const parentInfo = await getParentInfo(parent);
+
+            directory += formatName(parentInfo.name) + "/";
+          }
+
+          const fileName = formatName(getFileName(file, file.metadata.parent));
+
+          directory += fileName;
+
+          await processFile(file, directory);
+        }
+      });
     }
 
     for (const fileID of fileIDs) {
-      const file = await fileDB.getFileInfo(fileID, userID);
+      queue.push(async () => {
+        const file = await fileDB.getFileInfo(fileID, userID);
 
-      if (!file) throw new NotFoundError("File Info Not Found Error");
-      const IV = file.metadata.IV;
+        if (!file) throw new NotFoundError("File Info Not Found Error");
 
-      const readStreamParams = createGenericParams({
-        filePath: file.metadata.filePath,
-        Key: file.metadata.s3ID,
+        const fileName = formatName(getFileName(file, "/"));
+
+        await processFile(file, fileName);
       });
-
-      const readStream = storageActions.createReadStream(readStreamParams);
-
-      readStream.on("error", (e: Error) => {
-        console.log("read stream error", e);
-      });
-
-      const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-      const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
-
-      decipher.on("error", (e: Error) => {
-        console.log("decipher stream error", e);
-      });
-
-      const fileName = formatName(getFileName(file, "/"));
-
-      archive.append(readStream.pipe(decipher), { name: fileName });
     }
 
+    await queue.drain();
     archive.finalize();
 
     return { archive };
