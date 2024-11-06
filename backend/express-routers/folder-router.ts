@@ -4,6 +4,7 @@ import FolderController from "../controllers/folder-controller";
 import {
   createFolderValidationRules,
   deleteFolderValidationRules,
+  downloadZipValidationRules,
   getFolderInfoValidationRules,
   getFolderListValidationRules,
   moveFolderListValidationRules,
@@ -39,7 +40,12 @@ router.get(
   folderController.getMoveFolderList
 );
 
-router.get("/folder-service/download-zip", auth, folderController.downloadZip);
+router.get(
+  "/folder-service/download-zip",
+  auth,
+  downloadZipValidationRules,
+  folderController.downloadZip
+);
 
 // PATCH
 

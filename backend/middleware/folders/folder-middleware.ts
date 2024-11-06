@@ -30,6 +30,18 @@ export const getFolderListValidationRules = [
   middlewareValidationFunction,
 ];
 
+export const downloadZipValidationRules = [
+  query("folderIDs")
+    .optional()
+    .isArray()
+    .withMessage("FolderIDs must be an array of strings"),
+  query("fileIDs")
+    .optional()
+    .isArray()
+    .withMessage("FileIDs must be an array of strings"),
+  middlewareValidationFunction,
+];
+
 // PATCH
 
 export const renameFolderValidationRules = [

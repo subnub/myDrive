@@ -177,6 +177,49 @@ class StorageService {
     const parentInfoMap = new Map<string, { name: string }>();
     const previouslyUsedFileNames = new Map<string, number>();
 
+    const getParentInfo = async (parentID: string) => {
+      if (parentInfoMap.has(parentID)) {
+        return parentInfoMap.get(parentID)!;
+      }
+
+      const parentFolder = await folderDB.getFolderInfo(parentID, userID);
+
+      if (!parentFolder) {
+        throw new NotFoundError("Parent Folder Not Found Error");
+      }
+
+      parentInfoMap.set(parentID, {
+        name: parentFolder.name,
+      });
+
+      return parentInfoMap.get(parentID)!;
+    };
+
+    const getFileName = (file: FileInterface, parentID: string) => {
+      const key = `${parentID}/${file.filename}`;
+
+      if (!previouslyUsedFileNames.has(key)) {
+        previouslyUsedFileNames.set(key, 1);
+        return file.filename;
+      } else {
+        const counter = previouslyUsedFileNames.get(key)!;
+        const extensionSplit = file.filename.split(".");
+        const extension = extensionSplit[extensionSplit.length - 1];
+
+        const filenameWithoutExtension = extensionSplit.slice(0, -1).join(".");
+
+        previouslyUsedFileNames.set(key, +counter + 1);
+
+        return `${filenameWithoutExtension}-${counter}${
+          extension ? `.${extension}` : ""
+        }`;
+      }
+    };
+
+    const formatName = (name: string) => {
+      return name.replace(/[/\\?%*:|"<>]/g, "-").trim();
+    };
+
     for (const folderID of folderIDs) {
       const folder = await folderDB.getFolderInfo(folderID, userID);
 
@@ -204,50 +247,14 @@ class StorageService {
         for (const parent of parentSplit) {
           if (parent === "/") continue;
 
-          if (!parentInfoMap.has(parent)) {
-            const parentFolder = await folderDB.getFolderInfo(parent, userID);
-            if (!parentFolder)
-              throw new NotFoundError("Parent Folder Not Found Error");
-            parentInfoMap.set(parent, {
-              name: parentFolder.name,
-            });
+          const parentInfo = await getParentInfo(parent);
 
-            directory += parentFolder.name + "/";
-          } else {
-            const savedName = parentInfoMap.get(parent)!.name;
-            directory += savedName + "/";
-          }
+          directory += formatName(parentInfo.name) + "/";
         }
 
-        if (
-          previouslyUsedFileNames.has(
-            `${file.metadata.parent}/${file.filename}`
-          )
-        ) {
-          const counter = previouslyUsedFileNames.get(
-            `${file.metadata.parent}/${file.filename}`
-          )!;
-          const extensionSplit = file.filename.split(".");
-          const extension = extensionSplit[extensionSplit.length - 1];
+        const fileName = formatName(getFileName(file, file.metadata.parent));
 
-          const filenameWithoutExtension = extensionSplit
-            .slice(0, -1)
-            .join(".");
-
-          directory += `${filenameWithoutExtension}-${counter}${
-            extension ? `.${extension}` : ""
-          }`;
-          previouslyUsedFileNames.set(
-            `${file.metadata.parent}/${file.filename}`,
-            +counter + 1
-          );
-        } else {
-          directory += file.filename;
-          previouslyUsedFileNames.set(
-            `${file.metadata.parent}/${file.filename}`,
-            1
-          );
-        }
+        directory += fileName;
 
         const IV = file.metadata.IV;
 
@@ -302,24 +309,9 @@ class StorageService {
         console.log("decipher stream error", e);
       });
 
-      if (previouslyUsedFileNames.has(file.filename)) {
-        const counter = previouslyUsedFileNames.get(file.filename)!;
-        const extensionSplit = file.filename.split(".");
-        const extension = extensionSplit[extensionSplit.length - 1];
+      const fileName = formatName(getFileName(file, "/"));
 
-        const filenameWithoutExtension = extensionSplit.slice(0, -1).join(".");
-
-        archive.append(readStream.pipe(decipher), {
-          name: `${filenameWithoutExtension}-${counter}${
-            extension ? `.${extension}` : ""
-          }`,
-        });
-
-        previouslyUsedFileNames.set(file.filename, +counter + 1);
-      } else {
-        archive.append(readStream.pipe(decipher), { name: file.filename });
-        previouslyUsedFileNames.set(file.filename, 1);
-      }
+      archive.append(readStream.pipe(decipher), { name: fileName });
     }
 
     archive.finalize();

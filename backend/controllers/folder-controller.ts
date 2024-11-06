@@ -219,8 +219,6 @@ class FolderController {
       const folderIDs = (req.query.folderIDs as string[]) || [];
       const fileIDs = (req.query.fileIDs as string[]) || [];
 
-      console.log("folderIDs", folderIDs);
-
       const { archive } = await chunkService.downloadZip(
         userID,
         folderIDs,
