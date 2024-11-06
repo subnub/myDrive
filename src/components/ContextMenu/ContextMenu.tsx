@@ -10,6 +10,7 @@ import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
 import { useFoldersClient } from "../../hooks/folders";
 import {
   deleteFolderAPI,
+  downloadZIPAPI,
   renameFolder,
   restoreFolderAPI,
   trashFolderAPI,
@@ -255,6 +256,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   const downloadItem = () => {
     closeContext();
     if (file) downloadFileAPI(file._id);
+    if (folder) downloadZIPAPI([folder._id], []);
   };
 
   const selectItemMultiSelect = () => {
@@ -326,7 +328,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
             <p className="ml-2.5 text-sm">Share</p>
           </div>
         )}
-        {!folderMode && !isTrash && (
+        {!isTrash && (
           <div
             onClick={downloadItem}
             className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"

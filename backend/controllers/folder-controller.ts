@@ -209,6 +209,40 @@ class FolderController {
     }
   };
 
+  downloadZip = async (req: RequestType, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const folderIDs = (req.query.folderIDs as string[]) || [];
+      const fileIDs = (req.query.fileIDs as string[]) || [];
+
+      console.log("folderIDs", folderIDs);
+
+      const { archive } = await chunkService.downloadZip(
+        userID,
+        folderIDs,
+        fileIDs
+      );
+
+      archive.on("error", (e: Error) => {
+        console.log("archive error", e);
+      });
+
+      res.set("Content-Type", "application/zip");
+      res.set(
+        "Content-Disposition",
+        `attachment; filename="myDrive-${new Date().toISOString()}.zip"`
+      );
+
+      archive.pipe(res);
+    } catch (e) {
+      next(e);
+    }
+  };
+
   getMoveFolderList = async (
     req: RequestType,
     res: Response,

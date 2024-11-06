@@ -1,11 +1,9 @@
-import Folder, { FolderInterface } from "../../models/folder-model";
 import InternalServerError from "../../utils/InternalServerError";
 import NotFoundError from "../../utils/NotFoundError";
 import FileDB from "../../db/mongoDB/fileDB";
 import FolderDB from "../../db/mongoDB/folderDB";
-import sortBySwitch from "../../utils/sortBySwitchFolder";
-import { UserInterface } from "../../models/user-model";
 import { FolderListQueryType } from "../../types/folder-types";
+import UserDB from "../../db/mongoDB/userDB";
 
 type userAccessType = {
   _id: string;
@@ -16,6 +14,7 @@ type userAccessType = {
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
+const userDB = new UserDB();
 
 class FolderService {
   createFolder = async (userID: string, name: string, parent: string) => {

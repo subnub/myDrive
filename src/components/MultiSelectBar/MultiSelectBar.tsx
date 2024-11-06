@@ -18,6 +18,10 @@ import {
 import RestoreIcon from "../../icons/RestoreIcon";
 import { useUtils } from "../../hooks/utils";
 import { toast } from "react-toastify";
+import DownloadIcon from "../../icons/DownloadIcon";
+import { downloadZIPAPI } from "../../api/foldersAPI";
+import CloseIcon from "../../icons/CloseIcon";
+import { useLocation } from "react-router-dom";
 
 const MultiSelectBar: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -37,13 +41,19 @@ const MultiSelectBar: React.FC = () => {
 
   const { isTrash, isMedia } = useUtils();
 
+  const location = useLocation();
+
+  // useEffect(() => {
+  //   if (ignoreFirstMount.current) {
+  //     ignoreFirstMount.current = false;
+  //   } else {
+  //     closeMultiSelect();
+  //   }
+  // }, [isTrash]);
+
   useEffect(() => {
-    if (ignoreFirstMount.current) {
-      ignoreFirstMount.current = false;
-    } else {
-      closeMultiSelect();
-    }
-  }, [isTrash]);
+    closeMultiSelect();
+  }, [location.pathname]);
 
   const closeMultiSelect = useCallback(() => {
     dispatch(resetMultiSelect());
@@ -126,6 +136,22 @@ const MultiSelectBar: React.FC = () => {
     dispatch(setMoveModal({ type: "multi-select", file: null, folder: null }));
   };
 
+  const downloadItems = () => {
+    const folders = [];
+    const files = [];
+
+    for (const key of Object.keys(multiSelectMap)) {
+      const item = multiSelectMap[key];
+      if (item.type === "folder") {
+        folders.push(item.id);
+      } else {
+        files.push(item.id);
+      }
+    }
+
+    downloadZIPAPI(folders, files);
+  };
+
   if (!multiSelectMode) return <div></div>;
 
   return (
@@ -133,37 +159,40 @@ const MultiSelectBar: React.FC = () => {
       <div className="border border-[#ebe9f9] bg-[#ebe9f9] rounded-full p-2 px-5 text-black text-sm mb-4 max-w-[600px] w-full mt-4 min-w-[300px] shadow-lg">
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center">
-            <img
-              className="w-[22px] h-[22px] cursor-pointer"
-              src="/images/close_icon.png"
+            <CloseIcon
+              className="w-5 h-5 cursor-pointer hover:text-primary"
               onClick={closeMultiSelect}
             />
-            <p className="ml-4">{multiSelectCount} selected</p>
+            <p className="ml-4 select-none">{multiSelectCount} selected</p>
           </div>
 
           <div className="flex flex-row items-center">
             {!isTrash && (
               <React.Fragment>
                 <TrashIcon
-                  className="ml-4 cursor-pointer w-5 h-5"
+                  className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
                   onClick={trashItems}
                 />
                 {!isMedia && (
                   <Moveicon
-                    className="ml-4 cursor-pointer w-5 h-5"
+                    className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
                     onClick={moveItems}
                   />
                 )}
+                <DownloadIcon
+                  className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
+                  onClick={downloadItems}
+                />
               </React.Fragment>
             )}
             {isTrash && (
               <React.Fragment>
                 <RestoreIcon
-                  className="ml-4 cursor-pointer w-5 h-5"
+                  className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
                   onClick={restoreItems}
                 />
                 <TrashIcon
-                  className="ml-4 cursor-pointer text-red-500 w-5 h-5"
+                  className="ml-4 cursor-pointer text-red-500 w-5 h-5 hover:text-red-700"
                   onClick={deleteItems}
                 />
               </React.Fragment>

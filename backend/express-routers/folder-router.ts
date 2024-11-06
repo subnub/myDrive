@@ -39,6 +39,8 @@ router.get(
   folderController.getMoveFolderList
 );
 
+router.get("/folder-service/download-zip", auth, folderController.downloadZip);
+
 // PATCH
 
 router.patch(

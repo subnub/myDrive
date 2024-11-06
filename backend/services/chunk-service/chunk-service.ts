@@ -20,6 +20,7 @@ import { Readable } from "stream";
 import ThumbnailDB from "../../db/mongoDB/thumbnailDB";
 import UserDB from "../../db/mongoDB/userDB";
 import fixEndChunkLength from "./utils/fixEndChunkLength";
+import archiver from "archiver";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -154,6 +155,176 @@ class StorageService {
       decipher,
       file: currentFile,
     };
+  };
+
+  downloadZip = async (
+    userID: string,
+    folderIDs: string[],
+    fileIDs: string[]
+  ) => {
+    const archive = archiver("zip", {
+      zlib: { level: 9 },
+    });
+
+    const user = await userDB.getUserInfo(userID);
+
+    if (!user) throw new NotFoundError("User Not Found");
+
+    const password = user.getEncryptionKey();
+
+    if (!password) throw new ForbiddenError("Invalid Encryption Key");
+
+    const parentInfoMap = new Map<string, { name: string }>();
+    const previouslyUsedFileNames = new Map<string, number>();
+
+    for (const folderID of folderIDs) {
+      const folder = await folderDB.getFolderInfo(folderID, userID);
+
+      if (!folder) throw new NotFoundError("Folder Info Not Found Error");
+
+      const parentList = [...folder.parentList, folder._id];
+
+      const files = await fileDB.getFileListByIncludedParent(
+        userID,
+        parentList.toString()
+      );
+
+      for (const file of files) {
+        const fileParent = await folderDB.getFolderInfo(
+          file.metadata.parent,
+          userID
+        );
+
+        if (!fileParent) throw new NotFoundError("File Parent Not Found Error");
+
+        let directory = "";
+
+        const parentSplit = file.metadata.parentList.split(",");
+
+        for (const parent of parentSplit) {
+          if (parent === "/") continue;
+
+          if (!parentInfoMap.has(parent)) {
+            const parentFolder = await folderDB.getFolderInfo(parent, userID);
+            if (!parentFolder)
+              throw new NotFoundError("Parent Folder Not Found Error");
+            parentInfoMap.set(parent, {
+              name: parentFolder.name,
+            });
+
+            directory += parentFolder.name + "/";
+          } else {
+            const savedName = parentInfoMap.get(parent)!.name;
+            directory += savedName + "/";
+          }
+        }
+
+        if (
+          previouslyUsedFileNames.has(
+            `${file.metadata.parent}/${file.filename}`
+          )
+        ) {
+          const counter = previouslyUsedFileNames.get(
+            `${file.metadata.parent}/${file.filename}`
+          )!;
+          const extensionSplit = file.filename.split(".");
+          const extension = extensionSplit[extensionSplit.length - 1];
+
+          const filenameWithoutExtension = extensionSplit
+            .slice(0, -1)
+            .join(".");
+
+          directory += `${filenameWithoutExtension}-${counter}${
+            extension ? `.${extension}` : ""
+          }`;
+          previouslyUsedFileNames.set(
+            `${file.metadata.parent}/${file.filename}`,
+            +counter + 1
+          );
+        } else {
+          directory += file.filename;
+          previouslyUsedFileNames.set(
+            `${file.metadata.parent}/${file.filename}`,
+            1
+          );
+        }
+
+        const IV = file.metadata.IV;
+
+        const readStreamParams = createGenericParams({
+          filePath: file.metadata.filePath,
+          Key: file.metadata.s3ID,
+        });
+
+        const readStream = storageActions.createReadStream(readStreamParams);
+
+        readStream.on("error", (e: Error) => {
+          console.log("read stream error", e);
+        });
+
+        const CIPHER_KEY = crypto
+          .createHash("sha256")
+          .update(password)
+          .digest();
+
+        const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
+
+        decipher.on("error", (e: Error) => {
+          console.log("decipher stream error", e);
+        });
+
+        archive.append(readStream.pipe(decipher), { name: directory });
+      }
+    }
+
+    for (const fileID of fileIDs) {
+      const file = await fileDB.getFileInfo(fileID, userID);
+
+      if (!file) throw new NotFoundError("File Info Not Found Error");
+      const IV = file.metadata.IV;
+
+      const readStreamParams = createGenericParams({
+        filePath: file.metadata.filePath,
+        Key: file.metadata.s3ID,
+      });
+
+      const readStream = storageActions.createReadStream(readStreamParams);
+
+      readStream.on("error", (e: Error) => {
+        console.log("read stream error", e);
+      });
+
+      const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
+
+      const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
+
+      decipher.on("error", (e: Error) => {
+        console.log("decipher stream error", e);
+      });
+
+      if (previouslyUsedFileNames.has(file.filename)) {
+        const counter = previouslyUsedFileNames.get(file.filename)!;
+        const extensionSplit = file.filename.split(".");
+        const extension = extensionSplit[extensionSplit.length - 1];
+
+        const filenameWithoutExtension = extensionSplit.slice(0, -1).join(".");
+
+        archive.append(readStream.pipe(decipher), {
+          name: `${filenameWithoutExtension}-${counter}${
+            extension ? `.${extension}` : ""
+          }`,
+        });
+
+        previouslyUsedFileNames.set(file.filename, +counter + 1);
+      } else {
+        archive.append(readStream.pipe(decipher), { name: file.filename });
+        previouslyUsedFileNames.set(file.filename, 1);
+      }
+    }
+
+    archive.finalize();
+
+    return { archive };
   };
 
   getThumbnail = async (user: UserInterface, id: string) => {

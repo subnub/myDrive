@@ -596,7 +596,7 @@ class FileController {
     if (!req.user) {
       return;
     }
-    let responseSent = false;
+
     try {
       const user = req.user;
       const fileID = req.params.id;

@@ -1,5 +1,6 @@
 import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
+import { getUserToken } from "./user";
 
 interface QueryKeyParams {
   parent: string;
@@ -59,6 +60,31 @@ export const getMoveFolderListAPI = async ({
     },
   });
   return response.data;
+};
+
+export const downloadZIPAPI = async (
+  folderIDs: string[],
+  fileIDs: string[]
+) => {
+  await getUserToken();
+
+  // TODO: Change this
+  let url = `http://localhost:5173/api/folder-service/download-zip?`;
+
+  for (const folderID of folderIDs) {
+    url += `folderIDs[]=${folderID}&`;
+  }
+
+  for (const fileID of fileIDs) {
+    url += `fileIDs[]=${fileID}&`;
+  }
+
+  const link = document.createElement("a");
+  document.body.appendChild(link);
+  link.href = url;
+  link.setAttribute("type", "hidden");
+  link.setAttribute("download", "true");
+  link.click();
 };
 
 // POST
