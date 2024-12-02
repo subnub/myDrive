@@ -22,6 +22,7 @@ import UserDB from "../../db/mongoDB/userDB";
 import fixEndChunkLength from "./utils/fixEndChunkLength";
 import archiver from "archiver";
 import async from "async";
+import getFolderBusboyData from "./utils/getFolderUploadBusboyData";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -129,7 +130,21 @@ class StorageService {
     };
   };
 
-  uploadFolder = async (user: UserInterface, busboy: any, req: Request) => {};
+  uploadFolder = async (user: UserInterface, busboy: any, req: Request) => {
+    const password = user.getEncryptionKey();
+
+    if (!password) throw new ForbiddenError("Invalid Encryption Key");
+
+    const initVect = crypto.randomBytes(16);
+
+    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
+
+    const cipher = crypto.createCipheriv("aes256", CIPHER_KEY, initVect);
+
+    const fileData = await getFolderBusboyData(busboy);
+
+    console.log("file data", fileData);
+  };
 
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {
     const currentFile = await fileDB.getFileInfo(fileID, user._id.toString());

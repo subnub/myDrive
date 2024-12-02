@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { createFolderAPI } from "../../api/foldersAPI";
+import { createFolderAPI, uploadFolderAPI } from "../../api/foldersAPI";
 import { useFoldersClient } from "../../hooks/folders";
 import { useClickOutOfBounds } from "../../hooks/utils";
 import { showCreateFolderPopup } from "../../popups/folder";
@@ -17,7 +17,8 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
   const { invalidateFoldersCache } = useFoldersClient();
   const { wrapperRef } = useClickOutOfBounds(props.closeDropdown);
   const uploadRef: RefObject<HTMLInputElement> = useRef(null);
-  const { uploadFiles } = useUploader();
+  const uploadFolderRef: RefObject<HTMLInputElement> = useRef(null);
+  const { uploadFiles, uploadFolder } = useUploader();
 
   const createFolder = async () => {
     props.closeDropdown();
@@ -41,9 +42,28 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
     uploadFiles(files);
   };
 
+  const handleFolderUpload = (e: React.FormEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    props.closeDropdown();
+
+    const items = uploadFolderRef.current?.files;
+
+    if (!items) return;
+
+    console.log("items", items);
+
+    uploadFolder(items);
+  };
+
   const triggerFileUpload = () => {
     if (uploadRef.current) {
       uploadRef.current.click();
+    }
+  };
+
+  const triggerFolderUpload = () => {
+    if (uploadFolderRef.current) {
+      uploadFolderRef.current.click();
     }
   };
 
@@ -55,6 +75,14 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
         type="file"
         multiple={true}
         onChange={handleUpload}
+      />
+      <input
+        className="hidden"
+        ref={uploadFolderRef}
+        type="file"
+        // @ts-ignore
+        webkitdirectory="true"
+        onChange={handleFolderUpload}
       />
       <ul className="rounded-sm overflow-hidden shadow-lg">
         <li>
@@ -75,6 +103,15 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
           >
             <CreateFolderIcon className="w-5 h-5 mr-2.5 text-primary" />
             <p className="text-sm">Create Folder</p>
+          </a>
+        </li>
+        <li>
+          <a
+            className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
+            onClick={triggerFolderUpload}
+          >
+            <CreateFolderIcon className="w-5 h-5 mr-2.5 text-primary" />
+            <p className="text-sm">Upload Folder</p>
           </a>
         </li>
       </ul>

@@ -26,6 +26,7 @@ import {
 } from "../utils/cancelTokenManager";
 import { debounce } from "lodash";
 import { addUpload, editUpload } from "../reducers/uploader";
+import { uploadFolderAPI } from "../api/foldersAPI";
 
 export const useFiles = (enabled = true) => {
   const params = useParams();
@@ -279,5 +280,74 @@ export const useUploader = () => {
     }
   };
 
-  return { uploadFiles };
+  const uploadFolder = (files: FileList) => {
+    const data = new FormData();
+
+    const parent = params.id || "/";
+
+    data.append("parent", parent);
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      data.append(
+        "file-data",
+        JSON.stringify({
+          name: currentFile.name,
+          size: currentFile.size,
+          type: currentFile.type,
+          path: currentFile.webkitRelativePath,
+        })
+      );
+    }
+
+    data.append("total-files", files.length.toString());
+
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i];
+      console.log("current file", currentFile.webkitRelativePath);
+      data.append("file", currentFile, "test");
+    }
+
+    const CancelToken = axiosNonInterceptor.CancelToken;
+    const source = CancelToken.source();
+
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Transfere-Encoding": "chunked",
+      },
+      onUploadProgress: (progressEvent: ProgressEvent<EventTarget>) => {
+        const currentProgress = Math.round(
+          (progressEvent.loaded / progressEvent.total) * 100
+        );
+
+        console.log("progress", currentProgress);
+      },
+      cancelToken: source.token,
+    };
+
+    uploadFolderAPI(data, config)
+      .then(() => {
+        // dispatch(
+        //   editUpload({
+        //     id: currentID,
+        //     updateData: { completed: true, progress: 100 },
+        //   })
+        // );
+        // removeFileUploadCancelToken(currentID);
+        console.log("uploaded folder");
+      })
+      .catch((e) => {
+        console.log("Error uploading folder", e);
+        // dispatch(
+        //   editUpload({
+        //     id: currentID,
+        //     updateData: { canceled: true },
+        //   })
+        // );
+        // removeFileUploadCancelToken(currentID);
+      });
+  };
+
+  return { uploadFiles, uploadFolder };
 };

@@ -13,6 +13,7 @@ import {
   restoreFolderValidationRules,
   trashFolderValidationRules,
 } from "../middleware/folders/folder-middleware";
+import authFullUser from "../middleware/authFullUser";
 
 const folderController = new FolderController();
 const router = Router();
@@ -95,6 +96,12 @@ router.post(
   auth,
   createFolderValidationRules,
   folderController.createFolder
+);
+
+router.post(
+  "/folder-service/upload",
+  authFullUser,
+  folderController.uploadFolder
 );
 
 export default router;

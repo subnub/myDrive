@@ -17,6 +17,12 @@ interface RequestType extends Request {
   encryptedToken?: string;
 }
 
+interface RequestTypeFullUser extends Request {
+  user?: UserInterface;
+  encryptedToken?: string;
+  accessTokenStreamVideo?: string;
+}
+
 const chunkService = new ChunkService();
 
 class FolderController {
@@ -62,6 +68,34 @@ class FolderController {
       res.send();
     } catch (e) {
       next(e);
+    }
+  };
+
+  uploadFolder = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const user = req.user;
+      const busboy = req.busboy;
+
+      console.log("upload folder request");
+
+      busboy.on("error", (e: Error) => {
+        console.log("busboy error", e);
+        // handleError();
+      });
+
+      req.pipe(busboy);
+
+      await chunkService.uploadFolder(user, busboy, req);
+    } catch (e) {
+      console.log("upload folder error", e);
     }
   };
 

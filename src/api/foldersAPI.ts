@@ -97,6 +97,12 @@ export const createFolderAPI = async (name: string, parent?: string) => {
   return response.data;
 };
 
+export const uploadFolderAPI = async (data: FormData, config: any) => {
+  const url = "/folder-service/upload";
+  const response = await axios.post(url, data, config);
+  return response.data;
+};
+
 // PATCH
 
 export const renameFolder = async (folderID: string, name: string) => {
