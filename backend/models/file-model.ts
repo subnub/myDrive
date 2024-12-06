@@ -61,6 +61,7 @@ const fileSchema = new mongoose.Schema({
       s3ID: String,
       personalFile: Boolean,
       trashed: Boolean,
+      processingFile: Boolean,
     },
     required: true,
   },
@@ -81,6 +82,7 @@ export interface FileMetadateInterface {
   s3ID?: string;
   personalFile?: boolean;
   trashed?: boolean | null;
+  processingFile?: boolean;
 }
 
 export interface FileInterface

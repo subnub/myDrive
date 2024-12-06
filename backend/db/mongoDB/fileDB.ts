@@ -34,7 +34,11 @@ class DbUtil {
   };
 
   getQuickList = async (userID: string, limit: number) => {
-    let query: any = { "metadata.owner": userID, "metadata.trashed": null };
+    let query: any = {
+      "metadata.owner": userID,
+      "metadata.trashed": null,
+      "metadata.processingFile": null,
+    };
 
     const fileList = await File.find(query)
       .sort({ uploadDate: -1 })
@@ -115,6 +119,27 @@ class DbUtil {
   };
 
   // UPDATE
+
+  updateFolderUploadedFile = async (
+    fileID: string,
+    userID: string,
+    parent: string,
+    parentList: string
+  ) => {
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      {
+        $set: {
+          "metadata.parent": parent,
+          "metadata.parentList": parentList,
+        },
+        $unset: { "metadata.processingFile": null },
+      },
+      { new: true }
+    );
+
+    return file;
+  };
 
   removeOneTimePublicLink = async (
     fileID: string | mongoose.Types.ObjectId

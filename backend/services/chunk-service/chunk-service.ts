@@ -141,9 +141,114 @@ class StorageService {
 
     const cipher = crypto.createCipheriv("aes256", CIPHER_KEY, initVect);
 
-    const fileData = await getFolderBusboyData(busboy);
+    console.log("1");
+    const { fileDataMap, parent } = await getFolderBusboyData(busboy, user);
+    console.log("2");
+    const keys = Object.keys(fileDataMap);
 
-    console.log("file data", fileData);
+    const folderPathsToCreate: Record<string, boolean> = {};
+
+    const parentList = [];
+
+    if (parent !== "/") {
+      const parentFolder = await folderDB.getFolderInfo(
+        parent,
+        user._id.toString()
+      );
+      if (!parentFolder) throw new NotFoundError("Parent Folder Not Found");
+      parentList.push(...parentFolder.parentList, parentFolder._id.toString());
+    } else {
+      parentList.push("/");
+    }
+
+    const parentName = fileDataMap[keys[0]].path.split("/")[0];
+
+    console.log("parent name", parentName);
+
+    const rootFolder = await folderDB.createFolder({
+      name: parentName,
+      parent: parentList[parentList.length - 1],
+      owner: user._id.toString(),
+      parentList: parentList,
+    });
+
+    parentList.push(rootFolder._id.toString());
+
+    for (const key of keys) {
+      const pathSplit = fileDataMap[key].path.split("/");
+      const path = pathSplit.slice(1, pathSplit.length - 1).join("/");
+      // console.log("path", path);
+
+      if (path && !folderPathsToCreate[path]) {
+        folderPathsToCreate[path] = true;
+      }
+    }
+
+    const sortedFolderPaths = Object.keys(folderPathsToCreate).sort();
+
+    const foldersCreated: Record<string, FolderInterface> = {};
+
+    for (const folderPath of sortedFolderPaths) {
+      // const parentListData = [];
+      // const tempFolderNameList = []
+      const subFolders = folderPath.split("/");
+      const parentDirectory = subFolders
+        .slice(0, subFolders.length - 1)
+        .join("/");
+
+      const tempParentList = [];
+
+      if (parentDirectory && foldersCreated[parentDirectory]) {
+        tempParentList.push(
+          ...foldersCreated[parentDirectory].parentList,
+          foldersCreated[parentDirectory]._id.toString()
+        );
+      } else {
+        tempParentList.push(...parentList);
+      }
+      // for (const subFolder of subFolders) {
+      //   // if
+      // }
+      const folderToCreate = subFolders[subFolders.length - 1];
+      //console.log("folder to create", folderToCreate);
+
+      const folder = await folderDB.createFolder({
+        name: folderToCreate,
+        parent: tempParentList[tempParentList.length - 1],
+        owner: user._id.toString(),
+        parentList: tempParentList,
+      });
+
+      foldersCreated[folderPath] = folder;
+    }
+
+    for (const key of keys) {
+      const currentFile = fileDataMap[key];
+      const parentSplit = currentFile.path.split("/");
+      const parentDirectory = parentSplit
+        .slice(1, parentSplit.length - 1)
+        .join("/");
+      if (parentDirectory && foldersCreated[parentDirectory]) {
+        await fileDB.updateFolderUploadedFile(
+          currentFile.uploadedFileId,
+          user._id.toString(),
+          foldersCreated[parentDirectory]._id.toString(),
+          [
+            ...foldersCreated[parentDirectory].parentList,
+            foldersCreated[parentDirectory]._id.toString(),
+          ].toString()
+        );
+      } else {
+        await fileDB.updateFolderUploadedFile(
+          currentFile.uploadedFileId,
+          user._id.toString(),
+          rootFolder._id.toString(),
+          [...rootFolder.parentList, rootFolder._id.toString()].toString()
+        );
+      }
+    }
+
+    console.log("folders created", fileDataMap);
   };
 
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {

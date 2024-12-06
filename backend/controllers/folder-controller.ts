@@ -2,6 +2,7 @@ import FolderService from "../services/folder-service/folder-service";
 import { NextFunction, Request, Response } from "express";
 import ChunkService from "../services/chunk-service/chunk-service";
 import { FolderListQueryType } from "../types/folder-types";
+import { UserInterface } from "../models/user-model";
 
 const folderService = new FolderService();
 
@@ -89,6 +90,18 @@ class FolderController {
       busboy.on("error", (e: Error) => {
         console.log("busboy error", e);
         // handleError();
+      });
+
+      req.on("end", () => {
+        console.log("end req");
+      });
+
+      req.on("close", () => {
+        console.log("close req");
+      });
+
+      req.on("error", () => {
+        console.log("error req");
       });
 
       req.pipe(busboy);

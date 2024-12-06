@@ -296,6 +296,7 @@ export const useUploader = () => {
           size: currentFile.size,
           type: currentFile.type,
           path: currentFile.webkitRelativePath,
+          index: i,
         })
       );
     }
@@ -305,7 +306,7 @@ export const useUploader = () => {
     for (let i = 0; i < files.length; i++) {
       const currentFile = files[i];
       console.log("current file", currentFile.webkitRelativePath);
-      data.append("file", currentFile, "test");
+      data.append("file", currentFile, i.toString());
     }
 
     const CancelToken = axiosNonInterceptor.CancelToken;

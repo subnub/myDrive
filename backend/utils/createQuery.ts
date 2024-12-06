@@ -20,6 +20,7 @@ export interface FileQueryInterface {
   "metadata.trashed"?: boolean | null;
   "metadata.hasThumbnail"?: boolean | null;
   "metadata.isVideo"?: boolean | null;
+  "metadata.processingFile"?: boolean | null;
 }
 
 export const createFileQuery = ({
@@ -66,6 +67,8 @@ export const createFileQuery = ({
       query["metadata.isVideo"] = true;
     }
   }
+
+  query["metadata.processingFile"] = null;
 
   return query;
 };
