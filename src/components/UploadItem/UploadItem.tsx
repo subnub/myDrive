@@ -8,19 +8,8 @@ import AlertIcon from "../../icons/AlertIcon";
 import { UploadItemType } from "../../reducers/uploader";
 
 const UploadItem: React.FC<UploadItemType> = (props) => {
-  const filesRefreshed = useRef(false);
-  const { invalidateFilesCache } = useFilesClient();
-  const { invalidateQuickFilesCache } = useQuickFilesClient();
-  const { completed, canceled, progress, name, id } = props;
+  const { completed, canceled, progress, name, id, type } = props;
   const cancelToken = getCancelToken(id);
-
-  useEffect(() => {
-    if (completed && !filesRefreshed.current) {
-      invalidateFilesCache();
-      invalidateQuickFilesCache();
-      filesRefreshed.current = true;
-    }
-  }, [completed]);
 
   const cancelUpload = () => {
     cancelToken.cancel();
@@ -44,7 +33,7 @@ const UploadItem: React.FC<UploadItemType> = (props) => {
   return (
     <div className="relative p-[20px] flex justify-between items-start hover:bg-[#f6f5fd]">
       <div className="w-full">
-        <div className="flex justify-between items-center mb-[15px]">
+        <div className="flex justify-between items-center mb-1">
           <div className="mr-[30px]">
             <p className="text-[15px] leading-[18px] font-medium max-w-[160px] overflow-hidden whitespace-nowrap text-ellipsis">
               {name}
@@ -55,12 +44,12 @@ const UploadItem: React.FC<UploadItemType> = (props) => {
           </div>
         </div>
         <div>
-          <div className="w-full bg-[#e0dcf3] rounded-[1.5px] h-[3px] relative">
-            <div
-              className="h-[3px] bg-[#3c85ee] rounded-[1.5px]"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
+          {(type === "file" || completed) && (
+            <progress className="custom-progress" value={progress} max="100" />
+          )}
+          {type === "folder" && !completed && (
+            <progress className="custom-progress indeterminate" />
+          )}
         </div>
       </div>
     </div>

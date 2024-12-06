@@ -107,6 +107,8 @@ class FolderController {
       req.pipe(busboy);
 
       await chunkService.uploadFolder(user, busboy, req);
+
+      res.send();
     } catch (e) {
       console.log("upload folder error", e);
     }

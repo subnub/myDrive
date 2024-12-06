@@ -27,6 +27,7 @@ import {
 import { debounce } from "lodash";
 import { addUpload, editUpload } from "../reducers/uploader";
 import { uploadFolderAPI } from "../api/foldersAPI";
+import { useFoldersClient } from "./folders";
 
 export const useFiles = (enabled = true) => {
   const params = useParams();
@@ -201,6 +202,9 @@ export const useSearchSuggestions = (searchText: string) => {
 export const useUploader = () => {
   const dispatch = useAppDispatch();
   const params = useParams();
+  const { invalidateFilesCache } = useFilesClient();
+  const { invalidateQuickFilesCache } = useQuickFilesClient();
+  const { invalidateFoldersCache } = useFoldersClient();
 
   const debounceDispatch = debounce(dispatch, 200);
 
@@ -246,6 +250,7 @@ export const useUploader = () => {
           completed: false,
           canceled: false,
           size: currentFile.size,
+          type: "file",
         })
       );
 
@@ -266,6 +271,8 @@ export const useUploader = () => {
             })
           );
           removeFileUploadCancelToken(currentID);
+          invalidateFilesCache();
+          invalidateQuickFilesCache();
         })
         .catch((e) => {
           console.log("Error uploading file", e);
@@ -287,6 +294,8 @@ export const useUploader = () => {
 
     data.append("parent", parent);
 
+    if (files.length === 0) return;
+
     for (let i = 0; i < files.length; i++) {
       const currentFile = files[i];
       data.append(
@@ -300,6 +309,11 @@ export const useUploader = () => {
         })
       );
     }
+
+    const firstItemPath = files[0].webkitRelativePath;
+    const firstItemPathSplit = firstItemPath.split("/");
+
+    const parentName = firstItemPathSplit[0];
 
     data.append("total-files", files.length.toString());
 
@@ -317,36 +331,45 @@ export const useUploader = () => {
         "Content-Type": "multipart/form-data",
         "Transfere-Encoding": "chunked",
       },
-      onUploadProgress: (progressEvent: ProgressEvent<EventTarget>) => {
-        const currentProgress = Math.round(
-          (progressEvent.loaded / progressEvent.total) * 100
-        );
-
-        console.log("progress", currentProgress);
-      },
       cancelToken: source.token,
     };
 
+    const currentID = uuid();
+
+    dispatch(
+      addUpload({
+        id: currentID,
+        progress: 0,
+        name: parentName,
+        completed: false,
+        canceled: false,
+        size: 100,
+        type: "folder",
+      })
+    );
+
     uploadFolderAPI(data, config)
       .then(() => {
-        // dispatch(
-        //   editUpload({
-        //     id: currentID,
-        //     updateData: { completed: true, progress: 100 },
-        //   })
-        // );
-        // removeFileUploadCancelToken(currentID);
-        console.log("uploaded folder");
+        dispatch(
+          editUpload({
+            id: currentID,
+            updateData: { completed: true, progress: 100 },
+          })
+        );
+        removeFileUploadCancelToken(currentID);
+        invalidateFilesCache();
+        invalidateQuickFilesCache();
+        invalidateFoldersCache();
       })
       .catch((e) => {
         console.log("Error uploading folder", e);
-        // dispatch(
-        //   editUpload({
-        //     id: currentID,
-        //     updateData: { canceled: true },
-        //   })
-        // );
-        // removeFileUploadCancelToken(currentID);
+        dispatch(
+          editUpload({
+            id: currentID,
+            updateData: { canceled: true },
+          })
+        );
+        removeFileUploadCancelToken(currentID);
       });
   };
 

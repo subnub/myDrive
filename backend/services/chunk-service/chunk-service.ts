@@ -131,19 +131,8 @@ class StorageService {
   };
 
   uploadFolder = async (user: UserInterface, busboy: any, req: Request) => {
-    const password = user.getEncryptionKey();
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const initVect = crypto.randomBytes(16);
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const cipher = crypto.createCipheriv("aes256", CIPHER_KEY, initVect);
-
-    console.log("1");
     const { fileDataMap, parent } = await getFolderBusboyData(busboy, user);
-    console.log("2");
+
     const keys = Object.keys(fileDataMap);
 
     const folderPathsToCreate: Record<string, boolean> = {};
@@ -163,8 +152,6 @@ class StorageService {
 
     const parentName = fileDataMap[keys[0]].path.split("/")[0];
 
-    console.log("parent name", parentName);
-
     const rootFolder = await folderDB.createFolder({
       name: parentName,
       parent: parentList[parentList.length - 1],
@@ -177,7 +164,6 @@ class StorageService {
     for (const key of keys) {
       const pathSplit = fileDataMap[key].path.split("/");
       const path = pathSplit.slice(1, pathSplit.length - 1).join("/");
-      // console.log("path", path);
 
       if (path && !folderPathsToCreate[path]) {
         folderPathsToCreate[path] = true;
@@ -189,8 +175,6 @@ class StorageService {
     const foldersCreated: Record<string, FolderInterface> = {};
 
     for (const folderPath of sortedFolderPaths) {
-      // const parentListData = [];
-      // const tempFolderNameList = []
       const subFolders = folderPath.split("/");
       const parentDirectory = subFolders
         .slice(0, subFolders.length - 1)
@@ -206,11 +190,8 @@ class StorageService {
       } else {
         tempParentList.push(...parentList);
       }
-      // for (const subFolder of subFolders) {
-      //   // if
-      // }
+
       const folderToCreate = subFolders[subFolders.length - 1];
-      //console.log("folder to create", folderToCreate);
 
       const folder = await folderDB.createFolder({
         name: folderToCreate,
@@ -247,8 +228,6 @@ class StorageService {
         );
       }
     }
-
-    console.log("folders created", fileDataMap);
   };
 
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {

@@ -7,6 +7,7 @@ export interface UploadItemType {
   completed: boolean;
   canceled: boolean;
   size: number;
+  type: "file" | "folder";
 }
 
 interface UploaderStateType {

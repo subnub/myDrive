@@ -7,6 +7,7 @@ import React, { RefObject, useRef } from "react";
 import { useUploader } from "../../hooks/files";
 import UploadFileIcon from "../../icons/UploadFileIcon";
 import CreateFolderIcon from "../../icons/CreateFolderIcon";
+import FolderUploadIcon from "../../icons/FolderUploadIcon";
 
 interface AddNewDropdownProps {
   closeDropdown: () => void;
@@ -110,7 +111,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
             className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
             onClick={triggerFolderUpload}
           >
-            <CreateFolderIcon className="w-5 h-5 mr-2.5 text-primary" />
+            <FolderUploadIcon className="w-5 h-5 mr-2.5 text-primary" />
             <p className="text-sm">Upload Folder</p>
           </a>
         </li>

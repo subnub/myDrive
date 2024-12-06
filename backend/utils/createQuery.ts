@@ -52,7 +52,7 @@ export const createFileQuery = ({
     query.filename = { $gt: startAtName };
   }
 
-  if (trashMode && parent === "/") {
+  if (trashMode) {
     query["metadata.trashed"] = true;
   } else {
     query["metadata.trashed"] = null;
