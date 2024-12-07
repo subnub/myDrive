@@ -140,12 +140,10 @@ const processData = (busboy: any, user: UserInterface) => {
           );
 
           writeStream.on("error", (e: Error) => {
-            console.log("write stream error", e);
             reject(e);
           });
 
           cipher.on("error", (e: Error) => {
-            console.log("cipher error", e);
             reject(e);
           });
 
@@ -177,7 +175,7 @@ const processData = (busboy: any, user: UserInterface) => {
 
           fileDataMap[currentFile!.index] = {
             ...fileDataMap[currentFile!.index],
-            uploadedFileId: file._id.toString(),
+            uploadedFileId: file._id!.toString(),
           };
 
           filesProcessed++;
@@ -187,7 +185,6 @@ const processData = (busboy: any, user: UserInterface) => {
           }
         }
       } catch (e) {
-        console.log("error", e);
         eventEmitter.emit("error", e);
       }
 
@@ -228,11 +225,9 @@ const processData = (busboy: any, user: UserInterface) => {
     );
 
     busboy.on("error", (e: Error) => {
-      console.log("busboy error", e);
       eventEmitter.emit("error", e);
     });
   } catch (e) {
-    console.log("get folder busboy data error", e);
     eventEmitter.emit("error", e);
   }
 

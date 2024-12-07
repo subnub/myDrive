@@ -32,12 +32,12 @@ const UploadItem: React.FC<UploadItemType> = (props) => {
   const ProgressBar = memo(() => {
     if (completed) {
       return <div className="custom-progress-success"></div>;
+    } else if (canceled) {
+      return <div className="custom-progress-failed"></div>;
     } else if (type === "file") {
       return (
         <progress className="custom-progress" value={progress} max="100" />
       );
-    } else if (canceled) {
-      return <div className="custom-progress-failed"></div>;
     } else {
       return <progress className="custom-progress indeterminate" />;
     }

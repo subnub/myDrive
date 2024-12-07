@@ -141,6 +141,20 @@ class DbUtil {
     return file;
   };
 
+  setThumbnail = async (fileID: string, thumbnailID: string) => {
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.hasThumbnail": false },
+      {
+        $set: {
+          "metadata.hasThumbnail": true,
+          "metadata.thumbnailID": thumbnailID,
+        },
+      }
+    );
+
+    return file;
+  };
+
   removeOneTimePublicLink = async (
     fileID: string | mongoose.Types.ObjectId
   ) => {
