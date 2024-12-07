@@ -14,9 +14,9 @@ import tempCreateVideoThumbnailFS from "./tempCreateVideoThumbnailFS";
 import { S3Actions } from "../actions/S3-actions";
 import { FilesystemActions } from "../actions/file-system-actions";
 import { createGenericParams } from "./storageHelper";
+import { getStorageActions } from "../actions/helper-actions";
 
-const storageActions =
-  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
+const storageActions = getStorageActions();
 
 const attemptToRemoveChunks = async (
   file: FileInterface,

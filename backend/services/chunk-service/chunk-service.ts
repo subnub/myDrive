@@ -3,7 +3,7 @@ import { UserInterface } from "../../models/user-model";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import NotFoundError from "../../utils/NotFoundError";
 import crypto from "crypto";
-import getBusboyData from "./utils/getBusboyData";
+import uploadFileToStorage from "./utils/getBusboyData";
 import videoChecker from "../../utils/videoChecker";
 import uuid from "uuid";
 import { FileInterface, FileMetadateInterface } from "../../models/file-model";
@@ -23,65 +23,20 @@ import fixEndChunkLength from "./utils/fixEndChunkLength";
 import archiver from "archiver";
 import async from "async";
 import getFolderBusboyData from "./utils/getFolderUploadBusboyData";
+import { getStorageActions } from "./actions/helper-actions";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
 const thumbnailDB = new ThumbnailDB();
 const userDB = new UserDB();
 
-const storageActions =
-  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
+const storageActions = getStorageActions();
 
 class StorageService {
   constructor() {}
 
   uploadFile = async (user: UserInterface, busboy: any, req: Request) => {
-    const password = user.getEncryptionKey();
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const initVect = crypto.randomBytes(16);
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const cipher = crypto.createCipheriv("aes256", CIPHER_KEY, initVect);
-
-    const { file, filename: fileInfo, formData } = await getBusboyData(busboy);
-
-    const filename = fileInfo.filename;
-    const parent = formData.get("parent") || "/";
-    const size = +formData.get("size");
-    const hasThumbnail = false;
-    const thumbnailID = "";
-    const isVideo = videoChecker(filename);
-
-    const errors = [];
-
-    if (!filename || filename.length === 0 || filename.length > 255) {
-      errors.push({
-        msg: "Filename is required and length must be greater than 0 and less than 255",
-        param: "filename",
-      });
-    }
-
-    if (!file) {
-      errors.push({ msg: "File is required", param: "file" });
-    }
-
-    // @prettier-ignore
-    if (!(file instanceof Readable)) {
-      errors.push({ msg: "File must be a readable stream", param: "file" });
-    }
-
-    if (!size || size < 0) {
-      errors.push({ msg: "Size must be a positive integer", param: "size" });
-    }
-
-    if (errors.length > 0) {
-      throw new Error(
-        `Invalid request parameters ${errors.map((e) => e.msg).join(", ")}`
-      );
-    }
+    const { parent, file } = await uploadFileToStorage(busboy, user);
 
     const parentList = [];
 
@@ -96,38 +51,14 @@ class StorageService {
       parentList.push("/");
     }
 
-    const randomFilenameID = uuid.v4();
-
-    const metadata = {
-      owner: user._id.toString(),
+    await fileDB.updateFileUploadedFile(
+      file._id!.toString(),
+      user._id.toString(),
       parent,
-      parentList: parentList.toString(),
-      hasThumbnail,
-      thumbnailID,
-      isVideo,
-      size,
-      IV: initVect,
-    } as FileMetadateInterface;
-
-    if (env.dbType === "fs") {
-      metadata.filePath = env.fsDirectory + randomFilenameID;
-    } else {
-      metadata.s3ID = randomFilenameID;
-    }
-
-    const { writeStream, emitter } = storageActions.createWriteStream(
-      metadata,
-      file.pipe(cipher),
-      randomFilenameID
+      parentList.toString()
     );
 
-    return {
-      cipher,
-      fileWriteStream: writeStream,
-      emitter,
-      metadata,
-      filename,
-    };
+    return file;
   };
 
   uploadFolder = async (
@@ -202,7 +133,7 @@ class StorageService {
       if (parentDirectory && foldersCreated[parentDirectory]) {
         tempParentList.push(
           ...foldersCreated[parentDirectory].parentList,
-          foldersCreated[parentDirectory]._id.toString()
+          foldersCreated[parentDirectory]._id!.toString()
         );
       } else {
         tempParentList.push(...parentList);
@@ -230,10 +161,10 @@ class StorageService {
         await fileDB.updateFolderUploadedFile(
           currentFile.uploadedFileId,
           user._id.toString(),
-          foldersCreated[parentDirectory]._id.toString(),
+          foldersCreated[parentDirectory]._id!.toString(),
           [
             ...foldersCreated[parentDirectory].parentList,
-            foldersCreated[parentDirectory]._id.toString(),
+            foldersCreated[parentDirectory]._id!.toString(),
           ].toString()
         );
       } else {

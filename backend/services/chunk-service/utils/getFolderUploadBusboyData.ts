@@ -16,6 +16,7 @@ import videoChecker from "../../../utils/videoChecker";
 import createVideoThumbnail from "./createVideoThumbnail";
 import createThumbnail from "./createImageThumbnail";
 import { EventEmitter } from "events";
+import { getStorageActions } from "../actions/helper-actions";
 
 type FileDataType = {
   name: string;
@@ -27,8 +28,7 @@ type FileDataType = {
   uploadedFileId: string;
 };
 
-const storageActions =
-  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
+const storageActions = getStorageActions();
 
 type dataType = Record<string, FileDataType>;
 

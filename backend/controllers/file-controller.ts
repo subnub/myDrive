@@ -131,126 +131,30 @@ class FileController {
     }
   };
 
-  uploadFile = async (req: RequestTypeFullUser, res: Response) => {
+  uploadFile = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
-
-    let responseSent = false;
-
-    const handleError = () => {
-      if (!responseSent) {
-        responseSent = true;
-        res.writeHead(500, { Connection: "close" });
-        res.end();
-      }
-    };
-
-    const handleFinish = async (
-      filename: string,
-      metadata: FileMetadateInterface
-    ) => {
-      try {
-        const user = req.user;
-
-        if (!user) throw new NotAuthorizedError("User Not Authorized");
-
-        const date = new Date();
-
-        let length = 0;
-
-        if (env.dbType === "fs" && metadata.filePath) {
-          length = (await getFileSize(metadata.filePath)) as number;
-        } else {
-          // TODO: Fix this we should be using the encrypted file size
-          length = metadata.size;
-        }
-
-        const currentFile = new File({
-          filename,
-          uploadDate: date.toISOString(),
-          length,
-          metadata,
-        });
-
-        await currentFile.save();
-
-        const imageCheck = imageChecker(currentFile.filename);
-        const videoCheck = videoChecker(currentFile.filename);
-
-        if (videoCheck) {
-          const updatedFile = await createVideoThumbnail(
-            currentFile,
-            filename,
-            user
-          );
-
-          res.send(updatedFile);
-        } else if (currentFile.length < 15728640 && imageCheck) {
-          const updatedFile = await createThumbnail(
-            currentFile,
-            filename,
-            user
-          );
-
-          res.send(updatedFile);
-        } else {
-          res.send(currentFile);
-        }
-      } catch (e: unknown) {
-        if (!responseSent) {
-          res.writeHead(500, { Connection: "close" });
-          res.end();
-        }
-      }
-    };
 
     try {
       const user = req.user;
       const busboy = req.busboy;
 
-      busboy.on("error", (e: Error) => {
-        console.log("busboy error", e);
-        handleError();
+      req.on("error", (e: Error) => {
+        next(e);
       });
 
       req.pipe(busboy);
 
-      const { cipher, fileWriteStream, emitter, metadata, filename } =
-        await this.chunkService.uploadFile(user, busboy, req);
+      const file = await this.chunkService.uploadFile(user, busboy, req);
 
-      cipher.on("error", (e: Error) => {
-        console.log("cipher error", e);
-        handleError();
-      });
-
-      fileWriteStream.on("error", (e: Error) => {
-        console.log("file write stream error", e);
-        handleError();
-      });
-
-      if (emitter) {
-        emitter.on("finish", async () => {
-          await handleFinish(filename, metadata);
-        });
-      } else {
-        fileWriteStream.on("finish", async () => {
-          await handleFinish(filename, metadata);
-        });
-      }
-
-      cipher.pipe(fileWriteStream);
+      res.send(file);
     } catch (e: unknown) {
-      if (!responseSent) {
-        res.writeHead(500, { Connection: "close" });
-        if (e instanceof Error) {
-          console.log("\nUploading File Error File Route:", e.message);
-          res.end(e.message);
-        } else {
-          console.log("\nUploading File Error File Route:", e);
-          res.end("Server error uploading file");
-        }
-      }
+      next(e);
     }
   };
 

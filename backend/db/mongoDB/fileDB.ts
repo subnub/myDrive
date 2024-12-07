@@ -120,6 +120,27 @@ class DbUtil {
 
   // UPDATE
 
+  updateFileUploadedFile = async (
+    fileID: string,
+    userID: string,
+    parent: string,
+    parentList: string
+  ) => {
+    const file = await File.findOneAndUpdate(
+      { _id: new ObjectId(fileID), "metadata.owner": userID },
+      {
+        $set: {
+          "metadata.parent": parent,
+          "metadata.parentList": parentList,
+        },
+        $unset: { "metadata.processingFile": null },
+      },
+      { new: true }
+    );
+
+    return file;
+  };
+
   updateFolderUploadedFile = async (
     fileID: string,
     userID: string,

@@ -10,11 +10,11 @@ import { S3Actions } from "../actions/S3-actions";
 import { FilesystemActions } from "../actions/file-system-actions";
 import { EventEmitter } from "stream";
 import FileDB from "../../../db/mongoDB/fileDB";
+import { getStorageActions } from "../actions/helper-actions";
 
 const fileDB = new FileDB();
 
-const storageActions =
-  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
+const storageActions = getStorageActions();
 
 const processData = (
   file: FileInterface,

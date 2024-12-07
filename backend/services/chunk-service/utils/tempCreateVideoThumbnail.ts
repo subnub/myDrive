@@ -13,9 +13,9 @@ import ffmpeg from "fluent-ffmpeg";
 import { S3Actions } from "../actions/S3-actions";
 import { FilesystemActions } from "../actions/file-system-actions";
 import { createGenericParams } from "./storageHelper";
+import { getStorageActions } from "../actions/helper-actions";
 
-const storageActions =
-  env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
+const storageActions = getStorageActions();
 
 const tempCreateVideoThumbnail = (
   file: FileInterface,
@@ -43,7 +43,7 @@ const tempCreateVideoThumbnail = (
 
       const readStream = storageActions.createReadStream(readStreamParams);
 
-      const writeStream = storageActions.createWriteStream(
+      const { writeStream, emitter } = storageActions.createWriteStream(
         readStreamParams,
         readStream,
         thumbnailFilename
