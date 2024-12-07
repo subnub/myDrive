@@ -90,8 +90,8 @@
   appearance: none;
   border-radius: 3px;
   border: none;
-  background-color: green;
   margin-top: 15px;
+  @apply bg-green-600;
 }
 
 .custom-progress.indeterminate {
