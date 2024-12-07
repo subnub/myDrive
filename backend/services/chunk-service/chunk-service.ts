@@ -1,4 +1,4 @@
-import { Response, Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import { UserInterface } from "../../models/user-model";
 import NotAuthorizedError from "../../utils/NotAuthorizedError";
 import NotFoundError from "../../utils/NotFoundError";
@@ -130,7 +130,24 @@ class StorageService {
     };
   };
 
-  uploadFolder = async (user: UserInterface, busboy: any, req: Request) => {
+  uploadFolder = async (
+    user: UserInterface,
+    busboy: any,
+    req: Request,
+    next: NextFunction
+  ) => {
+    req.on("error", (e: Error) => {
+      console.log("req error", e);
+      next(e);
+    });
+
+    busboy.on("error", (e: Error) => {
+      console.log("busboy error", e);
+      next(e);
+    });
+
+    req.pipe(busboy);
+
     const { fileDataMap, parent } = await getFolderBusboyData(busboy, user);
 
     const keys = Object.keys(fileDataMap);

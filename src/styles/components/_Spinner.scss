@@ -74,6 +74,26 @@
   border: none;
 }
 
+.custom-progress-failed {
+  width: 100%;
+  height: 5px;
+  appearance: none;
+  border-radius: 3px;
+  border: none;
+  background-color: red;
+  margin-top: 15px;
+}
+
+.custom-progress-success {
+  width: 100%;
+  height: 5px;
+  appearance: none;
+  border-radius: 3px;
+  border: none;
+  background-color: green;
+  margin-top: 15px;
+}
+
 .custom-progress.indeterminate {
   position: relative;
   overflow: hidden;

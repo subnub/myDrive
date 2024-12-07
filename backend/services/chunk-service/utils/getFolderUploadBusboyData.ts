@@ -15,6 +15,7 @@ import imageChecker from "../../../utils/imageChecker";
 import videoChecker from "../../../utils/videoChecker";
 import createVideoThumbnail from "./createVideoThumbnail";
 import createThumbnail from "./createImageThumbnail";
+import { EventEmitter } from "events";
 
 type FileDataType = {
   name: string;
@@ -29,75 +30,69 @@ type FileDataType = {
 const storageActions =
   env.dbType === "s3" ? new S3Actions() : new FilesystemActions();
 
-const getFolderBusboyData = (busboy: any, user: UserInterface) => {
-  type dataType = Record<string, FileDataType>;
+type dataType = Record<string, FileDataType>;
 
-  return new Promise<{ fileDataMap: dataType; parent: string }>(
-    (resolve, reject) => {
-      const formData = new Map();
+const processData = (busboy: any, user: UserInterface) => {
+  const eventEmitter = new EventEmitter();
 
-      let filesProcessed = 0;
-      let filesToProcess = 0;
-      let parent = "";
+  try {
+    const formData = new Map();
 
-      const fileDataMap: dataType = {};
+    let filesProcessed = 0;
+    let filesToProcess = 0;
+    let parent = "";
 
-      const uploadQueue: { file: Stream; index: string }[] = [];
+    const fileDataMap: dataType = {};
 
-      let processing = false;
+    const uploadQueue: { file: Stream; index: string }[] = [];
 
-      const handleFinish = async (
-        filename: string,
-        metadata: FileMetadateInterface
-      ) => {
-        try {
-          const date = new Date();
+    let processing = false;
 
-          let length = 0;
+    const handleFinish = async (
+      filename: string,
+      metadata: FileMetadateInterface
+    ) => {
+      const date = new Date();
 
-          if (env.dbType === "fs" && metadata.filePath) {
-            length = (await getFileSize(metadata.filePath)) as number;
-          } else {
-            // TODO: Fix this we should be using the encrypted file size
-            length = metadata.size;
-          }
+      let length = 0;
 
-          const currentFile = new File({
-            filename,
-            uploadDate: date.toISOString(),
-            length,
-            metadata,
-          });
+      if (env.dbType === "fs" && metadata.filePath) {
+        length = (await getFileSize(metadata.filePath)) as number;
+      } else {
+        // TODO: Fix this we should be using the encrypted file size
+        length = metadata.size;
+      }
 
-          await currentFile.save();
+      const currentFile = new File({
+        filename,
+        uploadDate: date.toISOString(),
+        length,
+        metadata,
+      });
 
-          const imageCheck = imageChecker(currentFile.filename);
-          const videoCheck = videoChecker(currentFile.filename);
+      await currentFile.save();
 
-          if (videoCheck) {
-            const updatedFile = await createVideoThumbnail(
-              currentFile,
-              filename,
-              user
-            );
-            return updatedFile;
-          } else if (currentFile.length < 15728640 && imageCheck) {
-            const updatedFile = await createThumbnail(
-              currentFile,
-              filename,
-              user
-            );
-            return updatedFile;
-          } else {
-            return currentFile;
-          }
-        } catch (e: unknown) {
-          console.log("handle finish error", e);
-        }
-      };
+      const imageCheck = imageChecker(currentFile.filename);
+      const videoCheck = videoChecker(currentFile.filename);
 
-      const uploadFile = (currentFile: { file: Stream; index: string }) => {
-        return new Promise<FileInterface | undefined>((resolve, reject) => {
+      if (videoCheck) {
+        const updatedFile = await createVideoThumbnail(
+          currentFile,
+          filename,
+          user
+        );
+        return updatedFile;
+      } else if (currentFile.length < 15728640 && imageCheck) {
+        const updatedFile = await createThumbnail(currentFile, filename, user);
+        return updatedFile;
+      } else {
+        return currentFile;
+      }
+    };
+
+    const uploadFile = (currentFile: { file: Stream; index: string }) => {
+      return new Promise<{ filename: string; metadata: FileMetadateInterface }>(
+        (resolve, reject) => {
           const { file, index } = currentFile;
 
           const fileData = fileDataMap[index];
@@ -144,36 +139,41 @@ const getFolderBusboyData = (busboy: any, user: UserInterface) => {
             randomFilenameID
           );
 
+          writeStream.on("error", (e: Error) => {
+            console.log("write stream error", e);
+            reject(e);
+          });
+
+          cipher.on("error", (e: Error) => {
+            console.log("cipher error", e);
+            reject(e);
+          });
+
           cipher.pipe(writeStream);
 
           if (emitter) {
-            emitter.on("finish", async () => {
-              const file = await handleFinish(filename, metadata);
-              resolve(file);
+            emitter.on("finish", () => {
+              resolve({ filename, metadata });
             });
           } else {
-            writeStream.on("finish", async () => {
-              const file = await handleFinish(filename, metadata);
-              resolve(file);
+            writeStream.on("finish", () => {
+              resolve({ filename, metadata });
             });
           }
-        });
-      };
+        }
+      );
+    };
 
-      const processQueue = async () => {
-        if (processing) return;
+    const processQueue = async () => {
+      if (processing) return;
 
-        processing = true;
+      processing = true;
 
+      try {
         while (uploadQueue.length > 0) {
           const currentFile = uploadQueue.shift();
-          console.log("processing file", currentFile);
-          const file = await uploadFile(currentFile!);
-          if (!file) {
-            // TODO: Handle error
-            console.log("Error uploading file");
-            break;
-          }
+          const { filename, metadata } = await uploadFile(currentFile!);
+          const file = await handleFinish(filename, metadata);
 
           fileDataMap[currentFile!.index] = {
             ...fileDataMap[currentFile!.index],
@@ -182,66 +182,71 @@ const getFolderBusboyData = (busboy: any, user: UserInterface) => {
 
           filesProcessed++;
 
-          console.log("files processed", currentFile);
-
           if (filesProcessed === filesToProcess) {
-            resolve({ fileDataMap, parent });
+            eventEmitter.emit("finish", { fileDataMap, parent });
           }
         }
-        processing = false;
-      };
+      } catch (e) {
+        console.log("error", e);
+        eventEmitter.emit("error", e);
+      }
 
-      busboy.on("field", (field: any, val: any) => {
-        console.log("field", field, val);
-        if (typeof val !== "string" || val !== "undefined") {
-          formData.set(field, val);
-          if (field === "file-data") {
-            const fileData = JSON.parse(val);
-            fileDataMap[fileData.index] = fileData;
-          }
-          if (field === "total-files") {
-            filesToProcess = +val;
-          }
-          if (field === "parent") {
-            parent = val;
-          }
+      processing = false;
+    };
+
+    busboy.on("field", (field: any, val: any) => {
+      if (typeof val !== "string" || val !== "undefined") {
+        formData.set(field, val);
+        if (field === "file-data") {
+          const fileData = JSON.parse(val);
+          fileDataMap[fileData.index] = fileData;
         }
+        if (field === "total-files") {
+          filesToProcess = +val;
+        }
+        if (field === "parent") {
+          parent = val;
+        }
+      }
+    });
+
+    busboy.on(
+      "file",
+      async (
+        _: string,
+        file: Stream,
+        fileData: {
+          filename: string;
+        }
+      ) => {
+        const index = fileData.filename;
+
+        uploadQueue.push({ file, index });
+
+        processQueue();
+      }
+    );
+
+    busboy.on("error", (e: Error) => {
+      console.log("busboy error", e);
+      eventEmitter.emit("error", e);
+    });
+  } catch (e) {
+    console.log("get folder busboy data error", e);
+    eventEmitter.emit("error", e);
+  }
+
+  return eventEmitter;
+};
+
+const getFolderBusboyData = (busboy: any, user: UserInterface) => {
+  return new Promise<{ fileDataMap: dataType; parent: string }>(
+    (resolve, reject) => {
+      const fileEventEmitter = processData(busboy, user);
+      fileEventEmitter.on("finish", (data) => {
+        resolve(data);
       });
-
-      busboy.on(
-        "file",
-        async (
-          _: string,
-          file: Stream,
-          fileData: {
-            filename: string;
-          }
-        ) => {
-          const index = fileData.filename;
-          // fileDataMap[index] = {
-          //   ...fileDataMap[index],
-          //   file,
-          // };
-
-          uploadQueue.push({ file, index });
-
-          processQueue();
-
-          // file.on("data", () => {
-          //   console.log("data");
-          // });
-
-          // console.log("file data", fileData);
-
-          // filesProcessed++;
-
-          // if (filesProcessed === filesToProcess) {
-          //   resolve(fileDataMap);
-          // }
-        }
-      );
-
-      busboy.on("error", (e: Error) => {
+      fileEventEmitter.on("error", (e) => {
         reject(e);
       });
     }

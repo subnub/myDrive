@@ -1,6 +1,5 @@
 import { connect } from "react-redux";
-import React, { memo, useEffect, useRef } from "react";
-import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
+import React, { memo } from "react";
 import { getCancelToken } from "../../utils/cancelTokenManager";
 import CloseIcon from "../../icons/CloseIcon";
 import CheckCircleIcon from "../../icons/CheckCircleIcon";
@@ -30,6 +29,20 @@ const UploadItem: React.FC<UploadItemType> = (props) => {
     }
   });
 
+  const ProgressBar = memo(() => {
+    if (completed) {
+      return <div className="custom-progress-success"></div>;
+    } else if (type === "file") {
+      return (
+        <progress className="custom-progress" value={progress} max="100" />
+      );
+    } else if (canceled) {
+      return <div className="custom-progress-failed"></div>;
+    } else {
+      return <progress className="custom-progress indeterminate" />;
+    }
+  });
+
   return (
     <div className="relative p-[20px] flex justify-between items-start hover:bg-[#f6f5fd]">
       <div className="w-full">
@@ -44,12 +57,7 @@ const UploadItem: React.FC<UploadItemType> = (props) => {
           </div>
         </div>
         <div>
-          {(type === "file" || completed) && (
-            <progress className="custom-progress" value={progress} max="100" />
-          )}
-          {type === "folder" && !completed && (
-            <progress className="custom-progress indeterminate" />
-          )}
+          <ProgressBar />
         </div>
       </div>
     </div>

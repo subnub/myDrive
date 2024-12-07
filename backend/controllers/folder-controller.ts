@@ -85,32 +85,11 @@ class FolderController {
       const user = req.user;
       const busboy = req.busboy;
 
-      console.log("upload folder request");
-
-      busboy.on("error", (e: Error) => {
-        console.log("busboy error", e);
-        // handleError();
-      });
-
-      req.on("end", () => {
-        console.log("end req");
-      });
-
-      req.on("close", () => {
-        console.log("close req");
-      });
-
-      req.on("error", () => {
-        console.log("error req");
-      });
-
-      req.pipe(busboy);
-
-      await chunkService.uploadFolder(user, busboy, req);
+      await chunkService.uploadFolder(user, busboy, req, next);
 
       res.send();
     } catch (e) {
-      console.log("upload folder error", e);
+      next(e);
     }
   };
 
