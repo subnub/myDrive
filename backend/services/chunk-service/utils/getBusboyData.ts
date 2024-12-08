@@ -134,17 +134,20 @@ const processData = (
             reject(e);
           });
 
-          cipher.pipe(writeStream);
-
           if (emitter) {
             emitter.on("finish", () => {
               resolve({ filename, metadata });
+            });
+            emitter.on("error", (e: Error) => {
+              reject(e);
             });
           } else {
             writeStream.on("finish", () => {
               resolve({ filename, metadata });
             });
           }
+
+          cipher.pipe(writeStream);
         }
       );
     };

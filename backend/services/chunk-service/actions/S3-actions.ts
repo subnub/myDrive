@@ -78,7 +78,8 @@ class S3Actions implements IStorageActions {
       { Bucket: bucket, Body: passThrough, Key: randomID },
       (err) => {
         if (err) {
-          console.log("S3 upload err", err);
+          emitter.emit("error", err);
+          return;
         }
         emitter.emit("finish");
       }
