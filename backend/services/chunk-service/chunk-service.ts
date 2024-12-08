@@ -24,6 +24,8 @@ import archiver from "archiver";
 import async from "async";
 import getFolderBusboyData from "./utils/getFolderUploadBusboyData";
 import { getStorageActions } from "./actions/helper-actions";
+import getThumbnailData from "./utils/getThumbnailData";
+import getFileData from "./utils/getFileData";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -36,7 +38,7 @@ class StorageService {
   constructor() {}
 
   uploadFile = async (user: UserInterface, busboy: any, req: Request) => {
-    const { parent, file } = await uploadFileToStorage(busboy, user);
+    const { parent, file } = await uploadFileToStorage(busboy, user, req);
 
     const parentList = [];
 
@@ -61,25 +63,12 @@ class StorageService {
     return file;
   };
 
-  uploadFolder = async (
-    user: UserInterface,
-    busboy: any,
-    req: Request,
-    next: NextFunction
-  ) => {
-    req.on("error", (e: Error) => {
-      console.log("req error", e);
-      next(e);
-    });
-
-    busboy.on("error", (e: Error) => {
-      console.log("busboy error", e);
-      next(e);
-    });
-
-    req.pipe(busboy);
-
-    const { fileDataMap, parent } = await getFolderBusboyData(busboy, user);
+  uploadFolder = async (user: UserInterface, busboy: any, req: Request) => {
+    const { fileDataMap, parent } = await getFolderBusboyData(
+      busboy,
+      user,
+      req
+    );
 
     const keys = Object.keys(fileDataMap);
 
@@ -179,32 +168,7 @@ class StorageService {
   };
 
   downloadFile = async (user: UserInterface, fileID: string, res: Response) => {
-    const currentFile = await fileDB.getFileInfo(fileID, user._id.toString());
-
-    if (!currentFile) throw new NotFoundError("Download File Not Found");
-
-    const password = user.getEncryptionKey();
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const IV = currentFile.metadata.IV;
-
-    const readStreamParams = createGenericParams({
-      filePath: currentFile.metadata.filePath,
-      Key: currentFile.metadata.s3ID,
-    });
-
-    const readStream = storageActions.createReadStream(readStreamParams);
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
-
-    return {
-      readStream,
-      decipher,
-      file: currentFile,
-    };
+    await getFileData(res, fileID, user);
   };
 
   downloadZip = async (
@@ -384,34 +348,8 @@ class StorageService {
   };
 
   getThumbnail = async (user: UserInterface, id: string) => {
-    const password = user.getEncryptionKey();
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const thumbnail = await thumbnailDB.getThumbnailInfo(
-      user._id.toString(),
-      id
-    );
-
-    if (!thumbnail) throw new NotFoundError("Thumbnail Not Found");
-
-    const iv = thumbnail.IV;
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, iv);
-
-    const readStreamParams = createGenericParams({
-      filePath: thumbnail.path,
-      Key: thumbnail.s3ID,
-    });
-
-    const readStream = storageActions.createReadStream(readStreamParams);
-
-    return {
-      readStream,
-      decipher,
-    };
+    const bufferData = await getThumbnailData(id, user);
+    return bufferData;
   };
 
   getFullThumbnail = async (user: UserInterface, fileID: string) => {

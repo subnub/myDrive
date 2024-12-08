@@ -14,6 +14,7 @@ import imageChecker from "../../../utils/imageChecker";
 import videoChecker from "../../../utils/videoChecker";
 import createVideoThumbnail from "./createVideoThumbnail";
 import createThumbnail from "./createImageThumbnail";
+import { RequestTypeFullUser } from "../../../controllers/file-controller";
 
 // TODO: We should stop using moongoose directly here,
 // Also in our fileDB make sure we are actually using File instead
@@ -26,7 +27,11 @@ type FileInfo = {
   parent: string;
 };
 
-const processData = (busboy: any, user: UserInterface) => {
+const processData = (
+  busboy: any,
+  user: UserInterface,
+  req: RequestTypeFullUser
+) => {
   const eventEmitter = new EventEmitter();
 
   try {
@@ -184,6 +189,12 @@ const processData = (busboy: any, user: UserInterface) => {
     busboy.on("error", (e: Error) => {
       eventEmitter.emit("error", e);
     });
+
+    req.on("error", (e: Error) => {
+      eventEmitter.emit("error", e);
+    });
+
+    req.pipe(busboy);
   } catch (e) {
     eventEmitter.emit("error", e);
   }
@@ -191,9 +202,13 @@ const processData = (busboy: any, user: UserInterface) => {
   return eventEmitter;
 };
 
-const uploadFileToStorage = (busboy: any, user: UserInterface) => {
+const uploadFileToStorage = (
+  busboy: any,
+  user: UserInterface,
+  req: RequestTypeFullUser
+) => {
   return new Promise<FileInfo>((resolve, reject) => {
-    const eventEmitter = processData(busboy, user);
+    const eventEmitter = processData(busboy, user, req);
     eventEmitter.on("finish", (data) => {
       resolve(data);
     });

@@ -85,7 +85,7 @@ class FolderController {
       const user = req.user;
       const busboy = req.busboy;
 
-      await chunkService.uploadFolder(user, busboy, req, next);
+      await chunkService.uploadFolder(user, busboy, req);
 
       res.send();
     } catch (e) {

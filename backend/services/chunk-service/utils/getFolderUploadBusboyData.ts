@@ -17,6 +17,7 @@ import createVideoThumbnail from "./createVideoThumbnail";
 import createThumbnail from "./createImageThumbnail";
 import { EventEmitter } from "events";
 import { getStorageActions } from "../actions/helper-actions";
+import { RequestTypeFullUser } from "../../../controllers/file-controller";
 
 type FileDataType = {
   name: string;
@@ -32,7 +33,11 @@ const storageActions = getStorageActions();
 
 type dataType = Record<string, FileDataType>;
 
-const processData = (busboy: any, user: UserInterface) => {
+const processData = (
+  busboy: any,
+  user: UserInterface,
+  req: RequestTypeFullUser
+) => {
   const eventEmitter = new EventEmitter();
 
   try {
@@ -209,7 +214,7 @@ const processData = (busboy: any, user: UserInterface) => {
 
     busboy.on(
       "file",
-      async (
+      (
         _: string,
         file: Stream,
         fileData: {
@@ -227,6 +232,16 @@ const processData = (busboy: any, user: UserInterface) => {
     busboy.on("error", (e: Error) => {
       eventEmitter.emit("error", e);
     });
+
+    req.on("error", (e: Error) => {
+      eventEmitter.emit("error", e);
+    });
+
+    busboy.on("error", (e: Error) => {
+      eventEmitter.emit("error", e);
+    });
+
+    req.pipe(busboy);
   } catch (e) {
     eventEmitter.emit("error", e);
   }
@@ -234,10 +249,14 @@ const processData = (busboy: any, user: UserInterface) => {
   return eventEmitter;
 };
 
-const getFolderBusboyData = (busboy: any, user: UserInterface) => {
+const getFolderBusboyData = (
+  busboy: any,
+  user: UserInterface,
+  req: RequestTypeFullUser
+) => {
   return new Promise<{ fileDataMap: dataType; parent: string }>(
     (resolve, reject) => {
-      const fileEventEmitter = processData(busboy, user);
+      const fileEventEmitter = processData(busboy, user, req);
       fileEventEmitter.on("finish", (data) => {
         resolve(data);
       });

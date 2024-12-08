@@ -7,14 +7,7 @@ import {
 } from "../cookies/create-cookies";
 import ChunkService from "../services/chunk-service/chunk-service";
 import streamToBuffer from "../utils/streamToBuffer";
-import env from "../enviroment/env";
-import getFileSize from "../services/chunk-service/utils/getFileSize";
-import File, { FileMetadateInterface } from "../models/file-model";
-import imageChecker from "../utils/imageChecker";
-import videoChecker from "../utils/videoChecker";
-import createVideoThumbnail from "../services/chunk-service/utils/createVideoThumbnail";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
-import createThumbnail from "../services/chunk-service/utils/createImageThumbnail";
 import { FileListQueryType } from "../types/file-types";
 
 const fileService = new FileService();
@@ -25,7 +18,7 @@ type userAccessType = {
   s3Enabled: boolean;
 };
 
-interface RequestTypeFullUser extends Request {
+export interface RequestTypeFullUser extends Request {
   user?: UserInterface;
   encryptedToken?: string;
   accessTokenStreamVideo?: string;
@@ -43,47 +36,23 @@ class FileController {
     this.chunkService = new ChunkService();
   }
 
-  getThumbnail = async (req: RequestTypeFullUser, res: Response) => {
+  getThumbnail = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
-    let responseSent = false;
     try {
       const user = req.user;
       const id = req.params.id;
 
-      const { readStream, decipher } = await this.chunkService.getThumbnail(
-        user,
-        id
-      );
-
-      readStream.on("error", (e: Error) => {
-        console.log("Get thumbnail read stream error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error getting thumbnail");
-        }
-      });
-
-      decipher.on("error", (e: Error) => {
-        console.log("Get thumbnail decipher error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error getting thumbnail");
-        }
-      });
-
-      const bufferData = await streamToBuffer(readStream.pipe(decipher));
+      const bufferData = await this.chunkService.getThumbnail(user, id);
 
       res.send(bufferData);
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Thumbnail Error File Route:", e.message);
-      }
-      if (!responseSent) {
-        responseSent = true;
-        res.status(500).send("Server error getting thumbnail");
-      }
+      next(e);
     }
   };
 
@@ -143,12 +112,6 @@ class FileController {
     try {
       const user = req.user;
       const busboy = req.busboy;
-
-      req.on("error", (e: Error) => {
-        next(e);
-      });
-
-      req.pipe(busboy);
 
       const file = await this.chunkService.uploadFile(user, busboy, req);
 
@@ -496,7 +459,11 @@ class FileController {
     }
   };
 
-  downloadFile = async (req: RequestTypeFullUser, res: Response) => {
+  downloadFile = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
@@ -505,29 +472,9 @@ class FileController {
       const user = req.user;
       const fileID = req.params.id;
 
-      const { readStream, decipher, file } =
-        await this.chunkService.downloadFile(user, fileID, res);
-
-      readStream.on("error", (e: Error) => {
-        console.log("read stream error", e);
-      });
-
-      decipher.on("error", (e: Error) => {
-        console.log("decipher stream errozr", e);
-      });
-
-      res.set("Content-Type", "binary/octet-stream");
-      res.set(
-        "Content-Disposition",
-        'attachment; filename="' + file.filename + '"'
-      );
-      res.set("Content-Length", file.metadata.size.toString());
-
-      readStream.pipe(decipher).pipe(res);
+      await this.chunkService.downloadFile(user, fileID, res);
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nDownload File Error File Route:", e.message);
-      }
+      next(e);
     }
   };
 
