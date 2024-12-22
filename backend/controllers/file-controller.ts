@@ -56,47 +56,21 @@ class FileController {
     }
   };
 
-  getFullThumbnail = async (req: RequestTypeFullUser, res: Response) => {
+  getFullThumbnail = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
-    let responseSent = false;
     try {
       const user = req.user;
       const fileID = req.params.id;
 
-      const { decipher, readStream, file } =
-        await this.chunkService.getFullThumbnail(user, fileID);
-
-      readStream.on("error", (e: Error) => {
-        console.log("Get full thumbnail read stream error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error getting full thumbnail");
-        }
-      });
-
-      decipher.on("error", (e: Error) => {
-        console.log("Get full thumbnail decipher error", e);
-        if (!responseSent) {
-          responseSent = true;
-          res.status(500).send("Server error gettingfull thumbnail");
-        }
-      });
-
-      res.set("Content-Type", "binary/octet-stream");
-      res.set(
-        "Content-Disposition",
-        'attachment; filename="' + file.filename + '"'
-      );
-      res.set("Content-Length", file.metadata.size.toString());
-
-      readStream.pipe(decipher).pipe(res);
+      await this.chunkService.getFullThumbnail(user, fileID, res);
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Thumbnail Full Error File Route:", e.message);
-      }
-      res.status(500).send("Server error getting image");
+      next(e);
     }
   };
 
@@ -121,35 +95,18 @@ class FileController {
     }
   };
 
-  getPublicDownload = async (req: RequestType, res: Response) => {
-    let responseSent = false;
+  getPublicDownload = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
     try {
       const ID = req.params.id;
       const tempToken = req.params.tempToken;
 
-      const { readStream, decipher, file } =
-        await this.chunkService.getPublicDownload(ID, tempToken, res);
-
-      readStream.on("error", (e: Error) => {
-        console.log("read stream error", e);
-      });
-
-      decipher.on("error", (e: Error) => {
-        console.log("decipher stream error", e);
-      });
-
-      res.set("Content-Type", "binary/octet-stream");
-      res.set(
-        "Content-Disposition",
-        'attachment; filename="' + file.filename + '"'
-      );
-      res.set("Content-Length", file.metadata.size.toString());
-
-      readStream.pipe(decipher).pipe(res);
+      await this.chunkService.getPublicDownload(ID, tempToken, res);
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nGet Public Download Error File Route:", e.message);
-      }
+      next(e);
     }
   };
 
@@ -397,65 +354,23 @@ class FileController {
     }
   };
 
-  streamVideo = async (req: RequestTypeFullUser, res: Response) => {
+  streamVideo = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
     if (!req.user) {
       return;
     }
-    let responseSent = false;
 
     try {
       const user = req.user;
       const fileID = req.params.id;
       const headers = req.headers;
 
-      const { decipher, readStream, head } =
-        await this.chunkService.streamVideo(user, fileID, headers);
-
-      const cleanUp = () => {
-        if (readStream) readStream.destroy();
-        if (decipher) decipher.end();
-      };
-
-      const handleError = (e: Error) => {
-        console.log("stream video read stream error", e);
-        cleanUp();
-      };
-
-      readStream.on("error", handleError);
-
-      decipher.on("error", handleError);
-
-      readStream.on("end", () => {
-        if (!responseSent) {
-          responseSent = true;
-          res.end();
-        }
-        cleanUp();
-      });
-
-      readStream.on("close", () => {
-        cleanUp();
-      });
-
-      decipher.on("end", () => {
-        if (!responseSent) {
-          responseSent = true;
-          res.end();
-        }
-        cleanUp();
-      });
-
-      decipher.on("close", () => {
-        cleanUp();
-      });
-
-      res.writeHead(206, head);
-
-      readStream.pipe(decipher).pipe(res);
+      await this.chunkService.streamVideo(user, fileID, headers, res);
     } catch (e: unknown) {
-      if (e instanceof Error) {
-        console.log("\nStream Video Error File Route:", e.message);
-      }
+      next(e);
     }
   };
 

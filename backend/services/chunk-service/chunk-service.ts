@@ -26,6 +26,7 @@ import getFolderBusboyData from "./utils/getFolderUploadBusboyData";
 import { getStorageActions } from "./actions/helper-actions";
 import getThumbnailData from "./utils/getThumbnailData";
 import getFileData from "./utils/getFileData";
+import getPublicFileData from "./utils/getPublicFileData";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -352,38 +353,20 @@ class StorageService {
     return bufferData;
   };
 
-  getFullThumbnail = async (user: UserInterface, fileID: string) => {
-    const userID = user._id;
-
-    const file = await fileDB.getFileInfo(fileID, userID.toString());
-
-    if (!file) throw new NotFoundError("File Thumbnail Not Found");
-
-    const password = user.getEncryptionKey();
-
-    const IV = file.metadata.IV;
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const readStreamParams = createGenericParams({
-      filePath: file.metadata.filePath,
-      Key: file.metadata.s3ID,
-    });
-
-    const readStream = storageActions.createReadStream(readStreamParams);
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
-
-    return {
-      readStream,
-      decipher,
-      file,
-    };
+  getFullThumbnail = async (
+    user: UserInterface,
+    fileID: string,
+    res: Response
+  ) => {
+    await getFileData(res, fileID, user);
   };
 
-  streamVideo = async (user: UserInterface, fileID: string, headers: any) => {
+  streamVideo = async (
+    user: UserInterface,
+    fileID: string,
+    headers: any,
+    res: Response
+  ) => {
     const userID = user._id;
     const currentFile = await fileDB.getFileInfo(fileID, userID.toString());
 
@@ -397,19 +380,16 @@ class StorageService {
 
     const range = headers.range;
     const parts = range.replace(/bytes=/, "").split("-");
-    let start = parseInt(parts[0], 10);
-    let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const IV = currentFile.metadata.IV;
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
     const chunksize = end - start + 1;
 
-    let head = {
+    const head = {
       "Content-Range": "bytes " + start + "-" + end + "/" + fileSize,
       "Accept-Ranges": "bytes",
       "Content-Length": chunksize,
       "Content-Type": "video/mp4",
     };
-
-    let currentIV = IV;
 
     let fixedStart = 0;
     let fixedEnd =
@@ -428,75 +408,13 @@ class StorageService {
       fixedStart = 0;
     }
 
-    const readStreamParams = createGenericParams({
-      filePath: currentFile.metadata.filePath,
-      Key: currentFile.metadata.s3ID,
-    });
+    res.writeHead(206, head);
 
-    if (fixedStart !== 0 && start !== 0) {
-      currentIV = (await storageActions.getPrevIV(
-        readStreamParams,
-        fixedStart - 16
-      )) as Buffer;
-    }
-
-    const readStream = storageActions.createReadStreamWithRange(
-      readStreamParams,
-      fixedStart,
-      fixedEnd
-    );
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, currentIV);
-
-    decipher.setAutoPadding(false);
-
-    return {
-      readStream,
-      decipher,
-      file: currentFile,
-      head,
-    };
+    await getFileData(res, fileID, user, { start: fixedStart, end: fixedEnd });
   };
 
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {
-    const file = await fileDB.getPublicFile(fileID);
-
-    if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
-      throw new NotAuthorizedError("File Not Public");
-    }
-
-    if (file.metadata.linkType === "one") {
-      await fileDB.removeOneTimePublicLink(fileID);
-    }
-
-    const user = await userDB.getUserInfo(file.metadata.owner);
-
-    if (!user) throw new NotFoundError("User Not Found");
-
-    const password = user.getEncryptionKey();
-
-    if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
-    const IV = file.metadata.IV;
-
-    const readStreamParams = createGenericParams({
-      filePath: file.metadata.filePath,
-      Key: file.metadata.s3ID,
-    });
-
-    const readStream = storageActions.createReadStream(readStreamParams);
-
-    const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
-
-    const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
-
-    return {
-      readStream,
-      decipher,
-      file: file,
-    };
+    await getPublicFileData(res, fileID, tempToken);
   };
 
   deleteMulti = async (
