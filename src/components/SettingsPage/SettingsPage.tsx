@@ -6,13 +6,14 @@ import AccountIcon from "../../icons/AccountIcon";
 import TuneIcon from "../../icons/TuneIcon";
 import { useNavigate } from "react-router-dom";
 import SettingsAccountSection from "./SettingsAccountSection";
-import { getUserDetailedAPI } from "../../api/user";
+import { getUserDetailedAPI, logoutAPI } from "../../api/user";
 import Spinner from "../Spinner/Spinner";
 import Swal from "sweetalert2";
 import SettingsGeneralSection from "./SettingsGeneralSection";
 import { useClickOutOfBounds } from "../../hooks/utils";
 import MenuIcon from "../../icons/MenuIcon";
 import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 const SettingsPage = () => {
   const [user, setUser] = useState(null);
@@ -36,6 +37,15 @@ const SettingsPage = () => {
         confirmButtonText: "Yes, logout",
       });
       if (result.value) {
+        await toast.promise(logoutAPI(), {
+          pending: "Logging out...",
+          success: "Logged out",
+          error: "Error Logging Out",
+        });
+
+        window.localStorage.removeItem("hasPreviouslyLoggedIn");
+
+        navigate("/");
       } else {
         navigate("/home");
       }
@@ -111,7 +121,9 @@ const SettingsPage = () => {
                 onClick={() => setShowSidebarMobile(!showSidebarMobile)}
               />
             </div>
-            {tab === "account" && <SettingsAccountSection user={user} />}
+            {tab === "account" && (
+              <SettingsAccountSection user={user} getUser={getUser} />
+            )}
             {tab === "general" && <SettingsGeneralSection />}
           </div>
         )}

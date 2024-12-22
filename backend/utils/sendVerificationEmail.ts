@@ -2,6 +2,7 @@ import SMTPTransport from "nodemailer/lib/smtp-transport";
 import env from "../enviroment/env";
 import { UserInterface } from "../models/user-model";
 import nodemailer from "nodemailer";
+import createEmailTransporter from "./createEmailTransporter";
 
 type MailOptionsType = {
   from: string;
@@ -30,32 +31,10 @@ const sendVerificationEmail = async (
   emailToken: string
 ) => {
   try {
-    const emailVerification = env.emailVerification === "true";
-    const emailAPIKey = env.emailAPIKey;
-    const emailDomain = env.emailDomain;
-    const emailHost = env.emailHost;
-    const emailPort = env.emailPort;
-    const emailAddress = env.emailAddress;
+    const transporter = createEmailTransporter();
 
-    if (!emailVerification) {
-      return false;
-    }
-
-    if (!emailAPIKey || !emailDomain || !emailHost || !emailAddress) {
-      console.log("Email Verification Not Setup Correctly");
-      return false;
-    }
-
+    const emailAddress = env.emailAddress!;
     const url = env.remoteURL + `/verify-email/${emailToken}`;
-
-    const transporter = nodemailer.createTransport({
-      host: emailHost,
-      port: 587 || emailPort,
-      auth: {
-        user: emailDomain,
-        pass: emailAPIKey,
-      },
-    });
 
     const mailOptions = {
       from: emailAddress,
@@ -65,15 +44,6 @@ const sendVerificationEmail = async (
         "Please navigate to the following link to verify your email address: " +
         url,
     };
-
-    console.log("Sending email verification", mailOptions, {
-      host: emailHost,
-      port: 587 || emailPort,
-      auth: {
-        user: emailDomain,
-        pass: emailAPIKey,
-      },
-    });
 
     await sendEmail(transporter, mailOptions);
 

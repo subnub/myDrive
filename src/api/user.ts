@@ -57,3 +57,33 @@ export const changePasswordAPI = async (
   });
   return response.data;
 };
+
+export const resendVerifyEmailAPI = async () => {
+  const response = await axios.patch("/user-service/resend-verify-email");
+  return response.data;
+};
+
+export const verifyEmailAPI = async (emailToken: string) => {
+  const response = await axios.patch("/user-service/verify-email", {
+    emailToken,
+  });
+  return response.data;
+};
+
+export const sendPasswordResetAPI = async (email: string) => {
+  const response = await axios.patch("/user-service/send-password-reset", {
+    email,
+  });
+  return response.data;
+};
+
+export const resetPasswordAPI = async (
+  password: string,
+  passwordToken: string
+) => {
+  const response = await axios.patch("/user-service/reset-password", {
+    passwordToken,
+    password,
+  });
+  return response.data;
+};

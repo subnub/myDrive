@@ -1,29 +1,56 @@
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 import env from "../enviroment/env";
 import { UserInterface } from "../models/user-model";
-// import sgMail from "@sendgrid/mail";
+import nodemailer from "nodemailer";
+import createEmailTransporter from "./createEmailTransporter";
+
+type MailOptionsType = {
+  from: string;
+  to: string;
+  subject: string;
+  text: string;
+};
+
+const sendEmail = (
+  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>,
+  mailOptions: MailOptionsType
+) => {
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(info);
+      }
+    });
+  });
+};
 
 const sendPasswordResetEmail = async (
   user: UserInterface,
-  passwordResetToken: string
+  resetToken: string
 ) => {
-  // if (process.env.NODE_ENV === "test") {
-  //     return;
-  // }
-  // const apiKey: any = env.sendgridKey;
-  // const sendgridEmail:any = env.sendgridEmail;
-  // const url = env.remoteURL + `/reset-password/${passwordResetToken}`
-  // // console.log("send grid api key", apiKey)
-  // // console.log("send grid email", sendgridEmail);
-  // // console.log("send grid reset url", url)
-  // sgMail.setApiKey(apiKey);
-  // const msg = {
-  //     to: user.email,
-  //     from: sendgridEmail,
-  //     subject: "myDrive Password Reset",
-  //     text: `Please navigate to the following link to reset your password: ${url}`
-  // }
-  // await sgMail.send(msg);
-  // //console.log("Send grid email sent reset");
+  try {
+    const transporter = createEmailTransporter();
+
+    const emailAddress = env.emailAddress!;
+    const url = env.remoteURL + `/reset-password/${resetToken}`;
+
+    const mailOptions = {
+      from: emailAddress,
+      to: user.email,
+      subject: "myDrive Password Reset",
+      text:
+        "Please navigate to the following link to reset your password: " + url,
+    };
+
+    await sendEmail(transporter, mailOptions);
+
+    return true;
+  } catch (e) {
+    console.log("Error sending password reset email", e);
+    return false;
+  }
 };
 
 export default sendPasswordResetEmail;

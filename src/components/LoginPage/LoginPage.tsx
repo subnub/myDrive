@@ -1,5 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { createAccountAPI, getUserAPI, loginAPI } from "../../api/user";
+import {
+  createAccountAPI,
+  getUserAPI,
+  loginAPI,
+  sendPasswordResetAPI,
+} from "../../api/user";
 import { useLocation, useNavigate } from "react-router-dom";
 import { setUser } from "../../reducers/user";
 import { useAppDispatch } from "../../hooks/store";
@@ -8,6 +13,7 @@ import AlertIcon from "../../icons/AlertIcon";
 import Spinner from "../Spinner/Spinner";
 import classNames from "classnames";
 import { toast, ToastContainer } from "react-toastify";
+import Swal from "sweetalert2";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -20,6 +26,7 @@ const LoginPage = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+  const lastSentPassowordReset = useRef(0);
 
   const attemptLoginWithToken = async () => {
     setAttemptingLogin(true);
@@ -75,6 +82,37 @@ const LoginPage = () => {
     }
   };
 
+  const resetPassword = async () => {
+    try {
+      const currentDate = Date.now();
+      if (currentDate - lastSentPassowordReset.current < 1000 * 60 * 1) {
+        await Swal.fire({
+          title: "Please wait 1 minute before resending",
+          icon: "warning",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "Okay",
+        });
+        return;
+      }
+
+      lastSentPassowordReset.current = Date.now();
+
+      setLoadingLogin(true);
+
+      await toast.promise(sendPasswordResetAPI(email), {
+        pending: "Sending password reset...",
+        success: "Password Reset Sent",
+        error: "Error Sending Password Reset",
+      });
+
+      setLoadingLogin(false);
+    } catch (e) {
+      console.log("Create Account Error", e);
+      setLoadingLogin(false);
+      setError("Create Account Failed");
+    }
+  };
+
   const isSubmitDisabled = useMemo(() => {
     switch (mode) {
       case "login":
@@ -94,6 +132,8 @@ const LoginPage = () => {
       login();
     } else if (mode === "create") {
       createAccount();
+    } else if (mode === "reset") {
+      resetPassword();
     }
   };
 
@@ -144,12 +184,7 @@ const LoginPage = () => {
   return (
     <div>
       <div className="bg-[#F4F4F6] w-screen h-screen flex justify-center items-center">
-        <div
-          className={classNames(
-            "rounded-md shadow-lg bg-white p-10 relative w-[90%] sm:w-[500px] animate-height",
-            {}
-          )}
-        >
+        <div className="rounded-md shadow-lg bg-white p-10 relative w-[90%] sm:w-[500px] animate-height">
           <div className="absolute -top-10 left-0 right-0 flex justify-center items-center">
             <div className="flex items-center justify-center rounded-full bg-white p-3 shadow-md">
               {!loadingLogin && (

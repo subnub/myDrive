@@ -172,9 +172,14 @@ class UserService {
 
     const verifiedEmail = user.emailVerified;
 
+    if (env.emailVerification !== "true") {
+      throw new ForbiddenError("Email Verification Disabled");
+    }
+
     if (!verifiedEmail) {
       const emailToken = await user.generateEmailVerifyToken();
-      await sendVerificationEmail(user, emailToken);
+      const result = await sendVerificationEmail(user, emailToken);
+      if (!result) throw new InternalServerError("Email Verification Error");
     } else {
       throw new ForbiddenError("Email Already Authorized");
     }

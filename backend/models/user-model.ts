@@ -154,6 +154,12 @@ userSchema.methods.toJSON = function () {
   delete userObject.privateKey;
   delete userObject.publicKey;
 
+  if (env.emailVerification !== "true") {
+    delete userObject.emailVerified;
+  } else {
+    userObject.emailVerified = user.emailVerified || false;
+  }
+
   return userObject;
 };
 
@@ -203,7 +209,7 @@ userSchema.methods.generateAuthToken = async function (
 
   const userObj = {
     _id: user._id,
-    emailVerified: user.emailVerified || env.disableEmailVerification,
+    emailVerified: user.emailVerified,
     email: user.email,
   };
 

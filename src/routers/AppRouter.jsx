@@ -11,9 +11,9 @@ import HomePage from "../components/Homepage/Homepage";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import DownloadPage from "../components/DownloadPage/DownloadPage";
-import VerifyEmailPage from "../components/VerifyEmailPage";
+import VerifyEmailPage from "../components/VerifyEmailPage/VerifyEmailPage";
 import uuid from "uuid";
-import ResetPasswordPage from "../components/ResetPasswordPage";
+import ResetPasswordPage from "../components/ResetPasswordPage/ResetPasswordPage";
 import SettingsPage from "../components/SettingsPage/SettingsPage";
 import Homepage from "../components/Homepage/Homepage";
 import { usePreferenceSetter } from "../hooks/preferenceSetter";
@@ -95,8 +95,8 @@ const AppRouter = () => {
             </PrivateRoute>
           }
         />
-        <Route path="/verify-email/:id" element={<VerifyEmailPage />} />
-        <Route path="/reset-password/:id" element={<ResetPasswordPage />} />
+        <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
         <Route
           path="/settings"
           element={

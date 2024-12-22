@@ -1,6 +1,5 @@
 import { Router } from "express";
 import auth from "../middleware/auth";
-import authNoEmailVerification from "../middleware/authNoEmailVerificication";
 import UserController from "../controllers/user-controller";
 import authRefresh from "../middleware/authRefresh";
 import authLogout from "../middleware/authLogout";
@@ -15,11 +14,7 @@ const router = Router();
 
 // GET
 
-router.get(
-  "/user-service/user",
-  authNoEmailVerification,
-  userController.getUser
-);
+router.get("/user-service/user", auth, userController.getUser);
 
 router.get("/user-service/user-detailed", auth, userController.getUserDetailed);
 
@@ -37,21 +32,6 @@ router.post(
   userController.createUser
 );
 
-router.post("/user-service/verify-email", userController.verifyEmail);
-
-router.post(
-  "/user-service/resend-verify-email",
-  authNoEmailVerification,
-  userController.resendVerifyEmail
-);
-
-router.post(
-  "/user-service/send-password-reset",
-  userController.sendPasswordReset
-);
-
-router.post("/user-service/reset-password", userController.resetPassword);
-
 router.post("/user-service/get-token", authRefresh, userController.getToken);
 
 // PATCH
@@ -61,6 +41,21 @@ router.patch(
   auth,
   changePasswordValidationRules,
   userController.changePassword
+);
+
+router.patch(
+  "/user-service/resend-verify-email",
+  auth,
+  userController.resendVerifyEmail
+);
+
+router.patch("/user-service/verify-email", userController.verifyEmail);
+
+router.patch("/user-service/reset-password", userController.resetPassword);
+
+router.patch(
+  "/user-service/send-password-reset",
+  userController.sendPasswordReset
 );
 
 export default router;
