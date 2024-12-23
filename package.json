@@ -34,7 +34,7 @@
     "vite-test": "vite",
     "dev-test": "concurrently \"vite\" \"nodemon server.js\"",
     "dev-hot": "concurrently \"vite\" \"tsc -w -p ./backend/tsconfig.json\" \"npm run dev:backend\"",
-    "dev:backend": "nodemon dist/server/server-start.js",
+    "dev:backend": "NODE_ENV=development nodemon dist/server/server-start.js",
     "vite-build": "vite build",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'"
   },

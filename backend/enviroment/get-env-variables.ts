@@ -1,17 +1,16 @@
 import path from "path";
 
 const getEnvVariables = () => {
-  const configPath = path.join(__dirname, "..", "..", "config");
+  const configPath = path.join(__dirname, "..", "..", "backend", "config");
 
   const processType = process.env.NODE_ENV;
-  console.log("123process", processType);
 
   if (processType === "production" || processType === undefined) {
-    require("dotenv").config({ path: configPath + "/prod.env" });
+    require("dotenv").config({ path: configPath + "/.env.production" });
   } else if (processType === "development") {
-    require("dotenv").config({ path: configPath + "/dev.env" });
+    require("dotenv").config({ path: configPath + "/.env.development" });
   } else if (processType === "test") {
-    require("dotenv").config({ path: configPath + "/test.env" });
+    require("dotenv").config({ path: configPath + "/.env.test" });
   }
 };
 
