@@ -385,6 +385,8 @@ class StorageService {
     const chunksize = end - start + 1;
     const IV = currentFile.metadata.IV;
 
+    console.log("chunksize", start, end, chunksize);
+
     const head = {
       "Content-Range": "bytes " + start + "-" + end + "/" + fileSize,
       "Accept-Ranges": "bytes",
@@ -423,7 +425,8 @@ class StorageService {
 
     await getFileData(res, fileID, user, currentIV, {
       start: start,
-      end: end,
+      end,
+      chunksize,
       fixedStart,
       fixedEnd,
       skip: start - fixedStart,

@@ -9,6 +9,7 @@ import ChunkService from "../services/chunk-service/chunk-service";
 import streamToBuffer from "../utils/streamToBuffer";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
 import { FileListQueryType } from "../types/file-types";
+import fs from "fs";
 
 const fileService = new FileService();
 type userAccessType = {
@@ -369,6 +370,51 @@ class FileController {
       const headers = req.headers;
 
       await this.chunkService.streamVideo(user, fileID, headers, res);
+    } catch (e: unknown) {
+      next(e);
+    }
+  };
+
+  streamVideoTest = async (
+    req: RequestTypeFullUser,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const headers = req.headers;
+      console.log("headers", headers.range);
+      const fileSize = 26867866;
+      const range = headers.range!;
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunksize = end - start + 1;
+
+      const readStream = fs.createReadStream(
+        "/Users/kylehoell/Developer/myDrive-4/upgrade/old/video.mp4",
+        { start, end }
+      );
+
+      const head = {
+        "Content-Range": "bytes " + start + "-" + end + "/" + fileSize,
+        "Accept-Ranges": "bytes",
+        "Content-Length": chunksize,
+        "Content-Type": "video/mp4",
+      };
+
+      res.writeHead(206, head);
+
+      readStream.on("data", (data) => {
+        res.write(data);
+      });
+
+      readStream.on("end", () => {
+        res.end();
+      });
     } catch (e: unknown) {
       next(e);
     }

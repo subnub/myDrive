@@ -25,6 +25,7 @@ const proccessData = (
     fixedStart: number;
     fixedEnd: number;
     skip: number;
+    chunksize: number;
   }
 ) => {
   const eventEmitter = new EventEmitter();
@@ -88,25 +89,54 @@ const proccessData = (
       }
 
       if (range) {
-        const extraBytes = range.fixedEnd - range.end;
         let bytesSent = 0;
 
         const skipStream = streamSkip(range.skip);
 
-        readStream.pipe(decipher).pipe(skipStream);
-        skipStream.on("data", (data: Buffer) => {
-          if (bytesSent + data.length > range.end) {
-            const neededData = data.slice(0, data.length - extraBytes);
+        const totalData: Buffer[] = [];
+        decipher.on("data", (data: Buffer) => {
+          // console.log("data", data.length);
+          if (bytesSent + data.length > range.chunksize) {
+            const currentDataLength = bytesSent + data.length;
+            const difference = currentDataLength - range.chunksize;
+            const neededData = data.slice(0, data.length - difference);
+            console.log("needed data", data.length - difference);
+            // console.log(
+            //   "needed data",
+            //   neededData.length,
+            //   range.end - range.start,
+            //   bytesSent
+            // );
             res.write(neededData);
+            totalData.push(neededData);
           } else {
             res.write(data);
+            totalData.push(data);
           }
+          //totalData.push(data);
 
           bytesSent += data.length;
         });
+
+        readStream.pipe(decipher);
+        // decipher.on("finish", () => {
+        //   eventEmitter.emit("finish");
+        // });
         decipher.on("finish", () => {
+          // console.log("finish", totalData);
+          const buffer = Buffer.concat(totalData);
+          console.log("buffer", buffer.length);
+          // res.write(buffer);
+          res.end();
+
           eventEmitter.emit("finish");
         });
+        // readStream
+        //   .pipe(decipher)
+        //   .pipe(res)
+        //   .on("finish", () => {
+        //     eventEmitter.emit("finish");
+        //   });
       } else {
         readStream
           .pipe(decipher)
@@ -136,6 +166,7 @@ const getFileData = (
     fixedStart: number;
     fixedEnd: number;
     skip: number;
+    chunksize: number;
   }
 ) => {
   return new Promise((resolve, reject) => {
