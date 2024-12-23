@@ -383,6 +383,7 @@ class StorageService {
     const start = parseInt(parts[0], 10);
     const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
     const chunksize = end - start + 1;
+    const IV = currentFile.metadata.IV;
 
     const head = {
       "Content-Range": "bytes " + start + "-" + end + "/" + fileSize,
@@ -408,9 +409,25 @@ class StorageService {
       fixedStart = 0;
     }
 
+    let currentIV = IV;
+
+    if (fixedStart !== 0 && start !== 0) {
+      const readStreamParams = createGenericParams({
+        filePath: currentFile.metadata.filePath,
+        Key: currentFile.metadata.s3ID,
+      });
+      currentIV = (await storageActions.getPrevIV(
+        readStreamParams,
+        fixedStart - 16
+      )) as Buffer;
+    }
+
     res.writeHead(206, head);
 
-    await getFileData(res, fileID, user, { start: fixedStart, end: fixedEnd });
+    await getFileData(res, fileID, user, currentIV, {
+      start: fixedStart,
+      end: fixedEnd,
+    });
   };
 
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {

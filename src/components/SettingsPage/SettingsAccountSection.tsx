@@ -118,11 +118,9 @@ const SettingsPageAccount: React.FC<SettingsPageAccountProps> = ({
           <p className="text-gray-primary">Email</p>
           <p>{user.email}</p>
         </div>
-        {"emailVerified" in user && (
+        {"emailVerified" in user && !user.emailVerified && (
           <div className="px-3 py-4 flex flex-row justify-between items-center border-b border-gray-secondary">
-            <p className="text-gray-primary">
-              {user.emailVerified ? "Email verified" : "Email unverified"}
-            </p>
+            <p className="text-gray-primary">Email not verified</p>
             {!user.emailVerified && (
               <button
                 className="text-primary hover:text-primary-hover cursor-pointer"

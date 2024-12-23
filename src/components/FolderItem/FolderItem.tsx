@@ -148,7 +148,7 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
       </div>
       <div
         className={classNames(
-          "overflow-hidden text-ellipsis block w-full animate",
+          "text-ellipsis block w-full animate",
           elementSelected || elementMultiSelected
             ? "bg-primary text-white"
             : "bg-white text-gray-primary"

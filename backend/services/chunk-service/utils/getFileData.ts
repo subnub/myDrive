@@ -16,6 +16,7 @@ const proccessData = (
   res: Response,
   fileID: string,
   user: UserInterface,
+  rangeIV?: Buffer,
   range?: { start: number; end: number }
 ) => {
   const eventEmitter = new EventEmitter();
@@ -30,7 +31,7 @@ const proccessData = (
 
       if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
-      const IV = currentFile.metadata.IV;
+      const IV = rangeIV || currentFile.metadata.IV;
 
       const readStreamParams = createGenericParams({
         filePath: currentFile.metadata.filePath,
@@ -99,10 +100,11 @@ const getFileData = (
   res: Response,
   fileID: string,
   user: UserInterface,
+  rangeIV?: Buffer,
   range?: { start: number; end: number }
 ) => {
   return new Promise((resolve, reject) => {
-    const eventEmitter = proccessData(res, fileID, user, range);
+    const eventEmitter = proccessData(res, fileID, user, rangeIV, range);
     eventEmitter.on("finish", (data) => {
       resolve(data);
     });
