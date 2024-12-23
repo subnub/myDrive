@@ -1,12 +1,14 @@
 import { EventEmitter } from "stream";
 import { UserInterface } from "../../../models/user-model";
-import { Response } from "express";
+import e, { Response } from "express";
 import ForbiddenError from "../../../utils/ForbiddenError";
 import NotFoundError from "../../../utils/NotFoundError";
 import crypto from "crypto";
 import { createGenericParams } from "./storageHelper";
 import { getStorageActions } from "../actions/helper-actions";
 import FileDB from "../../../db/mongoDB/fileDB";
+// @ts-ignore
+import streamSkip from "stream-skip";
 
 const fileDB = new FileDB();
 
@@ -17,7 +19,13 @@ const proccessData = (
   fileID: string,
   user: UserInterface,
   rangeIV?: Buffer,
-  range?: { start: number; end: number }
+  range?: {
+    start: number;
+    end: number;
+    fixedStart: number;
+    fixedEnd: number;
+    skip: number;
+  }
 ) => {
   const eventEmitter = new EventEmitter();
 
@@ -43,8 +51,8 @@ const proccessData = (
       if (range) {
         readStream = storageActions.createReadStreamWithRange(
           readStreamParams,
-          range.start,
-          range.end
+          range.fixedStart,
+          range.fixedEnd
         );
       } else {
         readStream = storageActions.createReadStream(readStreamParams);
@@ -55,7 +63,6 @@ const proccessData = (
       const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
 
       if (range) {
-        // TODO: Check if we need this for video streaming
         decipher.setAutoPadding(false);
       }
 
@@ -80,12 +87,34 @@ const proccessData = (
         res.set("Content-Length", currentFile.metadata.size.toString());
       }
 
-      readStream
-        .pipe(decipher)
-        .pipe(res)
-        .on("finish", () => {
+      if (range) {
+        const extraBytes = range.fixedEnd - range.end;
+        let bytesSent = 0;
+
+        const skipStream = streamSkip(range.skip);
+
+        readStream.pipe(decipher).pipe(skipStream);
+        skipStream.on("data", (data: Buffer) => {
+          if (bytesSent + data.length > range.end) {
+            const neededData = data.slice(0, data.length - extraBytes);
+            res.write(neededData);
+          } else {
+            res.write(data);
+          }
+
+          bytesSent += data.length;
+        });
+        decipher.on("finish", () => {
           eventEmitter.emit("finish");
         });
+      } else {
+        readStream
+          .pipe(decipher)
+          .pipe(res)
+          .on("finish", () => {
+            eventEmitter.emit("finish");
+          });
+      }
     } catch (e) {
       eventEmitter.emit("error", e);
     }
@@ -101,7 +130,13 @@ const getFileData = (
   fileID: string,
   user: UserInterface,
   rangeIV?: Buffer,
-  range?: { start: number; end: number }
+  range?: {
+    start: number;
+    end: number;
+    fixedStart: number;
+    fixedEnd: number;
+    skip: number;
+  }
 ) => {
   return new Promise((resolve, reject) => {
     const eventEmitter = proccessData(res, fileID, user, rangeIV, range);

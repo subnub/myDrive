@@ -286,7 +286,7 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
           className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
         />
       </div>
-      <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center">
+      <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center z-10">
         {(isVideoLoading || isThumbnailLoading) && <Spinner />}
         {!file.metadata.isVideo && !isThumbnailLoading && (
           <img

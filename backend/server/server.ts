@@ -13,6 +13,7 @@ import http from "http";
 import cookieParser from "cookie-parser";
 import env from "../enviroment/env";
 import { middlewareErrorHandler } from "../middleware/utils/middleware-utils";
+import cors from "cors";
 // import requestIp from "request-ip";
 
 const app = express();
@@ -39,6 +40,7 @@ server = http.createServer(app);
 
 require("../db/connections/mongoose");
 
+app.use(cors());
 app.use(cookieParser(env.passwordCookie));
 app.use(helmet());
 app.use(compression());

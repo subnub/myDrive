@@ -39,7 +39,7 @@ const MainSection = memo(() => {
 
         {moveModalItemType && <MoverPopup />}
 
-        <div className="flex flex-row h-screen w-screen pt-16">
+        <div className="flex flex-row dynamic-height w-screen pt-16">
           <LeftSection />
 
           {!isMedia ? <DataForm /> : <Medias />}

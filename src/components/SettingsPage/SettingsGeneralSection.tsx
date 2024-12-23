@@ -107,7 +107,7 @@ const SettingsPageGeneral = () => {
           <select
             value={listViewStyle}
             onChange={fileListStyleChange}
-            className="text-primary"
+            className="text-sm font-medium appearance-none bg-white text-primary"
           >
             <option value="grid">Grid</option>
             <option value="list">List</option>
@@ -118,7 +118,7 @@ const SettingsPageGeneral = () => {
           <select
             value={sortBy}
             onChange={sortByChange}
-            className="text-primary"
+            className="text-sm font-medium appearance-none bg-white text-primary"
           >
             <option value="date">Date</option>
             <option value="name">Name</option>
@@ -129,7 +129,7 @@ const SettingsPageGeneral = () => {
           <select
             value={orderBy}
             onChange={orderByChange}
-            className="text-primary"
+            className="text-sm font-medium appearance-none bg-white text-primary"
           >
             <option value="descending">Descending</option>
             <option value="ascending">Ascending</option>
@@ -140,7 +140,7 @@ const SettingsPageGeneral = () => {
           <select
             value={singleClickFolders}
             onChange={singleClickFoldersChange}
-            className="text-primary"
+            className="text-sm font-medium appearance-none bg-white text-primary"
           >
             <option value="disabled">Disabled</option>
             <option value="enabled">Enabled</option>
@@ -151,7 +151,7 @@ const SettingsPageGeneral = () => {
           <select
             value={loadThumbnails}
             onChange={loadThumbnailsChange}
-            className="text-primary"
+            className="text-sm font-medium appearance-none bg-white text-primary"
           >
             <option value="enabled">Enabled</option>
             <option value="disabled">Disabled</option>

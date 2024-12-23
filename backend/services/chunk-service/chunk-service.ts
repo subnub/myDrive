@@ -393,10 +393,7 @@ class StorageService {
     };
 
     let fixedStart = 0;
-    let fixedEnd =
-      currentFile.length % 16 === 0
-        ? currentFile.length
-        : fixEndChunkLength(currentFile.length);
+    let fixedEnd = fixEndChunkLength(end) - 1;
 
     if (start === 0 && end === 1) {
       fixedStart = 0;
@@ -425,8 +422,11 @@ class StorageService {
     res.writeHead(206, head);
 
     await getFileData(res, fileID, user, currentIV, {
-      start: fixedStart,
-      end: fixedEnd,
+      start: start,
+      end: end,
+      fixedStart,
+      fixedEnd,
+      skip: start - fixedStart,
     });
   };
 
