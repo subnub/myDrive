@@ -1,5 +1,6 @@
 import axios from "axios";
 import uuid from "uuid";
+import getBackendURL from "../utils/getBackendURL";
 
 let browserIDCheck = localStorage.getItem("browser-id");
 
@@ -11,9 +12,9 @@ const sleep = () => {
   });
 };
 
-const axiosRetry = axios.create({ baseURL: "http://localhost:5173/api" });
-const axiosNoRetry = axios.create({ baseURL: "http://localhost:5173/api" });
-const axios3 = axios.create({ baseURL: "http://localhost:5173/api" });
+const axiosRetry = axios.create({ baseURL: getBackendURL() });
+const axiosNoRetry = axios.create({ baseURL: getBackendURL() });
+const axios3 = axios.create({ baseURL: getBackendURL() });
 
 axiosRetry.interceptors.request.use(
   (config) => {

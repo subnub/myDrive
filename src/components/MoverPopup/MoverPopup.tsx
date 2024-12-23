@@ -99,20 +99,20 @@ const MoverPopup = () => {
 
   const moveText = useMemo(() => {
     if (selectedFolder?._id && selectedFolder?.name) {
-      let reducedLengthFileName = selectedFolder.name;
-      if (reducedLengthFileName.length > 10)
-        reducedLengthFileName = reducedLengthFileName.substring(0, 10) + "...";
-      return `Move to ${reducedLengthFileName}`;
+      return `Move to ${selectedFolder.name}`;
     } else if (!parent) {
       return "Move to home";
     } else {
       const lastParent = parentList[parentList.length - 1];
-      let reducedLengthFileName = lastParent.name;
-      if (reducedLengthFileName.length > 10)
-        reducedLengthFileName = reducedLengthFileName.substring(0, 10) + "...";
-      return `Move to ${reducedLengthFileName}`;
+      return `Move to ${lastParent.name}`;
     }
-  }, [selectedFolder?._id, selectedFolder?.name, parent?._id]);
+  }, [
+    selectedFolder?._id,
+    selectedFolder?.name,
+    parent?._id,
+    parentList[parentList.length - 1],
+    parentList.length,
+  ]);
 
   const headerText = useMemo(() => {
     if (parent) {
@@ -255,6 +255,11 @@ const MoverPopup = () => {
             </div>
           )}
         </div>
+        <div className="mt-4">
+          <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+            {moveText}
+          </p>
+        </div>
         <div className="flex justify-end mt-4">
           <button
             className={classNames(
@@ -266,7 +271,7 @@ const MoverPopup = () => {
             onClick={onMoveClick}
             disabled={isLoadingMove}
           >
-            {moveText}
+            Confirm
           </button>
         </div>
       </div>

@@ -9,6 +9,7 @@ export default defineConfig({
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"], // Include these extensions
   },
+  envDir: "./src/config/",
   server: {
     proxy: {
       "/api": {

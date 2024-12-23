@@ -1,6 +1,7 @@
 import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
 import { getUserToken } from "./user";
+import getBackendURL from "../utils/getBackendURL";
 
 interface QueryKeyParams {
   parent: string;
@@ -68,8 +69,7 @@ export const downloadZIPAPI = async (
 ) => {
   await getUserToken();
 
-  // TODO: Change this
-  let url = `http://localhost:5173/api/folder-service/download-zip?`;
+  let url = `${getBackendURL()}/folder-service/download-zip?`;
 
   for (const folderID of folderIDs) {
     url += `folderIDs[]=${folderID}&`;

@@ -3,6 +3,9 @@ public/dist/
 config/dev.env
 config/prod.env
 config/test.env
+config/.env.development
+config/.env.test
+config/.env.production
 .env.development
 .env.test
 .env.production

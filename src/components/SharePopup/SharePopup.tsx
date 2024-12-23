@@ -21,6 +21,7 @@ import {
   setShareModal,
 } from "../../reducers/selected";
 import { toast } from "react-toastify";
+import getBackendURL from "../../utils/getBackendURL";
 
 const SharePopup = memo(() => {
   const file = useAppSelector((state) => state.selected.shareModal.file)!;
@@ -155,7 +156,9 @@ const SharePopup = memo(() => {
 
   useEffect(() => {
     if (!file.metadata.link) return;
-    const url = `${window.location.origin}/public-download/${file._id}/${file.metadata.link}`;
+    const url = `${getBackendURL()}/public-download/${file._id}/${
+      file.metadata.link
+    }`;
     setShareLink(url);
   }, [file.metadata.link]);
 

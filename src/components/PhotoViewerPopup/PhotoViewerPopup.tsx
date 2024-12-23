@@ -18,6 +18,7 @@ import { InfiniteData } from "react-query";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import Spinner from "../Spinner/Spinner";
 import { toast } from "react-toastify";
+import getBackendURL from "../../utils/getBackendURL";
 
 interface PhotoViewerPopupProps {
   file: FileInterface;
@@ -62,9 +63,10 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
     try {
       setIsVideoLoading(true);
       setVideo("");
-      // TODO: Change this
       await getVideoTokenAPI();
-      const videoURL = `http://localhost:5173/api/file-service/stream-video/${file._id}`;
+      const videoURL = `${getBackendURL()}/file-service/stream-video/${
+        file._id
+      }`;
       console.log("video url", videoURL);
       setVideo(videoURL);
       setIsVideoLoading(false);

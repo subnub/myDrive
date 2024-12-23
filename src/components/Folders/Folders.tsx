@@ -111,7 +111,7 @@ const Folders = memo(() => {
             </svg>
           </a>
           <select
-            className="text-sm font-medium"
+            className="text-sm font-medium appearance-none bg-white"
             onChange={switchTypeOrderBy}
             value={
               sortBy === "alp_desc" || sortBy === "alp_asc" ? "name" : "date"

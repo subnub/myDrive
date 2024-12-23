@@ -1,6 +1,7 @@
 import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
 import { getUserToken } from "./user";
+import getBackendURL from "../utils/getBackendURL";
 
 interface QueryKeyParams {
   parent: string;
@@ -68,8 +69,7 @@ export const getQuickFilesListAPI = async () => {
 export const downloadFileAPI = async (fileID: string) => {
   await getUserToken();
 
-  // TODO: Change this
-  const url = `http://localhost:5173/api/file-service/download/${fileID}`;
+  const url = `${getBackendURL()}/file-service/download/${fileID}`;
 
   const link = document.createElement("a");
   document.body.appendChild(link);
@@ -80,8 +80,7 @@ export const downloadFileAPI = async (fileID: string) => {
 };
 
 export const getFileThumbnailAPI = async (thumbnailID: string) => {
-  // TODO: Change this
-  const url = `http://localhost:5173/api/file-service/thumbnail/${thumbnailID}`;
+  const url = `${getBackendURL()}/file-service/thumbnail/${thumbnailID}`;
 
   const response = await axios.get(url, {
     responseType: "arraybuffer",
@@ -94,7 +93,7 @@ export const getFileThumbnailAPI = async (thumbnailID: string) => {
 };
 
 export const getFileFullThumbnailAPI = async (fileID: string) => {
-  const url = `http://localhost:5173/api/file-service/full-thumbnail/${fileID}`;
+  const url = `${getBackendURL()}/file-service/full-thumbnail/${fileID}`;
 
   const response = await axios.get(url, {
     responseType: "arraybuffer",
@@ -146,7 +145,7 @@ export const downloadPublicFileAPI = async (
   await getUserToken();
 
   // TODO: Change this
-  const url = `http://localhost:5173/api/file-service/public/download/${fileID}/${tempToken}`;
+  const url = `${getBackendURL()}/file-service/public/download/${fileID}/${tempToken}`;
 
   const link = document.createElement("a");
   document.body.appendChild(link);
