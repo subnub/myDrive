@@ -16,7 +16,7 @@ import { middlewareErrorHandler } from "../middleware/utils/middleware-utils";
 // import requestIp from "request-ip";
 
 const app = express();
-const publicPath = path.join(__dirname, "..", "..", "public");
+const publicPath = path.join(__dirname, "..", "..", "dist-frontend");
 
 let server: any;
 let serverHttps: any;

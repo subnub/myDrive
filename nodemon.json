@@ -1,6 +1,6 @@
 {
-  "watch": ["dist/"],
+  "watch": ["dist-backend/"],
   "ignore": ["src", "node_modules"],
   "ext": "js,json",
-  "exec": "node dist/server/server-start.js"
+  "exec": "node dist-backend/server/server-start.js"
 }

@@ -22,3 +22,5 @@ package-lock.json
 dist/
 rds-combined-ca-bundle.pem
 docker-variables.env
+dist-frontend/
+dist-backend/

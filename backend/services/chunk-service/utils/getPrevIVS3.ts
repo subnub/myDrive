@@ -1,4 +1,4 @@
-import s3 from "../../../db/s3";
+import s3 from "../../../db/connections/s3";
 import env from "../../../enviroment/env";
 import { UserInterface } from "../../../models/user-model";
 
@@ -17,7 +17,7 @@ const getPrevIV = (
 
     const stream = s3.getObject(params).createReadStream();
 
-    stream.on("data", (data) => {
+    stream.on("data", (data: any) => {
       resolve(data);
     });
   });
