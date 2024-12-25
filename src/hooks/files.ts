@@ -69,6 +69,8 @@ export const useFiles = (enabled = true) => {
           };
         },
         enabled,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
       }
     );
 
@@ -112,6 +114,8 @@ export const useQuickFiles = (enabled = true) => {
     getQuickFilesListAPI,
     {
       enabled,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     }
   );
 

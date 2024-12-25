@@ -7,6 +7,7 @@ export const useContextMenu = () => {
     Y: 0,
   });
   const lastTouched = useRef(0);
+  const timeoutRef = useRef<any>(null);
 
   const onContextMenu = (e: any) => {
     if (e) e.stopPropagation();
@@ -32,27 +33,31 @@ export const useContextMenu = () => {
     });
   };
 
-  const onTouchStart = () => {
-    lastTouched.current = new Date().getTime();
-  };
+  const onTouchStart = (e: any) => {
+    const touches = e.touches[0];
+    let X = e.clientX || touches.clientX;
+    let Y = e.clientY || touches.clientY;
 
-  const onTouchMove = () => {
-    lastTouched.current = 0;
-  };
-
-  const onTouchEnd = () => {
-    if (lastTouched.current === 0) {
-      return;
-    }
-
-    const date = new Date();
-    const difference = date.getTime() - lastTouched.current;
-
-    if (difference > 500) {
+    timeoutRef.current = setTimeout(() => {
+      console.log("timeout");
       setContextData({
         ...contextData,
         selected: true,
+        X,
+        Y,
       });
+    }, 500);
+  };
+
+  const onTouchMove = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const onTouchEnd = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
   };
 

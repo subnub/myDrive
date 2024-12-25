@@ -25,7 +25,7 @@ export const useFolders = (enabled = true) => {
       },
     ],
     getFoldersListAPI,
-    { enabled }
+    { enabled, refetchOnWindowFocus: false, refetchOnReconnect: false }
   );
 
   return { ...foldersReactQuery };

@@ -108,7 +108,10 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
           <PlayButtonIcon className="w-[50px] h-[50px]" />
         </div>
       )}
-      <img className="object-cover h-full w-full" src={thumbnail} />
+      <img
+        className="object-cover h-full w-full disable-force-touch"
+        src={thumbnail}
+      />
     </div>
   );
 });

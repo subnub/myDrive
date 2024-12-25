@@ -37,3 +37,7 @@
 :root {
   --toastify-icon-color-success: #3c85ee !important;
 }
+
+.disable-force-touch {
+  -webkit-touch-callout: none;
+}

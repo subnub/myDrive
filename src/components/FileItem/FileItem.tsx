@@ -205,7 +205,10 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
         >
           {!!thumbnail ? (
             <div className="w-full min-h-[88px] max-h-[88px] h-full flex">
-              <img className="object-cover w-full" src={thumbnail} />
+              <img
+                className="object-cover w-full disable-force-touch"
+                src={thumbnail}
+              />
               {file.metadata.isVideo && (
                 <div className="w-full h-full absolute flex justify-center items-center text-white">
                   <PlayButtonIcon className="w-[50px] h-[50px]" />
