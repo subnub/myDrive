@@ -8,6 +8,8 @@ import { createGenericParams } from "./storageHelper";
 import { getStorageActions } from "../actions/helper-actions";
 import FileDB from "../../../db/mongoDB/fileDB";
 import { FileInterface } from "../../../models/file-model";
+import NotAuthorizedError from "../../../utils/NotAuthorizedError";
+import sanitizeFilename from "../../../utils/sanitizeFilename";
 
 const fileDB = new FileDB();
 
@@ -32,6 +34,9 @@ const getFileAndRemoveActiveStream = async (
     const file = await fileDB.getFileInfo(fileID, userID);
     if (!file) {
       throw new NotFoundError("File not found");
+    }
+    if (file.metadata.owner !== userID) {
+      throw new NotAuthorizedError("Not owner of file");
     }
     return file;
   } else {
@@ -127,10 +132,12 @@ const proccessData = (
       });
 
       if (!range) {
+        const sanatizedFilename = sanitizeFilename(currentFile.filename);
+        const encodedFilename = encodeURIComponent(sanatizedFilename);
         res.set("Content-Type", "binary/octet-stream");
         res.set(
           "Content-Disposition",
-          'attachment; filename="' + currentFile.filename + '"'
+          `attachment; filename="${sanatizedFilename}"; filename*=UTF-8''${encodedFilename}`
         );
         res.set("Content-Length", currentFile.metadata.size.toString());
       }

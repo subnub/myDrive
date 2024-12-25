@@ -9,6 +9,7 @@ import { getStorageActions } from "../actions/helper-actions";
 import FileDB from "../../../db/mongoDB/fileDB";
 import NotAuthorizedError from "../../../utils/NotAuthorizedError";
 import UserDB from "../../../db/mongoDB/userDB";
+import sanitizeFilename from "../../../utils/sanitizeFilename";
 
 const fileDB = new FileDB();
 const userDB = new UserDB();
@@ -63,10 +64,12 @@ const proccessData = (res: Response, fileID: string, tempToken: string) => {
         eventEmitter.emit("error", e);
       });
 
+      const sanatizedFilename = sanitizeFilename(file.filename);
+      const encodedFilename = encodeURIComponent(sanatizedFilename);
       res.set("Content-Type", "binary/octet-stream");
       res.set(
         "Content-Disposition",
-        'attachment; filename="' + file.filename + '"'
+        `attachment; filename="${sanatizedFilename}"; filename*=UTF-8''${encodedFilename}`
       );
       res.set("Content-Length", file.metadata.size.toString());
 
