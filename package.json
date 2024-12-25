@@ -91,7 +91,6 @@
     "redux": "^5.0.1",
     "regenerator-runtime": "^0.13.3",
     "sharp": "^0.33.4",
-    "stream-skip": "^1.0.3",
     "supertest-session": "^4.1.0",
     "sweetalert2": "^11.6.13",
     "temp": "^0.9.1",

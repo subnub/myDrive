@@ -42,7 +42,6 @@ const getFileAndRemoveActiveStream = async (
       readStream.destroy();
       // @ts-ignore
       decipherStream.destroy();
-      console.log("Destroyed streams");
     } catch (e) {
       console.log("Error destroying streams", e);
     }
@@ -140,16 +139,20 @@ const proccessData = (
         let bytesSent = 0;
 
         decipher.on("data", (data: Buffer) => {
-          if (bytesSent + data.length > range.chunksize) {
+          if (bytesSent === 0 && range.skip > 0) {
+            const neededData = data.slice(range.skip, data.length);
+            res.write(neededData);
+            bytesSent += neededData.length;
+          } else if (bytesSent + data.length > range.chunksize) {
             const currentDataLength = bytesSent + data.length;
             const difference = currentDataLength - range.chunksize;
             const neededData = data.slice(0, data.length - difference);
             res.write(neededData);
+            bytesSent += neededData.length;
           } else {
             res.write(data);
+            bytesSent += data.length;
           }
-
-          bytesSent += data.length;
         });
 
         decipher.on("finish", () => {
