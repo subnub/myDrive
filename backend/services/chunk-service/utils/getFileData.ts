@@ -7,12 +7,48 @@ import crypto from "crypto";
 import { createGenericParams } from "./storageHelper";
 import { getStorageActions } from "../actions/helper-actions";
 import FileDB from "../../../db/mongoDB/fileDB";
-// @ts-ignore
-import streamSkip from "stream-skip";
+import { FileInterface } from "../../../models/file-model";
 
 const fileDB = new FileDB();
 
 const storageActions = getStorageActions();
+
+const activeStreams = new Map<
+  string,
+  {
+    readStream: NodeJS.ReadableStream;
+    decipherStream: NodeJS.ReadableStream;
+    file: FileInterface;
+  }
+>();
+
+const getFileAndRemoveActiveStream = async (
+  fileID: string,
+  userID: string,
+  isVideoStream: boolean
+) => {
+  const cachedFileData = activeStreams.get(fileID);
+  if (!cachedFileData || !isVideoStream) {
+    const file = await fileDB.getFileInfo(fileID, userID);
+    if (!file) {
+      throw new NotFoundError("File not found");
+    }
+    return file;
+  } else {
+    const { file, readStream, decipherStream } = cachedFileData;
+    try {
+      activeStreams.delete(fileID);
+      // @ts-ignore
+      readStream.destroy();
+      // @ts-ignore
+      decipherStream.destroy();
+      console.log("Destroyed streams");
+    } catch (e) {
+      console.log("Error destroying streams", e);
+    }
+    return file;
+  }
+};
 
 const proccessData = (
   res: Response,
@@ -32,7 +68,11 @@ const proccessData = (
 
   const processFile = async () => {
     try {
-      const currentFile = await fileDB.getFileInfo(fileID, user._id.toString());
+      const currentFile = await getFileAndRemoveActiveStream(
+        fileID,
+        user._id.toString(),
+        !!range
+      );
 
       if (!currentFile) throw new NotFoundError("Download File Not Found");
 
@@ -47,7 +87,7 @@ const proccessData = (
         Key: currentFile.metadata.s3ID,
       });
 
-      let readStream;
+      let readStream: NodeJS.ReadableStream;
 
       if (range) {
         readStream = storageActions.createReadStreamWithRange(
@@ -74,6 +114,14 @@ const proccessData = (
       readStream.on("error", (e: Error) => {
         eventEmitter.emit("error", e);
       });
+
+      if (!!range) {
+        activeStreams.set(fileID, {
+          readStream,
+          decipherStream: decipher,
+          file: currentFile,
+        });
+      }
 
       res.on("error", (e: Error) => {
         eventEmitter.emit("error", e);
