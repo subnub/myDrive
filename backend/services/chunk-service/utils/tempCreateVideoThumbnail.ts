@@ -22,142 +22,108 @@ const tempCreateVideoThumbnail = (
   filename: string,
   user: UserInterface
 ) => {
-  return new Promise<FileInterface>((resolve, reject) => {
+  return new Promise<FileInterface>(async (resolve, reject) => {
+    const password = user.getEncryptionKey();
+
+    let CIPHER_KEY = crypto.createHash("sha256").update(password!).digest();
+
     const thumbnailFilename = uuid.v4();
-    const tempDirectory = env.fsDirectory + "temp/" + thumbnailFilename;
-    const cleanup = () => {
+
+    const readStreamParams = createGenericParams({
+      filePath: file.metadata.filePath,
+      Key: file.metadata.s3ID,
+    });
+
+    const readStream = storageActions.createReadStream(readStreamParams);
+
+    const { writeStream, emitter } = storageActions.createWriteStream(
+      readStreamParams,
+      readStream,
+      thumbnailFilename
+    );
+
+    const tempDirectory = env.tempDirectory + thumbnailFilename;
+    const tempWriteStream = fs.createWriteStream(tempDirectory);
+    const decipher = crypto.createDecipheriv(
+      "aes256",
+      CIPHER_KEY,
+      file.metadata.IV
+    );
+
+    const thumbnailIV = crypto.randomBytes(16);
+
+    const thumbnailCipher = crypto.createCipheriv(
+      "aes256",
+      CIPHER_KEY,
+      thumbnailIV
+    );
+
+    const decryptedReadStream = readStream.pipe(decipher);
+
+    decryptedReadStream.pipe(tempWriteStream, { end: true });
+
+    if (emitter) {
+      emitter.on("finish", async () => {
+        await handleFinish();
+      });
+    }
+
+    const handleFinish = async () => {
+      const thumbnailModel = new Thumbnail({
+        name: filename,
+        owner: user._id,
+        IV: thumbnailIV,
+        path: env.fsDirectory + thumbnailFilename,
+        s3ID: thumbnailFilename,
+      });
+
+      await thumbnailModel.save();
+      if (!file._id) {
+        return reject();
+      }
+      const updatedFile = await File.findOneAndUpdate(
+        { _id: new ObjectId(file._id), "metadata.owner": user._id },
+        {
+          $set: {
+            "metadata.hasThumbnail": true,
+            "metadata.thumbnailID": thumbnailModel._id,
+            "metadata.isVideo": true,
+          },
+        },
+        { new: true }
+      );
+
+      if (!updatedFile) return reject();
+
       fs.unlink(tempDirectory, (err) => {
-        if (err) console.error("CLEANUP ERROR:", err);
+        resolve(updatedFile);
       });
     };
 
-    try {
-      const password = user.getEncryptionKey();
-
-      let CIPHER_KEY = crypto.createHash("sha256").update(password!).digest();
-
-      const readStreamParams = createGenericParams({
-        filePath: file.metadata.filePath,
-        Key: file.metadata.s3ID,
-      });
-
-      const readStream = storageActions.createReadStream(readStreamParams);
-
-      const { writeStream, emitter } = storageActions.createWriteStream(
-        readStreamParams,
-        readStream,
-        thumbnailFilename
-      );
-
-      const tempWriteStream = fs.createWriteStream(tempDirectory);
-      const decipher = crypto.createDecipheriv(
-        "aes256",
-        CIPHER_KEY,
-        file.metadata.IV
-      );
-
-      const thumbnailIV = crypto.randomBytes(16);
-
-      const thumbnailCipher = crypto.createCipheriv(
-        "aes256",
-        CIPHER_KEY,
-        thumbnailIV
-      );
-
-      const handleError = (e: Error) => {
-        console.log("thumbnail error", e);
-        cleanup();
-        resolve(file);
-      };
-
-      const decryptedReadStream = readStream.pipe(decipher);
-
-      readStream.on("error", handleError);
-
-      decipher.on("error", handleError);
-
-      writeStream.on("error", handleError);
-
-      thumbnailCipher.on("error", handleError);
-
-      decryptedReadStream.on("error", handleError);
-
-      tempWriteStream.on("error", handleError);
-
-      decryptedReadStream.pipe(tempWriteStream, { end: true });
-
-      const handleFinish = async () => {
-        try {
-          const thumbnailModel = new Thumbnail({
-            name: filename,
-            owner: user._id,
-            IV: thumbnailIV,
-            path: env.fsDirectory + thumbnailFilename,
-          });
-
-          await thumbnailModel.save();
-          if (!file._id) {
-            return reject();
-          }
-          const updateFileResponse = await File.updateOne(
-            { _id: new ObjectId(file._id), "metadata.owner": user._id },
-            {
-              $set: {
-                "metadata.hasThumbnail": true,
-                "metadata.thumbnailID": thumbnailModel._id,
-              },
-            }
-          );
-          if (updateFileResponse.modifiedCount === 0) {
-            return reject();
-          }
-
-          const updatedFile = await File.findById({
-            _id: new ObjectId(file._id),
-            "metadata.owner": user._id,
-          });
-
-          if (!updatedFile) return reject();
-
-          cleanup();
-
-          resolve(updatedFile?.toObject());
-        } catch (e) {
-          console.log("thumbnail error", e);
-          cleanup();
-          resolve(file);
-        }
-      };
-
-      tempWriteStream.on("finish", () => {
-        ffmpeg(tempDirectory, {
-          timeout: 60,
-        })
-          .seek(1)
-          .format("image2pipe")
-          .outputOptions([
-            "-f image2pipe",
-            "-vframes 1",
-            "-vf scale='if(gt(iw,ih),600,-1):if(gt(ih,iw),300,-1)'",
-          ])
-          .on("start", (command) => {})
-          .on("end", async () => {
-            console.log("end");
+    tempWriteStream.on("finish", () => {
+      ffmpeg(tempDirectory, {
+        timeout: 60,
+      })
+        .seek(1)
+        .format("image2pipe")
+        .outputOptions([
+          "-f image2pipe",
+          "-vframes 1",
+          "-vf scale='if(gt(iw,ih),600,-1):if(gt(ih,iw),300,-1)'",
+        ])
+        .on("start", () => {})
+        .on("end", async () => {
+          if (!emitter) {
             await handleFinish();
-          })
-          .on("error", (err, _, stderr) => {
-            console.log("error", err, stderr);
-            cleanup();
-            resolve(file);
-          })
-          .pipe(thumbnailCipher)
-          .pipe(writeStream, { end: true });
-      });
-    } catch (e) {
-      console.log("thumbnail error", e);
-      cleanup();
-      resolve(file);
-    }
+          }
+        })
+        .on("error", (err, _, stderr) => {
+          console.log("error", err, stderr);
+          resolve(file);
+        })
+        .pipe(thumbnailCipher)
+        .pipe(writeStream, { end: true });
+    });
   });
 };
 

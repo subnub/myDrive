@@ -10,7 +10,7 @@ import env from "../../../enviroment/env";
 import { ObjectId } from "mongodb";
 import File from "../../../models/file-model";
 import ffmpeg from "fluent-ffmpeg";
-import tempCreateVideoThumbnailFS from "./tempCreateVideoThumbnailFS";
+import tempCreateVideoThumbnail from "./tempCreateVideoThumbnail";
 import { S3Actions } from "../actions/S3-actions";
 import { FilesystemActions } from "../actions/file-system-actions";
 import { createGenericParams } from "./storageHelper";
@@ -163,7 +163,7 @@ const createVideoThumbnail = (
           await attemptToRemoveChunks(file, thumbnailFilename);
 
           if (env.tempDirectory) {
-            const updatedFile = await tempCreateVideoThumbnailFS(
+            const updatedFile = await tempCreateVideoThumbnail(
               file,
               filename,
               user
