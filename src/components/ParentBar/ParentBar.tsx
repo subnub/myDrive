@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUtils } from "../../hooks/utils";
 import { useFolder } from "../../hooks/folders";
+import SpacerIcon from "../../icons/SpacerIcon";
 
 const ParentBar = memo(() => {
   const { data: folder } = useFolder();
@@ -40,9 +41,7 @@ const ParentBar = memo(() => {
         >
           {!isTrash ? "Home" : "Trash"}
         </a>
-        <span className="inline-flex m-[0px_10px]">
-          <img src="/assets/spacer.svg" alt="spacer" />
-        </span>
+        <SpacerIcon className="text-black mx-2" />
         <p
           onClick={goToFolder}
           className="text-[#212b36] text-[18px] leading-[21px] font-medium m-0 whitespace-nowrap max-w-[170px] sm:max-w-[300px] overflow-hidden text-ellipsis cursor-pointer"

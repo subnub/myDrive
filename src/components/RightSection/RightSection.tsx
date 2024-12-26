@@ -12,6 +12,7 @@ import { resetSelected, setPopupSelect } from "../../reducers/selected";
 import { useUtils } from "../../hooks/utils";
 import { useThumbnail } from "../../hooks/files";
 import CloseIcon from "../../icons/CloseIcon";
+import FileDetailsIcon from "../../icons/FileDetailsIcon";
 
 const RightSection = memo(() => {
   const selectedItem = useAppSelector((state) => state.selected.mainSection);
@@ -109,9 +110,7 @@ const RightSection = memo(() => {
     >
       {selectedItem.id === "" ? (
         <div className="flex flex-col justify-center items-center text-center">
-          <span>
-            <img src="/assets/filedetailsicon.svg" alt="filedetailsicon" />
-          </span>
+          <FileDetailsIcon />
           <p className="text-[#637381] text-[16px] leading-[24px] font-normal m-0 mt-[30px]">
             Select a file or folder to view it’s details
           </p>
@@ -119,16 +118,7 @@ const RightSection = memo(() => {
       ) : (
         <div className="w-full">
           <div className="flex flex-row">
-            {/* <div>
-              <img
-                className="flex w-auto max-w-full"
-                src="/assets/typedetailed1.svg"
-                alt="typedetailed1"
-              />
-            </div> */}
-            <div>
-              {/* <img className="object-cover w-full" src={thumbnail} /> */}
-            </div>
+            <div></div>
             <div className="w-full h-16 flex items-center relative">
               <div
                 className="opacity-40 w-full h-full absolute"
