@@ -160,7 +160,7 @@ const MultiSelectBar: React.FC = () => {
         <div className="flex flex-row items-center justify-between">
           <div className="flex flex-row items-center">
             <CloseIcon
-              className="w-5 h-5 cursor-pointer hover:text-primary"
+              className="w-7 h-7 md:w-5 md:h-5 cursor-pointer hover:text-primary"
               onClick={closeMultiSelect}
             />
             <p className="ml-4 select-none">{multiSelectCount} selected</p>
@@ -170,17 +170,17 @@ const MultiSelectBar: React.FC = () => {
             {!isTrash && (
               <React.Fragment>
                 <TrashIcon
-                  className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
+                  className="ml-4 cursor-pointer w-7 h-7 md:w-5 md:h-5 hover:text-primary"
                   onClick={trashItems}
                 />
                 {!isMedia && (
                   <Moveicon
-                    className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
+                    className="ml-4 cursor-pointer w-7 h-7 md:w-5 md:h-5 hover:text-primary"
                     onClick={moveItems}
                   />
                 )}
                 <DownloadIcon
-                  className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
+                  className="ml-4 cursor-pointer w-7 h-7 md:w-5 md:h-5 hover:text-primary"
                   onClick={downloadItems}
                 />
               </React.Fragment>
@@ -188,11 +188,11 @@ const MultiSelectBar: React.FC = () => {
             {isTrash && (
               <React.Fragment>
                 <RestoreIcon
-                  className="ml-4 cursor-pointer w-5 h-5 hover:text-primary"
+                  className="ml-4 cursor-pointerw-7 h-7 md:w-5 md:h-5 hover:text-primary"
                   onClick={restoreItems}
                 />
                 <TrashIcon
-                  className="ml-4 cursor-pointer text-red-500 w-5 h-5 hover:text-red-700"
+                  className="ml-4 cursor-pointer text-red-500 w-7 h-7 md:w-5 md:h-5 hover:text-red-700"
                   onClick={deleteItems}
                 />
               </React.Fragment>

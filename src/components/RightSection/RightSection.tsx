@@ -13,6 +13,7 @@ import { useUtils } from "../../hooks/utils";
 import { useThumbnail } from "../../hooks/files";
 import CloseIcon from "../../icons/CloseIcon";
 import FileDetailsIcon from "../../icons/FileDetailsIcon";
+import ActionsIcon from "../../icons/ActionsIcon";
 
 const RightSection = memo(() => {
   const selectedItem = useAppSelector((state) => state.selected.mainSection);
@@ -195,7 +196,7 @@ const RightSection = memo(() => {
                   // @ts-ignore
                   onClick={onContextMenu}
                 >
-                  <i className="fas fa-ellipsis-h" aria-hidden="true"></i>
+                  <ActionsIcon className="w-[20px] h-[20px]" />
                 </a>
               </div>
             </div>

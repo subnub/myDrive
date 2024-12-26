@@ -112,6 +112,7 @@ const createVideoThumbnail = (
               $set: {
                 "metadata.hasThumbnail": true,
                 "metadata.thumbnailID": thumbnailModel._id,
+                "metadata.isVideo": true,
               },
             }
           );
