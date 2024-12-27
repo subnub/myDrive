@@ -13,7 +13,9 @@
     "build:backend": "tsc -p ./backend/tsconfig.json",
     "build": "npm run build:frontend && npm run build:backend",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
-    "start": "NODE_ENV=production node dist-backend/server/server-start.js"
+    "start": "NODE_ENV=production node dist-backend/server/server-start.js",
+    "create-video-thumbnails": "NODE_ENV=production node serverUtils/createVideoThumbnails.js",
+    "create-video-thumbnails:dev": "NODE_ENV=development node serverUtils/createVideoThumbnails.js"
   },
   "dependencies": {
     "@babel/core": "^7.8.4",

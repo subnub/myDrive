@@ -1,13 +1,12 @@
-const getEnvVariables = require("../dist/enviroment/get-env-variables");
+const getEnvVariables = require("../dist-backend/enviroment/get-env-variables");
 getEnvVariables();
 const mongoose = require("./mongoServerUtil");
 const conn = mongoose.connection;
-const File = require("../dist/models/file-model");
-const User = require("../dist/models/user-model");
-const crypto = require("crypto");
+const File = require("../dist-backend/models/file-model");
+const User = require("../dist-backend/models/user-model");
 const createVideoThumbnail =
-  require("../dist/services/chunk-service/utils/createVideoThumbnail").default;
-const getKey = require("../dist/key/get-key").default;
+  require("../dist-backend/services/chunk-service/utils/createVideoThumbnail").default;
+const getKey = require("../dist-backend/key/get-key").default;
 
 const waitForDatabase = () => {
   return new Promise((resolve, reject) => {
@@ -22,6 +21,8 @@ const waitForDatabase = () => {
 };
 
 const updateDocs = async () => {
+  console.log(`Updating video thumbnails, env is ${process.env.NODE_ENV}`);
+
   console.log("\nWaiting for database...");
   await waitForDatabase();
   console.log("Connected to database\n");
@@ -44,13 +45,17 @@ const updateDocs = async () => {
   console.log("Found", files.length, "files");
 
   for (let i = 0; i < files.length; i++) {
-    const currentFile = files[i];
+    try {
+      const currentFile = files[i];
 
-    console.log("current file", currentFile._id);
+      console.log("current file", currentFile._id);
 
-    const user = await User.findById(currentFile.metadata.owner);
+      const user = await User.findById(currentFile.metadata.owner);
 
-    await createVideoThumbnail(currentFile, currentFile.filename, user);
+      await createVideoThumbnail(currentFile, currentFile.filename, user);
+    } catch (e) {
+      console.log("error creating video thumbnail", e);
+    }
   }
 
   console.log("Done");

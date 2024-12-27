@@ -53,19 +53,23 @@ const processData = (
         length = metadata.size;
       }
 
+      const videoCheck = videoChecker(filename);
+
       const currentFile = new File({
         filename,
         uploadDate: date.toISOString(),
         length,
-        metadata,
+        metadata: {
+          ...metadata,
+          isVideo: videoCheck,
+        },
       });
 
       await currentFile.save();
 
       const imageCheck = imageChecker(currentFile.filename);
-      const videoCheck = videoChecker(currentFile.filename);
 
-      if (videoCheck) {
+      if (videoCheck && env.videoThumbnailsEnabled) {
         const updatedFile = await createVideoThumbnail(
           currentFile,
           filename,

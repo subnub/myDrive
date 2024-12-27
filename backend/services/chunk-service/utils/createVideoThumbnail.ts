@@ -163,7 +163,7 @@ const createVideoThumbnail = (
 
           await attemptToRemoveChunks(file, thumbnailFilename);
 
-          if (env.tempDirectory) {
+          if (env.tempDirectory && env.tempVideoThumbnailLimit > file.length) {
             const updatedFile = await tempCreateVideoThumbnail(
               file,
               filename,

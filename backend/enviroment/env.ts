@@ -26,6 +26,10 @@ export default {
   emailHost: process.env.EMAIL_HOST,
   emailPort: process.env.EMAIL_PORT,
   emailAddress: process.env.EMAIL_ADDRESS,
+  videoThumbnailsEnabled: process.env.VIDEO_THUMBNAILS_ENABLED === "true",
+  tempVideoThumbnailLimit: process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
+    ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
+    : 0,
 };
 
 module.exports = {
@@ -56,4 +60,8 @@ module.exports = {
   emailHost: process.env.EMAIL_HOST,
   emailPort: process.env.EMAIL_PORT,
   emailAddress: process.env.EMAIL_ADDRESS,
+  videoThumbnailsEnabled: process.env.VIDEO_THUMBNAILS_ENABLED === "true",
+  tempVideoThumbnailLimit: process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
+    ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
+    : 0,
 };
