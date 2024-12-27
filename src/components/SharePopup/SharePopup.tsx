@@ -164,7 +164,7 @@ const SharePopup = memo(() => {
 
   return (
     <div
-      className="w-screen h-screen bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col"
+      className="w-screen dynamic-height bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col"
       id="outer-wrapper"
       onClick={outterWrapperClick}
     >

@@ -172,7 +172,7 @@ const LoginPage = () => {
   if (attemptingLogin) {
     return (
       <div>
-        <div className="w-screen h-screen flex justify-center items-center">
+        <div className="w-screen dynamic-height flex justify-center items-center">
           <div>
             <Spinner />
           </div>
@@ -183,7 +183,7 @@ const LoginPage = () => {
 
   return (
     <div>
-      <div className="bg-[#F4F4F6] w-screen h-screen flex justify-center items-center">
+      <div className="bg-[#F4F4F6] w-screen dynamic-height flex justify-center items-center">
         <div className="rounded-md shadow-lg bg-white p-10 relative w-[90%] sm:w-[500px] animate-height">
           <div className="absolute -top-10 left-0 right-0 flex justify-center items-center">
             <div className="flex items-center justify-center rounded-full bg-white p-3 shadow-md">

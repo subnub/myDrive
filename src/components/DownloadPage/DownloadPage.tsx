@@ -40,7 +40,7 @@ const PublicDownloadPage = () => {
 
   if (!file) {
     return (
-      <div className="w-screen h-screen flex justify-center items-center">
+      <div className="w-screen dynamic-height flex justify-center items-center">
         <Spinner />
         <ToastContainer position="bottom-left" />
       </div>
@@ -57,7 +57,7 @@ const PublicDownloadPage = () => {
 
   return (
     <div>
-      <div className="flex justify-center items-center w-screen h-screen bg-black bg-opacity-90">
+      <div className="flex justify-center items-center w-screen dynamic-height bg-black bg-opacity-90">
         <div
           className="absolute top-5 flex justify-between w-full"
           id="actions-wrapper"

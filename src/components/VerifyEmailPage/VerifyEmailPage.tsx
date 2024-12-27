@@ -27,7 +27,7 @@ const VerifyEmailPage = () => {
   }, []);
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center flex-col">
+    <div className="w-screen dynamic-height flex justify-center items-center flex-col">
       <h1>Verifying email...</h1>
       <ToastContainer position="bottom-left" />
     </div>

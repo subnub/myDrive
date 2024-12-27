@@ -72,7 +72,7 @@ const SettingsPage = () => {
         <div
           ref={wrapperRef}
           className={classNames(
-            "fixed sm:relative px-4 border-r border-gray-secondary w-72 h-screen animate-movement bg-white",
+            "fixed sm:relative px-4 border-r border-gray-secondary w-72 dynamic-height animate-movement bg-white",
             {
               "-ml-72 sm:ml-0": !showSidebarMobile,
               "ml-0": showSidebarMobile,
@@ -128,7 +128,7 @@ const SettingsPage = () => {
           </div>
         )}
         {!user && (
-          <div className="w-full h-screen flex justify-center items-center">
+          <div className="w-full dynamic-height flex justify-center items-center">
             <Spinner />
           </div>
         )}
