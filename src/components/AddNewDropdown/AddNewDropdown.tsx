@@ -3,7 +3,7 @@ import { createFolderAPI, uploadFolderAPI } from "../../api/foldersAPI";
 import { useFoldersClient } from "../../hooks/folders";
 import { useClickOutOfBounds } from "../../hooks/utils";
 import { showCreateFolderPopup } from "../../popups/folder";
-import React, { RefObject, useRef } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useUploader } from "../../hooks/files";
 import UploadFileIcon from "../../icons/UploadFileIcon";
 import CreateFolderIcon from "../../icons/CreateFolderIcon";
@@ -16,6 +16,7 @@ interface AddNewDropdownProps {
 const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
   const params = useParams();
   const { invalidateFoldersCache } = useFoldersClient();
+  const [supportsWebkitDirectory, setSupportsWebkitDirectory] = useState(false);
   const { wrapperRef } = useClickOutOfBounds(props.closeDropdown);
   const uploadRef: RefObject<HTMLInputElement> = useRef(null);
   const uploadFolderRef: RefObject<HTMLInputElement> = useRef(null);
@@ -68,6 +69,12 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
     }
   };
 
+  useEffect(() => {
+    if (uploadFolderRef.current) {
+      setSupportsWebkitDirectory("webkitdirectory" in uploadFolderRef.current);
+    }
+  }, []);
+
   return (
     <div ref={wrapperRef} className="absolute bottom-0 top-full w-full">
       <input
@@ -106,15 +113,17 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
             <p className="text-sm">Create Folder</p>
           </a>
         </li>
-        <li>
-          <a
-            className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
-            onClick={triggerFolderUpload}
-          >
-            <FolderUploadIcon className="w-5 h-5 mr-2.5 text-primary" />
-            <p className="text-sm">Upload Folder</p>
-          </a>
-        </li>
+        {supportsWebkitDirectory && (
+          <li>
+            <a
+              className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
+              onClick={triggerFolderUpload}
+            >
+              <FolderUploadIcon className="w-5 h-5 mr-2.5 text-primary" />
+              <p className="text-sm">Upload Folder</p>
+            </a>
+          </li>
+        )}
       </ul>
     </div>
   );
