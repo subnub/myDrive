@@ -30,6 +30,12 @@ export interface SelectedStateType {
     file: FileInterface | null;
   };
   moveModal: MoveStateType;
+  navigationMap: {
+    [key: string]: {
+      url: string;
+      scrollTop: number;
+    };
+  };
 }
 
 const initialState: SelectedStateType = {
@@ -54,6 +60,7 @@ const initialState: SelectedStateType = {
     file: null,
     folder: null,
   },
+  navigationMap: {},
 };
 
 const selectedSlice = createSlice({
@@ -143,6 +150,20 @@ const selectedSlice = createSlice({
         folder: null,
       };
     },
+    addNavigationMap: (
+      state,
+      action: PayloadAction<{
+        url: string;
+        scrollTop: number;
+      }>
+    ) => {
+      const navigationMap = state.navigationMap;
+      navigationMap[action.payload.url] = {
+        url: action.payload.url,
+        scrollTop: action.payload.scrollTop,
+      };
+      state.navigationMap = navigationMap;
+    },
   },
 });
 
@@ -157,6 +178,7 @@ export const {
   resetShareModal,
   setMoveModal,
   resetMoveModal,
+  addNavigationMap,
 } = selectedSlice.actions;
 
 export default selectedSlice.reducer;

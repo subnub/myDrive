@@ -6,16 +6,21 @@ import { useNavigate } from "react-router-dom";
 import mobilecheck from "../../utils/mobileCheck";
 import moment from "moment";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { setMainSelect, setMultiSelectMode } from "../../reducers/selected";
+import {
+  addNavigationMap,
+  setMainSelect,
+  setMultiSelectMode,
+} from "../../reducers/selected";
 import { useUtils } from "../../hooks/utils";
 import { FolderInterface } from "../../types/folders";
 
 interface FolderItemProps {
   folder: FolderInterface;
+  scrollDivRef: React.RefObject<HTMLDivElement>;
 }
 
 const FolderItem: React.FC<FolderItemProps> = memo((props) => {
-  const { folder } = props;
+  const { folder, scrollDivRef } = props;
   const elementSelected = useAppSelector((state) => {
     if (state.selected.mainSection.type !== "folder") return false;
     return state.selected.mainSection.id === folder._id;
@@ -77,6 +82,12 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
       }
 
       if (singleClickFolders || currentDate - lastSelected.current < 1500) {
+        dispatch(
+          addNavigationMap({
+            url: window.location.pathname,
+            scrollTop: scrollDivRef.current?.scrollTop || 0,
+          })
+        );
         if (isTrash) {
           navigate(`/folder-trash/${folder._id}`);
         } else {

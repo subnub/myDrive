@@ -1,6 +1,6 @@
 import DataForm from "../Dataform/Dataform";
 import RightSection from "../RightSection/RightSection";
-import { memo } from "react";
+import { memo, useRef } from "react";
 import LeftSection from "../LeftSection/LeftSection";
 import { useUtils } from "../../hooks/utils";
 import Medias from "../Medias/Medias";
@@ -20,6 +20,7 @@ const MainSection = memo(() => {
   const moveModalItemType = useAppSelector(
     (state) => state.selected.moveModal.type
   );
+  const scrollDivRef = useRef<HTMLDivElement>(null);
 
   const isMediaSelected =
     popupModalItem?.metadata.isVideo || popupModalItem?.metadata.hasThumbnail;
@@ -40,9 +41,13 @@ const MainSection = memo(() => {
         {moveModalItemType && <MoverPopup />}
 
         <div className="flex flex-row dynamic-height w-screen pt-16">
-          <LeftSection />
+          <LeftSection scrollDivRef={scrollDivRef} />
 
-          {!isMedia ? <DataForm /> : <Medias />}
+          {!isMedia ? (
+            <DataForm scrollDivRef={scrollDivRef} />
+          ) : (
+            <Medias scrollDivRef={scrollDivRef} />
+          )}
 
           <RightSection />
         </div>

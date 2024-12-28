@@ -10,8 +10,13 @@ import { closeDrawer } from "../../reducers/leftSection";
 import SettingsIcon from "../../icons/SettingsIcon";
 import ChevronSolid from "../../icons/ChevronSolid";
 import HomeIconOutline from "../../icons/HomeIconOutline";
+import { addNavigationMap } from "../../reducers/selected";
 
-const LeftSection = () => {
+const LeftSection = ({
+  scrollDivRef,
+}: {
+  scrollDivRef: React.RefObject<HTMLDivElement>;
+}) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const leftSectionOpen = useAppSelector((state) => state.leftSection.drawOpen);
   const { isHome, isHomeFolder, isTrash, isMedia, isSettings } = useUtils();
@@ -33,21 +38,45 @@ const LeftSection = () => {
 
   const goHome = () => {
     dispatch(closeDrawer());
+    dispatch(
+      addNavigationMap({
+        url: window.location.pathname,
+        scrollTop: scrollDivRef.current?.scrollTop || 0,
+      })
+    );
     navigate("/home");
   };
 
   const goTrash = () => {
     dispatch(closeDrawer());
+    dispatch(
+      addNavigationMap({
+        url: window.location.pathname,
+        scrollTop: scrollDivRef.current?.scrollTop || 0,
+      })
+    );
     navigate("/trash");
   };
 
   const goMedia = () => {
     dispatch(closeDrawer());
+    dispatch(
+      addNavigationMap({
+        url: window.location.pathname,
+        scrollTop: scrollDivRef.current?.scrollTop || 0,
+      })
+    );
     navigate("/media");
   };
 
   const goSettings = () => {
     dispatch(closeDrawer());
+    dispatch(
+      addNavigationMap({
+        url: window.location.pathname,
+        scrollTop: scrollDivRef.current?.scrollTop || 0,
+      })
+    );
     navigate("/settings");
   };
 
