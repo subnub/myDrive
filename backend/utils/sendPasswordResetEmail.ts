@@ -31,7 +31,8 @@ const sendPasswordResetEmail = async (
   resetToken: string
 ) => {
   try {
-    const transporter = createEmailTransporter();
+    // TODO: Fix any, for some reason some envs come up with a ts error for this
+    const transporter = createEmailTransporter() as any;
 
     const emailAddress = env.emailAddress!;
     const url = env.remoteURL + `/reset-password/${resetToken}`;

@@ -13,6 +13,7 @@ const Medias = memo(
       data: files,
       isFetchingNextPage,
       fetchNextPage: filesFetchNextPage,
+      isLoading: isLoadingFiles,
     } = useFiles();
     const [initialLoad, setInitialLoad] = useState(true);
     const { sentinelRef, reachedIntersect } = useInfiniteScroll();
@@ -31,10 +32,10 @@ const Medias = memo(
       } else if (!files) {
         return;
       }
-      if (reachedIntersect && !isFetchingNextPage) {
+      if (reachedIntersect && !isFetchingNextPage && !isLoadingFiles) {
         filesFetchNextPage();
       }
-    }, [reachedIntersect, initialLoad, isFetchingNextPage]);
+    }, [reachedIntersect, initialLoad, isFetchingNextPage, isLoadingFiles]);
 
     useEffect(() => {
       if (!initialLoad && navigationMap) {

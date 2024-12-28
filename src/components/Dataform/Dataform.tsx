@@ -40,10 +40,10 @@ const DataForm = memo(
       } else if (!fileList) {
         return;
       }
-      if (reachedIntersect && !isFetchingNextPage) {
+      if (reachedIntersect && !isFetchingNextPage && !isLoadingFiles) {
         filesFetchNextPage();
       }
-    }, [reachedIntersect, initialLoad, isFetchingNextPage]);
+    }, [reachedIntersect, initialLoad, isFetchingNextPage, isLoadingFiles]);
 
     useEffect(() => {
       if (!isLoading && navigationMap) {
