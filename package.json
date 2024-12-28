@@ -10,7 +10,7 @@
     "dev": "concurrently \"vite\" \"tsc -w -p ./backend/tsconfig.json\" \"npm run dev:backend\"",
     "dev:backend": "NODE_ENV=development nodemon dist-backend/server/server-start.js",
     "build:frontend": "vite build",
-    "build:backend": "tsc -p ./backend/tsconfig.json",
+    "build:backend": "tsc -p ./backend/tsconfig.json --skipLibCheck",
     "build": "npm run build:frontend && npm run build:backend",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "start": "NODE_ENV=production node dist-backend/server/server-start.js",
