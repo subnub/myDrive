@@ -8,6 +8,7 @@ import { useUploader } from "../../hooks/files";
 import UploadFileIcon from "../../icons/UploadFileIcon";
 import CreateFolderIcon from "../../icons/CreateFolderIcon";
 import FolderUploadIcon from "../../icons/FolderUploadIcon";
+import Swal from "sweetalert2";
 
 interface AddNewDropdownProps {
   closeDropdown: () => void;
@@ -44,17 +45,38 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
     uploadFiles(files);
   };
 
+  const checkForWebkitDirectory = (items: FileList) => {
+    for (let i = 0; i < items.length; i++) {
+      if (!items[i].webkitRelativePath) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleFolderUpload = (e: React.FormEvent<HTMLInputElement>) => {
     e.preventDefault();
     props.closeDropdown();
 
     const items = uploadFolderRef.current?.files;
 
-    if (!items) return;
+    if (!items || !items.length) {
+      Swal.fire({
+        title: "No items selected",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "Okay",
+      });
+      return;
+    }
 
-    console.log("items", items);
+    const hasWebkitDirectory = checkForWebkitDirectory(items);
 
-    uploadFolder(items);
+    if (!hasWebkitDirectory) {
+      uploadFiles(items);
+    } else {
+      uploadFolder(items);
+    }
   };
 
   const triggerFileUpload = () => {

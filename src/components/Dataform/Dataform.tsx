@@ -51,7 +51,7 @@ const DataForm = memo(
       } else if (!isLoading) {
         scrollDivRef.current?.scrollTo(0, 0);
       }
-    }, [isLoading, navigationMap, window.location.pathname]);
+    }, [isLoading, navigationMap]);
 
     const addFile = useCallback(
       (files: FileList) => {

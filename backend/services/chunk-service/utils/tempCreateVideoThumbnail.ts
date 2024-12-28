@@ -100,6 +100,14 @@ const tempCreateVideoThumbnail = (
       });
     };
 
+    const attemptToRemoveTempDirectory = () => {
+      return new Promise((resolve, reject) => {
+        fs.unlink(tempDirectory, (err) => {
+          resolve(!err);
+        });
+      });
+    };
+
     tempWriteStream.on("finish", () => {
       ffmpeg(tempDirectory, {
         timeout: 60,
@@ -119,6 +127,7 @@ const tempCreateVideoThumbnail = (
         })
         .on("error", (err, _, stderr) => {
           console.log("error", err, stderr);
+          attemptToRemoveTempDirectory();
           resolve(file);
         })
         .pipe(thumbnailCipher)
