@@ -46,8 +46,6 @@ export interface FolderInterface
   trashed: boolean | null;
 }
 
-folderSchema.index({ owner: 1, parent: 1, name: 1 }, { background: true });
-folderSchema.index({ owner: 1, parent: 1, createdAt: 1 }, { background: true });
 folderSchema.index({ createdAt: 1 }, { background: true });
 folderSchema.index({ owner: 1 }, { background: true });
 folderSchema.index({ trashed: 1 }, { background: true });
