@@ -15,7 +15,9 @@
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "start": "NODE_ENV=production node dist-backend/server/server-start.js",
     "create-video-thumbnails": "NODE_ENV=production node serverUtils/createVideoThumbnails.js",
-    "create-video-thumbnails:dev": "NODE_ENV=development node serverUtils/createVideoThumbnails.js"
+    "create-video-thumbnails:dev": "NODE_ENV=development node serverUtils/createVideoThumbnails.js",
+    "migrate-to-mydrive4": "NODE_ENV=production node serverUtils/migrateMyDrive4.js",
+    "migrate-to-mydrive4:dev": "NODE_ENV=development node serverUtils/migrateMyDrive4.js"
   },
   "dependencies": {
     "@babel/core": "^7.8.4",

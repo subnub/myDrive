@@ -1,8 +1,8 @@
-const getEnvVariables = require("../dist/enviroment/get-env-variables");
+const getEnvVariables = require("../dist-backend/enviroment/get-env-variables");
 getEnvVariables();
 const mongoose = require("./mongoServerUtil");
 const conn = mongoose.connection;
-const File = require("../dist/models/file-model");
+const File = require("../dist-backend/models/file-model");
 
 const waitForDatabase = () => {
   return new Promise((resolve, reject) => {
