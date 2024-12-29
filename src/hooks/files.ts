@@ -54,7 +54,10 @@ export const useFiles = (enabled = true) => {
       {
         getNextPageParam: (lastPage, pages) => {
           const lastElement = lastPage[lastPage.length - 1];
-          if (!lastElement) return undefined;
+          const hasPageWithoutMaxItemLength = pages.some(
+            (page) => page.length < limit
+          );
+          if (!lastElement || hasPageWithoutMaxItemLength) return undefined;
           return {
             startAtDate: lastElement.uploadDate,
             startAtName: lastElement.filename,

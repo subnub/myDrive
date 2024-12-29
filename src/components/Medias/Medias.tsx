@@ -6,6 +6,8 @@ import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { setMediaFilter, setSortBy } from "../../reducers/filter";
+import Spinner from "../Spinner/Spinner";
+import { removeNavigationMap } from "../../reducers/selected";
 
 const Medias = memo(
   ({ scrollDivRef }: { scrollDivRef: React.RefObject<HTMLDivElement> }) => {
@@ -40,8 +42,7 @@ const Medias = memo(
     useEffect(() => {
       if (!initialLoad && navigationMap) {
         scrollDivRef.current?.scrollTo(0, navigationMap.scrollTop);
-      } else if (!initialLoad) {
-        scrollDivRef.current?.scrollTo(0, 0);
+        dispatch(removeNavigationMap(window.location.pathname));
       }
     }, [initialLoad, navigationMap, window.location.pathname]);
 
@@ -131,22 +132,34 @@ const Medias = memo(
             </select>
           </div>
         </div>
-        <div
-          className={classNames(
-            "grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-[10px]"
-          )}
-        >
-          <div className="fixed bottom-0 flex justify-center items-center right-0 left-0 z-10">
-            <MultiSelectBar />
+        {!isLoadingFiles && (
+          <div
+            className={classNames(
+              "grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-[10px]"
+            )}
+          >
+            <div className="fixed bottom-0 flex justify-center items-center right-0 left-0 z-10">
+              <MultiSelectBar />
+            </div>
+            {files?.pages.map((filePage, index) => (
+              <React.Fragment key={index}>
+                {filePage.map((file) => (
+                  <MediaItem file={file} key={file._id} />
+                ))}
+              </React.Fragment>
+            ))}
           </div>
-          {files?.pages.map((filePage, index) => (
-            <React.Fragment key={index}>
-              {filePage.map((file) => (
-                <MediaItem file={file} key={file._id} />
-              ))}
-            </React.Fragment>
-          ))}
-        </div>
+        )}
+        {isLoadingFiles && (
+          <div className="w-full flex justify-center items-center h-full">
+            <Spinner />
+          </div>
+        )}
+        {isFetchingNextPage && (
+          <div className="w-full flex justify-center items-center mt-4">
+            <Spinner />
+          </div>
+        )}
         {/* @ts-ignore */}
         <div ref={sentinelRef} className="h-1"></div>
       </div>

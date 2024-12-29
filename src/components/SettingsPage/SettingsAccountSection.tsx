@@ -150,7 +150,7 @@ const SettingsPageAccount: React.FC<SettingsPageAccountProps> = ({
           </button>
         </div>
         <div className="px-3 py-4 flex flex-row justify-between items-center border-b border-gray-secondary">
-          <p className="text-gray-primary">Logout all accounts</p>
+          <p className="text-gray-primary">Logout all sessions</p>
           <button
             className="text-primary hover:text-primary-hover cursor-pointer"
             onClick={logoutAllClick}

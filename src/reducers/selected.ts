@@ -164,6 +164,11 @@ const selectedSlice = createSlice({
       };
       state.navigationMap = navigationMap;
     },
+    removeNavigationMap: (state, action: PayloadAction<string>) => {
+      const navigationMap = state.navigationMap;
+      delete navigationMap[action.payload];
+      state.navigationMap = navigationMap;
+    },
   },
 });
 
@@ -179,6 +184,7 @@ export const {
   setMoveModal,
   resetMoveModal,
   addNavigationMap,
+  removeNavigationMap,
 } = selectedSlice.actions;
 
 export default selectedSlice.reducer;

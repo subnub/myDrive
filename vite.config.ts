@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://192.168.86.105:3000", // The port where your backend is running
+        target: "htto://localhost:3000", // The port where your backend is running
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

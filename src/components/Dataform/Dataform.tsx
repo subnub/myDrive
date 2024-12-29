@@ -11,6 +11,7 @@ import classNames from "classnames";
 import { useDragAndDrop } from "../../hooks/utils";
 import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
 import { useFolders } from "../../hooks/folders";
+import { removeNavigationMap } from "../../reducers/selected";
 
 const DataForm = memo(
   ({ scrollDivRef }: { scrollDivRef: React.RefObject<HTMLDivElement> }) => {
@@ -47,9 +48,10 @@ const DataForm = memo(
 
     useEffect(() => {
       if (!isLoading && navigationMap) {
-        scrollDivRef.current?.scrollTo(0, navigationMap.scrollTop);
-      } else if (!isLoading) {
-        scrollDivRef.current?.scrollTo(0, 0);
+        const scrollTop = navigationMap.scrollTop;
+        scrollDivRef.current?.scrollTo(0, scrollTop);
+        console.log("navigation map", navigationMap, scrollTop);
+        dispatch(removeNavigationMap(window.location.pathname));
       }
     }, [isLoading, navigationMap]);
 
@@ -105,7 +107,6 @@ const DataForm = memo(
         {/* @ts-ignore  */}
         <div ref={sentinelRef} className="h-1"></div>
 
-        {/* TODO: Change this spinner name */}
         {isFetchingNextPage && (
           <div className="w-full flex justify-center items-center mt-4">
             <Spinner />
