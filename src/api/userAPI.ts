@@ -45,6 +45,15 @@ export const logoutAllAPI = async () => {
   return response.data;
 };
 
+export const getAccessToken = async (uuid: string) => {
+  const response = await axios.post("/user-service/get-token", undefined, {
+    headers: {
+      uuid,
+    },
+  });
+  return response.data;
+};
+
 // PATCH
 
 export const changePasswordAPI = async (

@@ -4,7 +4,7 @@ import {
   getUserAPI,
   loginAPI,
   sendPasswordResetAPI,
-} from "../../api/user";
+} from "../../api/userAPI";
 import { useLocation, useNavigate } from "react-router-dom";
 import { setUser } from "../../reducers/user";
 import { useAppDispatch } from "../../hooks/store";

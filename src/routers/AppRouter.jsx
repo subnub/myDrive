@@ -17,11 +17,13 @@ import ResetPasswordPage from "../components/ResetPasswordPage/ResetPasswordPage
 import SettingsPage from "../components/SettingsPage/SettingsPage";
 import Homepage from "../components/Homepage/Homepage";
 import { usePreferenceSetter } from "../hooks/preferenceSetter";
+import useAccessTokenHandler from "../hooks/user";
 
 // export const history = createHistory();
 
 const AppRouter = () => {
   usePreferenceSetter();
+  useAccessTokenHandler();
 
   return (
     <BrowserRouter>

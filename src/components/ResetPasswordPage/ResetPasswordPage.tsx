@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "../Spinner/Spinner";
 import { ToastContainer, toast } from "react-toastify";
 import { useState } from "react";
-import { resetPasswordAPI } from "../../api/user";
+import { resetPasswordAPI } from "../../api/userAPI";
 import AlertIcon from "../../icons/AlertIcon";
 
 const ResetPasswordPage = () => {
