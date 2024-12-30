@@ -15,6 +15,7 @@ import { getFileColor, getFileExtension } from "../../utils/files";
 import Spinner from "../Spinner/Spinner";
 import { toast } from "react-toastify";
 import getBackendURL from "../../utils/getBackendURL";
+import classNames from "classnames";
 
 interface PhotoViewerPopupProps {
   file: FileInterface;
@@ -27,6 +28,7 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
   const [isThumbnailLoading, setIsThumbnailLoading] = useState(
     file.metadata.hasThumbnail && !file.metadata.isVideo
   );
+  const [thumbnailError, setThumbnailError] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const type = useAppSelector((state) => state.selected.popupModal.type)!;
   const thumbnailURL = `${getBackendURL()}/file-service/full-thumbnail/${
@@ -285,14 +287,24 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
         />
       </div>
       <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center z-10">
-        {isThumbnailLoading && <Spinner />}
+        {isThumbnailLoading && !thumbnailError && <Spinner />}
         {!file.metadata.isVideo && (
           <img
             src={thumbnailURL}
-            className="max-w-full max-h-full object-contain select-none"
+            className={classNames(
+              "max-w-full max-h-full object-contain select-none",
+              {
+                hidden: isThumbnailLoading,
+              }
+            )}
             onLoad={() => setIsThumbnailLoading(false)}
-            onError={() => setIsThumbnailLoading(false)}
+            onError={() => setThumbnailError(true)}
           />
+        )}
+        {thumbnailError && (
+          <div className="bg-white p-6 rounded-md">
+            <p className="text-center text-sm">Error loading image</p>
+          </div>
         )}
         {file.metadata.isVideo && !isVideoLoading && (
           <video
