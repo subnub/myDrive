@@ -5,9 +5,11 @@ import uuid from "uuid";
 const useAccessTokenHandler = () => {
   const refreshAccessToken = useCallback(async () => {
     try {
-      const randomID = uuid.v4();
-      localStorage.setItem("browser-id", randomID);
-      await getAccessToken(randomID);
+      const browserID = localStorage.getItem("browser-id") || uuid.v4();
+      if (!localStorage.getItem("browser-id")) {
+        localStorage.setItem("browser-id", browserID);
+      }
+      await getAccessToken(browserID);
     } catch (e) {
       console.log("Error refreshing access token", e);
     }
