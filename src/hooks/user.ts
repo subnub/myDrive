@@ -13,14 +13,23 @@ const useAccessTokenHandler = () => {
     }
   }, []);
 
+  const visibilityChange = useCallback(() => {
+    if (document.visibilityState === "visible") {
+      refreshAccessToken();
+    }
+  }, [refreshAccessToken]);
+
   useEffect(() => {
     refreshAccessToken();
+
     const timer = setInterval(refreshAccessToken, 60 * 1000 * 20);
+    document.addEventListener("visibilitychange", visibilityChange);
 
     return () => {
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", visibilityChange);
     };
-  }, []);
+  }, [refreshAccessToken, visibilityChange]);
 };
 
 export default useAccessTokenHandler;
