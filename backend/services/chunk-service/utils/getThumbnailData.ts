@@ -1,26 +1,27 @@
 import { EventEmitter } from "stream";
 import { UserInterface } from "../../../models/user-model";
+import { Response } from "express";
 import ForbiddenError from "../../../utils/ForbiddenError";
-import ThumbnailDB from "../../../db/mongoDB/thumbnailDB";
 import NotFoundError from "../../../utils/NotFoundError";
 import crypto from "crypto";
 import { createGenericParams } from "./storageHelper";
 import { getStorageActions } from "../actions/helper-actions";
-import streamToBuffer from "../../../utils/streamToBuffer";
+
+import ThumbnailDB from "../../../db/mongoDB/thumbnailDB";
 
 const thumbnailDB = new ThumbnailDB();
 
 const storageActions = getStorageActions();
 
-const processData = (thumbnailID: string, user: UserInterface) => {
+const proccessData = (
+  res: Response,
+  thumbnailID: string,
+  user: UserInterface
+) => {
   const eventEmitter = new EventEmitter();
 
-  const processThumbnail = async () => {
+  const processFile = async () => {
     try {
-      const password = user.getEncryptionKey();
-
-      if (!password) throw new ForbiddenError("Invalid Encryption Key");
-
       const thumbnail = await thumbnailDB.getThumbnailInfo(
         user._id.toString(),
         thumbnailID
@@ -28,11 +29,11 @@ const processData = (thumbnailID: string, user: UserInterface) => {
 
       if (!thumbnail) throw new NotFoundError("Thumbnail Not Found");
 
-      const iv = thumbnail.IV;
+      const password = user.getEncryptionKey();
 
-      const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
+      if (!password) throw new ForbiddenError("Invalid Encryption Key");
 
-      const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, iv);
+      const IV = thumbnail.IV;
 
       const readStreamParams = createGenericParams({
         filePath: thumbnail.path,
@@ -40,6 +41,10 @@ const processData = (thumbnailID: string, user: UserInterface) => {
       });
 
       const readStream = storageActions.createReadStream(readStreamParams);
+
+      const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
+
+      const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
 
       decipher.on("error", (e: Error) => {
         eventEmitter.emit("error", e);
@@ -49,22 +54,33 @@ const processData = (thumbnailID: string, user: UserInterface) => {
         eventEmitter.emit("error", e);
       });
 
-      const bufferData = await streamToBuffer(readStream.pipe(decipher));
+      res.on("error", (e: Error) => {
+        eventEmitter.emit("error", e);
+      });
 
-      eventEmitter.emit("finish", bufferData);
+      readStream
+        .pipe(decipher)
+        .pipe(res)
+        .on("finish", () => {
+          eventEmitter.emit("finish");
+        });
     } catch (e) {
       eventEmitter.emit("error", e);
     }
   };
 
-  processThumbnail();
+  processFile();
 
   return eventEmitter;
 };
 
-const getThumbnailData = (thumbnailID: string, user: UserInterface) => {
+const getThumbnailData = (
+  res: Response,
+  thumbnailID: string,
+  user: UserInterface
+) => {
   return new Promise((resolve, reject) => {
-    const eventEmitter = processData(thumbnailID, user);
+    const eventEmitter = proccessData(res, thumbnailID, user);
     eventEmitter.on("finish", (data) => {
       resolve(data);
     });

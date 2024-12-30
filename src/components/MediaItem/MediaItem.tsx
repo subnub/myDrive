@@ -1,6 +1,5 @@
 import React, { memo, useRef } from "react";
 import { FileInterface } from "../../types/file";
-import { useThumbnail } from "../../hooks/files";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import {
   setMainSelect,
@@ -12,6 +11,7 @@ import classNames from "classnames";
 import { useContextMenu } from "../../hooks/contextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import PlayButtonIcon from "../../icons/PlayIcon";
+import getBackendURL from "../../utils/getBackendURL";
 
 type MediaItemType = {
   file: FileInterface;
@@ -41,7 +41,9 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
   } = useContextMenu();
   const lastSelected = useRef(0);
   const dispatch = useAppDispatch();
-  const { data: thumbnail } = useThumbnail(file.metadata.thumbnailID);
+  const thumbnail = `${getBackendURL()}/file-service/thumbnail/${
+    file.metadata.thumbnailID
+  }`;
 
   // TODO: See if we can memoize this and remove any
   const mediaItemClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

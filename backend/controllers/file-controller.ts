@@ -49,9 +49,7 @@ class FileController {
       const user = req.user;
       const id = req.params.id;
 
-      const bufferData = await this.chunkService.getThumbnail(user, id);
-
-      res.send(bufferData);
+      await this.chunkService.getThumbnail(user, id, res);
     } catch (e: unknown) {
       next(e);
     }

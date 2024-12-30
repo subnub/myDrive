@@ -10,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../hooks/store";
 import { resetSelected, setPopupSelect } from "../../reducers/selected";
 import { useUtils } from "../../hooks/utils";
-import { useThumbnail } from "../../hooks/files";
 import CloseIcon from "../../icons/CloseIcon";
 import FileDetailsIcon from "../../icons/FileDetailsIcon";
 import ActionsIcon from "../../icons/ActionsIcon";

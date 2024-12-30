@@ -79,32 +79,6 @@ export const downloadFileAPI = async (fileID: string) => {
   link.click();
 };
 
-export const getFileThumbnailAPI = async (thumbnailID: string) => {
-  const url = `${getBackendURL()}/file-service/thumbnail/${thumbnailID}`;
-
-  const response = await axios.get(url, {
-    responseType: "arraybuffer",
-  });
-
-  const imgFile = new Blob([response.data]);
-  const imgUrl = URL.createObjectURL(imgFile);
-
-  return imgUrl;
-};
-
-export const getFileFullThumbnailAPI = async (fileID: string) => {
-  const url = `${getBackendURL()}/file-service/full-thumbnail/${fileID}`;
-
-  const response = await axios.get(url, {
-    responseType: "arraybuffer",
-  });
-
-  const imgFile = new Blob([response.data]);
-  const imgUrl = URL.createObjectURL(imgFile);
-
-  return imgUrl;
-};
-
 export const getVideoTokenAPI = async () => {
   const response = await axios.get(
     "/file-service/download/access-token-stream-video"

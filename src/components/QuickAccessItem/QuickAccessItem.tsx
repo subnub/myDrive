@@ -4,7 +4,6 @@ import React, { memo, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
 import { getFileColor, getFileExtension } from "../../utils/files";
-import { useThumbnail } from "../../hooks/files";
 import { useContextMenu } from "../../hooks/contextMenu";
 import mobilecheck from "../../utils/mobileCheck";
 import { FileInterface } from "../../types/file";
@@ -15,6 +14,7 @@ import {
   setPopupSelect,
 } from "../../reducers/selected";
 import PlayButtonIcon from "../../icons/PlayIcon";
+import getBackendURL from "../../utils/getBackendURL";
 
 interface QuickAccessItemProps {
   file: FileInterface;
@@ -34,7 +34,9 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
-  const { data: thumbnail } = useThumbnail(file.metadata.thumbnailID, true);
+  const thumbnail = `${getBackendURL()}/file-service/thumbnail/${
+    file.metadata.thumbnailID
+  }`;
   const dispatch = useAppDispatch();
   const lastSelected = useRef(0);
 

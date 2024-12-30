@@ -1,10 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import {
-  deleteVideoTokenAPI,
-  getFileFullThumbnailAPI,
-  getVideoTokenAPI,
-} from "../../api/filesAPI";
+import { deleteVideoTokenAPI, getVideoTokenAPI } from "../../api/filesAPI";
 import CloseIcon from "../../icons/CloseIcon";
 import ActionsIcon from "../../icons/ActionsIcon";
 import { useContextMenu } from "../../hooks/contextMenu";
@@ -12,7 +8,7 @@ import ContextMenu from "../ContextMenu/ContextMenu";
 import { resetPopupSelect, setPopupSelect } from "../../reducers/selected";
 import CircleLeftIcon from "../../icons/CircleLeftIcon";
 import CircleRightIcon from "../../icons/CircleRightIcon";
-import { useFiles, useFullThumbnail, useQuickFiles } from "../../hooks/files";
+import { useFiles, useQuickFiles } from "../../hooks/files";
 import { FileInterface } from "../../types/file";
 import { InfiniteData } from "react-query";
 import { getFileColor, getFileExtension } from "../../utils/files";
@@ -28,12 +24,14 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
   const { file } = props;
   const [video, setVideo] = useState("");
   const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [isThumbnailLoading, setIsThumbnailLoading] = useState(
+    file.metadata.hasThumbnail && !file.metadata.isVideo
+  );
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const type = useAppSelector((state) => state.selected.popupModal.type)!;
-  const { data: thumbnail, isLoading: isThumbnailLoading } = useFullThumbnail(
-    file._id,
-    file.metadata.isVideo
-  );
+  const thumbnailURL = `${getBackendURL()}/file-service/full-thumbnail/${
+    file._id
+  }`;
   const finalLastPageLoaded = useRef(false);
   const loadingNextPage = useRef(false);
   const { data: quickFiles } = useQuickFiles(false);
@@ -287,11 +285,13 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
         />
       </div>
       <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center z-10">
-        {(isVideoLoading || isThumbnailLoading) && <Spinner />}
-        {!file.metadata.isVideo && !isThumbnailLoading && (
+        {isThumbnailLoading && <Spinner />}
+        {!file.metadata.isVideo && (
           <img
-            src={thumbnail}
+            src={thumbnailURL}
             className="max-w-full max-h-full object-contain select-none"
+            onLoad={() => setIsThumbnailLoading(false)}
+            onError={() => setIsThumbnailLoading(false)}
           />
         )}
         {file.metadata.isVideo && !isVideoLoading && (

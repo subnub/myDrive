@@ -8,8 +8,6 @@ import {
 } from "react-query";
 import { useParams } from "react-router-dom";
 import {
-  getFileFullThumbnailAPI,
-  getFileThumbnailAPI,
   getFilesListAPI,
   getQuickFilesListAPI,
   getSuggestedListAPI,
@@ -135,57 +133,6 @@ export const useQuickFilesClient = () => {
   };
 
   return { ...quickFilesReactClientQuery, invalidateQuickFilesCache };
-};
-
-export const useThumbnail = (
-  thumbnailID: string | undefined,
-  isQuickFile?: boolean
-) => {
-  const listView = useAppSelector((state) => state.general.listView);
-  const loadThumbnailsDisabled = useAppSelector(
-    (state) => state.general.loadThumbnailsDisabled
-  );
-  const { isMedia } = useUtils();
-  const disabled =
-    (listView && !isMedia && !isQuickFile) ||
-    (loadThumbnailsDisabled && !isMedia);
-  const thumbnailQuery = useQuery(
-    ["thumbnail", { thumbnailID }],
-    () => {
-      if (thumbnailID) {
-        return getFileThumbnailAPI(thumbnailID);
-      } else {
-        return undefined;
-      }
-    },
-    {
-      enabled: !!thumbnailID && !disabled,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      keepPreviousData: true,
-    }
-  );
-  return thumbnailQuery;
-};
-
-export const useFullThumbnail = (fileID: string, isVideo: boolean) => {
-  console.log("usefullthumbnail", fileID, isVideo);
-  const thumbnailQuery = useQuery(
-    ["full-thumbnail", { fileID }],
-    () => {
-      if (!isVideo) {
-        return getFileFullThumbnailAPI(fileID);
-      } else {
-        return undefined;
-      }
-    },
-    {
-      enabled: !isVideo,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    }
-  );
-  return thumbnailQuery;
 };
 
 export const useSearchSuggestions = (searchText: string) => {

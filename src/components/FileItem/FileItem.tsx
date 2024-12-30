@@ -3,9 +3,7 @@ import moment from "moment";
 import React, { memo, useMemo, useRef } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
-import { useSelector } from "react-redux";
 import classNames from "classnames";
-import { useThumbnail } from "../../hooks/files";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import bytes from "bytes";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
@@ -14,6 +12,7 @@ import PlayButtonIcon from "../../icons/PlayIcon";
 import { setPopupSelect } from "../../reducers/selected";
 import ActionsIcon from "../../icons/ActionsIcon";
 import { FileInterface } from "../../types/file";
+import getBackendURL from "../../utils/getBackendURL";
 
 interface FileItemProps {
   file: FileInterface;
@@ -34,7 +33,9 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
     (state) => state.selected.multiSelectMode
   );
   const listView = useAppSelector((state) => state.general.listView);
-  const { data: thumbnail } = useThumbnail(file.metadata.thumbnailID);
+  const thumbnail = `${getBackendURL()}/file-service/thumbnail/${
+    file.metadata.thumbnailID
+  }`;
   const dispatch = useAppDispatch();
   const lastSelected = useRef(0);
   const {
@@ -203,7 +204,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
             }
           )}
         >
-          {!!thumbnail ? (
+          {file.metadata.hasThumbnail ? (
             <div className="w-full min-h-[88px] max-h-[88px] h-full flex">
               <img
                 className="object-cover w-full disable-force-touch"
