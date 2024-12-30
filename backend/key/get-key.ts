@@ -1,24 +1,32 @@
 import env from "../enviroment/env";
 import crypto from "crypto";
-import getWebUIKey from "./get-web-UI-key";
+import getKeyFromTerminal from "../utils/getKeyFromTerminal";
 
 const getKey = async () => {
-  if (process.env.KEY) {
-    // For Docker
-
+  if (process.env.KEY || process.env.NODE_ENV === "development") {
     const password = process.env.KEY;
+    if (!password) {
+      console.log("Key is required for development server");
+      throw new Error("Key is required for development server");
+    }
 
     env.key = crypto.createHash("md5").update(password).digest("hex");
-  } else if (process.env.NODE_ENV === "production") {
-    let password = await getWebUIKey();
+  } else if (process.env.NODE_ENV === "production" && !process.env.KEY) {
+    const terminalPassword = await getKeyFromTerminal();
 
-    password = crypto.createHash("md5").update(password).digest("hex");
+    if (!terminalPassword || !terminalPassword.length) {
+      console.log(
+        "Terminal key is required for production server, or create a .env file with KEY"
+      );
+      throw new Error(
+        "Terminal key is required for production server, or create a .env file with KEY"
+      );
+    }
 
-    env.key = password;
-  } else {
-    let password = "1234";
-
-    password = crypto.createHash("md5").update(password).digest("hex");
+    const password = crypto
+      .createHash("md5")
+      .update(terminalPassword)
+      .digest("hex");
 
     env.key = password;
   }
