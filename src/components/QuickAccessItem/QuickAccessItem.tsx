@@ -1,6 +1,6 @@
 import capitalize from "../../utils/capitalize";
 import moment from "moment";
-import React, { memo, useMemo, useRef } from "react";
+import React, { memo, useMemo, useRef, useState } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
 import { getFileColor, getFileExtension } from "../../utils/files";
@@ -34,9 +34,11 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
-  const thumbnail = `${getBackendURL()}/file-service/thumbnail/${
+  const thumbnailURL = `${getBackendURL()}/file-service/thumbnail/${
     file.metadata.thumbnailID
   }`;
+  const hasThumbnail = file.metadata.hasThumbnail;
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
   const dispatch = useAppDispatch();
   const lastSelected = useRef(0);
 
@@ -123,15 +125,23 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
         className={classNames(
           "inline-flex items-center w-full bg-white relative",
           {
-            "mt-2": !thumbnail,
+            "mt-2": !thumbnailLoaded,
           }
         )}
       >
-        {!!thumbnail ? (
-          <div className="w-full min-h-[88px] max-h-[88px] h-full flex">
+        {hasThumbnail && (
+          <div
+            className={classNames(
+              "w-full min-h-[88px] max-h-[88px] h-full flex",
+              {
+                hidden: !thumbnailLoaded,
+              }
+            )}
+          >
             <img
               className="object-cover w-full disable-force-touch"
-              src={thumbnail}
+              src={thumbnailURL}
+              onLoad={() => setThumbnailLoaded(true)}
             />
             {file.metadata.isVideo && (
               <div className="w-full h-full absolute flex justify-center items-center text-white">
@@ -139,26 +149,27 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
               </div>
             )}
           </div>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-            version="1.1"
-            width="150"
-            height="150"
-            viewBox="0 0 24 24"
-            className="w-full min-h-[80px] max-h-[80px] h-full flex"
-          >
-            <path
-              d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"
-              fill={imageColor}
-            />
-          </svg>
         )}
-        {!thumbnail && (
-          <div className="w-full h-full absolute flex justify-center items-center text-white mt-3">
-            <p className="text-sm">{fileExtension}</p>
-          </div>
+        {!thumbnailLoaded && (
+          <>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+              version="1.1"
+              width="150"
+              height="150"
+              viewBox="0 0 24 24"
+              className="w-full min-h-[80px] max-h-[80px] h-full flex"
+            >
+              <path
+                d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"
+                fill={imageColor}
+              />
+            </svg>
+            <div className="w-full h-full absolute flex justify-center items-center text-white mt-3">
+              <p className="text-sm">{fileExtension}</p>
+            </div>
+          </>
         )}
       </div>
       <div
