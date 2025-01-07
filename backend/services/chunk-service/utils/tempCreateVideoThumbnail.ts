@@ -22,7 +22,7 @@ const tempCreateVideoThumbnail = (
   filename: string,
   user: UserInterface
 ) => {
-  return new Promise<FileInterface>(async (resolve, reject) => {
+  return new Promise<FileInterface>((resolve, reject) => {
     const password = user.getEncryptionKey();
 
     let CIPHER_KEY = crypto.createHash("sha256").update(password!).digest();

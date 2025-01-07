@@ -10,17 +10,30 @@ const getKey = require("../dist-backend/key/get-key").default;
 
 const waitForDatabase = () => {
   return new Promise((resolve, reject) => {
+    // Wait for the database to be ready.
+    const timeoutWait = () => {
+      setTimeout(() => resolve(), 3000);
+    };
+
     if (conn.readyState !== 1) {
       conn.once("open", () => {
-        resolve();
+        timeoutWait();
       });
     } else {
-      resolve();
+      timeoutWait();
     }
   });
 };
 
+// Wait to be after anything else may be printed to the terminal
+const terminalWait = () => {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), 2000);
+  });
+};
+
 const updateDocs = async () => {
+  await terminalWait();
   console.log(`Updating video thumbnails, env is ${process.env.NODE_ENV}`);
 
   console.log("\nWaiting for database...");
@@ -48,7 +61,7 @@ const updateDocs = async () => {
     try {
       const currentFile = files[i];
 
-      console.log("current file", currentFile._id);
+      console.log(`Progress ${i + 1}/${files.length}`);
 
       const user = await User.findById(currentFile.metadata.owner);
 

@@ -1,4 +1,4 @@
-import React, { memo, useRef } from "react";
+import React, { memo, useRef, useState } from "react";
 import { FileInterface } from "../../types/file";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import {
@@ -12,12 +12,14 @@ import { useContextMenu } from "../../hooks/contextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import PlayButtonIcon from "../../icons/PlayIcon";
 import getBackendURL from "../../utils/getBackendURL";
+import AlertIcon from "../../icons/AlertIcon";
 
 type MediaItemType = {
   file: FileInterface;
 };
 
 const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
+  const [thumbnailError, setThumbnailError] = useState(false);
   const elementSelected = useAppSelector((state) => {
     if (state.selected.mainSection.type !== "file") return false;
     return state.selected.mainSection.id === file._id;
@@ -105,15 +107,23 @@ const MediaItem: React.FC<MediaItemType> = memo(({ file }) => {
           />
         </div>
       )}
-      {file.metadata.isVideo && (
+      {file.metadata.isVideo && !thumbnailError && (
         <div className="w-full h-full absolute flex justify-center items-center text-white">
           <PlayButtonIcon className="w-[50px] h-[50px]" />
         </div>
       )}
-      <img
-        className="object-cover h-full w-full disable-force-touch"
-        src={thumbnail}
-      />
+      {!thumbnailError && (
+        <img
+          className="object-cover h-full w-full disable-force-touch"
+          src={thumbnail}
+          onError={() => setThumbnailError(true)}
+        />
+      )}
+      {thumbnailError && (
+        <div className="w-full h-full flex justify-center items-center">
+          <AlertIcon className="w-7 h-7 text-red-500" />
+        </div>
+      )}
     </div>
   );
 });

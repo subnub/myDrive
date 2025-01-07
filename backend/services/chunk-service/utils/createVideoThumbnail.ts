@@ -157,7 +157,7 @@ const createVideoThumbnail = (
           }
         })
         .on("error", async (err, sdf, stderr) => {
-          console.log("thumbnail error attempting temp directory fix");
+          // console.log("thumbnail error attempting temp directory fix");
 
           error = true;
 
