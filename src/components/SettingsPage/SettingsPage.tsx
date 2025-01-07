@@ -6,7 +6,7 @@ import AccountIcon from "../../icons/AccountIcon";
 import TuneIcon from "../../icons/TuneIcon";
 import { useNavigate } from "react-router-dom";
 import SettingsAccountSection from "./SettingsAccountSection";
-import { getUserDetailedAPI, logoutAPI } from "../../api/user";
+import { getUserDetailedAPI, logoutAPI } from "../../api/userAPI";
 import Spinner from "../Spinner/Spinner";
 import Swal from "sweetalert2";
 import SettingsGeneralSection from "./SettingsGeneralSection";

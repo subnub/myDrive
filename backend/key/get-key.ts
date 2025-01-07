@@ -3,11 +3,15 @@ import crypto from "crypto";
 import getKeyFromTerminal from "../utils/getKeyFromTerminal";
 
 const getKey = async () => {
-  if (process.env.KEY || process.env.NODE_ENV === "development") {
+  if (
+    process.env.KEY ||
+    process.env.NODE_ENV === "development" ||
+    process.env.NODE_ENV === "test"
+  ) {
     const password = process.env.KEY;
     if (!password) {
-      console.log("Key is required for development server");
-      throw new Error("Key is required for development server");
+      console.log(`Key is required for ${process.env.NODE_ENV} server`);
+      throw new Error(`Key is required for ${process.env.NODE_ENV} server`);
     }
 
     env.key = crypto.createHash("md5").update(password).digest("hex");

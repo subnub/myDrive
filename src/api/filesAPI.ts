@@ -1,6 +1,6 @@
 import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
-import { getUserToken } from "./user";
+import { getUserToken } from "./userAPI";
 import getBackendURL from "../utils/getBackendURL";
 
 interface QueryKeyParams {

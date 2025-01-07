@@ -77,11 +77,6 @@ const authRefresh = async (
       }
     }
 
-    if (!tokenFound) {
-      console.log("token not found", encryptedToken);
-      console.log("token list", user.tokens);
-    }
-
     if (!tokenFound) throw new Error("Refresh Token Not Found");
 
     req.user = user;

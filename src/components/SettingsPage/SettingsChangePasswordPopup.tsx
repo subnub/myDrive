@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import CloseIcon from "../../icons/CloseIcon";
 import classNames from "classnames";
 import { toast } from "react-toastify";
-import { changePasswordAPI } from "../../api/user";
+import { changePasswordAPI } from "../../api/userAPI";
 
 interface SettingsChangePasswordPopupProps {
   closePopup: () => void;

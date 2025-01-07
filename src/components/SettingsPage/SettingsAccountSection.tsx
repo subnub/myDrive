@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import SettingsChangePasswordPopup from "./SettingsChangePasswordPopup";
 import { toast } from "react-toastify";
-import { logoutAPI, resendVerifyEmailAPI } from "../../api/user";
+import { logoutAPI, resendVerifyEmailAPI } from "../../api/userAPI";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 

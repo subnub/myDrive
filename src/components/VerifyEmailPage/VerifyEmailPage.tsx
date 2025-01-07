@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { verifyEmailAPI } from "../../api/user";
+import { verifyEmailAPI } from "../../api/userAPI";
 import { toast, ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 
