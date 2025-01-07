@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "../SearchBar/SearchBar";
 import MenuIcon from "../../icons/MenuIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { useCallback } from "react";
 import { closeDrawer, toggleDrawer } from "../../reducers/leftSection";
 import { useUtils } from "../../hooks/utils";
 import ChevronOutline from "../../icons/ChevronOutline";
@@ -14,21 +13,13 @@ const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const toggleDrawerClick = useCallback(
-    (e: any) => {
-      e.stopPropagation();
-      dispatch(toggleDrawer());
-    },
-    [toggleDrawer]
-  );
+  const toggleDrawerClick = () => {
+    dispatch(toggleDrawer());
+  };
 
-  const closeDrawerClick = useCallback(
-    (e: any) => {
-      e.stopPropagation();
-      dispatch(closeDrawer());
-    },
-    [closeDrawer]
-  );
+  const closeDrawerClick = () => {
+    dispatch(closeDrawer());
+  };
 
   return (
     <header

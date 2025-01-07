@@ -51,13 +51,13 @@ const MultiSelectBar: React.FC = () => {
   //   }
   // }, [isTrash]);
 
-  useEffect(() => {
-    closeMultiSelect();
-  }, [location.pathname]);
-
   const closeMultiSelect = useCallback(() => {
     dispatch(resetMultiSelect());
   }, []);
+
+  useEffect(() => {
+    closeMultiSelect();
+  }, [location.pathname, closeMultiSelect]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {

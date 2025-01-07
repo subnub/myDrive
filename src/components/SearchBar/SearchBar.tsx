@@ -36,10 +36,10 @@ const SearchBar = memo(() => {
     };
   }, [searchText, debouncedSetSearchText]);
 
-  const resetState = useCallback(() => {
+  const resetState = () => {
     setSearchText("");
     setDebouncedSearchText("");
-  }, []);
+  };
 
   const outOfContainerClick = useCallback(() => {
     closeDrawer();

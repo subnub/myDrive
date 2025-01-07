@@ -24,17 +24,18 @@ const LeftSection = ({
   const navigate = useNavigate();
   const addNewDisabled = useRef(false);
 
-  const openDropdown = useCallback(() => {
+  const openDropdown = () => {
     if (addNewDisabled.current) return;
     setIsDropdownOpen(true);
-  }, []);
+  };
 
-  const closeDropdown = useCallback(() => {
+  const closeDropdown = () => {
     addNewDisabled.current = true;
     setIsDropdownOpen(false);
+
     // Clicking out of bounds on the add new button will cause it to reopen
     setTimeout(() => (addNewDisabled.current = false), 300);
-  }, []);
+  };
 
   const goHome = () => {
     dispatch(closeDrawer());

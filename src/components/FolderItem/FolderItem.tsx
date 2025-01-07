@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef } from "react";
+import React, { memo, useRef } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import classNames from "classnames";
@@ -49,64 +49,53 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
     ...contextMenuState
   } = useContextMenu();
 
-  const folderClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      const multiSelectKey = e.metaKey || e.ctrlKey;
-      if (multiSelectMode || multiSelectKey) {
-        dispatch(
-          setMultiSelectMode([
-            {
-              type: "folder",
-              id: folder._id,
-              file: null,
-              folder: folder,
-            },
-          ])
-        );
-        return;
-      }
-      const currentDate = Date.now();
-
-      if (!elementSelected) {
-        dispatch(
-          setMainSelect({
-            file: null,
-            id: folder._id,
+  const folderClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const multiSelectKey = e.metaKey || e.ctrlKey;
+    if (multiSelectMode || multiSelectKey) {
+      dispatch(
+        setMultiSelectMode([
+          {
             type: "folder",
+            id: folder._id,
+            file: null,
             folder: folder,
-          })
-        );
-        lastSelected.current = Date.now();
+          },
+        ])
+      );
+      return;
+    }
+    const currentDate = Date.now();
 
-        if (!singleClickFolders) return;
-      }
-
-      if (singleClickFolders || currentDate - lastSelected.current < 1500) {
-        dispatch(
-          addNavigationMap({
-            url: window.location.pathname,
-            scrollTop: scrollDivRef.current?.scrollTop || 0,
-          })
-        );
-        if (isTrash) {
-          navigate(`/folder-trash/${folder._id}`);
-        } else {
-          navigate(`/folder/${folder._id}`);
-        }
-      }
-
+    if (!elementSelected) {
+      dispatch(
+        setMainSelect({
+          file: null,
+          id: folder._id,
+          type: "folder",
+          folder: folder,
+        })
+      );
       lastSelected.current = Date.now();
-    },
-    [
-      mobilecheck,
-      navigate,
-      folder._id,
-      elementSelected,
-      multiSelectMode,
-      singleClickFolders,
-      isTrash,
-    ]
-  );
+
+      if (!singleClickFolders) return;
+    }
+
+    if (singleClickFolders || currentDate - lastSelected.current < 1500) {
+      dispatch(
+        addNavigationMap({
+          url: window.location.pathname,
+          scrollTop: scrollDivRef.current?.scrollTop || 0,
+        })
+      );
+      if (isTrash) {
+        navigate(`/folder-trash/${folder._id}`);
+      } else {
+        navigate(`/folder/${folder._id}`);
+      }
+    }
+
+    lastSelected.current = Date.now();
+  };
 
   return (
     <div

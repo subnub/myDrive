@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import MediaItem from "../MediaItem/MediaItem";
 import { useFiles } from "../../hooks/files";
 import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
@@ -46,7 +46,7 @@ const Medias = memo(
       }
     }, [initialLoad, navigationMap, window.location.pathname]);
 
-    const switchOrderSortBy = useCallback(() => {
+    const switchOrderSortBy = () => {
       let newSortBy = "";
       switch (sortBy) {
         case "date_asc": {
@@ -72,7 +72,7 @@ const Medias = memo(
       }
 
       dispatch(setSortBy(newSortBy));
-    }, [sortBy]);
+    };
 
     const mediaFilterOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.target.value;

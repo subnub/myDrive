@@ -1,6 +1,6 @@
 import { useFolders } from "../../hooks/folders";
 import FolderItem from "../FolderItem/FolderItem";
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
@@ -13,7 +13,7 @@ const Folders = memo(
     const sortBy = useAppSelector((state) => state.filter.sortBy);
     const dispatch = useAppDispatch();
 
-    const switchOrderSortBy = useCallback(() => {
+    const switchOrderSortBy = () => {
       let newSortBy = "";
       switch (sortBy) {
         case "date_asc": {
@@ -39,32 +39,29 @@ const Folders = memo(
       }
 
       dispatch(setSortBy(newSortBy));
-    }, [sortBy]);
+    };
 
-    const switchTypeOrderBy = useCallback(
-      (e: any) => {
-        const value = e.target.value;
+    const switchTypeOrderBy = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
 
-        let newSortBy = "date_desc";
+      let newSortBy = "date_desc";
 
-        if (value === "date") {
-          if (sortBy.includes("asc")) {
-            newSortBy = "date_asc";
-          } else {
-            newSortBy = "date_desc";
-          }
-        } else if (value === "name") {
-          if (sortBy.includes("asc")) {
-            newSortBy = "alp_asc";
-          } else {
-            newSortBy = "alp_desc";
-          }
+      if (value === "date") {
+        if (sortBy.includes("asc")) {
+          newSortBy = "date_asc";
+        } else {
+          newSortBy = "date_desc";
         }
+      } else if (value === "name") {
+        if (sortBy.includes("asc")) {
+          newSortBy = "alp_asc";
+        } else {
+          newSortBy = "alp_desc";
+        }
+      }
 
-        dispatch(setSortBy(newSortBy));
-      },
-      [sortBy]
-    );
+      dispatch(setSortBy(newSortBy));
+    };
 
     const title = (() => {
       if (isTrash) {

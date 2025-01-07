@@ -61,14 +61,13 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
       const videoURL = `${getBackendURL()}/file-service/stream-video/${
         file._id
       }`;
-      console.log("video url", videoURL);
       setVideo(videoURL);
       setIsVideoLoading(false);
     } catch (e) {
       console.log("Error getting video", e);
       toast.error("Error getting video");
     }
-  }, [file._id, getVideoTokenAPI]);
+  }, [file._id]);
 
   const cleanUpVideo = useCallback(async () => {
     if (!file.metadata.isVideo || !videoRef.current) return;
@@ -208,9 +207,9 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
     }
   };
 
-  const closePhotoViewer = useCallback(() => {
+  const closePhotoViewer = () => {
     dispatch(resetPopupSelect());
-  }, [resetPopupSelect]);
+  };
 
   useEffect(() => {
     if (file.metadata.isVideo) {
