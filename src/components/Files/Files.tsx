@@ -1,6 +1,6 @@
 import { useFiles } from "../../hooks/files";
 import { useUtils } from "../../hooks/utils";
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import FileItem from "../FileItem/FileItem";
 import ParentBar from "../ParentBar/ParentBar";
 import classNames from "classnames";

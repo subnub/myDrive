@@ -1,9 +1,7 @@
-import { useSelector } from "react-redux";
 import QuickAccessItem from "../QuickAccessItem/QuickAccessItem";
-import React, { memo, useMemo, useState } from "react";
+import { memo, useState } from "react";
 import { useQuickFiles } from "../../hooks/files";
 import classNames from "classnames";
-import { useParams } from "react-router-dom";
 import { useUtils } from "../../hooks/utils";
 import ChevronOutline from "../../icons/ChevronOutline";
 

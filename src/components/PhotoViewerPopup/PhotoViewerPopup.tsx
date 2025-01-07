@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { deleteVideoTokenAPI, getVideoTokenAPI } from "../../api/filesAPI";
 import CloseIcon from "../../icons/CloseIcon";
@@ -49,15 +49,9 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
     ...contextMenuState
   } = useContextMenu();
 
-  const fileExtension = useMemo(
-    () => getFileExtension(file.filename, 3),
-    [file.filename]
-  );
+  const fileExtension = getFileExtension(file.filename, 3);
 
-  const imageColor = useMemo(
-    () => getFileColor(file.filename),
-    [file.filename]
-  );
+  const imageColor = getFileColor(file.filename);
 
   const getVideo = useCallback(async () => {
     try {

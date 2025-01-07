@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import CloseIcon from "../../icons/CloseIcon";
 import classNames from "classnames";
 import { toast } from "react-toastify";
@@ -16,7 +16,7 @@ const SettingsChangePasswordPopup: React.FC<
   const [verifyNewPassword, setVerifyNewPassword] = useState("");
   const [loadingChangePassword, setLoadingChangePassword] = useState(false);
 
-  const inputDisabled = useMemo(() => {
+  const inputDisabled = (() => {
     if (
       loadingChangePassword ||
       currentPassword.length === 0 ||
@@ -35,9 +35,9 @@ const SettingsChangePasswordPopup: React.FC<
     }
 
     return false;
-  }, [currentPassword, newPassword, verifyNewPassword, loadingChangePassword]);
+  })();
 
-  const errorMessage = useMemo(() => {
+  const errorMessage = (() => {
     if (newPassword.length === 0) {
       return "";
     }
@@ -51,7 +51,7 @@ const SettingsChangePasswordPopup: React.FC<
     }
 
     return "";
-  }, [newPassword, verifyNewPassword]);
+  })();
 
   const submitPasswordChange = async (e: any) => {
     e.preventDefault();

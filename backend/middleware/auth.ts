@@ -46,8 +46,6 @@ const auth = async (req: RequestType, res: Response, next: NextFunction) => {
       console.log("\nAuthorization Middleware Error:", e.message);
     }
 
-    console.log("Error Authenticating", e);
-
     res.status(401).send("Error Authenticating");
   }
 };

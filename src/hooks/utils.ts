@@ -1,39 +1,25 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 export const useUtils = () => {
   const location = useLocation();
 
-  const isHome = useMemo(() => {
-    return location.pathname === "/home";
-  }, [location.pathname]);
+  const isHome = location.pathname === "/home";
 
-  const isTrash = useMemo(() => {
-    return (
-      location.pathname === "/trash" ||
-      location.pathname.includes("/folder-trash") ||
-      location.pathname.includes("/search-trash")
-    );
-  }, [location.pathname]);
+  const isTrash =
+    location.pathname === "/trash" ||
+    location.pathname.includes("/folder-trash") ||
+    location.pathname.includes("/search-trash");
 
-  const isMedia = useMemo(() => {
-    return (
-      location.pathname === "/media" ||
-      location.pathname.includes("/search-media")
-    );
-  }, [location.pathname]);
+  const isMedia =
+    location.pathname === "/media" ||
+    location.pathname.includes("/search-media");
 
-  const isSettings = useMemo(() => {
-    return location.pathname === "/settings";
-  }, [location.pathname]);
+  const isSettings = location.pathname === "/settings";
 
-  const isHomeFolder = useMemo(() => {
-    return location.pathname.includes("/folder/");
-  }, [location.pathname]);
+  const isHomeFolder = location.pathname.includes("/folder/");
 
-  const isSearch = useMemo(() => {
-    return location.pathname.includes("/search/");
-  }, [location.pathname]);
+  const isSearch = location.pathname.includes("/search/");
 
   return { isHome, isTrash, isMedia, isSettings, isHomeFolder, isSearch };
 };

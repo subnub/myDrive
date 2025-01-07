@@ -46,17 +46,14 @@ const RightSection = memo(() => {
     const date =
       selectedItem.file?.uploadDate || selectedItem.folder?.createdAt;
     return moment(date).format("L");
-  }, [selectedItem?.file?.uploadDate, selectedItem.folder?.createdAt, moment]);
+  }, [selectedItem?.file?.uploadDate, selectedItem.folder?.createdAt]);
 
-  const fileSize = useMemo(() => {
-    if (!selectedItem.file?.length) return 0;
-    return bytes(selectedItem.file.length);
-  }, [selectedItem?.file?.length, bytes]);
+  const fileSize = bytes(selectedItem.file?.length || 0);
 
-  const fileExtension = useMemo(() => {
+  const fileExtension = (() => {
     if (!selectedItem?.file?.filename) return null;
     return getFileExtension(selectedItem.file.filename);
-  }, [selectedItem?.file?.filename, getFileExtension]);
+  })();
 
   const {
     onContextMenu,
@@ -71,6 +68,7 @@ const RightSection = memo(() => {
   const reset = () => {
     dispatch(resetSelected());
   };
+
   const openItem = () => {
     if (selectedItem.file) {
       dispatch(setPopupSelect({ type: "file", file: selectedItem.file }));
@@ -81,7 +79,7 @@ const RightSection = memo(() => {
     }
   };
 
-  const bannerBackgroundColor = useMemo(() => {
+  const bannerBackgroundColor = (() => {
     if (selectedItem.file) {
       return getFileColor(selectedItem.file.filename);
     } else if (selectedItem.folder) {
@@ -89,9 +87,9 @@ const RightSection = memo(() => {
     } else {
       return "#3c85ee";
     }
-  }, [selectedItem.file?.filename, selectedItem.folder?.name]);
+  })();
 
-  const bannerText = useMemo(() => {
+  const bannerText = (() => {
     if (selectedItem.file) {
       return getFileExtension(selectedItem.file.filename);
     } else if (selectedItem.folder) {
@@ -99,7 +97,7 @@ const RightSection = memo(() => {
     } else {
       return "";
     }
-  }, [selectedItem.file?.filename, selectedItem.folder?.name]);
+  })();
 
   return (
     <div

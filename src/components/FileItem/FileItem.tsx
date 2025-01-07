@@ -49,20 +49,11 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
     clickStopPropagation,
     ...contextMenuState
   } = useContextMenu();
-  const fileExtension = useMemo(
-    () => getFileExtension(file.filename, listView ? 3 : 4),
-    [file.filename]
-  );
+  const fileExtension = getFileExtension(file.filename, listView ? 3 : 4);
 
-  const imageColor = useMemo(
-    () => getFileColor(file.filename),
-    [file.filename]
-  );
+  const imageColor = getFileColor(file.filename);
 
-  const formattedFilename = useMemo(
-    () => capitalize(file.filename),
-    [file.filename]
-  );
+  const formattedFilename = capitalize(file.filename);
 
   const formattedCreatedDate = useMemo(
     () => moment(file.uploadDate).format("MM/DD/YY hh:mma"),

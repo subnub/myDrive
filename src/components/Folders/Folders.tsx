@@ -1,6 +1,6 @@
 import { useFolders } from "../../hooks/folders";
 import FolderItem from "../FolderItem/FolderItem";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback } from "react";
 import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
@@ -9,7 +9,7 @@ import { setSortBy } from "../../reducers/filter";
 const Folders = memo(
   ({ scrollDivRef }: { scrollDivRef: React.RefObject<HTMLDivElement> }) => {
     const { data: folders } = useFolders(false);
-    const { isHome, isTrash, isSearch } = useUtils();
+    const { isTrash, isSearch } = useUtils();
     const sortBy = useAppSelector((state) => state.filter.sortBy);
     const dispatch = useAppDispatch();
 
@@ -66,7 +66,7 @@ const Folders = memo(
       [sortBy]
     );
 
-    const title = useMemo(() => {
+    const title = (() => {
       if (isTrash) {
         return "Trash";
       } else if (isSearch) {
@@ -74,7 +74,7 @@ const Folders = memo(
       } else {
         return folders?.length === 0 ? "No Folders" : "Folders";
       }
-    }, [isHome, isTrash, isSearch, folders?.length]);
+    })();
 
     return (
       <div className="mt-8 select-none">

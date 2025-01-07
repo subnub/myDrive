@@ -12,7 +12,7 @@ const Uploader = memo(() => {
   const dispatch = useAppDispatch();
 
   const toggleMinimize = () => {
-    setMinimized(!minimized);
+    setMinimized((val) => !val);
   };
 
   const uploadTitle = useMemo(() => {

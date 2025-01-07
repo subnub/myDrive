@@ -52,15 +52,13 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
     ...contextMenuState
   } = useContextMenu();
 
-  const fileExtension = useMemo(
-    () => getFileExtension(file.filename),
-    [file.filename]
+  const fileExtension = getFileExtension(file.filename);
+  const imageColor = getFileColor(file.filename);
+  const formattedDate = useMemo(
+    () => moment(file.uploadDate).format("MM/DD/YY hh:mma"),
+    [file.uploadDate]
   );
-
-  const imageColor = useMemo(
-    () => getFileColor(file.filename),
-    [file.filename]
-  );
+  const formattedFilename = capitalize(file.filename);
 
   const quickItemClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const multiSelectKey = e.metaKey || e.ctrlKey;
@@ -188,7 +186,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
               : "text-[#212b36]"
           )}
         >
-          {capitalize(file.filename)}
+          {formattedFilename}
         </p>
         <span
           className={classNames(
@@ -198,7 +196,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
               : "text-[#637381]"
           )}
         >
-          Created {moment(file.uploadDate).format("MM/DD/YY hh:mma")}
+          Created {formattedDate}
         </span>
       </div>
     </div>

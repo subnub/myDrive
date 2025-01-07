@@ -97,7 +97,7 @@ const MoverPopup = () => {
     }
   };
 
-  const moveText = useMemo(() => {
+  const moveText = (() => {
     if (selectedFolder?._id && selectedFolder?.name) {
       return `Move to ${selectedFolder.name}`;
     } else if (!parent) {
@@ -106,21 +106,15 @@ const MoverPopup = () => {
       const lastParent = parentList[parentList.length - 1];
       return `Move to ${lastParent.name}`;
     }
-  }, [
-    selectedFolder?._id,
-    selectedFolder?.name,
-    parent?._id,
-    parentList[parentList.length - 1],
-    parentList.length,
-  ]);
+  })();
 
-  const headerText = useMemo(() => {
+  const headerText = (() => {
     if (parent) {
       return parent.name;
     } else {
       return "Home";
     }
-  }, [selectedFolder?.name, parent?._id]);
+  })();
 
   const onHomeClick = () => {
     setSearch("");
@@ -256,7 +250,7 @@ const MoverPopup = () => {
           )}
         </div>
         <div className="mt-4">
-          <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap">
+          <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap select-none">
             {moveText}
           </p>
         </div>

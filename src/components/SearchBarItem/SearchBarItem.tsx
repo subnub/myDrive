@@ -1,6 +1,5 @@
 import { FileInterface } from "../../types/file";
 import { FolderInterface } from "../../types/folders";
-import { useMemo } from "react";
 import { getFileColor, getFileExtension } from "../../utils/files";
 
 interface SearchBarItemProps {
@@ -13,15 +12,10 @@ interface SearchBarItemProps {
 
 const SearchBarItem = (props: SearchBarItemProps) => {
   const { type, folder, file, fileClick, folderClick } = props;
-  const fileExtension = useMemo(
-    () => getFileExtension(file?.filename || "", 3),
-    [file?.filename]
-  );
 
-  const imageColor = useMemo(
-    () => getFileColor(file?.filename || ""),
-    [file?.filename]
-  );
+  const fileExtension = file ? getFileExtension(file.filename, 3) : "";
+
+  const imageColor = file ? getFileColor(file.filename) : "";
 
   if (type === "folder" && folder) {
     return (

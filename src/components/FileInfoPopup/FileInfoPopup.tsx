@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { downloadFileAPI } from "../../api/filesAPI";
 import CloseIcon from "../../icons/CloseIcon";
@@ -10,7 +10,7 @@ import { getFileColor, getFileExtension } from "../../utils/files";
 import bytes from "bytes";
 import moment from "moment";
 
-const FileInfoPopup = memo(() => {
+const FileInfoPopup = () => {
   const file = useAppSelector((state) => state.selected.popupModal.file)!;
   const dispatch = useAppDispatch();
   const {
@@ -23,34 +23,32 @@ const FileInfoPopup = memo(() => {
     ...contextMenuState
   } = useContextMenu();
 
-  const fileExtension = useMemo(
-    () => getFileExtension(file.filename, 3),
-    [file.filename]
+  const fileExtension = getFileExtension(file.filename, 3);
+
+  const imageColor = getFileColor(file.filename);
+
+  const formattedDate = useMemo(
+    () => moment(file.uploadDate).format("L"),
+    [file.uploadDate]
   );
 
-  const imageColor = useMemo(
-    () => getFileColor(file.filename),
-    [file.filename]
-  );
+  const fileSize = bytes(file.metadata.size);
 
-  const formattedDate = useMemo(() => {
-    return moment(file.uploadDate).format("L");
-  }, [file.uploadDate, moment]);
-
-  const fileSize = useMemo(() => {
-    return bytes(file.metadata.size);
-  }, [file.metadata.size, bytes]);
-
-  const closePhotoViewer = useCallback(() => {
+  const closePhotoViewer = () => {
     dispatch(resetPopupSelect());
-  }, [resetPopupSelect]);
+  };
 
   const downloadItem = () => {
     downloadFileAPI(file._id);
   };
 
-  const outterWrapperClick = (e: any) => {
-    if (e.target.id !== "outer-wrapper" || contextMenuState.selected) return;
+  const outterWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (
+      (e.target as HTMLDivElement).id !== "outer-wrapper" ||
+      contextMenuState.selected
+    ) {
+      return;
+    }
     dispatch(resetPopupSelect());
   };
 
@@ -136,6 +134,6 @@ const FileInfoPopup = memo(() => {
       </div>
     </div>
   );
-});
+};
 
 export default FileInfoPopup;

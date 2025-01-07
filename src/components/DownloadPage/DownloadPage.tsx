@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../../axiosInterceptor";
 import {
   downloadPublicFileAPI,
   getPublicFileInfoAPI,
@@ -26,13 +25,13 @@ const PublicDownloadPage = () => {
       console.log("Error getting publicfile info", e);
       toast.error("Error getting public file");
     }
-  }, [params.id, params.tempToken, getPublicFileInfoAPI]);
+  }, [params.id, params.tempToken]);
 
-  const downloadItem = useCallback(() => {
+  const downloadItem = () => {
     const id = params.id!;
     const tempToken = params.tempToken!;
     downloadPublicFileAPI(id, tempToken);
-  }, [params.id, params.tempToken, downloadPublicFileAPI]);
+  };
 
   useEffect(() => {
     getFile();

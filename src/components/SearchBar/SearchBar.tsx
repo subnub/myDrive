@@ -95,7 +95,7 @@ const SearchBar = memo(() => {
     setShowSuggestions(true);
   };
 
-  const searchTextPlaceholder = useMemo(() => {
+  const searchTextPlaceholder = (() => {
     if (isMedia) {
       return "Search Media";
     } else if (isTrash) {
@@ -103,7 +103,7 @@ const SearchBar = memo(() => {
     } else {
       return "Search";
     }
-  }, [isMedia, isTrash]);
+  })();
 
   return (
     <form

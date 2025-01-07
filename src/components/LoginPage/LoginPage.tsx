@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   createAccountAPI,
   getUserAPI,
@@ -11,7 +11,6 @@ import { useAppDispatch } from "../../hooks/store";
 import { capitalize } from "lodash";
 import AlertIcon from "../../icons/AlertIcon";
 import Spinner from "../Spinner/Spinner";
-import classNames from "classnames";
 import { toast, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
 
@@ -113,7 +112,7 @@ const LoginPage = () => {
     }
   };
 
-  const isSubmitDisabled = useMemo(() => {
+  const isSubmitDisabled = (() => {
     switch (mode) {
       case "login":
         return !email || !password;
@@ -124,7 +123,7 @@ const LoginPage = () => {
       default:
         return false;
     }
-  }, [email, password, verifyPassword, mode]);
+  })();
 
   const onSubmit = (e: any) => {
     e.preventDefault();
@@ -137,7 +136,7 @@ const LoginPage = () => {
     }
   };
 
-  const headerTitle = useMemo(() => {
+  const headerTitle = (() => {
     switch (mode) {
       case "login":
         return "Login to your account";
@@ -148,9 +147,9 @@ const LoginPage = () => {
       default:
         return "Login to your account";
     }
-  }, [mode]);
+  })();
 
-  const validationError = useMemo(() => {
+  const validationError = (() => {
     if (mode === "login" || mode === "reset") return "";
 
     if (mode === "create") {
@@ -158,7 +157,7 @@ const LoginPage = () => {
     }
 
     return "";
-  }, [mode, email, password, verifyPassword]);
+  })();
 
   useEffect(() => {
     const loggedIn = window.localStorage.getItem("hasPreviouslyLoggedIn");

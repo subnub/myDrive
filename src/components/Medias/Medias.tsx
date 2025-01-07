@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import MediaItem from "../MediaItem/MediaItem";
 import { useFiles } from "../../hooks/files";
 import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
@@ -80,7 +80,7 @@ const Medias = memo(
       dispatch(setMediaFilter(value));
     };
 
-    const title = useMemo(() => {
+    const title = (() => {
       if (mediaFilter === "all") {
         return "Photos and Videos";
       } else if (mediaFilter === "photos") {
@@ -88,7 +88,7 @@ const Medias = memo(
       } else if (mediaFilter === "videos") {
         return "Videos";
       }
-    }, [mediaFilter]);
+    })();
 
     return (
       <div

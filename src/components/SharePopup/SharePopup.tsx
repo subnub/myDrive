@@ -21,7 +21,6 @@ import {
   setShareModal,
 } from "../../reducers/selected";
 import { toast } from "react-toastify";
-import getBackendURL from "../../utils/getBackendURL";
 
 const SharePopup = memo(() => {
   const file = useAppSelector((state) => state.selected.shareModal.file)!;
@@ -31,23 +30,16 @@ const SharePopup = memo(() => {
   const { invalidateFilesCache } = useFilesClient();
   const { invalidateQuickFilesCache } = useQuickFilesClient();
 
-  const imageColor = useMemo(
-    () => getFileColor(file.filename),
-    [file.filename]
+  const imageColor = getFileColor(file.filename);
+
+  const fileExtension = getFileExtension(file.filename, 3);
+
+  const formattedDate = useMemo(
+    () => moment(file.uploadDate).format("MM/DD/YYYY"),
+    [file.uploadDate]
   );
 
-  const fileExtension = useMemo(
-    () => getFileExtension(file.filename, 3),
-    [file.filename]
-  );
-
-  const formattedDate = useMemo(() => {
-    return moment(file.uploadDate).format("MM/DD/YYYY");
-  }, [file.uploadDate, moment]);
-
-  const fileSize = useMemo(() => {
-    return bytes(file.length);
-  }, [file.length, bytes]);
+  const fileSize = bytes(file.length);
 
   const makePublic = async () => {
     try {
@@ -156,11 +148,9 @@ const SharePopup = memo(() => {
 
   useEffect(() => {
     if (!file.metadata.link) return;
-    const url = `${getBackendURL()}/public-download/${file._id}/${
-      file.metadata.link
-    }`;
+    const url = `${window.location.origin}/public-download/${file._id}/${file.metadata.link}`;
     setShareLink(url);
-  }, [file.metadata.link]);
+  }, [file._id, file.metadata.link]);
 
   return (
     <div
