@@ -1,10 +1,8 @@
 import {
-  QueryFunctionContext,
   UseInfiniteQueryResult,
   UseQueryResult,
   useInfiniteQuery,
   useQuery,
-  useQueryClient,
 } from "react-query";
 import { useParams } from "react-router-dom";
 import {
@@ -25,7 +23,7 @@ import {
 import { debounce } from "lodash";
 import { addUpload, editUpload } from "../reducers/uploader";
 import { uploadFolderAPI } from "../api/foldersAPI";
-import { useFoldersClient } from "./folders";
+import { useFolders } from "./folders";
 
 export const useFiles = (enabled = true) => {
   const params = useParams();
@@ -75,38 +73,7 @@ export const useFiles = (enabled = true) => {
       }
     );
 
-  const testFunction = () => {
-    console.log("this is a test function");
-  };
-
-  return { ...filesReactQuery, testFunction };
-};
-
-export const useFilesClient = () => {
-  const params = useParams();
-  // TODO: Remove any
-  const sortBy = useAppSelector((state) => state.filter.sortBy);
-  const filesReactClientQuery = useQueryClient();
-  const { isTrash, isMedia } = useUtils();
-  const limit = isMedia ? 100 : 50;
-
-  const invalidateFilesCache = () => {
-    filesReactClientQuery.invalidateQueries({
-      queryKey: [
-        "files",
-        {
-          parent: params.id || "/",
-          search: params.query || "",
-          sortBy,
-          limit,
-          trashMode: isTrash,
-          mediaMode: isMedia,
-        },
-      ],
-    });
-  };
-
-  return { ...filesReactClientQuery, invalidateFilesCache };
+  return { ...filesReactQuery };
 };
 
 export const useQuickFiles = (enabled = true) => {
@@ -121,18 +88,6 @@ export const useQuickFiles = (enabled = true) => {
   );
 
   return { ...quickFilesQuery };
-};
-
-export const useQuickFilesClient = () => {
-  const quickFilesReactClientQuery = useQueryClient();
-
-  const invalidateQuickFilesCache = () => {
-    quickFilesReactClientQuery.invalidateQueries({
-      queryKey: "quickFiles",
-    });
-  };
-
-  return { ...quickFilesReactClientQuery, invalidateQuickFilesCache };
 };
 
 export const useSearchSuggestions = (searchText: string) => {
@@ -156,9 +111,9 @@ export const useSearchSuggestions = (searchText: string) => {
 export const useUploader = () => {
   const dispatch = useAppDispatch();
   const params = useParams();
-  const { invalidateFilesCache } = useFilesClient();
-  const { invalidateQuickFilesCache } = useQuickFilesClient();
-  const { invalidateFoldersCache } = useFoldersClient();
+  const { refetch: refetchFiles } = useFiles(false);
+  const { refetch: refetchQuickFiles } = useQuickFiles(false);
+  const { refetch: refetchFolders } = useFolders(false);
 
   const debounceDispatch = debounce(dispatch, 200);
 
@@ -225,8 +180,8 @@ export const useUploader = () => {
             })
           );
           removeFileUploadCancelToken(currentID);
-          invalidateFilesCache();
-          invalidateQuickFilesCache();
+          refetchFiles();
+          refetchQuickFiles();
         })
         .catch((e) => {
           console.log("Error uploading file", e);
@@ -311,9 +266,9 @@ export const useUploader = () => {
           })
         );
         removeFileUploadCancelToken(currentID);
-        invalidateFilesCache();
-        invalidateQuickFilesCache();
-        invalidateFoldersCache();
+        refetchFiles();
+        refetchQuickFiles();
+        refetchFolders();
       })
       .catch((e) => {
         console.log("Error uploading folder", e);

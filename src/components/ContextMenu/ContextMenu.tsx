@@ -6,8 +6,7 @@ import {
   trashFileAPI,
   restoreFileAPI,
 } from "../../api/filesAPI";
-import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
-import { useFoldersClient } from "../../hooks/folders";
+import { useFiles, useQuickFiles } from "../../hooks/files";
 import {
   deleteFolderAPI,
   downloadZIPAPI,
@@ -40,6 +39,7 @@ import { FileInterface } from "../../types/file";
 import { FolderInterface } from "../../types/folders";
 import { toast } from "react-toastify";
 import { deleteFolderPopup, renameFolderPopup } from "../../popups/folder";
+import { useFolders } from "../../hooks/folders";
 
 export interface ContextMenuProps {
   closeContext: () => void;
@@ -61,9 +61,9 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     Y: 0,
     set: false,
   });
-  const { invalidateFilesCache } = useFilesClient();
-  const { invalidateFoldersCache } = useFoldersClient();
-  const { invalidateQuickFilesCache } = useQuickFilesClient();
+  const { refetch: refetchFiles } = useFiles(false);
+  const { refetch: refetchFolders } = useFolders(false);
+  const { refetch: refetchQuickFiles } = useQuickFiles(false);
   const {
     closeContext,
     contextSelected,
@@ -230,9 +230,9 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   };
 
   const reloadItems = () => {
-    invalidateFilesCache();
-    invalidateQuickFilesCache();
-    invalidateFoldersCache();
+    refetchFiles();
+    refetchQuickFiles();
+    refetchFolders();
     dispatch(resetSelected());
   };
 

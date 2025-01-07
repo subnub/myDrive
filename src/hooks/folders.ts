@@ -31,33 +31,7 @@ export const useFolders = (enabled = true) => {
   return { ...foldersReactQuery };
 };
 
-export const useFoldersClient = () => {
-  const params = useParams();
-  const sortBy = useAppSelector((state) => state.filter.sortBy);
-  const foldersReactClientQuery = useQueryClient();
-  const { isTrash } = useUtils();
-
-  const invalidateFoldersCache = () => {
-    foldersReactClientQuery.invalidateQueries({
-      queryKey: [
-        "folders",
-        {
-          parent: params.id || "/",
-          search: params.query || "",
-          sortBy,
-          limit: undefined,
-          trashMode: isTrash,
-        },
-      ],
-    });
-  };
-  return {
-    ...foldersReactClientQuery,
-    invalidateFoldersCache,
-  };
-};
-
-export const useFolder = () => {
+export const useFolder = (enabled = true) => {
   const params = useParams();
   const folderQuery = useQuery(
     [
@@ -66,7 +40,8 @@ export const useFolder = () => {
         id: params.id,
       },
     ],
-    getFolderInfoAPI
+    getFolderInfoAPI,
+    { enabled }
   );
 
   return { ...folderQuery };

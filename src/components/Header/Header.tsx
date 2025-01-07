@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "../SearchBar/SearchBar";
 import MenuIcon from "../../icons/MenuIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { closeDrawer, toggleDrawer } from "../../reducers/leftSection";
+import { closeDrawer, openDrawer } from "../../reducers/leftSection";
 import { useUtils } from "../../hooks/utils";
 import ChevronOutline from "../../icons/ChevronOutline";
 import SettingsIconSolid from "../../icons/SettingsIconSolid";
@@ -13,8 +13,8 @@ const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const toggleDrawerClick = () => {
-    dispatch(toggleDrawer());
+  const openDrawerClick = () => {
+    dispatch(openDrawer());
   };
 
   const closeDrawerClick = () => {
@@ -37,22 +37,21 @@ const Header = () => {
         </div>
         {!isSettings && (
           <div className="items-center flex desktopMode:hidden mr-4">
-            <a className="inline-flex items-center justify-center cursor-pointer">
-              {!drawerOpen && (
-                <MenuIcon
-                  id="menu-icon"
-                  onClick={toggleDrawerClick}
-                  className="text-primary w-9"
-                />
-              )}
-              {drawerOpen && (
+            <div className="inline-flex items-center justify-center cursor-pointer">
+              {drawerOpen ? (
                 <ChevronOutline
                   id="menu-icon"
                   onClick={closeDrawerClick}
                   className="text-primary w-9 rotate-90"
                 />
+              ) : (
+                <MenuIcon
+                  id="menu-icon"
+                  onClick={openDrawerClick}
+                  className="text-primary w-9"
+                />
               )}
-            </a>
+            </div>
           </div>
         )}
         <SearchBar />

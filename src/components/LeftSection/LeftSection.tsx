@@ -82,20 +82,20 @@ const LeftSection = ({
   };
 
   const closeDrawerEvent = useCallback(
-    (e: any) => {
-      if (
-        !e ||
-        !leftSectionOpen ||
-        e.target.id === "search-bar" ||
-        e.target.id === "menu-icon" ||
-        e.target.id === "header"
-      ) {
+    (e: MouseEvent | TouchEvent) => {
+      if (!leftSectionOpen) return;
+
+      const target = e.target as HTMLElement;
+
+      const idsToIgnore = ["search-bar", "menu-icon", "header"];
+
+      if (!target || idsToIgnore.includes(target.id)) {
         return;
       }
 
       dispatch(closeDrawer());
     },
-    [closeDrawer, leftSectionOpen]
+    [leftSectionOpen]
   );
 
   const { wrapperRef } = useClickOutOfBounds(closeDrawerEvent, leftSectionOpen);

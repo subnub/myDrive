@@ -31,7 +31,7 @@ export const useClickOutOfBounds = (
   const wrapperRef = useRef<HTMLDivElement>(null);
   // TODO: Remove this any
   const outOfBoundsClickCheck = useCallback(
-    (e: any) => {
+    (e: MouseEvent | TouchEvent) => {
       if (wrapperRef && !wrapperRef.current?.contains(e.target as Node)) {
         outOfBoundsCallback(e);
       }
@@ -40,7 +40,6 @@ export const useClickOutOfBounds = (
   );
 
   useEffect(() => {
-    console.log("useeffect");
     if (shouldCheck) {
       document.addEventListener("mousedown", outOfBoundsClickCheck);
       document.addEventListener("touchstart", outOfBoundsClickCheck);

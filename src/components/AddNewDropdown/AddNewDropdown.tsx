@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
-import { createFolderAPI, uploadFolderAPI } from "../../api/foldersAPI";
-import { useFoldersClient } from "../../hooks/folders";
+import { createFolderAPI } from "../../api/foldersAPI";
 import { useClickOutOfBounds } from "../../hooks/utils";
 import { showCreateFolderPopup } from "../../popups/folder";
 import React, { RefObject, useEffect, useRef, useState } from "react";
@@ -9,6 +8,7 @@ import UploadFileIcon from "../../icons/UploadFileIcon";
 import CreateFolderIcon from "../../icons/CreateFolderIcon";
 import FolderUploadIcon from "../../icons/FolderUploadIcon";
 import Swal from "sweetalert2";
+import { useFolders } from "../../hooks/folders";
 
 interface AddNewDropdownProps {
   closeDropdown: () => void;
@@ -16,7 +16,7 @@ interface AddNewDropdownProps {
 
 const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
   const params = useParams();
-  const { invalidateFoldersCache } = useFoldersClient();
+  const { refetch: refetchFolders } = useFolders(false);
   const [supportsWebkitDirectory, setSupportsWebkitDirectory] = useState(false);
   const { wrapperRef } = useClickOutOfBounds(props.closeDropdown);
   const uploadRef: RefObject<HTMLInputElement> = useRef(null);
@@ -32,7 +32,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
     }
 
     await createFolderAPI(folderName, params.id);
-    invalidateFoldersCache();
+    refetchFolders();
   };
 
   const handleUpload = (e: React.FormEvent<HTMLInputElement>) => {

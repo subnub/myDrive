@@ -1,11 +1,11 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUtils } from "../../hooks/utils";
 import { useFolder } from "../../hooks/folders";
 import SpacerIcon from "../../icons/SpacerIcon";
 
 const ParentBar = memo(() => {
-  const { data: folder } = useFolder();
+  const { data: folder } = useFolder(false);
   const navigate = useNavigate();
   const { isHome, isTrash } = useUtils();
 

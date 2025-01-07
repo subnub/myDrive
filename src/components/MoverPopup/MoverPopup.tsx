@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { useFoldersClient, useMoveFolders } from "../../hooks/folders";
+import { useFolders, useMoveFolders } from "../../hooks/folders";
 import { FolderInterface } from "../../types/folders";
 import CloseIcon from "../../icons/CloseIcon";
 import { resetMoveModal } from "../../reducers/selected";
@@ -12,7 +12,7 @@ import classNames from "classnames";
 import FolderIcon from "../../icons/FolderIcon";
 import { toast } from "react-toastify";
 import { moveFileAPI } from "../../api/filesAPI";
-import { useFilesClient } from "../../hooks/files";
+import { useFiles } from "../../hooks/files";
 import { moveFolderAPI } from "../../api/foldersAPI";
 
 const MoverPopup = () => {
@@ -30,8 +30,8 @@ const MoverPopup = () => {
   const file = useAppSelector((state) => state.selected.moveModal.file);
   const folder = useAppSelector((state) => state.selected.moveModal.folder);
   const dispatch = useAppDispatch();
-  const { invalidateFilesCache } = useFilesClient();
-  const { invalidateFoldersCache } = useFoldersClient();
+  const { refetch: refetchFiles } = useFiles(false);
+  const { refetch: refetchFolders } = useFolders(false);
   const lastSelected = useRef({
     timestamp: 0,
     folderID: "",
@@ -137,7 +137,7 @@ const MoverPopup = () => {
           success: "File Moved",
           error: "Error Moving File",
         });
-        invalidateFilesCache();
+        refetchFiles();
         dispatch(resetMoveModal());
       } else if (folder) {
         await toast.promise(moveFolderAPI(folder._id, moveTo), {
@@ -145,7 +145,7 @@ const MoverPopup = () => {
           success: "Folder Moved",
           error: "Error Moving Folder",
         });
-        invalidateFoldersCache();
+        refetchFolders();
         dispatch(resetMoveModal());
       }
       console.log("move to", moveTo);

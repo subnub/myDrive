@@ -14,7 +14,7 @@ import {
   makePublicAPI,
   removeLinkAPI,
 } from "../../api/filesAPI";
-import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
+import { useFiles, useQuickFiles } from "../../hooks/files";
 import {
   resetShareModal,
   setMainSelect,
@@ -27,8 +27,8 @@ const SharePopup = memo(() => {
   const [updating, setUpdating] = useState(false);
   const [shareLink, setShareLink] = useState("");
   const dispatch = useAppDispatch();
-  const { invalidateFilesCache } = useFilesClient();
-  const { invalidateQuickFilesCache } = useQuickFilesClient();
+  const { refetch: refetchFiles } = useFiles(false);
+  const { refetch: refetchQuickFiles } = useQuickFiles(false);
 
   const imageColor = getFileColor(file.filename);
 
@@ -63,8 +63,8 @@ const SharePopup = memo(() => {
         })
       );
       dispatch(setShareModal(updatedFile));
-      invalidateFilesCache();
-      invalidateQuickFilesCache();
+      refetchFiles();
+      refetchQuickFiles();
     } catch (e) {
       console.log("Error making file public", e);
     } finally {
@@ -94,8 +94,8 @@ const SharePopup = memo(() => {
         })
       );
       dispatch(setShareModal(updatedFile));
-      invalidateFilesCache();
-      invalidateQuickFilesCache();
+      refetchFiles();
+      refetchQuickFiles();
     } catch (e) {
       console.log("Error making file public", e);
     } finally {
@@ -122,8 +122,8 @@ const SharePopup = memo(() => {
         })
       );
       dispatch(setShareModal(updatedFile));
-      invalidateFilesCache();
-      invalidateQuickFilesCache();
+      refetchFiles();
+      refetchQuickFiles();
       setShareLink("");
     } catch (e) {
       console.log("Error removing link", e);

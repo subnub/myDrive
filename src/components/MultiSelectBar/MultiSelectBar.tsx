@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { resetMultiSelect, setMoveModal } from "../../reducers/selected";
 import {
@@ -6,8 +6,7 @@ import {
   restoreMultiAPI,
   trashMultiAPI,
 } from "../../api/filesAPI";
-import { useFilesClient, useQuickFilesClient } from "../../hooks/files";
-import { useFoldersClient } from "../../hooks/folders";
+import { useFiles, useQuickFiles } from "../../hooks/files";
 import TrashIcon from "../../icons/TrashIcon";
 import Moveicon from "../../icons/MoveIcon";
 import {
@@ -22,10 +21,11 @@ import DownloadIcon from "../../icons/DownloadIcon";
 import { downloadZIPAPI } from "../../api/foldersAPI";
 import CloseIcon from "../../icons/CloseIcon";
 import { useLocation } from "react-router-dom";
+import { useFolders } from "../../hooks/folders";
 
 const MultiSelectBar: React.FC = () => {
   const dispatch = useAppDispatch();
-  const ignoreFirstMount = useRef(true);
+  // const ignoreFirstMount = useRef(true);
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
@@ -35,9 +35,9 @@ const MultiSelectBar: React.FC = () => {
   const multiSelectCount = useAppSelector(
     (state) => state.selected.multiSelectCount
   );
-  const { invalidateFilesCache } = useFilesClient();
-  const { invalidateFoldersCache } = useFoldersClient();
-  const { invalidateQuickFilesCache } = useQuickFilesClient();
+  const { refetch: refetchFiles } = useFiles(false);
+  const { refetch: refetchFolders } = useFolders(false);
+  const { refetch: refetchQuickFiles } = useQuickFiles(false);
 
   const { isTrash, isMedia } = useUtils();
 
@@ -87,9 +87,9 @@ const MultiSelectBar: React.FC = () => {
         success: "Trashed",
         error: "Error Trashing",
       });
-      invalidateFilesCache();
-      invalidateFoldersCache();
-      invalidateQuickFilesCache();
+      refetchFiles();
+      refetchFolders();
+      refetchQuickFiles();
       closeMultiSelect();
     } catch (e) {
       console.log("Error Trashing Items", e);
@@ -107,9 +107,9 @@ const MultiSelectBar: React.FC = () => {
         success: "Deleted",
         error: "Error Deleting",
       });
-      invalidateFilesCache();
-      invalidateFoldersCache();
-      invalidateQuickFilesCache();
+      refetchFiles();
+      refetchFolders();
+      refetchQuickFiles();
       closeMultiSelect();
     } catch (e) {
       console.log("Error Deleting Items", e);
@@ -126,9 +126,9 @@ const MultiSelectBar: React.FC = () => {
       success: "Restored",
       error: "Error Restoring",
     });
-    invalidateFilesCache();
-    invalidateFoldersCache();
-    invalidateQuickFilesCache();
+    refetchFiles();
+    refetchFolders();
+    refetchQuickFiles();
     closeMultiSelect();
   };
 

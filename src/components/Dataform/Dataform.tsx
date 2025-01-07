@@ -10,7 +10,7 @@ import { useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useDragAndDrop } from "../../hooks/utils";
 import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
-import { useFolders } from "../../hooks/folders";
+import { useFolder, useFolders } from "../../hooks/folders";
 import { removeNavigationMap } from "../../reducers/selected";
 
 const DataForm = memo(
@@ -21,6 +21,7 @@ const DataForm = memo(
       data: fileList,
       isLoading: isLoadingFiles,
     } = useFiles();
+    const { isLoading: isLoadingFolder } = useFolder(true);
     const { isLoading: isLoadingFolders } = useFolders();
     const { isLoading: isLoadingQuickItems } = useQuickFiles();
     const dispatch = useAppDispatch();
@@ -32,7 +33,11 @@ const DataForm = memo(
       return state.selected.navigationMap[window.location.pathname];
     });
 
-    const isLoading = isLoadingFiles || isLoadingFolders || isLoadingQuickItems;
+    const isLoading =
+      isLoadingFiles ||
+      isLoadingFolders ||
+      isLoadingQuickItems ||
+      isLoadingFolder;
 
     useEffect(() => {
       if (initialLoad) {

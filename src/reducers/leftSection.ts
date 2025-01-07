@@ -14,9 +14,13 @@ const leftSectionSlice = createSlice({
     closeDrawer: (state) => {
       state.drawOpen = false;
     },
+    openDrawer: (state) => {
+      state.drawOpen = true;
+    },
   },
 });
 
-export const { toggleDrawer, closeDrawer } = leftSectionSlice.actions;
+export const { toggleDrawer, closeDrawer, openDrawer } =
+  leftSectionSlice.actions;
 
 export default leftSectionSlice.reducer;
