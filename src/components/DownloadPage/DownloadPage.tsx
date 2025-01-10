@@ -6,7 +6,7 @@ import {
 } from "../../api/filesAPI";
 import { toast, ToastContainer } from "react-toastify";
 import Spinner from "../Spinner/Spinner";
-import moment from "moment";
+import dayjs from "dayjs";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { FileInterface } from "../../types/file";
 import bytes from "bytes";
@@ -50,7 +50,7 @@ const PublicDownloadPage = () => {
 
   const imageColor = getFileColor(file.filename);
 
-  const formattedDate = moment(file.uploadDate).format("L");
+  const formattedDate = dayjs(file.uploadDate).format("MM/DD/YYYY hh:mma");
 
   const fileSize = bytes(file.metadata.size);
 

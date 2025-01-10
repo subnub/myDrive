@@ -1,5 +1,4 @@
 import bytes from "bytes";
-import moment from "moment";
 import { memo, useMemo } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
@@ -13,6 +12,7 @@ import { useUtils } from "../../hooks/utils";
 import CloseIcon from "../../icons/CloseIcon";
 import FileDetailsIcon from "../../icons/FileDetailsIcon";
 import ActionsIcon from "../../icons/ActionsIcon";
+import dayjs from "dayjs";
 
 const RightSection = memo(() => {
   const selectedItem = useAppSelector((state) => state.selected.mainSection);
@@ -45,7 +45,7 @@ const RightSection = memo(() => {
   const formattedDate = useMemo(() => {
     const date =
       selectedItem.file?.uploadDate || selectedItem.folder?.createdAt;
-    return moment(date).format("L");
+    return dayjs(date).format("MM/DD/YYYY");
   }, [selectedItem?.file?.uploadDate, selectedItem.folder?.createdAt]);
 
   const fileSize = bytes(selectedItem.file?.length || 0);

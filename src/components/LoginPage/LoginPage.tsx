@@ -8,7 +8,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { setUser } from "../../reducers/user";
 import { useAppDispatch } from "../../hooks/store";
-import { capitalize } from "lodash";
+import capitalize from "lodash/capitalize";
 import AlertIcon from "../../icons/AlertIcon";
 import Spinner from "../Spinner/Spinner";
 import { toast, ToastContainer } from "react-toastify";

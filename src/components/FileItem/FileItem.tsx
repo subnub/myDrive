@@ -1,5 +1,4 @@
 import capitalize from "../../utils/capitalize";
-import moment from "moment";
 import React, { memo, useMemo, useRef, useState } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
@@ -13,6 +12,7 @@ import { setPopupSelect } from "../../reducers/selected";
 import ActionsIcon from "../../icons/ActionsIcon";
 import { FileInterface } from "../../types/file";
 import getBackendURL from "../../utils/getBackendURL";
+import dayjs from "dayjs";
 
 interface FileItemProps {
   file: FileInterface;
@@ -56,7 +56,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
   const formattedFilename = capitalize(file.filename);
 
   const formattedCreatedDate = useMemo(
-    () => moment(file.uploadDate).format("MM/DD/YY hh:mma"),
+    () => dayjs(file.uploadDate).format("MM/DD/YY hh:mma"),
     [file.uploadDate]
   );
 

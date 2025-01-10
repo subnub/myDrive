@@ -3,7 +3,6 @@ import CloseIcon from "../../icons/CloseIcon";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import bytes from "bytes";
-import moment from "moment";
 import {
   makeOneTimePublicPopup,
   makePublicPopup,
@@ -21,6 +20,7 @@ import {
   setShareModal,
 } from "../../reducers/selected";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
 const SharePopup = memo(() => {
   const file = useAppSelector((state) => state.selected.shareModal.file)!;
@@ -35,7 +35,7 @@ const SharePopup = memo(() => {
   const fileExtension = getFileExtension(file.filename, 3);
 
   const formattedDate = useMemo(
-    () => moment(file.uploadDate).format("MM/DD/YYYY"),
+    () => dayjs(file.uploadDate).format("MM/DD/YYYY"),
     [file.uploadDate]
   );
 

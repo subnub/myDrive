@@ -3,8 +3,6 @@ import ContextMenu from "../ContextMenu/ContextMenu";
 import { useContextMenu } from "../../hooks/contextMenu";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
-import mobilecheck from "../../utils/mobileCheck";
-import moment from "moment";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import {
   addNavigationMap,
@@ -13,6 +11,7 @@ import {
 } from "../../reducers/selected";
 import { useUtils } from "../../hooks/utils";
 import { FolderInterface } from "../../types/folders";
+import dayjs from "dayjs";
 
 interface FolderItemProps {
   folder: FolderInterface;
@@ -172,7 +171,7 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
               : "text-gray-primary"
           )}
         >
-          Created {moment(folder.createdAt).format("MM/DD/YY hh:mma")}
+          Created {dayjs(folder.createdAt).format("MM/DD/YY hh:mma")}
         </span>
       </div>
     </div>

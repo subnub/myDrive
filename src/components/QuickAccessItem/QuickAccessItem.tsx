@@ -1,5 +1,4 @@
 import capitalize from "../../utils/capitalize";
-import moment from "moment";
 import React, { memo, useMemo, useRef, useState } from "react";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
@@ -14,6 +13,7 @@ import {
   setPopupSelect,
 } from "../../reducers/selected";
 import PlayButtonIcon from "../../icons/PlayIcon";
+import dayjs from "dayjs";
 import getBackendURL from "../../utils/getBackendURL";
 
 interface QuickAccessItemProps {
@@ -55,7 +55,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
   const fileExtension = getFileExtension(file.filename);
   const imageColor = getFileColor(file.filename);
   const formattedDate = useMemo(
-    () => moment(file.uploadDate).format("MM/DD/YY hh:mma"),
+    () => dayjs(file.uploadDate).format("MM/DD/YY hh:mma"),
     [file.uploadDate]
   );
   const formattedFilename = capitalize(file.filename);

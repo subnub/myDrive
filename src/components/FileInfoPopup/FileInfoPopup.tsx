@@ -8,7 +8,7 @@ import ContextMenu from "../ContextMenu/ContextMenu";
 import { resetPopupSelect } from "../../reducers/selected";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import bytes from "bytes";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const FileInfoPopup = () => {
   const file = useAppSelector((state) => state.selected.popupModal.file)!;
@@ -28,7 +28,7 @@ const FileInfoPopup = () => {
   const imageColor = getFileColor(file.filename);
 
   const formattedDate = useMemo(
-    () => moment(file.uploadDate).format("L"),
+    () => dayjs(file.uploadDate).format("MM/DD/YYYY hh:mma"),
     [file.uploadDate]
   );
 

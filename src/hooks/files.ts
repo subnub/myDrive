@@ -20,7 +20,7 @@ import {
   addFileUploadCancelToken,
   removeFileUploadCancelToken,
 } from "../utils/cancelTokenManager";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import { addUpload, editUpload } from "../reducers/uploader";
 import { uploadFolderAPI } from "../api/foldersAPI";
 import { useFolders } from "./folders";

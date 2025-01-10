@@ -4,7 +4,7 @@ import { useFolders, useMoveFolders } from "../../hooks/folders";
 import { FolderInterface } from "../../types/folders";
 import CloseIcon from "../../icons/CloseIcon";
 import { resetMoveModal } from "../../reducers/selected";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 import Spinner from "../Spinner/Spinner";
 import HomeIconOutline from "../../icons/HomeIconOutline";
 import ArrowBackIcon from "../../icons/ArrowBackIcon";

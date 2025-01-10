@@ -1,12 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // Here you can set the proxy URL if you are using a proxy server
 // This is only used for development
 const proxyURL = "http://localhost:3000";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), visualizer()],
   build: {
     outDir: "dist-frontend",
   },
