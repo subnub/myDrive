@@ -17,7 +17,7 @@ const DataForm = memo(
   ({ scrollDivRef }: { scrollDivRef: React.RefObject<HTMLDivElement> }) => {
     const {
       fetchNextPage: filesFetchNextPage,
-      isFetchingNextPage,
+      isFetchingNextPage: isFetchingNextPageState,
       data: fileList,
       isLoading: isLoadingFiles,
     } = useFiles();
@@ -32,6 +32,7 @@ const DataForm = memo(
     const navigationMap = useAppSelector((state) => {
       return state.selected.navigationMap[window.location.pathname];
     });
+    const isFetchingNextPage = useRef(false);
 
     const isLoading =
       isLoadingFiles ||
@@ -43,19 +44,21 @@ const DataForm = memo(
       if (initialLoad) {
         setInitialLoad(false);
         return;
-      } else if (!fileList) {
+      } else if (!fileList || isFetchingNextPage.current) {
         return;
       }
-      if (reachedIntersect && !isFetchingNextPage && !isLoadingFiles) {
-        filesFetchNextPage();
+      if (reachedIntersect && !isLoadingFiles) {
+        isFetchingNextPage.current = true;
+        filesFetchNextPage().then(() => {
+          isFetchingNextPage.current = false;
+        });
       }
-    }, [reachedIntersect, initialLoad, isFetchingNextPage, isLoadingFiles]);
+    }, [reachedIntersect, initialLoad, isLoadingFiles]);
 
     useEffect(() => {
       if (!isLoading && navigationMap) {
         const scrollTop = navigationMap.scrollTop;
         scrollDivRef.current?.scrollTo(0, scrollTop);
-        console.log("navigation map", navigationMap, scrollTop);
         dispatch(removeNavigationMap(window.location.pathname));
       }
     }, [isLoading, navigationMap]);
@@ -112,7 +115,7 @@ const DataForm = memo(
         {/* @ts-ignore  */}
         <div ref={sentinelRef} className="h-1"></div>
 
-        {isFetchingNextPage && (
+        {isFetchingNextPageState && (
           <div className="w-full flex justify-center items-center mt-4">
             <Spinner />
           </div>

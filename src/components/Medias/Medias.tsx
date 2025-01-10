@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import MediaItem from "../MediaItem/MediaItem";
 import { useFiles } from "../../hooks/files";
 import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
@@ -13,8 +13,8 @@ const Medias = memo(
   ({ scrollDivRef }: { scrollDivRef: React.RefObject<HTMLDivElement> }) => {
     const {
       data: files,
-      isFetchingNextPage,
       fetchNextPage: filesFetchNextPage,
+      isFetchingNextPage: isFetchingNextPageState,
       isLoading: isLoadingFiles,
     } = useFiles();
     const [initialLoad, setInitialLoad] = useState(true);
@@ -24,6 +24,7 @@ const Medias = memo(
     const navigationMap = useAppSelector((state) => {
       return state.selected.navigationMap[window.location.pathname];
     });
+    const isFetchingNextPage = useRef(false);
 
     const dispatch = useAppDispatch();
 
@@ -31,13 +32,16 @@ const Medias = memo(
       if (initialLoad) {
         setInitialLoad(false);
         return;
-      } else if (!files) {
+      } else if (!files || isFetchingNextPage.current) {
         return;
       }
-      if (reachedIntersect && !isFetchingNextPage && !isLoadingFiles) {
-        filesFetchNextPage();
+      if (reachedIntersect && !isLoadingFiles) {
+        isFetchingNextPage.current = true;
+        filesFetchNextPage().then(() => {
+          isFetchingNextPage.current = false;
+        });
       }
-    }, [reachedIntersect, initialLoad, isFetchingNextPage, isLoadingFiles]);
+    }, [reachedIntersect, initialLoad, isLoadingFiles]);
 
     useEffect(() => {
       if (!initialLoad && navigationMap) {
@@ -155,7 +159,7 @@ const Medias = memo(
             <Spinner />
           </div>
         )}
-        {isFetchingNextPage && (
+        {isFetchingNextPageState && (
           <div className="w-full flex justify-center items-center mt-4">
             <Spinner />
           </div>

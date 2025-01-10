@@ -229,12 +229,9 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
         );
       } else if (!finalLastPageLoaded.current && !loadingNextPage.current) {
         loadingNextPage.current = true;
-        console.log("fetch next page");
         const newFilesResponse = await fetchNextPage();
-        console.log("new files response", newFilesResponse);
         if (!newFilesResponse.data?.pages) return;
         const fetchedNextItem = findNextFilesItem(newFilesResponse.data);
-        console.log("fetched next item", fetchedNextItem);
         if (fetchedNextItem) {
           dispatch(setPopupSelect({ type: "file", file: fetchedNextItem }));
           dispatch(
@@ -249,7 +246,6 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
           finalLastPageLoaded.current = true;
         }
         loadingNextPage.current = false;
-        console.log("end");
       }
     }
   };
@@ -259,7 +255,6 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
   };
 
   const outterWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log("outter wrapper click", e.target);
     if ((e.target as HTMLDivElement).id !== "outer-wrapper") {
       return;
     }
