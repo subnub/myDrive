@@ -101,6 +101,12 @@ export const moveFileValidationRules = [
   middlewareValidationFunction,
 ];
 
+export const moveMultiValidationRules = [
+  body("items").isArray().withMessage("Items must be an array"),
+  body("parentID").isString().optional().withMessage("Parent must be a string"),
+  middlewareValidationFunction,
+];
+
 export const trashFileValidationRules = [
   body("id").isString().withMessage("ID must be a string"),
   middlewareValidationFunction,

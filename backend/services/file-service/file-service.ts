@@ -331,6 +331,34 @@ class MongoFileService {
 
     return updatedFile;
   };
+
+  moveMultiFiles = async (
+    userID: string,
+    items: {
+      type: "file" | "folder" | "quick-item";
+      id: string;
+      file?: FileInterface;
+      folder?: FolderInterface;
+    }[],
+    parentID: string
+  ) => {
+    const fileList = items.filter(
+      (item) => item.type === "file" || item.type === "quick-item"
+    );
+    const folderList = items
+      .filter((item) => item.type === "folder")
+      .sort((a, b) => {
+        if (!a.folder || !b.folder) return 0;
+        return b.folder.parentList.length - a.folder.parentList.length;
+      });
+
+    for (const file of fileList) {
+      await this.moveFile(userID, file.id, parentID);
+    }
+    for (const folder of folderList) {
+      await folderService.moveFolder(userID, folder.id, parentID);
+    }
+  };
 }
 
 export default MongoFileService;

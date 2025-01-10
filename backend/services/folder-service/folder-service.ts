@@ -132,6 +132,16 @@ class FolderService {
       startParentList.push("/");
     }
 
+    await Promise.all([
+      folderDB.moveFolder(folderID, userID, parentID, startParentList),
+      fileDB.moveMultipleFiles(
+        userID,
+        folderID,
+        folderID,
+        [...startParentList, folderID].toString()
+      ),
+    ]);
+
     for (let i = 0; i < foldersByIncludedParent.length; i++) {
       const currentFolder = foldersByIncludedParent[i];
 
@@ -141,16 +151,22 @@ class FolderService {
 
       newParentList.push(
         ...startParentList,
+        folderID,
         ...currentFolder.parentList.slice(currentParentIndex + 1)
       );
 
       await Promise.all([
-        folderDB.moveFolder(folderID, userID, parentID, newParentList),
+        folderDB.moveFolder(
+          currentFolder._id.toString(),
+          userID,
+          currentFolder.parent,
+          newParentList
+        ),
         fileDB.moveMultipleFiles(
           userID,
           currentFolder._id.toString(),
-          parentID,
-          newParentList.toString()
+          currentFolder._id.toString(),
+          [...newParentList, currentFolder._id.toString()].toString()
         ),
       ]);
     }

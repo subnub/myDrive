@@ -288,91 +288,93 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   };
 
   return (
-    <div
-      onClick={stopPropagation}
-      ref={wrapperRef}
-      className="fixed min-w-[215px] bg-white shadow-lg rounded-md z-50"
-      style={
-        fixedCoords.set
-          ? {
-              display: "block",
-              left: `${fixedCoords.X}px`,
-              top: `${fixedCoords.Y}px`,
-            }
-          : { opacity: 0 }
-      }
-    >
-      <div>
-        <div
-          onClick={selectItemMultiSelect}
-          className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-t-md"
-        >
-          <MultiSelectIcon className="w-5 h-5" />
-          <p className="ml-2.5 text-sm">Multi-select</p>
+    <div className="w-screen dynamic-height absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col">
+      <div
+        onClick={stopPropagation}
+        ref={wrapperRef}
+        className="fixed min-w-[215px] bg-white shadow-lg rounded-md z-50"
+        style={
+          fixedCoords.set
+            ? {
+                display: "block",
+                left: `${fixedCoords.X}px`,
+                top: `${fixedCoords.Y}px`,
+              }
+            : { opacity: 0 }
+        }
+      >
+        <div>
+          <div
+            onClick={selectItemMultiSelect}
+            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-t-md"
+          >
+            <MultiSelectIcon className="w-5 h-5" />
+            <p className="ml-2.5 text-sm">Multi-select</p>
+          </div>
+          {!isTrash && !isMedia && (
+            <div
+              onClick={renameItem}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+            >
+              <RenameIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Rename</p>
+            </div>
+          )}
+          {!folderMode && !isTrash && (
+            <div
+              onClick={openShareItemModal}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+            >
+              <ShareIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Share</p>
+            </div>
+          )}
+          {!isTrash && (
+            <div
+              onClick={downloadItem}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+            >
+              <DownloadIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Download</p>
+            </div>
+          )}
+          {!isTrash && !isMedia && (
+            <div
+              onClick={openMoveItemModal}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+            >
+              <MoveIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Move</p>
+            </div>
+          )}
+          {!isTrash && (
+            <div
+              onClick={trashItem}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-b-md"
+            >
+              <TrashIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Trash</p>
+            </div>
+          )}
+          {isTrash && (
+            <div
+              onClick={restoreItem}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
+            >
+              <RestoreIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Restore</p>
+            </div>
+          )}
+          {isTrash && (
+            <div
+              onClick={deleteItem}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-red-500 rounded-b-md"
+            >
+              <TrashIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Delete</p>
+            </div>
+          )}
         </div>
-        {!isTrash && !isMedia && (
-          <div
-            onClick={renameItem}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
-          >
-            <RenameIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Rename</p>
-          </div>
-        )}
-        {!folderMode && !isTrash && (
-          <div
-            onClick={openShareItemModal}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
-          >
-            <ShareIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Share</p>
-          </div>
-        )}
-        {!isTrash && (
-          <div
-            onClick={downloadItem}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
-          >
-            <DownloadIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Download</p>
-          </div>
-        )}
-        {!isTrash && !isMedia && (
-          <div
-            onClick={openMoveItemModal}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
-          >
-            <MoveIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Move</p>
-          </div>
-        )}
-        {!isTrash && (
-          <div
-            onClick={trashItem}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-b-md"
-          >
-            <TrashIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Trash</p>
-          </div>
-        )}
-        {isTrash && (
-          <div
-            onClick={restoreItem}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary"
-          >
-            <RestoreIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Restore</p>
-          </div>
-        )}
-        {isTrash && (
-          <div
-            onClick={deleteItem}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-red-500 rounded-b-md"
-          >
-            <TrashIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Delete</p>
-          </div>
-        )}
       </div>
     </div>
   );

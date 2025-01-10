@@ -5,7 +5,11 @@ import CloseIcon from "../../icons/CloseIcon";
 import ActionsIcon from "../../icons/ActionsIcon";
 import { useContextMenu } from "../../hooks/contextMenu";
 import ContextMenu from "../ContextMenu/ContextMenu";
-import { resetPopupSelect, setPopupSelect } from "../../reducers/selected";
+import {
+  resetPopupSelect,
+  setMainSelect,
+  setPopupSelect,
+} from "../../reducers/selected";
 import CircleLeftIcon from "../../icons/CircleLeftIcon";
 import CircleRightIcon from "../../icons/CircleRightIcon";
 import { useFiles, useQuickFiles } from "../../hooks/files";
@@ -122,13 +126,28 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
       const prevItem = filteredQuickFiles[index - 1];
       if (prevItem) {
         dispatch(setPopupSelect({ type: "quick-item", file: prevItem }));
+        dispatch(
+          setMainSelect({
+            file: prevItem,
+            id: prevItem._id,
+            type: "file",
+            folder: null,
+          })
+        );
       }
     } else {
       if (!files?.pages) return 0;
       const prevItem = findPrevFilesItem();
-      console.log("prev item", prevItem);
       if (prevItem) {
         dispatch(setPopupSelect({ type: "file", file: prevItem }));
+        dispatch(
+          setMainSelect({
+            file: prevItem,
+            id: prevItem._id,
+            type: "file",
+            folder: null,
+          })
+        );
       }
       // TODO: Perhaps implement this if needed in the future
       //   else {
@@ -186,23 +205,51 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
       const nextItem = filteredQuickFiles[index + 1];
       if (nextItem) {
         dispatch(setPopupSelect({ type: "quick-item", file: nextItem }));
+        dispatch(
+          setMainSelect({
+            file: nextItem,
+            id: nextItem._id,
+            type: "file",
+            folder: null,
+          })
+        );
       }
     } else {
       if (!files?.pages) return;
       const nextItem = findNextFilesItem();
       if (nextItem) {
         dispatch(setPopupSelect({ type: "file", file: nextItem }));
+        dispatch(
+          setMainSelect({
+            file: nextItem,
+            id: nextItem._id,
+            type: "file",
+            folder: null,
+          })
+        );
       } else if (!finalLastPageLoaded.current && !loadingNextPage.current) {
         loadingNextPage.current = true;
+        console.log("fetch next page");
         const newFilesResponse = await fetchNextPage();
+        console.log("new files response", newFilesResponse);
         if (!newFilesResponse.data?.pages) return;
         const fetchedNextItem = findNextFilesItem(newFilesResponse.data);
+        console.log("fetched next item", fetchedNextItem);
         if (fetchedNextItem) {
           dispatch(setPopupSelect({ type: "file", file: fetchedNextItem }));
+          dispatch(
+            setMainSelect({
+              file: fetchedNextItem,
+              id: fetchedNextItem._id,
+              type: "file",
+              folder: null,
+            })
+          );
         } else {
           finalLastPageLoaded.current = true;
         }
         loadingNextPage.current = false;
+        console.log("end");
       }
     }
   };
@@ -211,7 +258,16 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
     dispatch(resetPopupSelect());
   };
 
+  const outterWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    console.log("outter wrapper click", e.target);
+    if ((e.target as HTMLDivElement).id !== "outer-wrapper") {
+      return;
+    }
+    closePhotoViewer();
+  };
+
   useEffect(() => {
+    console.log("useeffect");
     if (file.metadata.isVideo) {
       getVideo();
     }
@@ -222,7 +278,11 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
   }, [file.metadata.isVideo, getVideo, cleanUpVideo]);
 
   return (
-    <div className="w-screen dynamic-height bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col">
+    <div
+      id="outer-wrapper"
+      className="w-screen dynamic-height bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col"
+      onClick={outterWrapperClick}
+    >
       {contextMenuState.selected && (
         <div onClick={clickStopPropagation}>
           <ContextMenu
@@ -244,12 +304,12 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
               className="h-[27px] w-[27px] bg-red-500 rounded-[3px] flex flex-row justify-center items-center"
               style={{ background: imageColor }}
             >
-              <span className="font-semibold text-[9.5px] text-white">
+              <span className="font-semibold text-[9.5px] text-white select-none">
                 {fileExtension}
               </span>
             </div>
           </span>
-          <p className="text-md text-white text-ellipsis overflow-hidden max-w-[200px] md:max-w-[600px] whitespace-nowrap">
+          <p className="text-md text-white text-ellipsis overflow-hidden max-w-[200px] md:max-w-[600px] whitespace-nowrap select-none">
             {file.filename}
           </p>
         </div>
@@ -269,16 +329,14 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
           </div>
         </div>
       </div>
-      <div className="flex absolute pb-[70px] desktopMode:pb-0 top-[50px] bottom-0 w-full h-full justify-between items-end desktopMode:items-center p-4">
-        <CircleLeftIcon
-          onClick={goToPreviousItem}
-          className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
-        />
-        <CircleRightIcon
-          onClick={goToNextItem}
-          className="pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
-        />
-      </div>
+      <CircleLeftIcon
+        onClick={goToPreviousItem}
+        className="fixed left-2 pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
+      />
+      <CircleRightIcon
+        onClick={goToNextItem}
+        className="fixed right-2 pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
+      />
       <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center z-10">
         {isThumbnailLoading && !thumbnailError && <Spinner />}
         {!file.metadata.isVideo && (

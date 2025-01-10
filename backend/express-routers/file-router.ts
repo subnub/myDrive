@@ -16,6 +16,7 @@ import {
   makePrivateValidationRules,
   makePublicValidationRules,
   moveFileValidationRules,
+  moveMultiValidationRules,
   removeVideoStreamTokenValidationRules,
   renameFileValidationRules,
   restoreFileValidationRules,
@@ -139,6 +140,13 @@ router.patch(
   auth,
   moveFileValidationRules,
   fileController.moveFile
+);
+
+router.patch(
+  "/file-service/move-multi",
+  auth,
+  moveMultiValidationRules,
+  fileController.moveMultiFile
 );
 
 router.patch(

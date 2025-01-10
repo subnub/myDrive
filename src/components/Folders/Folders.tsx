@@ -1,15 +1,16 @@
 import { useFolders } from "../../hooks/folders";
 import FolderItem from "../FolderItem/FolderItem";
-import { memo } from "react";
+import React, { memo } from "react";
 import classNames from "classnames";
 import { useUtils } from "../../hooks/utils";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { setSortBy } from "../../reducers/filter";
+import ParentBar from "../ParentBar/ParentBar";
 
 const Folders = memo(
   ({ scrollDivRef }: { scrollDivRef: React.RefObject<HTMLDivElement> }) => {
     const { data: folders } = useFolders(false);
-    const { isTrash, isSearch } = useUtils();
+    const { isTrash, isSearch, isHome } = useUtils();
     const sortBy = useAppSelector((state) => state.filter.sortBy);
     const dispatch = useAppDispatch();
 
@@ -68,13 +69,24 @@ const Folders = memo(
         return "Trash";
       } else if (isSearch) {
         return "Search";
+      } else if (folders?.length === 0) {
+        return "No Folders";
+      } else if (isHome) {
+        return "Home Folders";
       } else {
-        return folders?.length === 0 ? "No Folders" : "Folders";
+        return "Folders";
       }
     })();
 
     return (
       <div className="mt-8 select-none">
+        {!isHome && (
+          <React.Fragment>
+            <div className="block mb-6">
+              <ParentBar />
+            </div>
+          </React.Fragment>
+        )}
         <div className="flex flex-row mb-5 justify-between items-center">
           <h2
             className={classNames(

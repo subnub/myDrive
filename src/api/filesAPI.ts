@@ -190,6 +190,14 @@ export const moveFileAPI = async (fileID: string, parentID: string) => {
   return response.data;
 };
 
+export const moveMultiAPI = async (items: any, parentID: string) => {
+  const response = await axios.patch(`/file-service/move-multi`, {
+    items,
+    parentID,
+  });
+  return response.data;
+};
+
 // DELETE
 
 export const deleteFileAPI = async (fileID: string) => {

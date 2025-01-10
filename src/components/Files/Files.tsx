@@ -2,7 +2,6 @@ import { useFiles } from "../../hooks/files";
 import { useUtils } from "../../hooks/utils";
 import React, { memo } from "react";
 import FileItem from "../FileItem/FileItem";
-import ParentBar from "../ParentBar/ParentBar";
 import classNames from "classnames";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { toggleListView } from "../../reducers/general";
@@ -22,15 +21,9 @@ const Files = memo(() => {
     <div className="mt-8 select-none">
       <div>
         <div className="flex justify-between items-center mb-5">
-          {isHome && <h2 className="m-0 text-xl font-medium">Home Files</h2>}
-          {!isHome && (
-            <React.Fragment>
-              <div className="block">
-                <ParentBar />
-              </div>
-            </React.Fragment>
-          )}
-
+          <h2 className="m-0 text-xl font-medium">
+            {isHome ? "Home" : ""} Files
+          </h2>
           <div>
             <ul className="flex items-center list-none m-0 p-0">
               <li className="mr-4" onClick={changeListViewMode}>

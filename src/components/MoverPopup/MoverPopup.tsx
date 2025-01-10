@@ -11,7 +11,7 @@ import ArrowBackIcon from "../../icons/ArrowBackIcon";
 import classNames from "classnames";
 import FolderIcon from "../../icons/FolderIcon";
 import { toast } from "react-toastify";
-import { moveFileAPI } from "../../api/filesAPI";
+import { moveFileAPI, moveMultiAPI } from "../../api/filesAPI";
 import { useFiles } from "../../hooks/files";
 import { moveFolderAPI } from "../../api/foldersAPI";
 
@@ -25,6 +25,9 @@ const MoverPopup = () => {
   );
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
+  );
+  const multiSelectMap = useAppSelector(
+    (state) => state.selected.multiSelectMap
   );
   const [isLoadingMove, setIsLoadingMove] = useState(false);
   const file = useAppSelector((state) => state.selected.moveModal.file);
@@ -131,6 +134,15 @@ const MoverPopup = () => {
       : parent?._id || "/";
     try {
       if (multiSelectMode) {
+        const itemsToMove = Object.values(multiSelectMap);
+        await toast.promise(moveMultiAPI(itemsToMove, moveTo), {
+          pending: "Moving items...",
+          success: "Items Moved",
+          error: "Error Moving Items",
+        });
+        refetchFiles();
+        refetchFolders();
+        dispatch(resetMoveModal());
       } else if (file) {
         await toast.promise(moveFileAPI(file._id, moveTo), {
           pending: "Moving File...",

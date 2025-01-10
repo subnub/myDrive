@@ -501,6 +501,28 @@ class FileController {
     }
   };
 
+  moveMultiFile = async (
+    req: RequestType,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (!req.user) {
+      return;
+    }
+
+    try {
+      const userID = req.user._id;
+      const items = req.body.items;
+      const parentID = (req.body.parentID as string) || "/";
+
+      await fileService.moveMultiFiles(userID, items, parentID);
+
+      res.send();
+    } catch (e) {
+      next(e);
+    }
+  };
+
   trashFile = async (req: RequestType, res: Response, next: NextFunction) => {
     if (!req.user) {
       return;
