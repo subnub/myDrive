@@ -72,15 +72,12 @@ const selectedSlice = createSlice({
     },
     resetSelected: () => initialState,
     setMultiSelectMode: (state, action: PayloadAction<MainSecionType[]>) => {
-      const currentSelection = state.mainSection;
+      const currentSelection = { ...state.mainSection };
       state.mainSection = { type: "", id: "", file: null, folder: null };
 
       const selects = action.payload;
 
-      if (currentSelection.id !== "") {
-        state.multiSelectMap[currentSelection.id] = currentSelection;
-        state.multiSelectCount++;
-      }
+      const selectsIds = selects.map((select) => select.id);
 
       for (const select of selects) {
         if (
@@ -101,6 +98,14 @@ const selectedSlice = createSlice({
           state.multiSelectMap[select.id] = select;
           state.multiSelectCount++;
         }
+      }
+
+      if (
+        currentSelection.id !== "" &&
+        !selectsIds.includes(currentSelection.id)
+      ) {
+        state.multiSelectMap[currentSelection.id] = currentSelection;
+        state.multiSelectCount++;
       }
     },
     resetMultiSelect: (state) => {
