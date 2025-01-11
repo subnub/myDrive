@@ -38,6 +38,8 @@ export const useContextMenu = () => {
     let X = e.clientX || touches.clientX;
     let Y = e.clientY || touches.clientY;
 
+    if (contextData.selected) return;
+
     timeoutRef.current = setTimeout(() => {
       console.log("timeout");
       setContextData({

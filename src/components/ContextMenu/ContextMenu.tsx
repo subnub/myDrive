@@ -287,8 +287,20 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     }
   };
 
+  const outterWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if ((e.target as HTMLDivElement).id !== "context-wrapper") {
+      return;
+    }
+    closeContext();
+  };
+
   return (
-    <div className="w-screen dynamic-height absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col">
+    <div
+      id="context-wrapper"
+      className="w-screen dynamic-height absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col"
+      onClick={outterWrapperClick}
+    >
       <div
         onClick={stopPropagation}
         ref={wrapperRef}
