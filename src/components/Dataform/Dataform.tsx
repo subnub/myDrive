@@ -3,10 +3,17 @@ import Folders from "../Folders/Folders";
 import { useFiles, useQuickFiles, useUploader } from "../../hooks/files";
 import { useInfiniteScroll } from "../../hooks/infiniteScroll";
 import Files from "../Files/Files";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Spinner from "../Spinner/Spinner";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import classNames from "classnames";
 import { useDragAndDrop } from "../../hooks/utils";
 import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
@@ -29,10 +36,12 @@ const DataForm = memo(
     const [initialLoad, setInitialLoad] = useState(true);
     const params = useParams();
     const { uploadFiles } = useUploader();
-    const navigationMap = useAppSelector((state) => {
-      return state.selected.navigationMap[window.location.pathname];
-    });
     const isFetchingNextPage = useRef(false);
+    const prevPathname = useRef("");
+    const location = useLocation();
+    const navigationMap = useAppSelector((state) => {
+      return state.selected.navigationMap[location.pathname];
+    });
 
     const isLoading =
       isLoadingFiles ||
@@ -59,9 +68,13 @@ const DataForm = memo(
       if (!isLoading && navigationMap) {
         const scrollTop = navigationMap.scrollTop;
         scrollDivRef.current?.scrollTo(0, scrollTop);
-        dispatch(removeNavigationMap(window.location.pathname));
+        dispatch(removeNavigationMap(location.pathname));
+        prevPathname.current = location.pathname;
+      } else if (!isLoading && prevPathname.current !== location.pathname) {
+        scrollDivRef.current?.scrollTo(0, 0);
+        prevPathname.current = location.pathname;
       }
-    }, [isLoading, navigationMap]);
+    }, [isLoading, navigationMap, location.pathname]);
 
     const addFile = useCallback(
       (files: FileList) => {
