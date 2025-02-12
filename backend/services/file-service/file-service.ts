@@ -78,26 +78,7 @@ class MongoFileService {
 
     if (!currentFile) throw new NotFoundError("Get File Info Not Found Error");
 
-    const parentID = currentFile.metadata.parent;
-
-    let parentName = "";
-
-    if (parentID === "/") {
-      parentName = "Home";
-    } else {
-      const parentFolder = await Folder.findOne({
-        owner: userID,
-        _id: parentID,
-      });
-
-      if (parentFolder) {
-        parentName = parentFolder.name;
-      } else {
-        parentName = "Unknown";
-      }
-    }
-
-    return { ...currentFile, parentName };
+    return currentFile;
   };
 
   getQuickList = async (
