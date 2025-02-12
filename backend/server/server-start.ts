@@ -28,7 +28,7 @@ const serverStart = async () => {
     const port = process.env.HTTP_PORT || process.env.PORT;
 
     server.listen(port, process.env.URL, () => {
-      console.log("Development Backend Server Running On :", port);
+      console.log("\nDevelopment Backend Server Running On :", port);
     });
   }
 };

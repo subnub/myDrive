@@ -96,9 +96,14 @@ class UserService {
     await user.generateEncryptionKeys();
 
     const { accessToken, refreshToken } = await user.generateAuthToken(uuid);
-    const emailToken = await user.generateEmailVerifyToken();
 
-    const emailSent = await sendEmailVerification(user, emailToken);
+    let emailSent = false;
+
+    if (env.emailVerification === "true") {
+      const emailToken = await user.generateEmailVerifyToken();
+
+      emailSent = await sendEmailVerification(user, emailToken);
+    }
 
     if (!accessToken || !refreshToken)
       throw new InternalServerError("Could Not Create New User Error");
