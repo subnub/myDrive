@@ -10,25 +10,31 @@ const { envFileFix } = require("../utils/db-setup");
 const { ObjectId } = require("mongodb");
 
 let mongoServer;
+let authToken;
+let file;
+let user;
 
 describe("File Controller", () => {
-  let authToken;
-  let file;
-
   beforeAll(async () => {
     envFileFix(env);
     await getKey();
-
     mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri(), { useNewUrlParser: true });
-
-    const user = await request(app)
+    user = await request(app)
       .post("/user-service/create")
       .send({
         email: "test@test.com",
         password: "test1234",
       })
       .set("uuid", 12314123123);
+
+    authToken = user.headers["set-cookie"]
+      .map((cookie) => cookie.split(";")[0])
+      .join("; ");
+  });
+
+  beforeEach(async () => {
+    await mongoose.model("fs.files").deleteMany({});
 
     file = await mongoose.model("fs.files").create({
       _id: new ObjectId("5eb88f29ecb8c9319ddca3c2"),
@@ -45,10 +51,6 @@ describe("File Controller", () => {
         isVideo: false,
       },
     });
-
-    authToken = user.headers["set-cookie"]
-      .map((cookie) => cookie.split(";")[0])
-      .join("; ");
   });
 
   afterAll(async () => {
@@ -92,7 +94,6 @@ describe("File Controller", () => {
           title: "newname.txt",
         });
 
-      console.log("fileResponse", fileResponse.body);
       expect(fileResponse.status).toBe(200);
       expect(fileResponse.body.filename).toBe("newname.txt");
 
@@ -326,6 +327,61 @@ describe("File Controller", () => {
         .set("Cookie", "access-token=test");
 
       expect(fileResponse.status).toBe(401);
+    });
+  });
+
+  describe("Make private file: PATCH /file-service/remove-link/:id", () => {
+    test("Should make file private", async () => {
+      await mongoose
+        .model("fs.files")
+        .updateOne(
+          { _id: file._id },
+          { $set: { "metadata.link": "test", "metadata.linkType": "public" } }
+        );
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/remove-link/${file._id}`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.link).toBeFalsy();
+      expect(fileDbCheck.metadata.linkType).toBeFalsy();
+    });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/remove-link/5f7e5d8d1f962d5a0f5e8a9e`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/remove-link/${file._id}`)
+        .set("Cookie", "access-token=test");
+
+      expect(fileResponse.status).toBe(401);
+    });
+  });
+
+  describe("Get public file info: GET /file-service/public/info/:id/:tempToken", () => {
+    test("Should return public file info", async () => {
+      const makePublicResponse = await request(app)
+        .patch(`/file-service/make-public/${file._id}`)
+        .set("Cookie", authToken);
+
+      const tempToken = makePublicResponse.body.token;
+
+      const fileResponse = await request(app)
+        .get(`/file-service/public/info/${file._id}/${tempToken}`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(file.filename === fileResponse.body.filename).toBeTruthy();
     });
   });
 });
