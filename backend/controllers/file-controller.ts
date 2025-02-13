@@ -475,9 +475,9 @@ class FileController {
       const title = req.body.title;
       const userID = req.user._id;
 
-      await fileService.renameFile(userID, fileID, title);
+      const file = await fileService.renameFile(userID, fileID, title);
 
-      res.send();
+      res.send(file);
     } catch (e) {
       next(e);
     }

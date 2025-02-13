@@ -265,8 +265,6 @@ class DbUtil {
 
     await file.save();
 
-    console.log("file", file);
-
     return file;
   };
 

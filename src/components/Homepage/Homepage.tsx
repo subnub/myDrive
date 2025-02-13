@@ -19,7 +19,7 @@ const Homepage = () => {
         </div>
       </div>
 
-      <ToastContainer position="bottom-left" />
+      <ToastContainer position="bottom-left" pauseOnFocusLoss={false} />
     </div>
   );
 };

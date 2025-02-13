@@ -41,7 +41,7 @@ const PublicDownloadPage = () => {
     return (
       <div className="w-screen dynamic-height flex justify-center items-center">
         <Spinner />
-        <ToastContainer position="bottom-left" />
+        <ToastContainer position="bottom-left" pauseOnFocusLoss={false} />
       </div>
     );
   }
@@ -106,7 +106,7 @@ const PublicDownloadPage = () => {
           </div>
         </div>
       </div>
-      <ToastContainer position="bottom-left" />
+      <ToastContainer position="bottom-left" pauseOnFocusLoss={false} />
     </div>
   );
 };

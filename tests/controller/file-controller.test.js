@@ -62,11 +62,270 @@ describe("File Controller", () => {
         .get(`/file-service/info/${file._id}`)
         .set("Cookie", authToken);
 
-      console.log("fileResponse", fileResponse.body);
-
       expect(fileResponse.status).toBe(200);
       expect(fileResponse.body.filename).toBe(file.filename);
       expect(fileResponse.body.length).toBe(file.length);
+    });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/info/5f7e5d8d1f962d5a0f5e8a9e`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/info/${file._id}`)
+        .set("Cookie", "access-token=test");
+
+      expect(fileResponse.status).toBe(401);
+    });
+  });
+
+  describe("File rename: PATCH /file-service/rename", () => {
+    test("Should rename file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          title: "newname.txt",
+        });
+
+      console.log("fileResponse", fileResponse.body);
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.filename).toBe("newname.txt");
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.filename).toBe("newname.txt");
+    });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken)
+        .send({
+          id: "5f7e5d8d1f962d5a0f5e8a9e",
+          title: "newname.txt",
+        });
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", "access-token=test")
+        .send({
+          id: file._id,
+          title: "newname.txt",
+        });
+
+      expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 400 if no title", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+        });
+
+      expect(fileResponse.status).toBe(400);
+    });
+    test("Should return 400 if title length is less than 1", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          title: "",
+        });
+
+      expect(fileResponse.status).toBe(400);
+    });
+    test("Should return 400 if title length is greater than 256", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          title: "a" * 257,
+        });
+
+      expect(fileResponse.status).toBe(400);
+    });
+    test("Should return 400 if no id", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken)
+        .send({
+          title: "newname.txt",
+        });
+
+      expect(fileResponse.status).toBe(400);
+    });
+  });
+
+  describe("Trash file: PATCH /file-service/trash", () => {
+    test("Should trash file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/trash`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+        });
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.trashed).toBe(true);
+    });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/trash`)
+        .set("Cookie", authToken)
+        .send({
+          id: "5f7e5d8d1f962d5a0f5e8a9e",
+        });
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/trash`)
+        .set("Cookie", "access-token=test")
+        .send({
+          id: file._id,
+        });
+
+      expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 400 if no id", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/trash`)
+        .set("Cookie", authToken)
+        .send();
+
+      expect(fileResponse.status).toBe(400);
+    });
+  });
+
+  describe("Restore file: PATCH /file-service/restore", () => {
+    test("Should restore file", async () => {
+      await mongoose
+        .model("fs.files")
+        .updateOne({ _id: file._id }, { $set: { "metadata.trashed": true } });
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/restore`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+        });
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.metadata.trashed).toBe(null);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.trashed).toBe(null);
+    });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/restore`)
+        .set("Cookie", authToken)
+        .send({
+          id: "5f7e5d8d1f962d5a0f5e8a9e",
+        });
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/restore`)
+        .set("Cookie", "access-token=test")
+        .send({
+          id: file._id,
+        });
+
+      expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 400 if no id", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/restore`)
+        .set("Cookie", authToken)
+        .send();
+
+      expect(fileResponse.status).toBe(400);
+    });
+  });
+
+  describe("Make public file: PATCH /file-service/make-public", () => {
+    test("Should make file public", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-public/${file._id}`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.link).toBeTruthy();
+      expect(fileDbCheck.metadata.linkType).toBe("public");
+    });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-public/5f7e5d8d1f962d5a0f5e8a9e`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-public/${file._id}`)
+        .set("Cookie", "access-token=test");
+
+      expect(fileResponse.status).toBe(401);
+    });
+  });
+
+  describe("Make one time public file: PATCH /file-service/make-one/", () => {
+    test("Should make file one time public", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-one/${file._id}`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.link).toBeTruthy();
+      expect(fileDbCheck.metadata.linkType).toBe("one");
+    });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-one/5f7e5d8d1f962d5a0f5e8a9e`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-one/${file._id}`)
+        .set("Cookie", "access-token=test");
+
+      expect(fileResponse.status).toBe(401);
     });
   });
 });
