@@ -493,9 +493,9 @@ class FileController {
       const userID = req.user._id as string;
       const parentID = (req.body.parentID as string) || "/";
 
-      await fileService.moveFile(userID, fileID, parentID);
+      const file = await fileService.moveFile(userID, fileID, parentID);
 
-      res.send();
+      res.send(file);
     } catch (e) {
       next(e);
     }

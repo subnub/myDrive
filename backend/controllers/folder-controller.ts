@@ -45,7 +45,7 @@ class FolderController {
 
       const folder = await folderService.createFolder(userID, name, parent);
 
-      res.send(folder);
+      res.status(201).send(folder);
     } catch (e) {
       next(e);
     }
@@ -169,9 +169,9 @@ class FolderController {
       const folderID = req.body.id;
       const parentID = req.body.parentID;
 
-      await folderService.moveFolder(userID, folderID, parentID);
+      const folder = await folderService.moveFolder(userID, folderID, parentID);
 
-      res.send();
+      res.send(folder);
     } catch (e) {
       next(e);
     }

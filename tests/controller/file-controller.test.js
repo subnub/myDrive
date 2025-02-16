@@ -383,5 +383,228 @@ describe("File Controller", () => {
       expect(fileResponse.status).toBe(200);
       expect(file.filename === fileResponse.body.filename).toBeTruthy();
     });
+    test("Should return 404 if file not found", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/public/info/5f7e5d8d1f962d5a0f5e8a9e/test`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401/404 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/public/info/${file._id}/abcd`)
+        .set("Cookie", authToken);
+
+      expect([401, 404]).toContain(fileResponse.status);
+    });
+    test("Should return 401/404 if not public", async () => {
+      const makePublicResponse = await request(app)
+        .patch(`/file-service/make-public/${file._id}`)
+        .set("Cookie", authToken);
+
+      const tempToken = makePublicResponse.body.token;
+
+      await mongoose
+        .model("fs.files")
+        .updateOne(
+          { _id: file._id },
+          { $set: { "metadata.link": null, "metadata.linkType": null } }
+        );
+
+      const fileResponse = await request(app)
+        .get(`/file-service/public/info/${file._id}/${tempToken}`)
+        .set("Cookie", authToken);
+
+      expect([401, 404]).toContain(fileResponse.status);
+    });
+  });
+
+  describe("Move file: PATCH /file-service/move", () => {
+    test("Should move file", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderId = folderResponse.body._id;
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          parentID: folderId,
+        });
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.parent).toBe(folderId);
+      expect(fileDbCheck.metadata.parentList).toBe(`/,${folderId}`);
+    });
+    test("Should return 404 if file not found", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderId = folderResponse.body._id;
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: "5f7e5d8d1f962d5a0f5e8a9e",
+          parentID: folderId,
+        });
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 404 if folder not found", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          parentID: "5f7e5d8d1f962d5a0f5e8a9e",
+        });
+
+      expect(fileResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", "access-token=test")
+        .send({
+          id: file._id,
+          parentID: "5f7e5d8d1f962d5a0f5e8a9e",
+        });
+
+      expect(fileResponse.status).toBe(401);
+    });
+    test("Should not allow moving into folder not owned by user", async () => {
+      const userResponse2 = await request(app)
+        .post("/user-service/create")
+        .send({
+          email: "test2@test.com",
+          password: "test1234",
+        })
+        .set("uuid", 12314123123);
+
+      const authToken2 = userResponse2.headers["set-cookie"]
+        .map((cookie) => cookie.split(";")[0])
+        .join("; ");
+
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken2)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderId = folderResponse.body._id;
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          parentID: folderId,
+        });
+
+      expect([401, 404]).toContain(fileResponse.status);
+    });
+    test("Should correctly move into nested folder", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderResponse2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test2",
+          parent: folderResponse.body._id,
+        });
+
+      expect(folderResponse2.status).toBe(201);
+
+      const folderId = folderResponse2.body._id;
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          parentID: folderId,
+        });
+
+      expect(fileResponse.status).toBe(200);
+
+      expect(fileResponse.body.metadata.parent).toBe(folderResponse2.body._id);
+      expect(fileResponse.body.metadata.parentList).toBe(
+        `/,${folderResponse.body._id},${folderResponse2.body._id}`
+      );
+    });
+    test("Should move file home", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderId = folderResponse.body._id;
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          parentID: folderId,
+        });
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.metadata.parent).toBe(folderId);
+      expect(fileResponse.body.metadata.parentList).toBe(`/,${folderId}`);
+
+      const fileResponse2 = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+          parentID: "/",
+        });
+
+      expect(fileResponse2.status).toBe(200);
+
+      expect(fileResponse2.body.metadata.parent).toBe("/");
+      expect(fileResponse2.body.metadata.parentList).toBe("/");
+    });
   });
 });

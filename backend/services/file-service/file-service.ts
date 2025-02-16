@@ -56,8 +56,10 @@ class MongoFileService {
   getPublicInfo = async (fileID: string, tempToken: string) => {
     const file = await fileDB.getPublicInfo(fileID, tempToken);
 
-    if (!file || !file.metadata.link || file.metadata.link !== tempToken) {
-      throw new NotFoundError("Public Info Not Found");
+    if (!file) throw new NotFoundError("Public Info Not Found");
+
+    if (!file.metadata.link || file.metadata.link !== tempToken) {
+      throw new NotAuthorizedError("Public Info Not Authorized");
     } else {
       return file;
     }
@@ -296,8 +298,6 @@ class MongoFileService {
     } else {
       newParentList.push("/");
     }
-
-    console.log("new parent list", newParentList, parentID);
 
     const updatedFile = await fileDB.moveFile(
       fileID,

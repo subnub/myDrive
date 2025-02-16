@@ -170,6 +170,10 @@ class FolderService {
         ),
       ]);
     }
+
+    const updatedFolder = await folderDB.getFolderInfo(folderID, userID);
+
+    return updatedFolder;
   };
 }
 
