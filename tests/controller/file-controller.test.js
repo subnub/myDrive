@@ -607,4 +607,106 @@ describe("File Controller", () => {
       expect(fileResponse2.body.metadata.parentList).toBe("/");
     });
   });
+  describe("Get quick file list: GET /file-service/quick-list", () => {
+    test("Should return quick file list", async () => {
+      const quickListResponse = await request(app)
+        .get(`/file-service/quick-list`)
+        .set("Cookie", authToken);
+
+      expect(quickListResponse.status).toBe(200);
+      expect(quickListResponse.body.length).toBe(1);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const quickListResponse = await request(app)
+        .get(`/file-service/quick-list`)
+        .set("Cookie", "access-token=test");
+
+      expect(quickListResponse.status).toBe(401);
+    });
+    test("Should return quick file list including files in folders", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "test2.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse.body._id,
+          parentList: `/,${folderResponse.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const quickListResponse = await request(app)
+        .get(`/file-service/quick-list`)
+        .set("Cookie", authToken);
+
+      expect(quickListResponse.status).toBe(200);
+      expect(quickListResponse.body.length).toBe(2);
+    });
+    test("Should not return a file that is trashed", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/trash`)
+        .set("Cookie", authToken)
+        .send({
+          id: file._id,
+        });
+
+      expect(fileResponse.status).toBe(200);
+
+      const quickListResponse = await request(app)
+        .get(`/file-service/quick-list`)
+        .set("Cookie", authToken);
+
+      expect(quickListResponse.status).toBe(200);
+      expect(quickListResponse.body.length).toBe(0);
+    });
+    test("Should return newer files first", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "test2.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse.body._id,
+          parentList: `/,${folderResponse.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const quickListResponse = await request(app)
+        .get(`/file-service/quick-list`)
+        .set("Cookie", authToken);
+
+      expect(quickListResponse.status).toBe(200);
+      expect(quickListResponse.body[0].filename).toBe("test2.txt");
+    });
+  });
 });
