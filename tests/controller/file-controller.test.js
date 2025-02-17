@@ -709,4 +709,430 @@ describe("File Controller", () => {
       expect(quickListResponse.body[0].filename).toBe("test2.txt");
     });
   });
+  describe("Get file list: GET /file-service/list", () => {
+    test("Should return file list", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/list`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(1);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/list`)
+        .set("Cookie", "access-token=test");
+
+      expect(fileResponse.status).toBe(401);
+    });
+    test("Should return files in descending date order/default order", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "test2.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list`)
+        .set("Cookie", authToken);
+
+      const fileResponse2 = await request(app)
+        .get(`/file-service/list?sortBy=date_desc`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body[0].filename).toBe(file2.filename);
+      expect(fileResponse.body[1].filename).toBe(file.filename);
+
+      expect(fileResponse2.status).toBe(200);
+      expect(fileResponse2.body[0].filename).toBe(file2.filename);
+      expect(fileResponse2.body[1].filename).toBe(file.filename);
+    });
+    test("Should return files in ascending date order", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "test2.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?sortBy=date_asc`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body[0].filename).toBe(file.filename);
+      expect(fileResponse.body[1].filename).toBe(file2.filename);
+    });
+    test("Should return files in descending alphabetical order", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?sortBy=alp_desc`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body[0].filename).toBe(file.filename);
+      expect(fileResponse.body[1].filename).toBe(file2.filename);
+    });
+    test("Should return files in ascending alphabetical order", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?sortBy=alp_asc`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body[0].filename).toBe(file2.filename);
+      expect(fileResponse.body[1].filename).toBe(file.filename);
+    });
+    test("Should correctly show only home files", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse.body._id,
+          parentList: `/,${folderResponse.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?parent=/`)
+        .set("Cookie", authToken);
+
+      const fileResponse2 = await request(app)
+        .get(`/file-service/list`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(1);
+      expect(fileResponse.body[0].filename).toBe(file.filename);
+
+      expect(fileResponse2.status).toBe(200);
+      expect(fileResponse2.body.length).toBe(1);
+      expect(fileResponse2.body[0].filename).toBe(file.filename);
+    });
+    test("Should correctly show only folder files", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse.body._id,
+          parentList: `/,${folderResponse.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const folderResponse2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test2",
+          parent: "/",
+        });
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c4"),
+        filename: "b.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse2.body._id,
+          parentList: `/,${folderResponse2.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?parent=${folderResponse.body._id}`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(1);
+      expect(fileResponse.body[0].filename).toBe(file2.filename);
+    });
+    test("Should correctly show only file search results", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?search=a`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(1);
+      expect(fileResponse.body[0].filename).toBe(file2.filename);
+    });
+    test("Should correctly show nested files search results", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "test1.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse.body._id,
+          parentList: `/,${folderResponse.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?search=test`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(2);
+    });
+    test("Should return 0 files if no search results", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/list?search=asdfasdfkl`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(0);
+    });
+    test("Should correctly show only trashed files", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+          trashed: true,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list?trashMode=true`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(1);
+      expect(fileResponse.body[0].filename).toBe(file2.filename);
+    });
+    test("Should correctly show only trashes files in a folder", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      await request(app)
+        .patch("/folder-service/trash")
+        .set("Cookie", authToken)
+        .send({
+          id: folderResponse.body._id,
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c4"),
+        filename: "ab.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+          trashed: true,
+        },
+      });
+
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse.body._id,
+          parentList: `/,${folderResponse.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+          trashed: true,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(
+          `/file-service/list?parent=${folderResponse.body._id}&trashMode=true`
+        )
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(1);
+      expect(fileResponse.body[0].filename).toBe(file2.filename);
+    });
+    test("Should only return files that belong to the user", async () => {
+      const user2 = await request(app)
+        .post("/user-service/create")
+        .send({
+          email: "test3@test.com",
+          password: "test1234",
+        })
+        .set("uuid", 12314123123);
+
+      expect(user2.status).toBe(201);
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "a.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user2.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/list`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.length).toBe(1);
+      expect(fileResponse.body[0].filename).toBe(file.filename);
+    });
+    test("Should not return file that is processing", async () => {
+      await mongoose
+        .model("fs.files")
+        .updateOne(
+          { _id: file._id },
+          { $set: { "metadata.processingFile": true } }
+        );
+
+      const fileResponse2 = await request(app)
+        .get(`/file-service/list`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse2.status).toBe(200);
+      expect(fileResponse2.body.length).toBe(0);
+    });
+  });
 });
