@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { downloadFileAPI } from "../../api/filesAPI";
 import CloseIcon from "../../icons/CloseIcon";
@@ -51,6 +51,17 @@ const FileInfoPopup = () => {
     }
     dispatch(resetPopupSelect());
   };
+
+  useEffect(() => {
+    const handleBack = () => {
+      dispatch(resetPopupSelect());
+    };
+    window.addEventListener("popstate", handleBack);
+
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, []);
 
   return (
     <div

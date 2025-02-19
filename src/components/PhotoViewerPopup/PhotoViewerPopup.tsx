@@ -262,7 +262,6 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
   };
 
   useEffect(() => {
-    console.log("useeffect");
     if (file.metadata.isVideo) {
       getVideo();
     }
@@ -271,6 +270,17 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
       cleanUpVideo();
     };
   }, [file.metadata.isVideo, getVideo, cleanUpVideo]);
+
+  useEffect(() => {
+    const handleBack = () => {
+      closePhotoViewer();
+    };
+    window.addEventListener("popstate", handleBack);
+
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, []);
 
   return (
     <div
