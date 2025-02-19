@@ -4,11 +4,22 @@ import { useUtils } from "../../hooks/utils";
 import { useFolder } from "../../hooks/folders";
 import SpacerIcon from "../../icons/SpacerIcon";
 import ArrowBackIcon from "../../icons/ArrowBackIcon";
+import { useContextMenu } from "../../hooks/contextMenu";
+import ContextMenu from "../ContextMenu/ContextMenu";
 
 const ParentBar = memo(() => {
   const { data: folder } = useFolder(false);
   const navigate = useNavigate();
   const { isHome, isTrash } = useUtils();
+  const {
+    onContextMenu,
+    closeContextMenu,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd,
+    clickStopPropagation,
+    ...contextMenuState
+  } = useContextMenu();
 
   if (isHome || !folder) {
     return <div></div>;
@@ -36,6 +47,18 @@ const ParentBar = memo(() => {
 
   return (
     <div className="w-full items-center flex border border-gray-third  rounded-md">
+      {contextMenuState.selected && (
+        <div onClick={clickStopPropagation}>
+          <ContextMenu
+            folderMode={true}
+            parentBarMode={true}
+            contextSelected={contextMenuState}
+            closeContext={closeContextMenu}
+            folder={folder}
+          />
+        </div>
+      )}
+
       <div className="flex items-center">
         <div className="flex items-center justify-center h-full border-r p-2 mr-2 hover:bg-gray-third">
           <ArrowBackIcon
@@ -51,8 +74,12 @@ const ParentBar = memo(() => {
         </a>
         <SpacerIcon className="text-black mx-2 w-2.5 h-2.5" />
         <p
-          onClick={goToFolder}
+          onClick={onContextMenu}
           className="text-primary text-md leading-[21px] font-medium m-0 whitespace-nowrap max-w-[170px] sm:max-w-[300px] overflow-hidden text-ellipsis cursor-pointer rounded-md p-1 hover:bg-gray-third "
+          onContextMenu={onContextMenu}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
           {folder.name}
         </p>

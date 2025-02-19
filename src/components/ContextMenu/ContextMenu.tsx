@@ -39,7 +39,8 @@ import { FileInterface } from "../../types/file";
 import { FolderInterface } from "../../types/folders";
 import { toast } from "react-toastify";
 import { deleteFolderPopup, renameFolderPopup } from "../../popups/folder";
-import { useFolders } from "../../hooks/folders";
+import { useFolder, useFolders } from "../../hooks/folders";
+import { useNavigate } from "react-router-dom";
 
 export interface ContextMenuProps {
   closeContext: () => void;
@@ -50,6 +51,7 @@ export interface ContextMenuProps {
   };
   folderMode?: boolean;
   quickItemMode?: boolean;
+  parentBarMode?: boolean;
   file?: FileInterface | null;
   folder?: FolderInterface | null;
   stopPropagation?: () => void;
@@ -63,6 +65,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
   });
   const { refetch: refetchFiles } = useFiles(false);
   const { refetch: refetchFolders } = useFolders(false);
+  const { refetch: refetchFolder } = useFolder(false);
   const { refetch: refetchQuickFiles } = useQuickFiles(false);
   const {
     closeContext,
@@ -72,10 +75,12 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     quickItemMode,
     stopPropagation,
     folder,
+    parentBarMode,
   } = props;
   const { wrapperRef } = useClickOutOfBounds(closeContext);
   const { isTrash, isMedia } = useUtils();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!wrapperRef.current) return;
@@ -161,6 +166,14 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           error: "Error Trashing",
         });
         reloadItems();
+
+        if (parentBarMode) {
+          if (folder.parent === "/") {
+            navigate("/home");
+          } else {
+            navigate(`/folder/${folder.parent}`);
+          }
+        }
       } catch (e) {
         console.log("Error trashing folder", e);
       }
@@ -194,6 +207,14 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           error: "Error Deleting",
         });
         reloadItems();
+
+        if (parentBarMode) {
+          if (folder.parent === "/") {
+            navigate("/trash");
+          } else {
+            navigate(`/folder-trash/${folder.parent}`);
+          }
+        }
       } catch (e) {
         console.log("Error deleting folder", e);
       }
@@ -223,6 +244,14 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
           error: "Error Restoring",
         });
         reloadItems();
+
+        if (parentBarMode) {
+          if (folder.parent === "/") {
+            navigate("/trash");
+          } else {
+            navigate(`/folder-trash/${folder.parent}`);
+          }
+        }
       } catch (e) {
         console.log("Error restoring folder", e);
       }
@@ -233,6 +262,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     refetchFiles();
     refetchQuickFiles();
     refetchFolders();
+    refetchFolder();
     dispatch(resetSelected());
   };
 
@@ -316,13 +346,15 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
         }
       >
         <div>
-          <div
-            onClick={selectItemMultiSelect}
-            className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-t-md"
-          >
-            <MultiSelectIcon className="w-5 h-5" />
-            <p className="ml-2.5 text-sm">Multi-select</p>
-          </div>
+          {!parentBarMode && (
+            <div
+              onClick={selectItemMultiSelect}
+              className="text-gray-primary flex flex-row p-4 hover:bg-white-hover hover:text-primary rounded-t-md"
+            >
+              <MultiSelectIcon className="w-5 h-5" />
+              <p className="ml-2.5 text-sm">Multi-select</p>
+            </div>
+          )}
           {!isTrash && !isMedia && (
             <div
               onClick={renameItem}
