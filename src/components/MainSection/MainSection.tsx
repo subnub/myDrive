@@ -40,7 +40,7 @@ const MainSection = memo(() => {
 
         {moveModalItemType && <MoverPopup />}
 
-        <div className="flex flex-row dynamic-height w-screen pt-16">
+        <div className="flex flex-row dynamic-height w-screen pt-12">
           <LeftSection scrollDivRef={scrollDivRef} />
 
           {!isMedia ? (

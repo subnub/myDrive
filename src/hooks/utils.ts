@@ -32,7 +32,10 @@ export const useClickOutOfBounds = (
   // TODO: Remove this any
   const outOfBoundsClickCheck = useCallback(
     (e: MouseEvent | TouchEvent) => {
-      if (wrapperRef && !wrapperRef.current?.contains(e.target as Node)) {
+      if (
+        wrapperRef?.current &&
+        !wrapperRef.current.contains(e.target as Node)
+      ) {
         outOfBoundsCallback(e);
       }
     },

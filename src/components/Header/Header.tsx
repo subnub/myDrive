@@ -26,13 +26,13 @@ const Header = () => {
       id="header"
       className="select-none border-b fixed top-0 left-0 w-full bg-white z-10"
     >
-      <div className="px-6 flex justify-between min-h-16 items-center py-3.5">
+      <div className="px-6 flex justify-between  items-center py-3">
         <div className="items-center w-[260px] hidden desktopMode:flex">
           <a
             className="inline-flex items-center justify-center cursor-pointer"
             onClick={() => navigate("/")}
           >
-            <img className="w-9" src="/images/icon.png" alt="logo" />
+            <img className="w-8" src="/images/icon.png" alt="logo" />
           </a>
         </div>
         {!isSettings && (
@@ -62,7 +62,7 @@ const Header = () => {
                 onClick={() => navigate("/settings")}
                 className="cursor-pointer"
               >
-                <SettingsIconSolid className="w-7 h-7 text-gray-primary" />
+                <SettingsIconSolid className="w-6 h-6 text-gray-primary" />
               </a>
             </div>
           </div>

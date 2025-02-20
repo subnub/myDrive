@@ -23,19 +23,25 @@ const LeftSection = ({
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const addNewDisabled = useRef(false);
+  const closeDropdownDisabled = useRef(true);
 
   const openDropdown = () => {
     if (addNewDisabled.current) return;
+    addNewDisabled.current = true;
+    closeDropdownDisabled.current = true;
     setIsDropdownOpen(true);
+    setTimeout(() => (closeDropdownDisabled.current = false), 300);
   };
 
-  const closeDropdown = () => {
+  const closeDropdown = useCallback(() => {
+    if (closeDropdownDisabled.current) return;
     addNewDisabled.current = true;
+    closeDropdownDisabled.current = true;
     setIsDropdownOpen(false);
 
     // Clicking out of bounds on the add new button will cause it to reopen
     setTimeout(() => (addNewDisabled.current = false), 300);
-  };
+  }, []);
 
   const goHome = () => {
     dispatch(closeDrawer());
@@ -123,7 +129,10 @@ const LeftSection = ({
               </p>
               <ChevronSolid className="text-white mr-1" />
             </a>
-            {isDropdownOpen && <AddNewDropdown closeDropdown={closeDropdown} />}
+            <AddNewDropdown
+              closeDropdown={closeDropdown}
+              isDropdownOpen={isDropdownOpen}
+            />
           </div>
         </div>
 

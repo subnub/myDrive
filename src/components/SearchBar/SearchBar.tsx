@@ -91,6 +91,11 @@ const SearchBar = memo(() => {
     resetState();
   };
 
+  const calculatedHeight =
+    47 *
+      (searchSuggestions?.folderList.length +
+        searchSuggestions?.fileList.length) || 56;
+
   const onFocus = () => {
     dispatch(closeDrawer());
     setShowSuggestions(true);
@@ -121,25 +126,32 @@ const SearchBar = memo(() => {
           />
         )}
         {isLoadingSearchSuggestions && <div className="spinner-small"></div>}
-        {searchText.length === 0 && <SearchIcon className="w-5 h-5 ml-3" />}
+        {searchText.length === 0 && <SearchIcon className="w-4 h-4 ml-3" />}
       </div>
       <input
         type="text"
         onChange={onChangeSearch}
         value={searchText}
         placeholder={searchTextPlaceholder}
-        className="w-full h-10 border border-gray-300 pl-11 pr-4 text-base text-black rounded-md"
+        className="w-full h-8 border border-gray-300 pl-11 pr-4 text-base text-black rounded-md"
         onFocus={onFocus}
         id="search-bar"
         autoComplete="off"
       />
       <div
-        className="absolute left-0 top-10 bg-white shadow-xl rounded-md w-full max-h-[400px] overflow-y-scroll border border-gray-secondary"
-        style={
-          debouncedSearchText.length !== 0 && showSuggestions
-            ? { display: "block" }
-            : { display: "none" }
-        }
+        className={classNames(
+          "absolute left-0 top-8 bg-white shadow-xl rounded-md w-full max-h-[400px] overflow-y-scroll animate-movement",
+          {
+            "border border-gray-secondary":
+              showSuggestions && debouncedSearchText.length,
+          }
+        )}
+        style={{
+          height:
+            showSuggestions && debouncedSearchText.length
+              ? calculatedHeight
+              : 0,
+        }}
       >
         {searchSuggestions?.folderList.length === 0 &&
         searchSuggestions?.fileList.length === 0 ? (

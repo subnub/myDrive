@@ -9,22 +9,27 @@ import CreateFolderIcon from "../../icons/CreateFolderIcon";
 import FolderUploadIcon from "../../icons/FolderUploadIcon";
 import Swal from "sweetalert2";
 import { useFolders } from "../../hooks/folders";
+import classNames from "classnames";
 
 interface AddNewDropdownProps {
   closeDropdown: () => void;
+  isDropdownOpen: boolean;
 }
 
-const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
+const AddNewDropdown: React.FC<AddNewDropdownProps> = ({
+  closeDropdown,
+  isDropdownOpen,
+}) => {
   const params = useParams();
   const { refetch: refetchFolders } = useFolders(false);
   const [supportsWebkitDirectory, setSupportsWebkitDirectory] = useState(false);
-  const { wrapperRef } = useClickOutOfBounds(props.closeDropdown);
+  const { wrapperRef } = useClickOutOfBounds(closeDropdown, true);
   const uploadRef: RefObject<HTMLInputElement> = useRef(null);
   const uploadFolderRef: RefObject<HTMLInputElement> = useRef(null);
   const { uploadFiles, uploadFolder } = useUploader();
 
   const createFolder = async () => {
-    props.closeDropdown();
+    closeDropdown();
     const folderName = await showCreateFolderPopup();
 
     if (folderName === undefined || folderName === null) {
@@ -37,7 +42,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
 
   const handleUpload = (e: React.FormEvent<HTMLInputElement>) => {
     e.preventDefault();
-    props.closeDropdown();
+    closeDropdown();
 
     const files = uploadRef.current?.files;
     if (!files) return;
@@ -56,7 +61,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
 
   const handleFolderUpload = (e: React.FormEvent<HTMLInputElement>) => {
     e.preventDefault();
-    props.closeDropdown();
+    closeDropdown();
 
     const items = uploadFolderRef.current?.files;
 
@@ -101,6 +106,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
     <div
       ref={wrapperRef}
       className="absolute bottom-0 top-full w-full text-gray-500"
+      id="add-new-dropdown"
     >
       <input
         className="hidden"
@@ -117,7 +123,12 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
         webkitdirectory="true"
         onChange={handleFolderUpload}
       />
-      <ul className="rounded-sm overflow-hidden shadow-lg">
+      <ul
+        className={classNames("rounded-sm overflow-hidden shadow-lg animate", {
+          "h-0": !isDropdownOpen,
+          "h-[132px]": isDropdownOpen,
+        })}
+      >
         <li>
           <div>
             <a
