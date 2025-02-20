@@ -4,11 +4,6 @@ import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import bytes from "bytes";
 import {
-  makeOneTimePublicPopup,
-  makePublicPopup,
-  removeLinkPopup,
-} from "../../popups/file";
-import {
   makeOneTimePublicAPI,
   makePublicAPI,
   removeLinkAPI,
@@ -21,11 +16,17 @@ import {
 } from "../../reducers/selected";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import LockIcon from "../../icons/LockIcon";
+import OneIcon from "../../icons/OneIcon";
+import PublicIcon from "../../icons/PublicIcon";
 
 const SharePopup = memo(() => {
   const file = useAppSelector((state) => state.selected.shareModal.file)!;
   const [updating, setUpdating] = useState(false);
   const [shareLink, setShareLink] = useState("");
+  const [shareType, setShareType] = useState<"private" | "public" | "one">(
+    "private"
+  );
   const dispatch = useAppDispatch();
   const { refetch: refetchFiles } = useFiles(false);
   const { refetch: refetchQuickFiles } = useQuickFiles(false);
@@ -43,8 +44,6 @@ const SharePopup = memo(() => {
 
   const makePublic = async () => {
     try {
-      const result = await makePublicPopup();
-      if (!result) return;
       setUpdating(true);
       const { file: updatedFile } = await toast.promise(
         makePublicAPI(file._id),
@@ -74,8 +73,6 @@ const SharePopup = memo(() => {
 
   const makeOneTimePublic = async () => {
     try {
-      const result = await makeOneTimePublicPopup();
-      if (!result) return;
       setUpdating(true);
       const { file: updatedFile } = await toast.promise(
         makeOneTimePublicAPI(file._id),
@@ -105,8 +102,6 @@ const SharePopup = memo(() => {
 
   const removeLink = async () => {
     try {
-      const result = await removeLinkPopup();
-      if (!result) return;
       setUpdating(true);
       const updatedFile = await toast.promise(removeLinkAPI(file._id), {
         pending: "Removing Link...",
@@ -133,6 +128,7 @@ const SharePopup = memo(() => {
   };
 
   const copyLink = () => {
+    if (shareType === "private") return;
     navigator.clipboard.writeText(shareLink);
     toast.success("Link Copied");
   };
@@ -146,11 +142,47 @@ const SharePopup = memo(() => {
     closeShareModal();
   };
 
+  const permissionText = (() => {
+    if (shareType === "one") {
+      return `This file will be available for download one time, 
+      after it is downloaded once the file will then automatically be marked as private.`;
+    } else if (shareType === "public") {
+      return "Anyone with the link can view and download this file";
+    } else {
+      return "Only you can view and download this file";
+    }
+  })();
+
+  const linkPreviewText = (() => {
+    if (shareType === "private") {
+      return "Document is private";
+    } else {
+      return shareLink;
+    }
+  })();
+
   useEffect(() => {
     if (!file.metadata.link) return;
     const url = `${window.location.origin}/public-download/${file._id}/${file.metadata.link}`;
     setShareLink(url);
-  }, [file._id, file.metadata.link]);
+    setShareType(file.metadata.linkType ? file.metadata.linkType : "private");
+  }, [file._id, file.metadata.link, file.metadata.linkType]);
+
+  const handleSelectChange = async (value: string) => {
+    if (value === "private") {
+      await removeLink();
+    } else if (value === "one") {
+      await makeOneTimePublic();
+    } else if (value === "public") {
+      await makePublic();
+    }
+  };
+
+  const selectOnChange = (e: any) => {
+    const value = e.target.value;
+    setShareType(value);
+    handleSelectChange(value);
+  };
 
   return (
     <div
@@ -183,90 +215,40 @@ const SharePopup = memo(() => {
           </div>
         </div>
       </div>
-      <div className="w-[90%] sm:w-[400px] p-4 bg-white rounded-md">
-        <p className="text-lg mb-4 text-center">Share file</p>
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Type
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-            {fileExtension}
-          </span>
+      <div className="w-[90%] sm:w-[500px] p-6 bg-white rounded-md">
+        <p>Share file</p>
+        <div className="bg-light-primary p-6 rounded-md mt-4 flex items-center space-x-2">
+          <input
+            className="rounded-md w-full text-xs h-10 p-2"
+            value={linkPreviewText}
+          />
+          <button
+            className="bg-primary text-white hover:bg-primary-hover text-xs w-20 p-1 py-3 rounded-md"
+            onClick={copyLink}
+          >
+            Copy link
+          </button>
         </div>
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Size
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-            {fileSize}
-          </span>
+        <p className="mt-6">Permission</p>
+        <div className="flex mt-6 items-center">
+          {shareType === "private" && <LockIcon className="w-5 h-5 mr-2" />}
+          {shareType === "one" && <OneIcon className="w-5 h-5 mr-2" />}
+          {shareType === "public" && <PublicIcon className="w-5 h-5 mr-2" />}
+          <select
+            className="text-sm"
+            value={shareType}
+            onChange={selectOnChange}
+            disabled={updating}
+          >
+            <option value="private">Private</option>
+            <option value="public">Public</option>
+            <option value="one">Temporary</option>
+          </select>
+          {updating && (
+            <div className="border-t border-primary rounded-full animate-spin h-4 w-4 ml-2"></div>
+          )}
         </div>
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Created
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-            {formattedDate}
-          </span>
-        </div>
-        <div className="mt-2 flex justify-between">
-          <span className="text-[#637381] text-[13px] font-normal leading-[20px] min-w-[50px]">
-            Access
-          </span>
-          <span className="text-[#212b36] text-[13px] font-normal leading-[20px]">
-            {file.metadata.link ? "Public" : "Private"}
-          </span>
-        </div>
-
-        {shareLink && (
-          <div className="relative">
-            <input
-              placeholder="Share link"
-              className="w-full h-[48px] pl-[12px] pr-[53px] text-black border border-[#637381] rounded-[5px] outline-none text-[15px] mt-4"
-              value={shareLink}
-              readOnly={true}
-            />
-            <div className="absolute right-0 top-0 bottom-0 flex items-center justify-center">
-              <a
-                className="text-[#3c85ee] text-[15px] font-medium no-underline mr-2 mt-4 cursor-pointer"
-                onClick={copyLink}
-              >
-                Copy
-              </a>
-            </div>
-          </div>
-        )}
-
-        {!shareLink && (
-          <div className="flex justify-between mt-4">
-            <button
-              className="py-2 px-4 inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate cursor-pointer hover:bg-[#f6f5fd] disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={makePublic}
-              disabled={updating}
-            >
-              Share Indefinitely
-            </button>
-            <button
-              className="py-2 px-4 inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate cursor-pointer hover:bg-[#f6f5fd] disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={makeOneTimePublic}
-              disabled={updating}
-            >
-              Single-Use Link
-            </button>
-          </div>
-        )}
-
-        {shareLink && (
-          <div className="flex justify-center mt-4">
-            <button
-              className="py-2 px-4 inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate cursor-pointer hover:bg-[#f6f5fd] disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={removeLink}
-              disabled={updating}
-            >
-              Make Private
-            </button>
-          </div>
-        )}
+        <p className="text-xs mt-1.5 text-gray-500">{permissionText}</p>
       </div>
     </div>
   );

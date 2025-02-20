@@ -231,7 +231,7 @@ const MoverPopup = () => {
               {folderList?.map((folder: FolderInterface) => (
                 <div
                   className={classNames(
-                    "p-2 border-b border-[#ebe9f9] rounded-md mt-1 flex flex-row items-center",
+                    "p-2 border-b border-[#ebe9f9] rounded-md flex flex-row items-center",
                     {
                       "bg-primary text-white hover:bg-primary-hover":
                         selectedFolder?._id === folder._id,
@@ -261,7 +261,7 @@ const MoverPopup = () => {
             </div>
           )}
         </div>
-        <div className="mt-4">
+        <div className="mt-4 border border-gray-secondary rounded-md p-4">
           <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap select-none">
             {moveText}
           </p>

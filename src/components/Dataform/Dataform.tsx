@@ -15,10 +15,11 @@ import Spinner from "../Spinner/Spinner";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { useLocation, useParams } from "react-router-dom";
 import classNames from "classnames";
-import { useDragAndDrop } from "../../hooks/utils";
+import { useDragAndDrop, useUtils } from "../../hooks/utils";
 import MultiSelectBar from "../MultiSelectBar/MultiSelectBar";
 import { useFolder, useFolders } from "../../hooks/folders";
 import { removeNavigationMap } from "../../reducers/selected";
+import AlertIcon from "../../icons/AlertIcon";
 
 const DataForm = memo(
   ({ scrollDivRef }: { scrollDivRef: React.RefObject<HTMLDivElement> }) => {
@@ -42,6 +43,7 @@ const DataForm = memo(
     const navigationMap = useAppSelector((state) => {
       return state.selected.navigationMap[location.pathname];
     });
+    const { isTrash } = useUtils();
 
     const isLoading =
       isLoadingFiles ||
@@ -113,6 +115,19 @@ const DataForm = memo(
             </div>
 
             <QuickAccess />
+
+            {isTrash && (
+              <div
+                className="bg-primary p-4 rounded-md text-sm 
+              text-white mt-4 flex items-center select-none"
+              >
+                <AlertIcon className="w-6 h-6 min-h-6 min-w-6 mr-2" />
+                <span>
+                  Items in the trash may be automatically deleted depending on
+                  the servers settings
+                </span>
+              </div>
+            )}
 
             <Folders scrollDivRef={scrollDivRef} />
 

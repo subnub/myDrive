@@ -50,6 +50,7 @@ const SearchBar = memo(() => {
 
   const onSearch = (e: any) => {
     e.preventDefault();
+    setShowSuggestions(false);
     if (isMedia) {
       if (searchText.length) {
         navigate(`/search-media/${searchText}`);

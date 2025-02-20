@@ -14,6 +14,7 @@ module.exports = {
         "gray-primary": "#637381",
         "gray-secondary": "#e8eef2",
         "gray-third": "#ebe9f9",
+        "light-primary": "rgba(60, 133, 238, 0.4)",
       },
     },
     screens: {
