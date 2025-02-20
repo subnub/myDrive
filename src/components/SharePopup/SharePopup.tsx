@@ -15,7 +15,6 @@ import {
   setShareModal,
 } from "../../reducers/selected";
 import { toast } from "react-toastify";
-import dayjs from "dayjs";
 import LockIcon from "../../icons/LockIcon";
 import OneIcon from "../../icons/OneIcon";
 import PublicIcon from "../../icons/PublicIcon";
@@ -34,13 +33,6 @@ const SharePopup = memo(() => {
   const imageColor = getFileColor(file.filename);
 
   const fileExtension = getFileExtension(file.filename, 3);
-
-  const formattedDate = useMemo(
-    () => dayjs(file.uploadDate).format("MM/DD/YYYY"),
-    [file.uploadDate]
-  );
-
-  const fileSize = bytes(file.length);
 
   const makePublic = async () => {
     try {

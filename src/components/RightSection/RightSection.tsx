@@ -1,23 +1,16 @@
 import bytes from "bytes";
 import { memo, useMemo } from "react";
-import ContextMenu from "../ContextMenu/ContextMenu";
 import classNames from "classnames";
 import { useDispatch } from "react-redux";
 import { getFileColor, getFileExtension } from "../../utils/files";
-import { useContextMenu } from "../../hooks/contextMenu";
-import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../hooks/store";
-import { resetSelected, setPopupSelect } from "../../reducers/selected";
-import { useUtils } from "../../hooks/utils";
+import { resetSelected } from "../../reducers/selected";
 import CloseIcon from "../../icons/CloseIcon";
 import FileDetailsIcon from "../../icons/FileDetailsIcon";
-import ActionsIcon from "../../icons/ActionsIcon";
 import dayjs from "dayjs";
 
 const RightSection = memo(() => {
   const selectedItem = useAppSelector((state) => state.selected.mainSection);
-  const { isTrash } = useUtils();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const formattedName = useMemo(() => {
@@ -55,28 +48,8 @@ const RightSection = memo(() => {
     return getFileExtension(selectedItem.file.filename);
   })();
 
-  const {
-    onContextMenu,
-    closeContextMenu,
-    onTouchStart,
-    onTouchMove,
-    onTouchEnd,
-    clickStopPropagation,
-    ...contextMenuState
-  } = useContextMenu();
-
   const reset = () => {
     dispatch(resetSelected());
-  };
-
-  const openItem = () => {
-    if (selectedItem.file) {
-      dispatch(setPopupSelect({ type: "file", file: selectedItem.file }));
-    } else if (!isTrash) {
-      navigate(`/folder/${selectedItem.id}`);
-    } else {
-      navigate(`/folder-trash/${selectedItem.id}`);
-    }
   };
 
   const bannerBackgroundColor = (() => {
@@ -180,35 +153,7 @@ const RightSection = memo(() => {
                 </span>
               </div>
             </div>
-            <div className="mt-[15px] flex items-center">
-              <a
-                className="w-[80px] h-[40px] inline-flex items-center justify-center border border-[#3c85ee] rounded-[4px] text-[#3c85ee] text-[15px] font-medium no-underline animate cursor-pointer hover:bg-[#f6f5fd]"
-                onClick={openItem}
-              >
-                Open
-              </a>
-              <div className="ml-[15px] px-[20px]">
-                <a
-                  className="w-[40px] h-[40px] rounded-[4px] inline-flex items-center justify-center border border-[#919eab] text-[#919eab] no-underline animate cursor-pointer"
-                  // @ts-ignore
-                  onClick={onContextMenu}
-                >
-                  <ActionsIcon className="w-[20px] h-[20px]" />
-                </a>
-              </div>
-            </div>
           </div>
-          {contextMenuState.selected && (
-            <div onClick={clickStopPropagation}>
-              <ContextMenu
-                contextSelected={contextMenuState}
-                closeContext={closeContextMenu}
-                folderMode={!selectedItem.file}
-                file={selectedItem.file}
-                folder={selectedItem.folder}
-              />
-            </div>
-          )}
         </div>
       )}
     </div>
