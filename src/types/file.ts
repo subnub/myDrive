@@ -18,6 +18,7 @@ export interface FileInterface {
     filePath?: string;
     s3ID?: string;
     personalFile?: boolean;
+    trashed?: boolean;
   };
 }
 interface example {

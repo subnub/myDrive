@@ -15,6 +15,7 @@ import {
 import PlayButtonIcon from "../../icons/PlayIcon";
 import dayjs from "dayjs";
 import getBackendURL from "../../utils/getBackendURL";
+import ClockIcon from "../../icons/ClockIcon";
 
 interface QuickAccessItemProps {
   file: FileInterface;
@@ -98,7 +99,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
   return (
     <div
       className={classNames(
-        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[130px] sm:h-[150px] animiate hover:border-[#3c85ee] overflow-hidden bg-white",
+        "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[150px] animiate hover:border-[#3c85ee] overflow-hidden bg-white",
         elementSelected || elementMultiSelected
           ? "border-[#3c85ee]"
           : "border-gray-third"
@@ -180,7 +181,7 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
       >
         <p
           className={classNames(
-            "text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate mb-1 sm:mb-0",
+            "text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate mb-0",
             elementSelected || elementMultiSelected
               ? "text-white"
               : "text-[#212b36]"
@@ -188,16 +189,19 @@ const QuickAccessItem = memo((props: QuickAccessItemProps) => {
         >
           {formattedFilename}
         </p>
-        <span
-          className={classNames(
-            "text-[#637381] font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
-            elementSelected || elementMultiSelected
-              ? "text-white"
-              : "text-[#637381]"
-          )}
-        >
-          Created {formattedDate}
-        </span>
+        <div className="flex flex-row items-center mt-2">
+          <ClockIcon className="h-4 w-4 mr-1" />
+          <p
+            className={classNames(
+              "m-0 font-normal max-w-full whitespace-nowrap text-xs animate",
+              elementSelected || elementMultiSelected
+                ? "text-white"
+                : "text-gray-primary]"
+            )}
+          >
+            {formattedDate}
+          </p>
+        </div>
       </div>
     </div>
   );

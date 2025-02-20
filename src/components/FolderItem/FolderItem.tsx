@@ -12,6 +12,7 @@ import {
 import { useUtils } from "../../hooks/utils";
 import { FolderInterface } from "../../types/folders";
 import dayjs from "dayjs";
+import ClockIcon from "../../icons/ClockIcon";
 
 interface FolderItemProps {
   folder: FolderInterface;
@@ -163,16 +164,19 @@ const FolderItem: React.FC<FolderItemProps> = memo((props) => {
         >
           {folder.name}
         </p>
-        <span
-          className={classNames(
-            "m-0 font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
-            elementSelected || elementMultiSelected
-              ? "text-white"
-              : "text-gray-primary"
-          )}
-        >
-          Created {dayjs(folder.createdAt).format("MM/DD/YY hh:mma")}
-        </span>
+        <div className="flex flex-row items-center mt-1">
+          <ClockIcon className="h-4 w-4 mr-1" />
+          <p
+            className={classNames(
+              "m-0 font-normal max-w-full whitespace-nowrap text-xs animate",
+              elementSelected || elementMultiSelected
+                ? "text-white"
+                : "text-gray-primary"
+            )}
+          >
+            {dayjs(folder.createdAt).format("MM/DD/YY hh:mma")}
+          </p>
+        </div>
       </div>
     </div>
   );

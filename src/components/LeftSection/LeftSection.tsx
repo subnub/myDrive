@@ -111,7 +111,7 @@ const LeftSection = ({
         }
       )}
     >
-      <div className="flex flex-col h-full select-none">
+      <div className="flex flex-col h-full select-none text-sm">
         <div>
           <div className="relative mb-7">
             <a
@@ -148,7 +148,7 @@ const LeftSection = ({
           onClick={goMedia}
         >
           <PhotoIcon className="w-6 h-6" />
-          <p className="ml-3">Media</p>
+          <p className="ml-2.5">Media</p>
         </div>
 
         <div
@@ -159,7 +159,7 @@ const LeftSection = ({
           onClick={goSettings}
         >
           <SettingsIcon className="w-6 h-6" />
-          <p className="ml-3">Settings</p>
+          <p className="ml-2.5">Settings</p>
         </div>
 
         <div
@@ -170,7 +170,7 @@ const LeftSection = ({
           onClick={goTrash}
         >
           <TrashIcon className="w-6 h-6" />
-          <p className="ml-3">Trash</p>
+          <p className="ml-2.5">Trash</p>
         </div>
       </div>
     </div>

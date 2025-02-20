@@ -98,7 +98,10 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
   }, []);
 
   return (
-    <div ref={wrapperRef} className="absolute bottom-0 top-full w-full">
+    <div
+      ref={wrapperRef}
+      className="absolute bottom-0 top-full w-full text-gray-500"
+    >
       <input
         className="hidden"
         ref={uploadRef}
@@ -121,7 +124,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
               className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
               onClick={triggerFileUpload}
             >
-              <UploadFileIcon className="w-5 h-5 mr-2.5 text-primary" />
+              <UploadFileIcon className="w-4 h-4 mr-2.5 text-primary" />
               <p className="text-sm">Upload Files</p>
             </a>
           </div>
@@ -131,7 +134,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
             className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
             onClick={createFolder}
           >
-            <CreateFolderIcon className="w-5 h-5 mr-2.5 text-primary" />
+            <CreateFolderIcon className="w-4 h-4 mr-2.5 text-primary" />
             <p className="text-sm">Create Folder</p>
           </a>
         </li>
@@ -141,7 +144,7 @@ const AddNewDropdown: React.FC<AddNewDropdownProps> = (props) => {
               className="flex items-center justify-start px-5 py-3 no-underline overflow-hidden text-sm bg-white hover:bg-white-hover"
               onClick={triggerFolderUpload}
             >
-              <FolderUploadIcon className="w-5 h-5 mr-2.5 text-primary" />
+              <FolderUploadIcon className="w-4 h-4 mr-2.5 text-primary" />
               <p className="text-sm">Upload Folder</p>
             </a>
           </li>

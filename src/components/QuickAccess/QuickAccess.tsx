@@ -35,8 +35,8 @@ const QuickAccess = memo(() => {
             ? "justify-normal"
             : "justify-center xs:justify-normal",
           {
-            "max-h-36 sm:max-h-40": !quickAccessExpanded,
-            "max-h-[720px] sm:max-h-[665px] quickAccessOne:max-h-[1000px] quickAccessTwo:max-h-[660px] quickAccessThree:max-h-[490px]":
+            "max-h-40": !quickAccessExpanded,
+            "max-h-[655px] quickAccessOne:max-h-[990px] quickAccessTwo:max-h-[660px] quickAccessThree:max-h-[490px]":
               quickAccessExpanded,
           }
         )}

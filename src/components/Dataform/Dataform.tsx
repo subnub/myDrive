@@ -118,8 +118,8 @@ const DataForm = memo(
 
             {isTrash && (
               <div
-                className="bg-primary p-4 rounded-md text-sm 
-              text-white mt-4 flex items-center select-none"
+                className="bg-light-primary p-4 rounded-md text-sm 
+              text-black mt-4 flex items-center select-none"
               >
                 <AlertIcon className="w-6 h-6 min-h-6 min-w-6 mr-2" />
                 <span>

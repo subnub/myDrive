@@ -13,6 +13,8 @@ import ActionsIcon from "../../icons/ActionsIcon";
 import { FileInterface } from "../../types/file";
 import getBackendURL from "../../utils/getBackendURL";
 import dayjs from "dayjs";
+import CalendarIcon from "../../icons/CalendarIcon";
+import ClockIcon from "../../icons/ClockIcon";
 
 interface FileItemProps {
   file: FileInterface;
@@ -168,7 +170,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
     return (
       <div
         className={classNames(
-          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[130px] sm:h-[150px] animiate hover:border-primary overflow-hidden bg-white ",
+          "border rounded-md o transition-all duration-400 ease-in-out cursor-pointer flex items-center justify-center flex-col h-[150px] animiate hover:border-primary overflow-hidden bg-white ",
           elementSelected || elementMultiSelected
             ? "border-primary"
             : "border-gray-third"
@@ -250,7 +252,7 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
         >
           <p
             className={classNames(
-              "text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate mb-1 sm:mb-0",
+              "text-[14px] leading-[16px] font-normal max-w-full overflow-hidden text-ellipsis whitespace-nowrap animate mb-0",
               elementSelected || elementMultiSelected
                 ? "text-white"
                 : "text-[#212b36]"
@@ -258,16 +260,19 @@ const FileItem: React.FC<FileItemProps> = memo((props) => {
           >
             {formattedFilename}
           </p>
-          <span
-            className={classNames(
-              "m-0 font-normal max-w-full whitespace-nowrap text-xs animate hidden sm:block mt-1",
-              elementSelected || elementMultiSelected
-                ? "text-white"
-                : "text-gray-primary]"
-            )}
-          >
-            Created {formattedCreatedDate}
-          </span>
+          <div className="flex flex-row items-center mt-2">
+            <ClockIcon className="h-4 w-4 mr-1" />
+            <p
+              className={classNames(
+                "m-0 font-normal max-w-full whitespace-nowrap text-xs animate block",
+                elementSelected || elementMultiSelected
+                  ? "text-white"
+                  : "text-gray-primary]"
+              )}
+            >
+              {formattedCreatedDate}
+            </p>
+          </div>
         </div>
       </div>
     );

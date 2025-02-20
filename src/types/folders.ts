@@ -7,4 +7,5 @@ export interface FolderInterface {
   updatedAt: Date;
   parentList: string[];
   personalFolder?: boolean;
+  trashed?: boolean;
 }
