@@ -11,13 +11,7 @@ export default defineConfig(({ mode }) => {
   console.log(`\nBackend Development Proxy URL: ${proxyURL}/api\n`);
 
   return {
-    plugins: [
-      react(),
-      visualizer(),
-      VitePWA({
-        registerType: "autoUpdate",
-      }),
-    ],
+    plugins: [react(), visualizer()],
     build: {
       outDir: "dist-frontend",
     },
