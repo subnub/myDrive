@@ -10,7 +10,6 @@ export const moveFolderListValidationRules = [
   query("folderIDs")
     .optional()
     .isArray()
-    .isLength({ min: 1 })
     .withMessage("FolderIDs must be an array of strings"),
   middlewareValidationFunction,
 ];

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { downloadFileAPI } from "../../api/filesAPI";
 import CloseIcon from "../../icons/CloseIcon";
@@ -29,6 +29,7 @@ const FileInfoPopup = () => {
     clickStopPropagation,
     ...contextMenuState
   } = useContextMenu();
+  const [animate, setAnimate] = useState(false);
 
   const fileExtension = getFileExtension(file.filename, 3);
 
@@ -42,7 +43,8 @@ const FileInfoPopup = () => {
   const fileSize = bytes(file.metadata.size);
 
   const closePhotoViewer = () => {
-    dispatch(resetPopupSelect());
+    setAnimate(false);
+    setTimeout(() => dispatch(resetPopupSelect()), 200);
   };
 
   const downloadItem = () => {
@@ -56,7 +58,8 @@ const FileInfoPopup = () => {
     ) {
       return;
     }
-    dispatch(resetPopupSelect());
+    setAnimate(false);
+    setTimeout(() => dispatch(resetPopupSelect()), 200);
   };
 
   const permissionText = (() => {
@@ -73,6 +76,10 @@ const FileInfoPopup = () => {
     navigator.clipboard.writeText(file.filename);
     toast.success("Filename Copied");
   };
+
+  useEffect(() => {
+    setAnimate(true);
+  }, []);
 
   useEffect(() => {
     const handleBack = () => {
@@ -136,7 +143,10 @@ const FileInfoPopup = () => {
           </div>
         </div>
       </div>
-      <div className="w-[90%] sm:w-[500px] p-6 bg-white rounded-md">
+      <div
+        className="w-[90%] sm:w-[500px] p-6 bg-white rounded-md animate-easy"
+        style={{ marginTop: !animate ? "calc(100vh + 350px" : 0 }}
+      >
         <div className="bg-light-primary p-6 rounded-md flex items-center space-x-2">
           <input
             className="rounded-md w-full text-xs h-10 p-2"

@@ -29,6 +29,7 @@ const SharePopup = memo(() => {
   const dispatch = useAppDispatch();
   const { refetch: refetchFiles } = useFiles(false);
   const { refetch: refetchQuickFiles } = useQuickFiles(false);
+  const [animate, setAnimate] = useState(false);
 
   const imageColor = getFileColor(file.filename);
 
@@ -126,7 +127,8 @@ const SharePopup = memo(() => {
   };
 
   const closeShareModal = () => {
-    dispatch(resetShareModal());
+    setAnimate(false);
+    setTimeout(() => dispatch(resetShareModal()), 200);
   };
 
   const outterWrapperClick = (e: any) => {
@@ -159,6 +161,10 @@ const SharePopup = memo(() => {
     setShareLink(url);
     setShareType(file.metadata.linkType ? file.metadata.linkType : "private");
   }, [file._id, file.metadata.link, file.metadata.linkType]);
+
+  useEffect(() => {
+    setAnimate(true);
+  }, []);
 
   const handleSelectChange = async (value: string) => {
     if (value === "private") {
@@ -207,7 +213,10 @@ const SharePopup = memo(() => {
           </div>
         </div>
       </div>
-      <div className="w-[90%] sm:w-[500px] p-6 bg-white rounded-md">
+      <div
+        className="w-[90%] sm:w-[500px] p-6 bg-white rounded-md animate-easy"
+        style={{ marginTop: !animate ? "calc(100vh + 340px" : 0 }}
+      >
         <p>Share file</p>
         <div className="bg-light-primary p-6 rounded-md mt-4 flex items-center space-x-2">
           <input

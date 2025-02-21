@@ -11,6 +11,7 @@ import { FileInterface } from "../../types/file";
 import { useNavigate } from "react-router-dom";
 import { useActions } from "../../hooks/actions";
 import { FolderInterface } from "../../types/folders";
+import classNames from "classnames";
 
 export interface ContextMenuProps {
   closeContext: () => void;
@@ -33,6 +34,7 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     Y: 0,
     set: false,
   });
+  const [animate, setAnimate] = useState(false);
   const {
     closeContext,
     contextSelected,
@@ -134,6 +136,10 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
     }
   };
 
+  useEffect(() => {
+    setAnimate(true);
+  }, []);
+
   const outterWrapperClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     if ((e.target as HTMLDivElement).id !== "context-wrapper") {
@@ -151,15 +157,20 @@ const ContextMenu: React.FC<ContextMenuProps> = memo((props) => {
       <div
         onClick={stopPropagation}
         ref={wrapperRef}
-        className="fixed min-w-[215px] bg-white shadow-lg rounded-md z-50"
+        className={classNames(
+          "fixed min-w-[215px] bg-white shadow-lg rounded-md z-50 animate-movement",
+          {
+            "opacity-0": !animate,
+            "opacity-100": animate,
+          }
+        )}
         style={
           fixedCoords.set
             ? {
-                display: "block",
                 left: `${fixedCoords.X}px`,
                 top: `${fixedCoords.Y}px`,
               }
-            : { opacity: 0 }
+            : {}
         }
       >
         <div>

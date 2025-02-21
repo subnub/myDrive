@@ -23,6 +23,7 @@ const MoverPopup = () => {
   const [selectedFolder, setSelectedFolder] = useState<FolderInterface | null>(
     null
   );
+  const [animate, setAnimate] = useState(false);
   const multiSelectMode = useAppSelector(
     (state) => state.selected.multiSelectMode
   );
@@ -119,6 +120,10 @@ const MoverPopup = () => {
     }
   })();
 
+  useEffect(() => {
+    setAnimate(true);
+  }, []);
+
   const onHomeClick = () => {
     setSearch("");
     setDebouncedSearch("");
@@ -175,7 +180,8 @@ const MoverPopup = () => {
   const closeMoverModal = (e: React.MouseEvent<HTMLElement>) => {
     const target = e.target as HTMLElement;
     if (target.id !== "outer-wrapper") return;
-    dispatch(resetMoveModal());
+    setAnimate(false);
+    setTimeout(() => dispatch(resetMoveModal()), 200);
   };
 
   return (
@@ -192,7 +198,10 @@ const MoverPopup = () => {
           />
         </div>
       </div>
-      <div className="bg-white w-full max-w-[500px] p-4 rounded-md">
+      <div
+        className="bg-white w-full max-w-[500px] p-4 rounded-md animate-easy"
+        style={{ marginTop: !animate ? "calc(100vh + 480px" : 0 }}
+      >
         <div
           className={classNames("flex flex-row items-center", {
             "justify-between": multiSelectMode,
