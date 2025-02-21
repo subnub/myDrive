@@ -19,7 +19,13 @@ export default defineConfig(({ mode }) => {
       VitePWA({
         registerType: "autoUpdate",
         workbox: {
-          navigateFallbackDenylist: [/^\/file-service\/download\//],
+          navigateFallbackDenylist: [
+            /^\/file-service\/download\//, // Matches any path starting with /file-service/download/
+            /^\/file-service\/public\/download\/[^\/]+\/[^\/]+/, // Matches /file-service/public/download/:id/:tempToken
+            /^\/folder-service\/download-zip/, // Matches /folder-service/download-zip
+            /^\/file-service\/stream-video\/[^\/]+/, // Matches /file-service/stream-video/:id
+            /^\/file-service\/download\/[^\/]+/, // Matches /file-service/download/:id
+          ],
         },
       }),
     ],
