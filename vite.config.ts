@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
               options: {
                 cacheName: "dynamic-thumbnails",
                 expiration: {
-                  maxEntries: 100,
+                  maxEntries: 1000,
                   maxAgeSeconds: 60 * 60 * 24 * 7, // Cache for 1 week
                 },
                 cacheableResponse: {
