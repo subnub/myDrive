@@ -2,6 +2,7 @@ import { QueryFunctionContext } from "react-query";
 import axios from "../axiosInterceptor";
 import { getUserToken } from "./userAPI";
 import getBackendURL from "../utils/getBackendURL";
+import { isPwa } from "../utils/PWAUtils";
 
 interface QueryKeyParams {
   parent: string;
@@ -71,12 +72,17 @@ export const downloadFileAPI = async (fileID: string) => {
 
   const url = `${getBackendURL()}/file-service/download/${fileID}`;
 
-  const link = document.createElement("a");
-  document.body.appendChild(link);
-  link.href = url;
-  link.setAttribute("type", "hidden");
-  link.setAttribute("download", "true");
-  link.click();
+  if (!isPwa()) {
+    const link = document.createElement("a");
+    document.body.appendChild(link);
+    link.href = url;
+    link.setAttribute("type", "hidden");
+    link.setAttribute("download", "true");
+    link.click();
+  } else {
+    alert("PWA");
+    window.open(url);
+  }
 };
 
 export const getVideoTokenAPI = async () => {
