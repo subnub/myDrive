@@ -72,17 +72,19 @@ export const downloadFileAPI = async (fileID: string) => {
 
   const url = `${getBackendURL()}/file-service/download/${fileID}`;
 
-  if (!isPwa()) {
-    const link = document.createElement("a");
-    document.body.appendChild(link);
-    link.href = url;
-    link.setAttribute("type", "hidden");
-    link.setAttribute("download", "true");
-    link.click();
-  } else {
-    alert("PWA");
-    window.open(url);
-  }
+  window.open(url);
+
+  // if (!isPwa()) {
+  //   const link = document.createElement("a");
+  //   document.body.appendChild(link);
+  //   link.href = url;
+  //   link.setAttribute("type", "hidden");
+  //   link.setAttribute("download", "true");
+  //   link.click();
+  // } else {
+  //   alert("PWA");
+  //   window.open(url);
+  // }
 };
 
 export const getVideoTokenAPI = async () => {
