@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, "./src/config/");
@@ -15,12 +16,12 @@ export default defineConfig(({ mode }) => {
       visualizer(),
       // Perhaps will be used in the future, currently lots of issues
       // With downloading files on safari iOS PWA (who would have guessed)
-      // VitePWA({
-      //   registerType: "autoUpdate",
-      //   workbox: {
-      //     navigateFallbackDenylist: [/^\/file-service\/download\//],
-      //   },
-      // }),
+      VitePWA({
+        registerType: "autoUpdate",
+        workbox: {
+          navigateFallbackDenylist: [/^\/file-service\/download\//],
+        },
+      }),
     ],
     build: {
       outDir: "dist-frontend",
