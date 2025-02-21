@@ -177,24 +177,28 @@ const MoverPopup = () => {
     setSelectedFolder(parentList[parentList.length - 1]);
   };
 
-  const closeMoverModal = (e: React.MouseEvent<HTMLElement>) => {
-    const target = e.target as HTMLElement;
-    if (target.id !== "outer-wrapper") return;
+  const closeModal = () => {
     setAnimate(false);
     setTimeout(() => dispatch(resetMoveModal()), 200);
+  };
+
+  const wrapperClick = (e: React.MouseEvent<HTMLElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.id !== "outer-wrapper") return;
+    closeModal();
   };
 
   return (
     <div
       className="w-screen dynamic-height bg-black bg-opacity-80 absolute top-0 left-0 right-0 bottom-0 z-50 flex justify-center items-center flex-col"
       id="outer-wrapper"
-      onClick={closeMoverModal}
+      onClick={wrapperClick}
     >
-      <div className="absolute top-[20px] flex justify-between w-full">
+      <div className="absolute top-[20px] flex justify-end w-full">
         <div>
           <CloseIcon
-            className="w-6 h-6 cursor-pointer"
-            onClick={() => dispatch(resetMoveModal())}
+            className="w-6 h-6 cursor-pointer text-white mr-4"
+            onClick={closeModal}
           />
         </div>
       </div>

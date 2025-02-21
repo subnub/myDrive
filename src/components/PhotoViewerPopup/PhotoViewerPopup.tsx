@@ -336,13 +336,13 @@ const PhotoViewerPopup: React.FC<PhotoViewerPopupProps> = memo((props) => {
       </div>
       <CircleLeftIcon
         onClick={goToPreviousItem}
-        className="fixed left-2 pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
+        className="bottom-2 sm:bottom-1/2 fixed left-2 pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
       />
       <CircleRightIcon
         onClick={goToNextItem}
-        className="fixed right-2 pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
+        className="bottom-2 sm:bottom-1/2 fixed right-2 pointer text-white w-[45px] h-[45px] desktopMode:w-[30px] desktopMode:h-[30px] select-none cursor-pointer hover:text-white-hover"
       />
-      <div className="max-w-[80vw] max-h-[80vh] flex justify-center items-center z-10">
+      <div className="max-w-[95vw] sm:max-w-[80vw] max-h-[85vh] sm:max-h-[80vh] flex justify-center items-center z-10">
         {isThumbnailLoading && !thumbnailError && <Spinner />}
         {!file.metadata.isVideo && (
           <img

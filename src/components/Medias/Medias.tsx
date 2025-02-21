@@ -95,11 +95,8 @@ const Medias = memo(
     })();
 
     return (
-      <div
-        className="w-full p-[17px_15px] desktopMode:p-[17px_40px] overflow-y-scroll select-none"
-        ref={scrollDivRef}
-      >
-        <div className="flex flex-row mb-5 justify-between items-center mt-2">
+      <div className="w-full overflow-y-scroll select-none" ref={scrollDivRef}>
+        <div className="flex flex-row justify-between items-center mt-2 p-[17px_15px] desktopMode:p-[17px_40px] mb-2">
           <h2 className={classNames("m-0 text-xl font-medium")}>{title}</h2>
           <div className="flex flex-row items-center">
             <a className="mr-2" onClick={switchOrderSortBy}>
@@ -139,7 +136,7 @@ const Medias = memo(
         {!isLoadingFiles && (
           <div
             className={classNames(
-              "grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-[2px]"
+              "grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-[2px] p-0 desktopMode:px-[40px]"
             )}
           >
             <div className="fixed bottom-0 flex justify-center items-center right-0 left-0 z-10">
