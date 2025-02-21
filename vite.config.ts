@@ -14,17 +14,33 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       visualizer(),
-      // Perhaps will be used in the future, currently lots of issues
-      // With downloading files on safari iOS PWA (who would have guessed)
       VitePWA({
         registerType: "autoUpdate",
         workbox: {
+          globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
           navigateFallbackDenylist: [
             /^\/file-service\/download\//, // Matches any path starting with /file-service/download/
             /^\/file-service\/public\/download\/[^\/]+\/[^\/]+/, // Matches /file-service/public/download/:id/:tempToken
             /^\/folder-service\/download-zip/, // Matches /folder-service/download-zip
             /^\/file-service\/stream-video\/[^\/]+/, // Matches /file-service/stream-video/:id
             /^\/file-service\/download\/[^\/]+/, // Matches /file-service/download/:id
+          ],
+          runtimeCaching: [
+            {
+              // Matches any URL that follows the pattern /file-service/thumbnail/{id}
+              urlPattern: /\/file-service\/thumbnail\/[a-zA-Z0-9_-]+$/,
+              handler: "CacheFirst",
+              options: {
+                cacheName: "dynamic-thumbnails",
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 7, // Cache for 1 week
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
           ],
         },
       }),
