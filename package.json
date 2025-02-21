@@ -130,6 +130,7 @@
     "superagent-binary-parser": "^1.0.1",
     "supertest": "^6.3.4",
     "tailwindcss": "^3.4.4",
-    "typescript-eslint": "^7.14.1"
+    "typescript-eslint": "^7.14.1",
+    "vite-plugin-pwa": "^0.21.1"
   }
 }

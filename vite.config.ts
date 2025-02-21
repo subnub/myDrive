@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, "./src/config/");
@@ -10,7 +11,13 @@ export default defineConfig(({ mode }) => {
   console.log(`\nBackend Development Proxy URL: ${proxyURL}/api\n`);
 
   return {
-    plugins: [react(), visualizer()],
+    plugins: [
+      react(),
+      visualizer(),
+      VitePWA({
+        registerType: "autoUpdate",
+      }),
+    ],
     build: {
       outDir: "dist-frontend",
     },
