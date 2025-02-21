@@ -72,7 +72,7 @@ export const downloadFileAPI = async (fileID: string) => {
 
   const url = `${getBackendURL()}/file-service/download/${fileID}`;
 
-  window.location.href = url;
+  window.location.href = "https://www.google.com/";
 
   // if (!isPwa()) {
   //   const link = document.createElement("a");
