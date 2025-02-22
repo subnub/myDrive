@@ -83,6 +83,39 @@ describe("File Controller", () => {
 
       expect(fileResponse.status).toBe(401);
     });
+    test("Should return 401/404 if not owner of file", async () => {
+      const user2 = await request(app)
+        .post("/user-service/create")
+        .send({
+          email: "tes@test.com",
+          password: "test1234",
+        })
+        .set("uuid", 12314123123);
+
+      expect(user2.status).toBe(201);
+
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
+        filename: "test2.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user2.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/info/${file2._id}`)
+        .set("Cookie", authToken);
+
+      expect([401, 404]).toContain(fileResponse.status);
+    });
   });
 
   describe("File rename: PATCH /file-service/rename", () => {
