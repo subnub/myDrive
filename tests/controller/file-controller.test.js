@@ -11,8 +11,11 @@ const { ObjectId } = require("mongodb");
 
 let mongoServer;
 let authToken;
+let authToken2;
 let file;
+let file2;
 let user;
+let user2;
 
 describe("File Controller", () => {
   beforeAll(async () => {
@@ -28,7 +31,19 @@ describe("File Controller", () => {
       })
       .set("uuid", 12314123123);
 
+    user2 = await request(app)
+      .post("/user-service/create")
+      .send({
+        email: "test@test2.com",
+        password: "test1234",
+      })
+      .set("uuid", 12314123124);
+
     authToken = user.headers["set-cookie"]
+      .map((cookie) => cookie.split(";")[0])
+      .join("; ");
+
+    authToken2 = user2.headers["set-cookie"]
       .map((cookie) => cookie.split(";")[0])
       .join("; ");
   });
@@ -44,6 +59,22 @@ describe("File Controller", () => {
       length: 10000,
       metadata: {
         owner: user.body.user._id,
+        parent: "/",
+        parentList: "/",
+        hasThumbnail: false,
+        size: "10000",
+        IV: "test",
+        isVideo: false,
+      },
+    });
+
+    file2 = await mongoose.model("fs.files").create({
+      _id: new ObjectId("4eb88f29ecb8c9319ddca3c2"),
+      filename: "test.txt2",
+      uploadDate: new Date(),
+      length: 10000,
+      metadata: {
+        owner: user2.body.user._id,
         parent: "/",
         parentList: "/",
         hasThumbnail: false,
@@ -69,6 +100,14 @@ describe("File Controller", () => {
       expect(fileResponse.body.filename).toBe(file.filename);
       expect(fileResponse.body.length).toBe(file.length);
     });
+    test("Should return user 2's file info", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/info/${file2._id}`)
+        .set("Cookie", authToken2);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.filename).toBe(file2.filename);
+    });
     test("Should return 404 if file not found", async () => {
       const fileResponse = await request(app)
         .get(`/file-service/info/5f7e5d8d1f962d5a0f5e8a9e`)
@@ -84,32 +123,6 @@ describe("File Controller", () => {
       expect(fileResponse.status).toBe(401);
     });
     test("Should return 401/404 if not owner of file", async () => {
-      const user2 = await request(app)
-        .post("/user-service/create")
-        .send({
-          email: "tes@test.com",
-          password: "test1234",
-        })
-        .set("uuid", 12314123123);
-
-      expect(user2.status).toBe(201);
-
-      const file2 = await mongoose.model("fs.files").create({
-        _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
-        filename: "test2.txt",
-        uploadDate: new Date(),
-        length: 10001,
-        metadata: {
-          owner: user2.body.user._id,
-          parent: "/",
-          parentList: "/",
-          hasThumbnail: false,
-          size: "10001",
-          IV: "test1",
-          isVideo: false,
-        },
-      });
-
       const fileResponse = await request(app)
         .get(`/file-service/info/${file2._id}`)
         .set("Cookie", authToken);
@@ -137,6 +150,24 @@ describe("File Controller", () => {
 
       expect(fileDbCheck.filename).toBe("newname.txt");
     });
+    test("Should rename user 2's file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken2)
+        .send({
+          id: file2._id,
+          title: "newname.txt",
+        });
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.filename).toBe("newname.txt");
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file2._id,
+      });
+
+      expect(fileDbCheck.filename).toBe("newname.txt");
+    });
     test("Should return 404 if file not found", async () => {
       const fileResponse = await request(app)
         .patch(`/file-service/rename`)
@@ -158,6 +189,17 @@ describe("File Controller", () => {
         });
 
       expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/rename`)
+        .set("Cookie", authToken)
+        .send({
+          id: file2._id,
+          title: "newname.txt",
+        });
+
+      expect([401, 404]).toContain(fileResponse.status);
     });
     test("Should return 400 if no title", async () => {
       const fileResponse = await request(app)
@@ -220,6 +262,22 @@ describe("File Controller", () => {
 
       expect(fileDbCheck.metadata.trashed).toBe(true);
     });
+    test("Should trash user 2's file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/trash`)
+        .set("Cookie", authToken2)
+        .send({
+          id: file2._id,
+        });
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file2._id,
+      });
+
+      expect(fileDbCheck.metadata.trashed).toBe(true);
+    });
     test("Should return 404 if file not found", async () => {
       const fileResponse = await request(app)
         .patch(`/file-service/trash`)
@@ -239,6 +297,16 @@ describe("File Controller", () => {
         });
 
       expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/trash`)
+        .set("Cookie", authToken)
+        .send({
+          id: file2._id,
+        });
+
+      expect([401, 404]).toContain(fileResponse.status);
     });
     test("Should return 400 if no id", async () => {
       const fileResponse = await request(app)
@@ -272,6 +340,27 @@ describe("File Controller", () => {
 
       expect(fileDbCheck.metadata.trashed).toBe(null);
     });
+    test("Should restore user 2's file", async () => {
+      await mongoose
+        .model("fs.files")
+        .updateOne({ _id: file2._id }, { $set: { "metadata.trashed": true } });
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/restore`)
+        .set("Cookie", authToken2)
+        .send({
+          id: file2._id,
+        });
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.metadata.trashed).toBe(null);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file2._id,
+      });
+
+      expect(fileDbCheck.metadata.trashed).toBe(null);
+    });
     test("Should return 404 if file not found", async () => {
       const fileResponse = await request(app)
         .patch(`/file-service/restore`)
@@ -291,6 +380,16 @@ describe("File Controller", () => {
         });
 
       expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/restore`)
+        .set("Cookie", authToken)
+        .send({
+          id: file2._id,
+        });
+
+      expect([401, 404]).toContain(fileResponse.status);
     });
     test("Should return 400 if no id", async () => {
       const fileResponse = await request(app)
@@ -317,6 +416,20 @@ describe("File Controller", () => {
       expect(fileDbCheck.metadata.link).toBeTruthy();
       expect(fileDbCheck.metadata.linkType).toBe("public");
     });
+    test("Should make user 2's file public", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-public/${file2._id}`)
+        .set("Cookie", authToken2);
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file2._id,
+      });
+
+      expect(fileDbCheck.metadata.link).toBeTruthy();
+      expect(fileDbCheck.metadata.linkType).toBe("public");
+    });
     test("Should return 404 if file not found", async () => {
       const fileResponse = await request(app)
         .patch(`/file-service/make-public/5f7e5d8d1f962d5a0f5e8a9e`)
@@ -330,6 +443,13 @@ describe("File Controller", () => {
         .set("Cookie", "access-token=test");
 
       expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-public/${file2._id}`)
+        .set("Cookie", authToken);
+
+      expect([401, 404]).toContain(fileResponse.status);
     });
   });
 
@@ -348,6 +468,20 @@ describe("File Controller", () => {
       expect(fileDbCheck.metadata.link).toBeTruthy();
       expect(fileDbCheck.metadata.linkType).toBe("one");
     });
+    test("Should make user 2's file one time public", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-one/${file2._id}`)
+        .set("Cookie", authToken2);
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file2._id,
+      });
+
+      expect(fileDbCheck.metadata.link).toBeTruthy();
+      expect(fileDbCheck.metadata.linkType).toBe("one");
+    });
     test("Should return 404 if file not found", async () => {
       const fileResponse = await request(app)
         .patch(`/file-service/make-one/5f7e5d8d1f962d5a0f5e8a9e`)
@@ -361,6 +495,13 @@ describe("File Controller", () => {
         .set("Cookie", "access-token=test");
 
       expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/make-one/${file2._id}`)
+        .set("Cookie", authToken);
+
+      expect([401, 404]).toContain(fileResponse.status);
     });
   });
 
@@ -386,6 +527,27 @@ describe("File Controller", () => {
       expect(fileDbCheck.metadata.link).toBeFalsy();
       expect(fileDbCheck.metadata.linkType).toBeFalsy();
     });
+    test("Should make user 2's file private", async () => {
+      await mongoose
+        .model("fs.files")
+        .updateOne(
+          { _id: file2._id },
+          { $set: { "metadata.link": "test", "metadata.linkType": "public" } }
+        );
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/remove-link/${file2._id}`)
+        .set("Cookie", authToken2);
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file2._id,
+      });
+
+      expect(fileDbCheck.metadata.link).toBeFalsy();
+      expect(fileDbCheck.metadata.linkType).toBeFalsy();
+    });
     test("Should return 404 if file not found", async () => {
       const fileResponse = await request(app)
         .patch(`/file-service/remove-link/5f7e5d8d1f962d5a0f5e8a9e`)
@@ -399,6 +561,13 @@ describe("File Controller", () => {
         .set("Cookie", "access-token=test");
 
       expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/remove-link/${file2._id}`)
+        .set("Cookie", authToken);
+
+      expect([401, 404]).toContain(fileResponse.status);
     });
   });
 
@@ -484,6 +653,36 @@ describe("File Controller", () => {
       expect(fileDbCheck.metadata.parent).toBe(folderId);
       expect(fileDbCheck.metadata.parentList).toBe(`/,${folderId}`);
     });
+    test("Should move user 2's file", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken2)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderId = folderResponse.body._id;
+
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken2)
+        .send({
+          id: file2._id,
+          parentID: folderId,
+        });
+
+      expect(fileResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file2._id,
+      });
+
+      expect(fileDbCheck.metadata.parent).toBe(folderId);
+      expect(fileDbCheck.metadata.parentList).toBe(`/,${folderId}`);
+    });
     test("Should return 404 if file not found", async () => {
       const folderResponse = await request(app)
         .post("/folder-service/create")
@@ -528,6 +727,17 @@ describe("File Controller", () => {
         });
 
       expect(fileResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of file", async () => {
+      const fileResponse = await request(app)
+        .patch(`/file-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: file2._id,
+          parentID: "/",
+        });
+
+      expect([401, 404]).toContain(fileResponse.status);
     });
     test("Should not allow moving into folder not owned by user", async () => {
       const userResponse2 = await request(app)
@@ -1119,16 +1329,6 @@ describe("File Controller", () => {
       expect(fileResponse.body[0].filename).toBe(file2.filename);
     });
     test("Should only return files that belong to the user", async () => {
-      const user2 = await request(app)
-        .post("/user-service/create")
-        .send({
-          email: "test3@test.com",
-          password: "test1234",
-        })
-        .set("uuid", 12314123123);
-
-      expect(user2.status).toBe(201);
-
       await mongoose.model("fs.files").create({
         _id: new ObjectId("5eb88f29ecb8c9319ddca3c3"),
         filename: "a.txt",
