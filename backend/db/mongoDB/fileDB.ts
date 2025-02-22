@@ -82,6 +82,7 @@ class DbUtil {
       "metadata.owner": userID,
       filename: searchQuery,
       "metadata.trashed": trashMode ? true : null,
+      "metadata.processingFile": null,
     };
 
     if (mediaMode) query = { ...query, "metadata.hasThumbnail": true };

@@ -35,6 +35,7 @@ describe("File Controller", () => {
 
   beforeEach(async () => {
     await mongoose.model("fs.files").deleteMany({});
+    await mongoose.model("Folder").deleteMany({});
 
     file = await mongoose.model("fs.files").create({
       _id: new ObjectId("5eb88f29ecb8c9319ddca3c2"),
@@ -1133,6 +1134,234 @@ describe("File Controller", () => {
 
       expect(fileResponse2.status).toBe(200);
       expect(fileResponse2.body.length).toBe(0);
+    });
+  });
+  describe("Get suggested list: GET /file-service/suggested-list", () => {
+    test("Should return suggested list", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=test`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.fileList.length).toBe(1);
+      expect(fileResponse.body.folderList.length).toBe(1);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=test`)
+        .set("Cookie", "access-token=test");
+
+      expect(fileResponse.status).toBe(401);
+    });
+    test("If search is provided should atleast be length of 1", async () => {
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(400);
+    });
+    test("Should return nested files and folders", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test2",
+          parent: folderResponse.body._id,
+        });
+
+      await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c4"),
+        filename: "test3.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folderResponse.body._id,
+          parentList: `/,${folderResponse.body._id}`,
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+        },
+      });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=test`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.fileList.length).toBe(2);
+      expect(fileResponse.body.folderList.length).toBe(2);
+    });
+    test("Should not reutrn items not in the search query", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=qweqweqwe`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.fileList.length).toBe(0);
+      expect(fileResponse.body.folderList.length).toBe(0);
+    });
+    test("Should not return files that are processing", async () => {
+      await mongoose
+        .model("fs.files")
+        .updateOne(
+          { _id: file._id },
+          { $set: { "metadata.processingFile": true } }
+        );
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=test`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.fileList.length).toBe(0);
+    });
+    test("Should not return items that are trashed", async () => {
+      await mongoose
+        .model("fs.files")
+        .updateOne({ _id: file._id }, { $set: { "metadata.trashed": true } });
+
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      await mongoose
+        .model("Folder")
+        .updateOne(
+          { _id: folderResponse.body._id },
+          { $set: { trashed: true } }
+        );
+
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=test`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.fileList.length).toBe(0);
+      expect(fileResponse.body.folderList.length).toBe(0);
+    });
+    test("Should only return trashed items", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c4"),
+        filename: "test2.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: false,
+          size: "10001",
+          IV: "test1",
+          isVideo: false,
+          trashed: true,
+        },
+      });
+
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderResponse2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test2",
+          parent: "/",
+        });
+
+      await mongoose
+        .model("Folder")
+        .updateOne(
+          { _id: folderResponse2.body._id },
+          { $set: { trashed: true } }
+        );
+
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=test&trashMode=true`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.fileList.length).toBe(1);
+      expect(fileResponse.body.folderList.length).toBe(1);
+      expect(fileResponse.body.fileList[0].filename).toBe(file2.filename);
+      expect(fileResponse.body.folderList[0].name).toBe(
+        folderResponse2.body.name
+      );
+    });
+    test("Should only reutrn moedia items", async () => {
+      const file2 = await mongoose.model("fs.files").create({
+        _id: new ObjectId("5eb88f29ecb8c9319ddca3c4"),
+        filename: "test2.txt",
+        uploadDate: new Date(),
+        length: 10001,
+        metadata: {
+          owner: user.body.user._id,
+          parent: "/",
+          parentList: "/",
+          hasThumbnail: true,
+          size: "10001",
+          IV: "test1",
+          isVideo: true,
+        },
+      });
+
+      await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const fileResponse = await request(app)
+        .get(`/file-service/suggested-list?search=test&mediaMode=true`)
+        .set("Cookie", authToken);
+
+      expect(fileResponse.status).toBe(200);
+      expect(fileResponse.body.fileList.length).toBe(1);
+      expect(fileResponse.body.fileList[0].filename).toBe(file2.filename);
+      expect(fileResponse.body.folderList.length).toBe(0);
     });
   });
 });
