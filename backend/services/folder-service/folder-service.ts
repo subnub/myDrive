@@ -114,6 +114,10 @@ class FolderService {
   };
 
   moveFolder = async (userID: string, folderID: string, parentID: string) => {
+    const folder = await folderDB.getFolderInfo(folderID, userID);
+
+    if (!folder) throw new NotFoundError("Move Folder Not Found Error");
+
     const foldersByIncludedParent =
       await folderDB.getFolderListByIncludedParent(userID, folderID);
 

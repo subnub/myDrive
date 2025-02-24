@@ -703,5 +703,276 @@ describe("File Controller", () => {
     });
   });
 
-  describe("Move folder: PATCH /folder-service/move", () => {});
+  describe("Move folder: PATCH /folder-service/move", () => {
+    test("Should move a folder", async () => {
+      const folder2Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder._id,
+          parentID: folder2Response.body._id,
+        });
+
+      expect(folderResponse.status).toBe(200);
+
+      const folderDbCheck = await mongoose.model("Folder").findOne({
+        _id: folder._id,
+      });
+
+      expect(folderDbCheck.parent).toBe(folder2Response.body._id);
+      expect(folderDbCheck.parentList.length).toBe(2);
+      expect(folderDbCheck.parentList[0]).toBe("/");
+      expect(folderDbCheck.parentList[1]).toBe(folder2Response.body._id);
+    });
+    test("Should return 404 if folder not found", async () => {
+      const folder2Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: "5f7e5d8d1f962d5a0f5e8a9e",
+          parentID: folder2Response.body._id,
+        });
+
+      expect(folderResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const folder2Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", "access-token=test")
+        .send({
+          id: folder._id,
+          parentID: folder2Response.body._id,
+        });
+
+      expect(folderResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of folder", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder._id,
+          parentID: folder2._id,
+        });
+
+      expect([401, 404]).toContain(folderResponse.status);
+    });
+    test("Should also move files in folder", async () => {
+      const folder2Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folder2 = folder2Response.body;
+
+      const file = await mongoose.model("fs.files").create({
+        _id: new ObjectId("4eb88f29ecb8c9319ddca3c2"),
+        filename: "test.txt2",
+        uploadDate: new Date(),
+        length: 10000,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folder._id,
+          parentList: `/,${folder._id}`,
+          hasThumbnail: false,
+          size: "10000",
+          IV: "test",
+          isVideo: false,
+        },
+      });
+
+      const folderResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder._id,
+          parentID: folder2._id,
+        });
+
+      expect(folderResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.parent).toBe(folder._id);
+      expect(fileDbCheck.metadata.parentList).toBe(
+        `/,${folder2._id},${folder._id}`
+      );
+    });
+    test("Should also move subfiles in a folder", async () => {
+      const folder2Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folder2 = folder2Response.body;
+
+      const folder3Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder2._id,
+        });
+
+      const folder3 = folder3Response.body;
+
+      const file = await mongoose.model("fs.files").create({
+        _id: new ObjectId("4eb88f29ecb8c9319ddca3c2"),
+        filename: "test.txt2",
+        uploadDate: new Date(),
+        length: 10000,
+        metadata: {
+          owner: user.body.user._id,
+          parent: folder3._id,
+          parentList: `/,${folder2._id},${folder3._id}`,
+          hasThumbnail: false,
+          size: "10000",
+          IV: "test",
+          isVideo: false,
+        },
+      });
+
+      const folderResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder2._id,
+          parentID: folder._id,
+        });
+
+      expect(folderResponse.status).toBe(200);
+
+      const fileDbCheck = await mongoose.model("fs.files").findOne({
+        _id: file._id,
+      });
+
+      expect(fileDbCheck.metadata.parent).toBe(folder3._id);
+      expect(fileDbCheck.metadata.parentList).toBe(
+        `/,${folder._id},${folder2._id},${folder3._id}`
+      );
+    });
+    test("Should also move folders in a folder", async () => {
+      const folder2Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder._id,
+        });
+
+      const folder2 = folder2Response.body;
+
+      const folder3Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folder3 = folder3Response.body;
+
+      const folderMoveResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder._id,
+          parentID: folder3._id,
+        });
+
+      expect(folderMoveResponse.status).toBe(200);
+
+      const folderDbCheck = await mongoose.model("Folder").findOne({
+        _id: folder2._id,
+      });
+
+      expect(folderDbCheck.parent).toBe(folder._id);
+      expect(folderDbCheck.parentList[0]).toBe("/");
+      expect(folderDbCheck.parentList[1]).toBe(folder3._id);
+      expect(folderDbCheck.parentList[2]).toBe(folder._id);
+    });
+    test("Should also move subfolders in a folder", async () => {
+      const folder2Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder._id,
+        });
+
+      const folder2 = folder2Response.body;
+
+      const folder3Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder2._id,
+        });
+
+      const folder3 = folder3Response.body;
+
+      const folder4Response = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folder4 = folder4Response.body;
+
+      const folderMoveResponse = await request(app)
+        .patch(`/folder-service/move`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder._id,
+          parentID: folder4._id,
+        });
+
+      expect(folderMoveResponse.status).toBe(200);
+
+      const folderDbCheck = await mongoose.model("Folder").findOne({
+        _id: folder3._id,
+      });
+
+      expect(folderDbCheck.parent).toBe(folder2._id);
+      expect(folderDbCheck.parentList[0]).toBe("/");
+      expect(folderDbCheck.parentList[1]).toBe(folder4._id);
+      expect(folderDbCheck.parentList[2]).toBe(folder._id);
+      expect(folderDbCheck.parentList[3]).toBe(folder2._id);
+    });
+  });
 });
