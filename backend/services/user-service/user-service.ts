@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import sendVerificationEmail from "../../utils/sendVerificationEmail";
 import sendPasswordResetEmail from "../../utils/sendPasswordResetEmail";
 import ForbiddenError from "../../utils/ForbiddenError";
+import ConflictError from "../../utils/ConflictError";
 
 type UserDataType = {
   email: string;
@@ -85,6 +86,16 @@ class UserService {
   };
 
   create = async (userData: any, uuid: string | undefined) => {
+    if (env.createAcctBlocked) {
+      throw new ForbiddenError("Account Creation Blocked");
+    }
+
+    const userExistsLookedUp = await User.findOne({ email: userData.email });
+
+    if (userExistsLookedUp) {
+      throw new ConflictError("Email Already Exists");
+    }
+
     const user = new User({
       email: userData.email,
       password: userData.password,

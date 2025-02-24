@@ -4,6 +4,7 @@ import crypto from "crypto";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import env from "../enviroment/env";
+import NotAuthorizedError from "../utils/NotAuthorizedError";
 
 const userSchema = new mongoose.Schema(
   {
@@ -131,13 +132,13 @@ userSchema.statics.findByCreds = async (email: string, password: string) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new Error("User not found");
+    throw new NotAuthorizedError("User not found");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    throw new Error("Incorrect password");
+    throw new NotAuthorizedError("Incorrect password");
   }
 
   return user;

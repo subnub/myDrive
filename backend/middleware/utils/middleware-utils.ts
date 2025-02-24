@@ -6,6 +6,7 @@ import NotFoundError from "../../utils/NotFoundError";
 import InternalServerError from "../../utils/InternalServerError";
 import ForbiddenError from "../../utils/ForbiddenError";
 import NotValidDataError from "../../utils/NotValidDataError";
+import ConflictError from "../../utils/ConflictError";
 
 export const middlewareValidationFunction = (
   req: Request,
@@ -32,7 +33,8 @@ export const middlewareErrorHandler = (
     error instanceof ForbiddenError ||
     error instanceof NotFoundError ||
     error instanceof InternalServerError ||
-    error instanceof NotValidDataError
+    error instanceof NotValidDataError ||
+    error instanceof ConflictError
   ) {
     return res.status(error.code).send(error.message);
   }

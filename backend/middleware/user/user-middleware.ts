@@ -30,6 +30,7 @@ export const createAccountValidationRules = [
     .withMessage("Email is required")
     .isString()
     .withMessage("Email must be a string")
+    .isLength({ min: 1, max: 256 })
     .isEmail()
     .withMessage("Email is invalid"),
   body("password")

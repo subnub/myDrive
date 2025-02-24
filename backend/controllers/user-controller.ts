@@ -127,11 +127,6 @@ class UserController {
   };
 
   createUser = async (req: RequestType, res: Response, next: NextFunction) => {
-    if (env.createAcctBlocked) {
-      res.status(401).send();
-      return;
-    }
-
     try {
       const currentUUID = req.headers.uuid as string;
 

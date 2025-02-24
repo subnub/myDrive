@@ -13,6 +13,7 @@ import AlertIcon from "../../icons/AlertIcon";
 import Spinner from "../Spinner/Spinner";
 import { toast, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
+import { AxiosError } from "axios";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -55,9 +56,13 @@ const LoginPage = () => {
       navigate("/home");
       setLoadingLogin(false);
     } catch (e) {
+      if (e instanceof AxiosError && e.response?.status === 401) {
+        setError("Incorrect email or password");
+      } else {
+        setError("Login Error");
+      }
       console.log("Login Error", e);
       setLoadingLogin(false);
-      setError("Login Failed");
     }
   };
 
@@ -75,9 +80,13 @@ const LoginPage = () => {
       navigate("/home");
       setLoadingLogin(false);
     } catch (e) {
+      if (e instanceof AxiosError && e.response?.status === 409) {
+        setError("Email Already Exists");
+      } else {
+        setError("Create Account Error");
+      }
       console.log("Create Account Error", e);
       setLoadingLogin(false);
-      setError("Create Account Failed");
     }
   };
 
