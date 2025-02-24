@@ -975,4 +975,191 @@ describe("File Controller", () => {
       expect(folderDbCheck.parentList[3]).toBe(folder2._id);
     });
   });
+
+  describe("Move folder list: GET /folder-service/move-folder-list", () => {
+    test("Should return folder list", async () => {
+      const folderResponse = await request(app)
+        .get(`/folder-service/move-folder-list`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const folderResponse = await request(app)
+        .get(`/folder-service/move-folder-list`)
+        .set("Cookie", "access-token=test");
+
+      expect(folderResponse.status).toBe(401);
+    });
+    test("Should only return folders on the homepage", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder._id,
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderMoveListResponse = await request(app)
+        .get(`/folder-service/move-folder-list`)
+        .set("Cookie", authToken);
+
+      const folderMoveListResponse2 = await request(app)
+        .get(`/folder-service/move-folder-list?parent=/`)
+        .set("Cookie", authToken);
+
+      expect(folderMoveListResponse.status).toBe(200);
+      expect(folderMoveListResponse2.status).toBe(200);
+
+      expect(folderMoveListResponse.body.length).toBe(1);
+      expect(folderMoveListResponse2.body.length).toBe(1);
+    });
+    test("Should only return subfolders of a parent", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderResponse2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder._id,
+        });
+
+      expect(folderResponse2.status).toBe(201);
+
+      const folderMoveListResponse = await request(app)
+        .get(`/folder-service/move-folder-list?parent=${folder._id}`)
+        .set("Cookie", authToken);
+
+      expect(folderMoveListResponse.status).toBe(200);
+      expect(folderMoveListResponse.body.length).toBe(1);
+    });
+    test("Should search for folders", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderMoveListResponse = await request(app)
+        .get(`/folder-service/move-folder-list?search=name`)
+        .set("Cookie", authToken);
+
+      expect(folderMoveListResponse.status).toBe(200);
+      expect(folderMoveListResponse.body.length).toBe(1);
+    });
+    test("Should show nested folders in search", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderResponse2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name2",
+          parent: folder._id,
+        });
+
+      expect(folderResponse2.status).toBe(201);
+
+      const folderMoveListResponse = await request(app)
+        .get(`/folder-service/move-folder-list?search=name`)
+        .set("Cookie", authToken);
+
+      expect(folderMoveListResponse.status).toBe(200);
+      expect(folderMoveListResponse.body.length).toBe(2);
+    });
+    test("Should not return folders in the folder IDs array", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name",
+          parent: "/",
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderResponse2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name2",
+          parent: "/",
+        });
+
+      expect(folderResponse2.status).toBe(201);
+
+      const folderMoveListResponse = await request(app)
+        .get(
+          `/folder-service/move-folder-list?folderIDs[]=${folder._id}&folderIDs[]=${folderResponse2.body._id}`
+        )
+        .set("Cookie", authToken);
+
+      expect(folderMoveListResponse.status).toBe(200);
+      expect(folderMoveListResponse.body.length).toBe(1);
+    });
+    test("Should not return sub folders in the folder IDs array", async () => {
+      const folderResponse = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name",
+          parent: folder._id,
+        });
+
+      expect(folderResponse.status).toBe(201);
+
+      const folderResponse2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name2",
+          parent: folderResponse.body._id,
+        });
+
+      expect(folderResponse2.status).toBe(201);
+
+      const folderResponse3 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "name3",
+          parent: "/",
+        });
+
+      expect(folderResponse3.status).toBe(201);
+
+      const folderMoveListResponse = await request(app)
+        .get(
+          `/folder-service/move-folder-list?search=name&folderIDs[]=${folderResponse.body._id}`
+        )
+        .set("Cookie", authToken);
+
+      expect(folderMoveListResponse.status).toBe(200);
+      expect(folderMoveListResponse.body.length).toBe(1);
+    });
+  });
 });
