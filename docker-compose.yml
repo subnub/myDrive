@@ -11,8 +11,8 @@ services:
       - /usr/app/node_modules
       - ${FS_DIRECTORY}:/data
     ports:
-      - "3000:3000"
-      - "8080:8080"
+      - "${HTTP_PORT:-3000}:3000"
+      - "${HTTPS_PORT:-8080}:8080"
       - "5173:5173"
     environment:
       - DOCKER=true
