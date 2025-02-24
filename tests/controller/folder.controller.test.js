@@ -332,4 +332,376 @@ describe("File Controller", () => {
       expect(folderResponse.status).toBe(400);
     });
   });
+
+  describe("Trash folder: PATCH /folder-service/trash", () => {
+    test("Should trash folder", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/trash`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder._id,
+        });
+
+      expect(folderResponse.status).toBe(200);
+
+      const folderDbCheck = await mongoose.model("Folder").findOne({
+        _id: folder._id,
+      });
+
+      expect(folderDbCheck.trashed).toBe(true);
+    });
+    test("Should trash user 2's folder", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/trash`)
+        .set("Cookie", authToken2)
+        .send({
+          id: folder2._id,
+        });
+
+      expect(folderResponse.status).toBe(200);
+
+      const folderDbCheck = await mongoose.model("Folder").findOne({
+        _id: folder2._id,
+      });
+
+      expect(folderDbCheck.trashed).toBe(true);
+    });
+    test("Should return 404 if folder not found", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/trash`)
+        .set("Cookie", authToken)
+        .send({
+          id: "5f7e5d8d1f962d5a0f5e8a9e",
+        });
+
+      expect(folderResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/trash`)
+        .set("Cookie", "access-token=test")
+        .send({
+          id: folder._id,
+        });
+
+      expect(folderResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of folder", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/trash`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder2._id,
+        });
+
+      expect([401, 404]).toContain(folderResponse.status);
+    });
+    test("Should return 400 if no id", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/trash`)
+        .set("Cookie", authToken)
+        .send();
+
+      expect(folderResponse.status).toBe(400);
+    });
+  });
+
+  describe("Restore folder: PATCH /folder-service/restore", () => {
+    test("Should restore folder", async () => {
+      await mongoose
+        .model("Folder")
+        .updateOne({ _id: folder._id }, { $set: { trashed: true } });
+
+      const folderResponse = await request(app)
+        .patch(`/folder-service/restore`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder._id,
+        });
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.trashed).toBeFalsy();
+
+      const folderDbCheck = await mongoose.model("Folder").findOne({
+        _id: folder._id,
+      });
+
+      expect(folderDbCheck.trashed).toBeFalsy();
+    });
+    test("Should restore user 2's folder", async () => {
+      await mongoose
+        .model("Folder")
+        .updateOne({ _id: folder2._id }, { $set: { trashed: true } });
+
+      const folderResponse = await request(app)
+        .patch(`/folder-service/restore`)
+        .set("Cookie", authToken2)
+        .send({
+          id: folder2._id,
+        });
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.trashed).toBeFalsy();
+
+      const folderDbCheck = await mongoose.model("Folder").findOne({
+        _id: folder2._id,
+      });
+
+      expect(folderDbCheck.trashed).toBeFalsy();
+    });
+    test("Should return 404 if folder not found", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/restore`)
+        .set("Cookie", authToken)
+        .send({
+          id: "5f7e5d8d1f962d5a0f5e8a9e",
+        });
+
+      expect(folderResponse.status).toBe(404);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/restore`)
+        .set("Cookie", "access-token=test")
+        .send({
+          id: folder._id,
+        });
+
+      expect(folderResponse.status).toBe(401);
+    });
+    test("Should return 401/404 if not owner of folder", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/restore`)
+        .set("Cookie", authToken)
+        .send({
+          id: folder2._id,
+        });
+
+      expect([401, 404]).toContain(folderResponse.status);
+    });
+    test("Should return 400 if no id", async () => {
+      const folderResponse = await request(app)
+        .patch(`/folder-service/restore`)
+        .set("Cookie", authToken)
+        .send();
+
+      expect(folderResponse.status).toBe(400);
+    });
+  });
+
+  describe("Get folder list: GET /folder-service/list", () => {
+    test("Should return folder list", async () => {
+      const folderResponse = await request(app)
+        .get(`/folder-service/list`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+    });
+    test("Should return user 2's folder list", async () => {
+      const folderResponse = await request(app)
+        .get(`/folder-service/list`)
+        .set("Cookie", authToken2);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const folderResponse = await request(app)
+        .get(`/folder-service/list`)
+        .set("Cookie", "access-token=test");
+
+      expect(folderResponse.status).toBe(401);
+    });
+    test("Should return folders in descending date order/default order", async () => {
+      const folder2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list`)
+        .set("Cookie", authToken);
+
+      const folderResponse2 = await request(app)
+        .get(`/folder-service/list?sortBy=date_desc`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body[0].name).toBe(folder2.body.name);
+      expect(folderResponse.body[1].name).toBe(folder.name);
+
+      expect(folderResponse2.status).toBe(200);
+      expect(folderResponse2.body[0].name).toBe(folder2.body.name);
+      expect(folderResponse2.body[1].name).toBe(folder.name);
+    });
+    test("Should return folders in ascending date order", async () => {
+      const folder2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?sortBy=date_asc`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body[0].name).toBe(folder.name);
+      expect(folderResponse.body[1].name).toBe(folder2.body.name);
+    });
+    test("Should return folders in descending alphabetical order", async () => {
+      const folder2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "a",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?sortBy=alp_desc`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body[0].name).toBe(folder.name);
+      expect(folderResponse.body[1].name).toBe(folder2.body.name);
+    });
+    test("Should return folders in ascending alphabetical order", async () => {
+      const folder2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "a",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?sortBy=alp_asc`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body[0].name).toBe(folder2.body.name);
+      expect(folderResponse.body[1].name).toBe(folder.name);
+    });
+    test("Should correctly show only home folders", async () => {
+      await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder._id,
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?parent=/`)
+        .set("Cookie", authToken);
+
+      const folderResponse2 = await request(app)
+        .get(`/folder-service/list`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+      expect(folderResponse.body[0].name).toBe(folder.name);
+
+      expect(folderResponse2.status).toBe(200);
+      expect(folderResponse2.body.length).toBe(1);
+      expect(folderResponse2.body[0].name).toBe(folder.name);
+    });
+    test("Should correctly show only sub folders", async () => {
+      await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder._id,
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?parent=${folder._id}`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+      expect(folderResponse.body[0].name).toBe(folder.name);
+    });
+    test("Should correctly search for folders", async () => {
+      await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "newname.txt",
+          parent: "/",
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?search=test`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+    });
+    test("Should correctly show nested folders search results", async () => {
+      await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: folder._id,
+        });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?search=test`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(2);
+    });
+    test("Should not return items not in the search query", async () => {
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?search=qweqweqwe`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(0);
+    });
+    test("Should only return trashed folders", async () => {
+      const folder2 = await request(app)
+        .post("/folder-service/create")
+        .set("Cookie", authToken)
+        .send({
+          name: "test",
+          parent: "/",
+        });
+
+      await mongoose
+        .model("Folder")
+        .updateOne({ _id: folder._id }, { $set: { trashed: true } });
+
+      const folderResponse = await request(app)
+        .get(`/folder-service/list?trashMode=true`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+      expect(folderResponse.body[0].name).toBe(folder2.body.name);
+    });
+    test("Should only return folders that belong to the user", async () => {
+      const folderResponse = await request(app)
+        .get(`/folder-service/list`)
+        .set("Cookie", authToken);
+
+      expect(folderResponse.status).toBe(200);
+      expect(folderResponse.body.length).toBe(1);
+      expect(folderResponse.body[0].name).toBe(folder.name);
+    });
+  });
+
+  describe("Move folder: PATCH /folder-service/move", () => {});
 });
