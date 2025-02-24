@@ -18,6 +18,7 @@ import createThumbnail from "./createImageThumbnail";
 import { EventEmitter } from "events";
 import { getStorageActions } from "../actions/helper-actions";
 import { RequestTypeFullUser } from "../../../controllers/file-controller";
+import { getFSStoragePath } from "../../../utils/getFSStoragePath";
 
 type FileDataType = {
   name: string;
@@ -133,7 +134,7 @@ const processData = (
           } as FileMetadateInterface;
 
           if (env.dbType === "fs") {
-            metadata.filePath = env.fsDirectory + randomFilenameID;
+            metadata.filePath = getFSStoragePath() + randomFilenameID;
           } else {
             metadata.s3ID = randomFilenameID;
           }

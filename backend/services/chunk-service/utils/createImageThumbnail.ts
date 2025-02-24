@@ -11,6 +11,7 @@ import { FilesystemActions } from "../actions/file-system-actions";
 import { EventEmitter } from "stream";
 import FileDB from "../../../db/mongoDB/fileDB";
 import { getStorageActions } from "../actions/helper-actions";
+import { getFSStoragePath } from "../../../utils/getFSStoragePath";
 
 const fileDB = new FileDB();
 
@@ -58,7 +59,7 @@ const processData = (
         name: filename,
         owner: user._id,
         IV: thumbnailIV,
-        path: env.fsDirectory + thumbnailFilename,
+        path: getFSStoragePath() + thumbnailFilename,
         s3ID: thumbnailFilename,
       });
 

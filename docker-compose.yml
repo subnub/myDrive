@@ -1,24 +1,18 @@
-version: '3'
-
+version: "3.8"
 services:
   app:
-    container_name: mydrive-node
-    restart: always
-    build: .
-    ports: 
-      - '3000:3000'
-      - '8080:8080'
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
-      - docker-variables.env
-    links:
-      - mongo
-  mongo:
-    container_name: mongo
-    image: mongo
-    ports:
-      - '27017:27017'
+      - ./backend/config/.env.development
     volumes:
-      - 'mongodb_data_volume:/data/db'
-volumes:
-      mongodb_data_volume:
-        external: true
+      - .:/usr/app
+      - /usr/app/node_modules
+      - ${FS_DIRECTORY}:/data
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "5173:5173"
+    environment:
+      - DOCKER=true

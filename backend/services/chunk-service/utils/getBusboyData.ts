@@ -15,6 +15,7 @@ import videoChecker from "../../../utils/videoChecker";
 import createVideoThumbnail from "./createVideoThumbnail";
 import createThumbnail from "./createImageThumbnail";
 import { RequestTypeFullUser } from "../../../controllers/file-controller";
+import { getFSStoragePath } from "../../../utils/getFSStoragePath";
 
 // TODO: We should stop using moongoose directly here,
 // Also in our fileDB make sure we are actually using File instead
@@ -115,7 +116,7 @@ const processData = (
           } as FileMetadateInterface;
 
           if (env.dbType === "fs") {
-            metadata.filePath = env.fsDirectory + randomFilenameID;
+            metadata.filePath = getFSStoragePath() + randomFilenameID;
           } else {
             metadata.s3ID = randomFilenameID;
           }

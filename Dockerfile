@@ -1,4 +1,4 @@
-FROM node:13
+FROM node:20
 
 WORKDIR /usr/app
 
@@ -8,9 +8,8 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build:docker
-
 EXPOSE 8080
 EXPOSE 3000
+EXPOSE 5173
 
-CMD [ "npm", "run", "start"]
+CMD [ "npm", "run", "dev"]

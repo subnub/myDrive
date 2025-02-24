@@ -15,6 +15,7 @@ import { S3Actions } from "../actions/S3-actions";
 import { FilesystemActions } from "../actions/file-system-actions";
 import { createGenericParams } from "./storageHelper";
 import { getStorageActions } from "../actions/helper-actions";
+import { getFSStoragePath } from "../../../utils/getFSStoragePath";
 
 const storageActions = getStorageActions();
 
@@ -24,7 +25,7 @@ const attemptToRemoveChunks = async (
 ) => {
   try {
     const readStreamParams = createGenericParams({
-      filePath: env.fsDirectory + thumbnailFilename,
+      filePath: getFSStoragePath() + thumbnailFilename,
       Key: thumbnailFilename,
     });
     await storageActions.removeChunks(readStreamParams);
@@ -98,7 +99,7 @@ const createVideoThumbnail = (
             name: filename,
             owner: user._id,
             IV: thumbnailIV,
-            path: env.fsDirectory + thumbnailFilename,
+            path: getFSStoragePath() + thumbnailFilename,
             s3ID: thumbnailFilename,
           });
 

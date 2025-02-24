@@ -30,6 +30,7 @@ export default {
   tempVideoThumbnailLimit: process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     : 0,
+  docker: process.env.DOCKER === "true",
 };
 
 module.exports = {
@@ -64,4 +65,5 @@ module.exports = {
   tempVideoThumbnailLimit: process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     : 0,
+  docker: process.env.DOCKER === "true",
 };

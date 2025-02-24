@@ -41,6 +41,7 @@ const envFileFix = (env) => {
   env.tempVideoThumbnailLimit = process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     : 0;
+  env.docker = process.env.DOCKER === "true";
 };
 
 module.exports = {

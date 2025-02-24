@@ -14,6 +14,7 @@ import { S3Actions } from "../actions/S3-actions";
 import { FilesystemActions } from "../actions/file-system-actions";
 import { createGenericParams } from "./storageHelper";
 import { getStorageActions } from "../actions/helper-actions";
+import { getFSStoragePath } from "../../../utils/getFSStoragePath";
 
 const storageActions = getStorageActions();
 
@@ -73,7 +74,7 @@ const tempCreateVideoThumbnail = (
         name: filename,
         owner: user._id,
         IV: thumbnailIV,
-        path: env.fsDirectory + thumbnailFilename,
+        path: getFSStoragePath() + thumbnailFilename,
         s3ID: thumbnailFilename,
       });
 

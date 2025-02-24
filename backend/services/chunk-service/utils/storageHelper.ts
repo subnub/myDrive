@@ -1,4 +1,5 @@
 import env from "../../../enviroment/env";
+import { getFSStoragePath } from "../../../utils/getFSStoragePath";
 
 type GenericParmasType = {
   filePath?: string;
@@ -13,11 +14,11 @@ export const createGenericParams = ({ filePath, Key }: GenericParmasType) => {
       const filePathSplit = filePath!.split("/");
       const fileName = filePathSplit[filePathSplit.length - 1];
       return {
-        filePath: env.fsDirectory + fileName,
+        filePath: getFSStoragePath() + fileName,
       };
     } else {
       return {
-        filePath: env.fsDirectory + Key!,
+        filePath: getFSStoragePath() + Key!,
       };
     }
   } else {

@@ -2,6 +2,7 @@ import fs from "fs";
 import { UserInterface } from "../../../models/user-model";
 import { GenericParams, IStorageActions } from "../store-types";
 import env from "../../../enviroment/env";
+import { getFSStoragePath } from "../../../utils/getFSStoragePath";
 
 class FilesystemActions implements IStorageActions {
   async getAuth() {
@@ -60,7 +61,7 @@ class FilesystemActions implements IStorageActions {
     stream: NodeJS.ReadableStream,
     randomID: string
   ) => {
-    const path = `${env.fsDirectory}${randomID}`;
+    const path = `${getFSStoragePath()}${randomID}`;
     return {
       writeStream: fs.createWriteStream(path),
       emitter: null,
