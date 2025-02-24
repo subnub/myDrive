@@ -6,6 +6,7 @@ import authLogout from "../middleware/authLogout";
 import {
   changePasswordValidationRules,
   createAccountValidationRules,
+  loginAccountValidationRules,
 } from "../middleware/user/user-middleware";
 
 const userController = new UserController();
@@ -20,7 +21,11 @@ router.get("/user-service/user-detailed", auth, userController.getUserDetailed);
 
 // POST
 
-router.post("/user-service/login", userController.login);
+router.post(
+  "/user-service/login",
+  loginAccountValidationRules,
+  userController.login
+);
 
 router.post("/user-service/logout", authLogout, userController.logout);
 

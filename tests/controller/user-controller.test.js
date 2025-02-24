@@ -12,8 +12,6 @@ const { ObjectId } = require("mongodb");
 let mongoServer;
 let authToken;
 let authToken2;
-let file;
-let file2;
 let user;
 let user2;
 
@@ -29,6 +27,7 @@ describe("File Controller", () => {
     await mongoose.model("fs.files").deleteMany({});
     await mongoose.model("Folder").deleteMany({});
     await mongoose.model("User").deleteMany({});
+    envFileFix(env);
 
     user = await request(app)
       .post("/user-service/create")
@@ -77,6 +76,7 @@ describe("File Controller", () => {
       expect(userResponse.status).toBe(401);
     });
   });
+
   describe("User login: POST /user-service/login", () => {
     test("Should login user", async () => {
       const userResponse = await request(app).post("/user-service/login").send({
@@ -102,7 +102,52 @@ describe("File Controller", () => {
       });
       expect(userResponse.status).toBe(401);
     });
+    test("Should return 400 if email length is less than 3", async () => {
+      const userResponse = await request(app).post("/user-service/login").send({
+        email: "ab",
+        password: "test1234",
+      });
+
+      expect(userResponse.status).toBe(400);
+    });
+    test("Should return 400 if email length is greater than 320", async () => {
+      const userResponse = await request(app)
+        .post("/user-service/login")
+        .send({
+          email: "a".repeat(321) + "@test.com",
+          password: "test1234",
+        });
+
+      expect(userResponse.status).toBe(400);
+    });
+    test("Should return 400 if email address is invalid", async () => {
+      const userResponse = await request(app).post("/user-service/login").send({
+        email: "a@b",
+        password: "test1234",
+      });
+
+      expect(userResponse.status).toBe(400);
+    });
+    test("Should return 400 if password length is less than 6", async () => {
+      const userResponse = await request(app).post("/user-service/login").send({
+        email: "test@test.com",
+        password: "a",
+      });
+
+      expect(userResponse.status).toBe(400);
+    });
+    test("Should return 400 if password length is greater than 256", async () => {
+      const userResponse = await request(app)
+        .post("/user-service/login")
+        .send({
+          email: "test@test.com",
+          password: "a".repeat(257),
+        });
+
+      expect(userResponse.status).toBe(400);
+    });
   });
+
   describe("Create User: POST /user-service/create", () => {
     test("Should create user", async () => {
       const userResponse = await request(app)
@@ -138,21 +183,21 @@ describe("File Controller", () => {
 
       expect(userResponse.status).toBe(400);
     });
-    test("Should return 400 if email length is less than 1", async () => {
+    test("Should return 400 if email length is less than 3", async () => {
       const userResponse = await request(app)
         .post("/user-service/create")
         .send({
-          email: "",
+          email: "a@b",
           password: "test1234",
         });
 
       expect(userResponse.status).toBe(400);
     });
-    test("Should return 400 if email length is greater than 256", async () => {
+    test("Should return 400 if email length is greater than 320", async () => {
       const userResponse = await request(app)
         .post("/user-service/create")
         .send({
-          email: "a" * 257,
+          email: "a".repeat(321) + "@test.com",
           password: "test1234",
         });
 
@@ -173,7 +218,7 @@ describe("File Controller", () => {
         .post("/user-service/create")
         .send({
           email: "newuser@test.com",
-          password: "a" * 257,
+          password: "a".repeat(267),
         });
 
       expect(userResponse.status).toBe(400);
@@ -199,6 +244,179 @@ describe("File Controller", () => {
         });
 
       expect(userResponse.status).toBe(403);
+    });
+  });
+
+  describe("Change Password: PATCH /user-service/change-password", () => {
+    test("Should change password", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          oldPassword: "test1234",
+          newPassword: "test12345",
+        });
+      expect(changePasswordResponse.status).toBe(200);
+      const loginResponse = await request(app)
+        .post("/user-service/login")
+        .send({
+          email: user.body.user.email,
+          password: "test12345",
+        });
+      expect(loginResponse.status).toBe(200);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", "access-token=test")
+        .send({
+          oldPassword: "test1234",
+          newPassword: "test12345",
+        });
+      expect(changePasswordResponse.status).toBe(401);
+    });
+    test("Should return 401 if incorrect password", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          oldPassword: "test12345",
+          newPassword: "test1234",
+        });
+      expect(changePasswordResponse.status).toBe(401);
+    });
+    test("Should return 400 if no old password", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          newPassword: "test12345",
+        });
+      expect(changePasswordResponse.status).toBe(400);
+    });
+    test("Should return 400 if no new password", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          oldPassword: "test1234",
+        });
+      expect(changePasswordResponse.status).toBe(400);
+    });
+    test("Should return 400 if old password length is less than 6", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          oldPassword: "",
+          newPassword: "test12345",
+        });
+      expect(changePasswordResponse.status).toBe(400);
+    });
+    test("Should return 400 if old password length is greater than 256", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          oldPassword: "a".repeat(257),
+          newPassword: "test12345",
+        });
+      expect(changePasswordResponse.status).toBe(400);
+    });
+    test("Should return 400 if new password length is less than 6", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          oldPassword: "test1234",
+          newPassword: "",
+        });
+      expect(changePasswordResponse.status).toBe(400);
+    });
+    test("Should return 400 if new password length is greater than 256", async () => {
+      const changePasswordResponse = await request(app)
+        .patch("/user-service/change-password")
+        .set("Cookie", authToken)
+        .send({
+          oldPassword: "test1234",
+          newPassword: "a".repeat(257),
+        });
+      expect(changePasswordResponse.status).toBe(400);
+    });
+  });
+
+  describe("Get/Create user token: POST /user-service/get-token", () => {
+    test("Should return user token", async () => {
+      const getTokenResponse = await request(app)
+        .post("/user-service/get-token")
+        .set("Cookie", authToken)
+        .send();
+
+      expect(getTokenResponse.status).toBe(201);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const getTokenResponse = await request(app)
+        .post("/user-service/get-token")
+        .set("Cookie", "access-token=test")
+        .send();
+
+      expect(getTokenResponse.status).toBe(401);
+    });
+  });
+
+  describe("Logout: POST /user-service/logout", () => {
+    test("Should logout user", async () => {
+      const userDbCheck = await mongoose.model("User").findOne({
+        email: user.body.user.email,
+      });
+
+      expect(userDbCheck.tokens.length).toBe(1);
+
+      const logoutResponse = await request(app)
+        .post("/user-service/logout")
+        .set("Cookie", authToken)
+        .send();
+
+      const userDbCheck2 = await mongoose.model("User").findOne({
+        email: user.body.user.email,
+      });
+
+      expect(userDbCheck2.tokens.length).toBe(0);
+      expect(logoutResponse.status).toBe(200);
+    });
+    test("Should return 401 if not authorized", async () => {
+      const logoutResponse = await request(app)
+        .post("/user-service/logout")
+        .set("Cookie", "access-token=test")
+        .send();
+
+      expect(logoutResponse.status).toBe(401);
+    });
+  });
+  describe("Logout all: POST /user-service/logout-all", () => {
+    test("Should logout all users", async () => {
+      await request(app).post("/user-service/login").send({
+        email: user.body.user.email,
+        password: "test1234",
+      });
+
+      const userDbCheck = await mongoose.model("User").findOne({
+        email: user.body.user.email,
+      });
+
+      expect(userDbCheck.tokens.length).toBe(2);
+
+      const logoutAllResponse = await request(app)
+        .post("/user-service/logout-all")
+        .set("Cookie", authToken)
+        .send();
+
+      const userDbCheck2 = await mongoose.model("User").findOne({
+        email: user.body.user.email,
+      });
+
+      expect(userDbCheck2.tokens.length).toBe(0);
+      expect(logoutAllResponse.status).toBe(200);
     });
   });
 });

@@ -14,6 +14,7 @@ import Spinner from "../Spinner/Spinner";
 import { toast, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
 import { AxiosError } from "axios";
+import isEmail from "validator/es/lib/isEmail";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -56,7 +57,10 @@ const LoginPage = () => {
       navigate("/home");
       setLoadingLogin(false);
     } catch (e) {
-      if (e instanceof AxiosError && e.response?.status === 401) {
+      if (
+        e instanceof AxiosError &&
+        [400, 401].includes(e.response?.status || 0)
+      ) {
         setError("Incorrect email or password");
       } else {
         setError("Login Error");
@@ -82,6 +86,8 @@ const LoginPage = () => {
     } catch (e) {
       if (e instanceof AxiosError && e.response?.status === 409) {
         setError("Email Already Exists");
+      } else if (e instanceof AxiosError && e.response?.status === 400) {
+        setError("Validation Error");
       } else {
         setError("Create Account Error");
       }
@@ -162,11 +168,41 @@ const LoginPage = () => {
     if (mode === "login" || mode === "reset") return "";
 
     if (mode === "create") {
-      if (password !== verifyPassword) return "Passwords do not match";
+      if (password.length) {
+        if (password.length < 6) {
+          return "Password must be at least 6 characters";
+        } else if (password.length > 256) {
+          return "Password must be less than 256 characters";
+        }
+      }
+
+      if (
+        password.length &&
+        verifyPassword.length &&
+        password !== verifyPassword
+      ) {
+        return "Passwords do not match";
+      }
+
+      if (email.length) {
+        const isValidEmail = isEmail(email);
+
+        if (email.length < 3) {
+          return "Email must be at least 3 characters";
+        } else if (email.length > 320) {
+          return "Email must be less than 320 characters";
+        } else if (!isValidEmail) {
+          return "Email is invalid";
+        }
+      }
     }
 
     return "";
   })();
+
+  useEffect(() => {
+    setError("");
+  }, [email.length, password.length, verifyPassword.length]);
 
   useEffect(() => {
     const loggedIn = window.localStorage.getItem("hasPreviouslyLoggedIn");

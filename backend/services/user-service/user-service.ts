@@ -10,6 +10,7 @@ import sendVerificationEmail from "../../utils/sendVerificationEmail";
 import sendPasswordResetEmail from "../../utils/sendPasswordResetEmail";
 import ForbiddenError from "../../utils/ForbiddenError";
 import ConflictError from "../../utils/ConflictError";
+import NotAuthorizedError from "../../utils/NotAuthorizedError";
 
 type UserDataType = {
   email: string;
@@ -131,13 +132,13 @@ class UserService {
   ) => {
     const user = await User.findById(userID);
 
-    if (!user) throw new NotFoundError("Could Not Find User");
+    if (!user) throw new NotAuthorizedError("User information is incorrect");
 
     const date = new Date();
 
     const isMatch = await bcrypt.compare(oldPassword, user.password);
 
-    if (!isMatch) throw new ForbiddenError("Old Password Is Incorrect");
+    if (!isMatch) throw new NotAuthorizedError("User information is incorrect");
 
     const encryptionKey = user.getEncryptionKey();
 

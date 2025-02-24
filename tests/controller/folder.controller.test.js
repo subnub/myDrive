@@ -175,7 +175,7 @@ describe("File Controller", () => {
         .post(`/folder-service/create`)
         .set("Cookie", authToken)
         .send({
-          name: "a" * 257,
+          name: "a".repeat(257),
           parent: "/",
         });
 
@@ -316,7 +316,7 @@ describe("File Controller", () => {
         .set("Cookie", authToken)
         .send({
           id: folder._id,
-          title: "a" * 257,
+          title: "a".repeat(257),
         });
 
       expect(folderResponse.status).toBe(400);

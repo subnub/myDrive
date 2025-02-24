@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema(
       validate(value: any): any {
         if (!validator.isEmail(value)) {
           throw new Error("Email is invalid");
+        } else if (value.length > 320) {
+          throw new Error("Email length must be less than 320 characters");
+        } else if (value.length < 3) {
+          throw new Error("Email length must be at least 3 characters");
         }
       },
     },
@@ -26,7 +30,9 @@ const userSchema = new mongoose.Schema(
       required: true,
       validate(value: any): any {
         if (value.length < 6) {
-          throw new Error("Password Length Not Sufficent");
+          throw new Error("Password length must be at least 6 characters");
+        } else if (value.length > 256) {
+          throw new Error("Password length must be less than 256 characters");
         }
       },
     },

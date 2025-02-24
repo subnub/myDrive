@@ -228,7 +228,7 @@ describe("File Controller", () => {
         .set("Cookie", authToken)
         .send({
           id: file._id,
-          title: "a" * 257,
+          title: "a".repeat(257),
         });
 
       expect(fileResponse.status).toBe(400);
