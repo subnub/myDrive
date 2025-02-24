@@ -4,8 +4,6 @@ import fs from "fs";
 
 const DBUrl = env.mongoURL as string;
 
-console.log("db url", DBUrl);
-
 if (env.useDocumentDB === "true") {
   console.log("Using DocumentDB");
 
