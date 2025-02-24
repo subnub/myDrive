@@ -3,6 +3,7 @@ import CloseIcon from "../../icons/CloseIcon";
 import classNames from "classnames";
 import { toast } from "react-toastify";
 import { changePasswordAPI } from "../../api/userAPI";
+import { AxiosError } from "axios";
 
 interface SettingsChangePasswordPopupProps {
   closePopup: () => void;
@@ -44,9 +45,15 @@ const SettingsChangePasswordPopup: React.FC<
 
     if (newPassword.length < 6) {
       return "Password must be at least 6 characters";
+    } else if (newPassword.length > 256) {
+      return "Password must be less than 256 characters";
     }
 
-    if (verifyNewPassword.length !== 0 && newPassword !== verifyNewPassword) {
+    if (
+      newPassword.length &&
+      verifyNewPassword.length &&
+      newPassword !== verifyNewPassword
+    ) {
       return "Passwords do not match";
     }
 
@@ -60,10 +67,14 @@ const SettingsChangePasswordPopup: React.FC<
       await toast.promise(changePasswordAPI(currentPassword, newPassword), {
         pending: "Changing password...",
         success: "Password Changed",
-        error: "Error Changing Password",
       });
       closePopup();
     } catch (e) {
+      if (e instanceof AxiosError && e.response?.status === 401) {
+        toast.error("Incorrect password");
+      } else {
+        toast.error("Error changing password");
+      }
       console.log("Error changing password", e);
     } finally {
       setLoadingChangePassword(false);

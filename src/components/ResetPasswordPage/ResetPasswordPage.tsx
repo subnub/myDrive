@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useState } from "react";
 import { resetPasswordAPI } from "../../api/userAPI";
 import AlertIcon from "../../icons/AlertIcon";
+import { AxiosError } from "axios";
 
 const ResetPasswordPage = () => {
   const token = useParams().token!;
@@ -13,7 +14,30 @@ const ResetPasswordPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const isSubmitDisabled = password !== verifyPassword;
+  const errorMessage = (() => {
+    if (password.length === 0) {
+      return "";
+    }
+
+    if (password.length < 6) {
+      return "Password must be at least 6 characters";
+    } else if (password.length > 256) {
+      return "Password must be less than 256 characters";
+    }
+
+    if (
+      password.length &&
+      verifyPassword.length &&
+      password !== verifyPassword
+    ) {
+      return "Passwords do not match";
+    }
+
+    return "";
+  })();
+
+  const isSubmitDisabled =
+    !password.length || password !== verifyPassword || errorMessage;
 
   const onSubmit = async (e: any) => {
     try {
@@ -22,15 +46,18 @@ const ResetPasswordPage = () => {
       await toast.promise(resetPasswordAPI(password, token), {
         pending: "Resetting password...",
         success: "Password Reset",
-        error: "Error Resetting Password",
       });
       setTimeout(() => {
         navigate("/");
       }, 1500);
     } catch (e) {
+      if (e instanceof AxiosError && e.response?.status === 401) {
+        setError("Invalid token error");
+      } else {
+        setError("Reset Password Failed");
+      }
       console.log("Reset Password Error", e);
       setLoadingLogin(false);
-      setError("Reset Password Failed");
     }
   };
 
@@ -70,17 +97,17 @@ const ResetPasswordPage = () => {
               <input
                 type="submit"
                 value="Reset"
-                disabled={isSubmitDisabled || loadingLogin}
+                disabled={!!isSubmitDisabled || loadingLogin}
                 className="bg-[#3c85ee] border border-[#3c85ee] hover:bg-[#326bcc] rounded-[5px] text-white text-[15px] font-medium cursor-pointer py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
-            {(isSubmitDisabled || error) && (
+            {(error || errorMessage) && (
               <div className="mt-4">
                 <div className="flex justify-center items-center">
                   <AlertIcon className="w-[20px] text-red-600 mr-2" />
                   <p className="text-[#637381] text-[15px]">
-                    {isSubmitDisabled ? "Passwords do not match" : error}
+                    {error ? error : errorMessage}
                   </p>
                 </div>
               </div>

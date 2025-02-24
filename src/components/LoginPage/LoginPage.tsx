@@ -123,7 +123,13 @@ const LoginPage = () => {
     } catch (e) {
       console.log("Create Account Error", e);
       setLoadingLogin(false);
-      setError("Create Account Failed");
+      if (e instanceof AxiosError && e.response?.status === 404) {
+        setError("Email does not exist");
+      } else if (e instanceof AxiosError && e.response?.status === 403) {
+        setError("Email Verification Not Enabled");
+      } else {
+        setError("Create Account Failed");
+      }
     }
   };
 

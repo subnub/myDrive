@@ -203,6 +203,10 @@ class UserService {
   };
 
   sendPasswordReset = async (email: string) => {
+    if (env.emailVerification !== "true") {
+      throw new ForbiddenError("Email Verification Not Enabled");
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) throw new NotFoundError("User Not Found Password Reset Email");

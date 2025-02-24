@@ -10,6 +10,12 @@ import dayjs from "dayjs";
 import { getFileColor, getFileExtension } from "../../utils/files";
 import { FileInterface } from "../../types/file";
 import bytes from "bytes";
+import LockIcon from "../../icons/LockIcon";
+import OneIcon from "../../icons/OneIcon";
+import StorageIcon from "../../icons/StorageIcon";
+import CalendarIcon from "../../icons/CalendarIcon";
+import DownloadIcon from "../../icons/DownloadIcon";
+import PublicIcon from "../../icons/PublicIcon";
 
 const PublicDownloadPage = () => {
   const [file, setFile] = useState<FileInterface | null>(null);
@@ -31,6 +37,22 @@ const PublicDownloadPage = () => {
     const id = params.id!;
     const tempToken = params.tempToken!;
     downloadPublicFileAPI(id, tempToken);
+  };
+
+  const permissionText = (() => {
+    if (!file) return "";
+    if (file.metadata.linkType === "one") {
+      return `Temporary`;
+    } else if (file.metadata.linkType === "public") {
+      return "Public";
+    } else {
+      return "Private";
+    }
+  })();
+
+  const copyName = () => {
+    navigator.clipboard.writeText(file!.filename);
+    toast.success("Filename Copied");
   };
 
   useEffect(() => {
@@ -77,32 +99,48 @@ const PublicDownloadPage = () => {
             </p>
           </div>
         </div>
-        <div className="w-[300px] p-4 bg-white rounded-md border shadow-lg text-xs flex flex-col space-y-3">
-          <div className="flex justify-between">
-            <span className="text-gray-primary font-normal">Type</span>
-            <span className="text-black font-normal ">{fileExtension}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-primary font-normal">Size</span>
-            <span className="text-black font-normal ">{fileSize}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-primary font-normal ">Created</span>
-            <span className="text-black font-normal ">{formattedDate}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-primary font-normal ">Access</span>
-            <span className="text-black font-normal ">
-              {file.metadata.link ? "Public" : "Private"}
-            </span>
-          </div>
-          <div className="flex justify-center">
-            <a
-              onClick={downloadItem}
-              className="px-5 py-2.5 inline-flex items-center justify-center border border-primary rounded-md text-primary text-sm font-medium no-underline animate mr-4 cursor-pointer hover:bg-white-hover"
+        <div className="w-[90%] sm:w-[500px] p-6 bg-white rounded-md animate-easy">
+          <div className="bg-light-primary p-6 rounded-md flex items-center space-x-2">
+            <input
+              className="rounded-md w-full text-xs h-10 p-2"
+              value={file.filename}
+            />
+            <button
+              className="bg-primary text-white hover:bg-primary-hover text-xs w-24 min-w-20 p-1 py-3 rounded-md"
+              onClick={copyName}
             >
-              Download
-            </a>
+              Copy name
+            </button>
+          </div>
+          <p className="mt-4">File details</p>
+          <div className="mt-2 text-xs space-y-2">
+            <div className="flex flex-row items-center">
+              {!file.metadata.linkType && <LockIcon className="w-5 h-5" />}
+              {file.metadata.linkType === "one" && (
+                <OneIcon className="w-5 h-5" />
+              )}
+              {file.metadata.linkType === "public" && (
+                <PublicIcon className="w-5 h-5" />
+              )}
+              <p className="ml-2 text-gray-500">{permissionText}</p>
+            </div>
+            <div className="flex flex-row items-center">
+              <StorageIcon className="w-5 h-5" />
+              <p className="ml-2 text-gray-500">{fileSize}</p>
+            </div>
+            <div className="flex flex-row items-center" items-center>
+              <CalendarIcon className="w-5 h-5" />
+              <p className="ml-2 text-gray-500">{formattedDate}</p>
+            </div>
+            <div className="flex w-full justify-center items-center pt-4">
+              <button
+                className="bg-primary text-white hover:bg-primary-hover text-xs p-1 py-3 rounded-md flex items-center justify-center w-40 space-x-2"
+                onClick={downloadItem}
+              >
+                <DownloadIcon className="w-5 h-5" />
+                <p>Download</p>
+              </button>
+            </div>
           </div>
         </div>
       </div>
