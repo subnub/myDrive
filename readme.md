@@ -178,9 +178,9 @@ I created a short YouTube video, showing off myDrives design and features: (Comi
 
 ## 🕹️ Live demo
 
-Demo: (Coming soon)
+Demo: http://143.244.181.219:3000/
 
-- Note: The Upload and Download Features, and other core features, are disabled in the demo.
+- Note: Creating, deleting and other features are disabled in the demo.
 
 ## 👾 Bug reports and Feature Requests
 
