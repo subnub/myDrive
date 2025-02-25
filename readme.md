@@ -8,19 +8,15 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 ## 🔍 Index
 
-- [Features](#features)
-- [Installation](#installation)
-- [Guided Installation](https://github.com/subnub/myDrive/wiki/Guided-Installation-Setup)
-- [Guided Installation (Docker)](<https://github.com/subnub/myDrive/wiki/Guided-Installation-Setup-(Docker)>)
-- [Updating from a previous version of myDrive](#updating-from-a-previous-version-of-mydrive)
-- [WebUI For Encryption Key](#webui-for-encryption-key)
-- [Docker](#docker)
-- [Environment Variables](#environment-variables)
-- [Screenshots](#screenshots)
-- [Wiki](https://github.com/subnub/myDrive/wiki)
-- [Video](#video)
-- [Demo](#demo)
-- [Fund/Donate](#fund)
+- [Features](#⭐️-features)
+- [Tech stack](#👨‍🔬-tech-stack)
+- [Installation (non docker)](#💻-installation)
+- [Docker](#🐳-docker)
+- [Screenshots](#📸-screenshots)
+- [Video](#🎥-video)
+- [Live demo](#🕹️-live-demo)
+- [Feature requests/bug reports](#👾-bug-reports-and-feature-requests)
+- [Updating from a previous version of myDrive](#⬆️-updating-from-a-previous-version-of-mydrive)
 
 ## ⭐️ Features
 
@@ -38,6 +34,7 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - Mobile Support
 - Docker
 - Email Verification
+- JWT (Access and Refresh Tokens)
 
 ## 👨‍🔬 Tech Stack
 
@@ -129,8 +126,8 @@ Image Viewer
 Video Viewer
 ![Video Viewer](github_images/video-viewer.png)
 
-Image Thumbnails
-![Search](github_images/thumbnails.png)
+Media Gallery
+![Search](github_images/media-viewer.png)
 
 Share Files
 ![Share](github_images/share.png)
@@ -141,8 +138,8 @@ Search For Files/Folders
 Move File/Folders
 ![Move](github_images/move.png)
 
-Google Drive Support
-![Move](github_images/drive.png)
+Trash
+![Trash](github_images/trash.png)
 
 ## 🎥 Video
 
@@ -154,7 +151,7 @@ Demo: https://mydrive-3.herokuapp.com/
 
 - Note: The Upload and Download Features, and other core features, are disabled in the demo.
 
-## 👾 Questions? Feature Requests? Issues?
+## 👾 Bug reports and Feature Requests
 
 Contact Email: kyle.hoell@gmail.com
 
