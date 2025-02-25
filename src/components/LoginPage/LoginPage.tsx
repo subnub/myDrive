@@ -15,6 +15,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Swal from "sweetalert2";
 import { AxiosError } from "axios";
 import isEmail from "validator/es/lib/isEmail";
+import { checkIsDemoMode } from "../../utils/demoMode";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -28,6 +29,7 @@ const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const lastSentPassowordReset = useRef(0);
+  const isDemoMode = checkIsDemoMode();
 
   const attemptLoginWithToken = async () => {
     setAttemptingLogin(true);
@@ -156,6 +158,14 @@ const LoginPage = () => {
       resetPassword();
     }
   };
+
+  useEffect(() => {
+    console.log("isDemoMode", isDemoMode);
+    if (isDemoMode) {
+      setEmail("demo@test.com");
+      setPassword("test1234");
+    }
+  }, [isDemoMode]);
 
   const headerTitle = (() => {
     switch (mode) {

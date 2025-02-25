@@ -8,6 +8,7 @@ import {
 } from "../cookies/create-cookies";
 import NotFoundError from "../utils/NotFoundError";
 import InternalServerError from "../utils/InternalServerError";
+import ForbiddenError from "../utils/ForbiddenError";
 
 const UserProvider = new UserService();
 
@@ -114,6 +115,9 @@ class UserController {
     if (!req.user) return;
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
 
       await UserProvider.logoutAll(userID);
@@ -128,6 +132,9 @@ class UserController {
 
   createUser = async (req: RequestType, res: Response, next: NextFunction) => {
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const currentUUID = req.headers.uuid as string;
 
       const { user, accessToken, refreshToken, emailSent } =
@@ -151,6 +158,9 @@ class UserController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
       const oldPassword = req.body.oldPassword;
       const newPassword = req.body.newPassword;
@@ -196,6 +206,9 @@ class UserController {
 
   verifyEmail = async (req: RequestType, res: Response, next: NextFunction) => {
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const verifyToken = req.body.emailToken;
 
       const currentUUID = req.headers.uuid as string;
@@ -224,6 +237,9 @@ class UserController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
 
       await UserProvider.resendVerifyEmail(userID);
@@ -240,6 +256,9 @@ class UserController {
     next: NextFunction
   ) => {
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const email = req.body.email;
 
       await UserProvider.sendPasswordReset(email);
@@ -256,6 +275,9 @@ class UserController {
     next: NextFunction
   ) => {
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const verifyToken = req.body.passwordToken;
       const newPassword = req.body.password;
 

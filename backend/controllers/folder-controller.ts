@@ -3,6 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import ChunkService from "../services/chunk-service/chunk-service";
 import { FolderListQueryType } from "../types/folder-types";
 import { UserInterface } from "../models/user-model";
+import ForbiddenError from "../utils/ForbiddenError";
+import env from "../enviroment/env";
 
 const folderService = new FolderService();
 
@@ -39,6 +41,10 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const name = req.body.name;
       const parent = req.body.parent || "/";
@@ -61,6 +67,9 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
       const folderID = req.body.id;
 
@@ -82,6 +91,9 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const user = req.user;
       const busboy = req.busboy;
 
@@ -99,6 +111,9 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
 
       await chunkService.deleteAll(userID);
@@ -165,6 +180,9 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
       const folderID = req.body.id;
       const parentID = req.body.parentID;
@@ -183,6 +201,9 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
       const folderID = req.body.id;
 
@@ -204,6 +225,9 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
       const folderID = req.body.id;
 
@@ -225,6 +249,9 @@ class FolderController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
       const userID = req.user._id;
       const folderID = req.body.id;
       const title = req.body.title;

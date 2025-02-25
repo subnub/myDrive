@@ -31,6 +31,7 @@ export default {
     ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     : 0,
   docker: process.env.DOCKER === "true",
+  demoMode: process.env.DEMO_MODE === "true",
 };
 
 module.exports = {
@@ -66,4 +67,5 @@ module.exports = {
     ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     : 0,
   docker: process.env.DOCKER === "true",
+  demoMode: process.env.DEMO_MODE === "true",
 };

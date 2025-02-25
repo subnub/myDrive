@@ -10,6 +10,8 @@ import streamToBuffer from "../utils/streamToBuffer";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
 import { FileListQueryType } from "../types/file-types";
 import fs from "fs";
+import ForbiddenError from "../utils/ForbiddenError";
+import env from "../enviroment/env";
 
 const fileService = new FileService();
 type userAccessType = {
@@ -83,6 +85,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const user = req.user;
       const busboy = req.busboy;
 
@@ -100,6 +106,10 @@ class FileController {
     next: NextFunction
   ) => {
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const ID = req.params.id;
       const tempToken = req.params.tempToken;
 
@@ -115,6 +125,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const id = req.params.id;
       const userID = req.user._id;
 
@@ -132,6 +146,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const fileID = req.params.id;
       const userID = req.user._id;
 
@@ -170,6 +188,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const id = req.params.id;
       const userID = req.user._id;
 
@@ -268,6 +290,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const user = req.user;
 
       const tempToken = await fileService.getDownloadToken(user);
@@ -471,6 +497,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const fileID = req.body.id;
       const title = req.body.title;
       const userID = req.user._id;
@@ -489,6 +519,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const fileID = req.body.id as string;
       const userID = req.user._id as string;
       const parentID = (req.body.parentID as string) || "/";
@@ -511,6 +545,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const items = req.body.items;
       const parentID = (req.body.parentID as string) || "/";
@@ -529,6 +567,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const fileID = req.body.id;
 
@@ -546,6 +588,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const fileID = req.body.id;
 
@@ -563,6 +609,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const fileID = req.body.id;
 
@@ -580,6 +630,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const items = req.body.items;
 
@@ -597,6 +651,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const items = req.body.items;
 
@@ -618,6 +676,10 @@ class FileController {
     }
 
     try {
+      if (env.demoMode) {
+        throw new ForbiddenError("This function is not available in the demo.");
+      }
+
       const userID = req.user._id;
       const items = req.body.items;
 
