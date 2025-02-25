@@ -52,6 +52,7 @@ Required:
 - Node.js (20 Recommended)
 - MongoDB (Unless using a service like Atlas)
 - FFMPEG (Optional, used for video thumbnails)
+- build-essential package (If using linux)
 
 <br/>
 
@@ -88,6 +89,36 @@ npm run build
 ```javascript
 npm run start
 ```
+
+#### Possible installation issues
+
+Make issue
+
+```javascript
+npm error gyp ERR! stack Error: not found: make
+```
+
+This is because you do not have the build essentials installed which is required for Linux. You can install them by running the following command:
+
+```javascript
+sudo apt-get install build-essential
+```
+
+<br/>
+
+Memory issue
+
+```javascript
+Aborted (core dumped)
+```
+
+When running the `npm run build` command it may take more memory than node allows by default. You will get the above error in such a case. To fix this, you can run the following command instead when building:
+
+```javascript
+NODE_OPTIONS="--max-old-space-size=4096" npm run build
+```
+
+You can read more about this issue [here](https://stackoverflow.com/questions/38558989/node-js-heap-out-of-memory).
 
 ## 🐳 Docker
 
