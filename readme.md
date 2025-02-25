@@ -12,11 +12,13 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - [Tech stack](#tech-stack)
 - [Installation (non docker)](#installation)
 - [Docker](#docker)
+- [Common installation issues](#common-installation-issues)
 - [Screenshots](#screenshots)
 - [Video](#video)
 - [Live demo](#live-demo)
 - [Feature requests/bug reports](#bugs)
 - [Updating from a previous version of myDrive](#updating)
+- [Known issues and future improvments](#known-issues)
 
 <span id="features"></span>
 
@@ -95,6 +97,8 @@ npm run build
 ```javascript
 npm run start
 ```
+
+<span id="common-installation-issues"></span>
 
 #### Possible installation issues
 
@@ -192,9 +196,9 @@ I created a short YouTube video, showing off myDrives design and features: (Comi
 
 ## 🕹️ Live demo
 
-Demo: http://143.244.181.219:3000/
+[Demo](http://143.244.181.219:3000/)
 
-Note: Creating, deleting and other features are disabled in the demo.
+Note: Creating, deleting and other features are disabled in the demo. Also the service worker is not enabled in the demo, images thumbnails are not cached because of this.
 
 <span id="bugs"></span>
 
@@ -221,3 +225,23 @@ Note: Make sure you have video thumbnails enabled in your env variables and FFMP
 ```javascript
 npm run create-video-thumbnails
 ```
+
+<span id="known-issues"></span>
+
+## 🔮 Known issues and future improvments
+
+#### Issues
+
+- Video streaming does not always work, especially on Safari.
+- PWA downloads does not work on iOS.
+- Upload folder will sometimes fail on complex folder structures.
+- Generating video thumbnails with the default method will often fail, requiring the whole file to be downloaded to temporary storage and then the thumbnail generated from that.
+
+#### Future improvments
+
+- An alternative to using mongoDB
+- Typescript type cleanup
+- Better error handling
+- Logging
+- More test coverage (currently only basic backend tests)
+- Some tailwind classes still need some slight tweaking
