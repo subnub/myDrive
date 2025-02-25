@@ -8,15 +8,17 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 ## 🔍 Index
 
-- [Features](#⭐️-features)
-- [Tech stack](#👨‍🔬-tech-stack)
-- [Installation (non docker)](#💻-installation)
-- [Docker](#🐳-docker)
-- [Screenshots](#📸-screenshots)
-- [Video](#🎥-video)
-- [Live demo](#🕹️-live-demo)
-- [Feature requests/bug reports](#👾-bug-reports-and-feature-requests)
-- [Updating from a previous version of myDrive](#⬆️-updating-from-a-previous-version-of-mydrive)
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Installation (non docker)](#installation)
+- [Docker](#docker)
+- [Screenshots](#screenshots)
+- [Video](#video)
+- [Live demo](#live-demo)
+- [Feature requests/bug reports](#bugs)
+- [Updating from a previous version of myDrive](#updating)
+
+<span id="features"></span>
 
 ## ⭐️ Features
 
@@ -36,6 +38,8 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - Email Verification
 - JWT (Access and Refresh Tokens)
 
+<span id="tech-stack"></span>
+
 ## 👨‍🔬 Tech Stack
 
 - React
@@ -44,6 +48,8 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - Express
 - MongoDB
 - Vite
+
+<span id="installation"></span>
 
 ## 💻 Installation
 
@@ -120,6 +126,8 @@ NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 You can read more about this issue [here](https://stackoverflow.com/questions/38558989/node-js-heap-out-of-memory).
 
+<span id="docker"></span>
+
 ## 🐳 Docker
 
 Setup:
@@ -139,6 +147,8 @@ Setup:
 ```javascript
 npm run docker:production
 ```
+
+<span id="screenshots"></span>
 
 ## 📸 Screenshots
 
@@ -172,19 +182,27 @@ Move File/Folders
 Trash
 ![Trash](github_images/trash.png)
 
+<span id="video"></span>
+
 ## 🎥 Video
 
 I created a short YouTube video, showing off myDrives design and features: (Coming soon)
+
+<span id="live-demo"></span>
 
 ## 🕹️ Live demo
 
 Demo: http://143.244.181.219:3000/
 
-- Note: Creating, deleting and other features are disabled in the demo.
+Note: Creating, deleting and other features are disabled in the demo.
+
+<span id="bugs"></span>
 
 ## 👾 Bug reports and Feature Requests
 
 Contact Email: kyle.hoell@gmail.com
+
+<span id="updating"></span>
 
 ## ⬆️ Updating from a previous version of myDrive
 
