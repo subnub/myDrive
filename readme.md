@@ -143,11 +143,11 @@ Trash
 
 ## 🎥 Video
 
-I created a short YouTube video, showing off myDrives design and features: https://www.youtube.com/watch?v=_bcADP6hDDI&feature=youtu.be
+I created a short YouTube video, showing off myDrives design and features: (Coming soon)
 
 ## 🕹️ Live demo
 
-Demo: https://mydrive-3.herokuapp.com/
+Demo: (Coming soon)
 
 - Note: The Upload and Download Features, and other core features, are disabled in the demo.
 
