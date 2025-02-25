@@ -1,12 +1,11 @@
 class NotValidDataError extends Error {
+  code: number;
 
-    code: number;
-    
-    constructor(args: any) {
-        super(args);
+  constructor(args: any) {
+    super(args);
 
-        this.code = 403;
-    }
+    this.code = 403;
+  }
 }
 
 export default NotValidDataError;

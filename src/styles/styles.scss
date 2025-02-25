@@ -1,38 +1,47 @@
-@import "./base/settings";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import "./base/base";
-@import "./components/content-container";
-@import "./components/LoginPage";
-@import "./components/box-layout";
-@import "./components/button";
-@import "./components/Header";
-@import "./components/HomePage";
-@import "./components/Dataform";
-@import "./components/Folder";
-@import "./components/File";
-@import "./components/Filter";
-@import "./components/LeftSection";
-@import "./components/Subbar";
-@import "./components/RightSection";
-@import "./components/Uploader";
-@import "./components/loader";
 @import "./components/Spinner";
-@import "./components/QuickAccess";
-@import "./components/Spacer";
-@import "./components/Popup-window";
-@import "./components/ContentMenu";
-@import "./components/Sharemenu";
-@import "./components/DownloadPage";
-@import "./components/SettingsMenu";
 @import "./components/Swal";
-@import "./components/Photoviewer";
-@import "./components/MoverMenu";
-@import "./components/Folder-tree";
-@import "./components/VerifyEmailPage";
-@import "./components/ResetPasswordPage";
-@import "./components/AddGoogleAccountPage";
-@import "./components/AddStoragePage";
-@import "./components/AddStorageItems";
-@import "./components/UploadSwitcher";
-@import "./components/main.scss";
-@import "./components/settings.scss";
-@import "./components/MobileContextMenu"
+
+.animate {
+  transition: 0.2s ease all;
+}
+
+.animate-easy {
+  transition: 0.3s ease all;
+}
+
+.animate-movement {
+  transition: 0.4s ease all;
+}
+
+.animate-medium {
+  transition: 0.6s ease all;
+}
+
+.animate-very-long {
+  transition: 6s ease all;
+}
+
+.Toastify__progress-bar--success {
+  background-color: #3c85ee !important;
+}
+
+.--toastify-color-transparent .Toastify__toast-icon {
+  background-color: #3c85ee !important;
+}
+
+.Toastify__toast--success .Toastify__icon svg path {
+  fill: #3c85ee !important;
+}
+
+:root {
+  --toastify-icon-color-success: #3c85ee !important;
+}
+
+.disable-force-touch {
+  -webkit-touch-callout: none;
+}

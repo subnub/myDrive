@@ -1,0 +1,17 @@
+FROM node:20
+
+WORKDIR /usr/app-production
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+# Default Ports
+EXPOSE 8080
+EXPOSE 3000
+
+CMD [ "npm", "run", "start"]

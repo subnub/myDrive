@@ -1,31 +1,58 @@
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 import env from "../enviroment/env";
-import {UserInterface} from "../models/user"
-import sgMail from "@sendgrid/mail";
+import { UserInterface } from "../models/user-model";
+import nodemailer from "nodemailer";
+import createEmailTransporter from "./createEmailTransporter";
 
-const sendVerificationEmail = async (user: UserInterface, emailToken: string) => {
+type MailOptionsType = {
+  from: string;
+  to: string;
+  subject: string;
+  text: string;
+};
 
-    if (process.env.NODE_ENV === "test") {
-        return;
-    }
+const sendEmail = (
+  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>,
+  mailOptions: MailOptionsType
+) => {
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(info);
+      }
+    });
+  });
+};
 
-    const apiKey: any = env.sendgridKey;
-    const sendgridEmail:any = env.sendgridEmail;
-    const url = env.remoteURL + `/verify-email/${emailToken}`    
+const sendVerificationEmail = async (
+  user: UserInterface,
+  emailToken: string
+) => {
+  try {
+    // TODO: Fix any, for some reason some envs come up with a ts error for this
+    const transporter = createEmailTransporter() as any;
 
-    // console.log("send grid api key", apiKey)
-    // console.log("send grid email", sendgridEmail);
-    // console.log("send grid verify url", url)
-    sgMail.setApiKey(apiKey);
+    const emailAddress = env.emailAddress!;
+    const url = env.remoteURL + `/verify-email/${emailToken}`;
 
-    const msg = {
-        to: user.email,
-        from: sendgridEmail,
-        subject: "myDrive Email Verification", 
-        text: `Please navigate to the following link to verify your email address: ${url}`
-    }
+    const mailOptions = {
+      from: emailAddress,
+      to: user.email,
+      subject: "myDrive Email Verification",
+      text:
+        "Please navigate to the following link to verify your email address: " +
+        url,
+    };
 
-    await sgMail.send(msg);
-    //console.log("Send grid email sent");
-}
+    await sendEmail(transporter, mailOptions);
+
+    return true;
+  } catch (e) {
+    console.log("Error sending email verification", e);
+    return false;
+  }
+};
 
 export default sendVerificationEmail;
