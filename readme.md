@@ -6,6 +6,8 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 [Main myDrive website](https://mydrive-storage.com/)
 
+[Live demo](http://143.244.181.219:3000/)
+
 ## 🔍 Index
 
 - [Features](#features)
