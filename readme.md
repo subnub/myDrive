@@ -13,7 +13,7 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - [Features](#features)
 - [Tech stack](#tech-stack)
 - [Installation (non docker)](#installation)
-- [Docker](#docker)
+- [Docker installation](#docker)
 - [Common installation issues](#common-installation-issues)
 - [Screenshots](#screenshots)
 - [Video](#video)
@@ -52,6 +52,7 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - Express
 - MongoDB
 - Vite
+- Jest
 
 <span id="installation"></span>
 
@@ -82,7 +83,8 @@ npm install
 > [backend/config](backend/config) -> Backend Enviroment Variables  
 > [src/config](src/config) -> Frontend Enviroment Variables
 
-> Simply remove the .example from the end of the filename, and fill in the values.
+> Simply remove the .example from the end of the filename, and fill in the values.  
+> Note: In most cases you will only have to change FE enviroment variables for development purposes.
 
 <br />
 
@@ -144,7 +146,8 @@ Setup:
 > [backend/config](backend/config) -> Backend Enviroment Variables  
 > [src/config](src/config) -> Frontend Enviroment Variables
 
-> Simply remove the .example from the end of the filename, and fill in the values.
+> Simply remove the .example from the end of the filename, and fill in the values.  
+> Note: In most cases you will only have to change FE enviroment variables for development purposes.
 
 <br />
 
@@ -185,6 +188,12 @@ Search For Files/Folders
 Move File/Folders
 ![Move](github_images/move.png)
 
+Multi-select
+![Multi-select](github_images/multiselect.png)
+
+Custom context menu
+![Context menu](github_images/context.png)
+
 Trash
 ![Trash](github_images/trash.png)
 
@@ -202,9 +211,13 @@ I created a short YouTube video, showing off myDrives design and features: (Comi
 
 Note: Creating, deleting and other features are disabled in the demo. Also the service worker is not enabled in the demo, images thumbnails are not cached because of this.
 
+Also this is just a 512mb RAM droplet go easy on her.
+
 <span id="bugs"></span>
 
-## 👾 Bug reports and Feature Requests
+## 👾 Bug reports and feature requests
+
+Please only open issues for actual bugs, feature requests or discussions should happen in Discussions or via my email.
 
 Contact Email: kyle.hoell@gmail.com
 
@@ -235,13 +248,15 @@ npm run create-video-thumbnails
 #### Issues
 
 - Video streaming does not always work, especially on Safari.
-- PWA downloads does not work on iOS.
+- PWA downloads does not work on iOS (This may be a current iOS limitation and not a myDrive issue).
 - Upload folder will sometimes fail on complex folder structures.
 - Generating video thumbnails with the default method will often fail, requiring the whole file to be downloaded to temporary storage and then the thumbnail generated from that.
 
 #### Future improvments
 
 - An alternative to using mongoDB
+- Dark mode
+- Enhance service worker, currently only caches thumbnails. This includes potentially adding offline support.
 - Typescript type cleanup
 - Better error handling
 - Logging
