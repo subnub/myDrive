@@ -157,6 +157,12 @@ Setup:
 npm run docker:production
 ```
 
+NOTE: I made an oversight in the docker command, since it requires npm to be installed in order to run the above command, I am working on a fix for this, but here is the command itself that npm runs for now.
+
+```javascript
+docker-compose -p mydrive-production -f docker-compose-production.yml --env-file ./backend/config/.env.production up
+```
+
 <span id="screenshots"></span>
 
 ## 📸 Screenshots
@@ -201,7 +207,11 @@ Trash
 
 ## 🎥 Video
 
-I created a short YouTube video, showing off myDrives design and features: (Coming soon)
+I created a short YouTube video, showing off myDrives design and features:
+
+[![myDrive 4 (open source Google Drive alternative) - UI and feature overview
+](github_images/youtube-video.jpeg)](https://www.youtube.com/watch?v=IqmTvAFBszg "myDrive 4 (open source Google Drive alternative) - UI and feature overview
+")
 
 <span id="live-demo"></span>
 
@@ -247,6 +257,7 @@ npm run create-video-thumbnails
 
 #### Issues
 
+- The docker compose command is currently setup incorrectly since it requires npm to be installed, I am working on a fix for this. (Top priority)
 - Video streaming does not always work, especially on Safari.
 - PWA downloads does not work on iOS (This may be a current iOS limitation and not a myDrive issue).
 - Upload folder will sometimes fail on complex folder structures.
@@ -254,6 +265,10 @@ npm run create-video-thumbnails
 
 #### Future improvments
 
+- Docker image (Top priority)
+- OIDC Support (Top priority)
+- Option to disable encryption
+- File sync from a local device
 - An alternative to using mongoDB
 - Dark mode
 - Enhance service worker, currently only caches thumbnails. This includes potentially adding offline support.
