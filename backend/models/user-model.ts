@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 import validator from "validator";
 import crypto from "crypto";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import env from "../enviroment/env";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
