@@ -1,4 +1,4 @@
-# ![MyDrive Homepage](github_images/homepage.png)
+# ![MyDrive Homepage](https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true)
 
 # ☁️ MyDrive
 
@@ -168,40 +168,40 @@ docker-compose -p mydrive-production -f docker-compose-production.yml --env-file
 ## 📸 Screenshots
 
 Modern and colorful design
-![MyDrive Design](github_images/homepage.png)
+![MyDrive Design](https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true)
 
 Upload Files
-![MyDrive Upload](github_images/upload.png)
+![MyDrive Upload](https://github.com/subnub/myDrive/blob/master/github_images/upload.png?raw=true)
 
 Download Files
-![MyDrive Upload](github_images/download.png)
+![MyDrive Upload](https://github.com/subnub/myDrive/blob/master/github_images/download.png?raw=true)
 
 Image Viewer
-![Image Viewer](github_images/image-viewer.png)
+![Image Viewer](https://github.com/subnub/myDrive/blob/master/github_images/image-viewer.png?raw=true)
 
 Video Viewer
-![Video Viewer](github_images/video-viewer.png)
+![Video Viewer](https://github.com/subnub/myDrive/blob/master/github_images/video-viewer.png?raw=true)
 
 Media Gallery
-![Search](github_images/media-viewer.png)
+![Search](https://github.com/subnub/myDrive/blob/master/github_images/media-viewer.png?raw=true)
 
 Share Files
-![Share](github_images/share.png)
+![Share](https://github.com/subnub/myDrive/blob/master/github_images/share.png?raw=true)
 
 Search For Files/Folders
-![Search](github_images/search.png)
+![Search](https://github.com/subnub/myDrive/blob/master/github_images/search.png?raw=true)
 
 Move File/Folders
-![Move](github_images/move.png)
+![Move](https://github.com/subnub/myDrive/blob/master/github_images/move.png?raw=true)
 
 Multi-select
-![Multi-select](github_images/multiselect.png)
+![Multi-select](https://github.com/subnub/myDrive/blob/master/github_images/multiselect.png?raw=true)
 
 Custom context menu
-![Context menu](github_images/context.png)
+![Context menu](https://github.com/subnub/myDrive/blob/master/github_images/context.png?raw=true)
 
 Trash
-![Trash](github_images/trash.png)
+![Trash](https://github.com/subnub/myDrive/blob/master/github_images/trash.png?raw=true)
 
 <span id="video"></span>
 
@@ -210,7 +210,7 @@ Trash
 I created a short YouTube video, showing off myDrives design and features:
 
 [![myDrive 4 (open source Google Drive alternative) - UI and feature overview
-](github_images/youtube-video.jpeg)](https://www.youtube.com/watch?v=IqmTvAFBszg "myDrive 4 (open source Google Drive alternative) - UI and feature overview
+](https://github.com/subnub/myDrive/blob/master/github_images/youtube-video.jpeg?raw=true)](https://www.youtube.com/watch?v=IqmTvAFBszg "myDrive 4 (open source Google Drive alternative) - UI and feature overview
 ")
 
 <span id="live-demo"></span>
