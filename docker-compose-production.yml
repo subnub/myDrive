@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile.production
     container_name: mydrive_production
     volumes:
-      - .:/usr/app-production
       - ${FS_DIRECTORY:-/dev/null}:/data
     ports:
       - "${HTTP_PORT:-3000}:3000"
