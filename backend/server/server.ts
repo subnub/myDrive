@@ -23,9 +23,12 @@ let server: any;
 let serverHttps: any;
 
 if (process.env.SSL === "true") {
-  const cert = fs.readFileSync("certificate.crt");
-  const ca = fs.readFileSync("certificate.ca-bundle");
-  const key = fs.readFileSync("certificate.key");
+  const certPath = env.httpsCrtPath || "certificate.crt"
+  const caPath = env.httpsCaPath || "certificate.ca-bundle"
+  const keyPath = env.httpsKeyPath || "certificate.key"
+  const cert = fs.readFileSync(certPath);
+  const ca = fs.readFileSync(caPath);
+  const key = fs.readFileSync(keyPath);
 
   const options = {
     cert,
