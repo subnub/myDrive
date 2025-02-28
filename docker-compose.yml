@@ -3,10 +3,11 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.production
-    container_name: mydrive_production
+      dockerfile: Dockerfile
+    container_name: mydrive
+    image: mydrive-image
     volumes:
-      - ${FS_DIRECTORY:-/dev/null}:/data
+      - /user/example/:/data 
     ports:
       - "${HTTP_PORT:-3000}:3000"
       - "${HTTPS_PORT:-8080}:8080"
@@ -14,7 +15,7 @@ services:
       - DOCKER=true
       - MONGODB_URL=
       - DB_TYPE=
-      - FS_DIRECTORY=
+      - FS_DIRECTORY=/data # Change this if you change the volume
       - S3_ID=
       - S3_KEY=
       - S3_BUCKET=

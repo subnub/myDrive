@@ -10,25 +10,24 @@ const serverStart = async () => {
 
   console.log("ENV", process.env.NODE_ENV);
 
+  const httpPort = process.env.HTTP_PORT || process.env.PORT || 3000;
+  const httpsPort = process.env.HTTPS_PORT || 8080
+
   if (process.env.NODE_ENV === "production" && process.env.SSL === "true") {
-    server.listen(process.env.HTTP_PORT, process.env.URL, () => {
-      console.log("Http Server Running On Port:", process.env.HTTP_PORT);
+    server.listen(httpPort, process.env.URL, () => {
+      console.log("Http Server Running On Port:", httpPort);
     });
 
-    serverHttps.listen(process.env.HTTPS_PORT, function () {
-      console.log("Https Server Running On Port:", process.env.HTTPS_PORT);
+    serverHttps.listen(httpsPort, function () {
+      console.log("Https Server Running On Port:", httpsPort);
     });
   } else if (process.env.NODE_ENV === "production") {
-    const port = process.env.HTTP_PORT || process.env.PORT;
-
-    server.listen(port, process.env.URL, () => {
-      console.log("Http Server (No-SSL) Running On Port:", port);
+    server.listen(httpPort, process.env.URL, () => {
+      console.log("Http Server (No-SSL) Running On Port:", httpPort);
     });
   } else {
-    const port = process.env.HTTP_PORT || process.env.PORT;
-
-    server.listen(port, process.env.URL, () => {
-      console.log("\nDevelopment Backend Server Running On :", port);
+    server.listen(httpPort, process.env.URL, () => {
+      console.log("\nDevelopment Backend Server Running On :", httpPort);
     });
   }
 };
