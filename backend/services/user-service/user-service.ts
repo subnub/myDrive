@@ -1,5 +1,5 @@
 import User, { UserInterface } from "../../models/user-model";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import NotFoundError from "../../utils/NotFoundError";
 import InternalServerError from "../../utils/InternalServerError";
 import sendEmailVerification from "../../utils/sendVerificationEmail";

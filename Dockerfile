@@ -1,4 +1,10 @@
-FROM node:20
+FROM node:20-alpine
+
+RUN apk add --no-cache python3 make g++ ffmpeg \
+    && ln -sf python3 /usr/bin/python
+
+ENV FS_DIRECTORY=/data/
+ENV TEMP_DIRECTORY=/temp/
 
 WORKDIR /usr/app-production
 

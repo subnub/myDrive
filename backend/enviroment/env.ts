@@ -31,6 +31,9 @@ export default {
     ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     : 0,
   docker: process.env.DOCKER === "true",
+  httpsKeyPath: process.env.HTTPS_KEY_PATH,
+  httpsCaPath: process.env.HTTPS_CA_PATH,
+  httpsCrtPath: process.env.HTTPS_CRT_PATH,
 };
 
 module.exports = {
@@ -66,4 +69,7 @@ module.exports = {
     ? +process.env.TEMP_VIDEO_THUMBNAIL_LIMIT
     : 0,
   docker: process.env.DOCKER === "true",
+  httpsKeyPath: process.env.HTTPS_KEY_PATH,
+  httpsCaPath: process.env.HTTPS_CA_PATH,
+  httpsCrtPath: process.env.HTTPS_CRT_PATH,
 };

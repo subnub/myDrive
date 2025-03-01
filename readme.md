@@ -1,4 +1,4 @@
-# ![MyDrive Homepage](github_images/homepage.png)
+# ![MyDrive Homepage](https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true)
 
 # ☁️ MyDrive
 
@@ -12,8 +12,8 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 - [Features](#features)
 - [Tech stack](#tech-stack)
-- [Installation (non docker)](#installation)
-- [Docker installation](#docker)
+- [Docker image](#docker)
+- [Manual installation](#installation)
 - [Common installation issues](#common-installation-issues)
 - [Screenshots](#screenshots)
 - [Video](#video)
@@ -56,7 +56,55 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 <span id="installation"></span>
 
-## 💻 Installation
+## 🐳 Docker image
+
+Required:
+
+- Docker
+- MongoDB (Unless using a service like Atlas)  
+  <br/>
+
+Run the following command to download the latest docker image:
+
+```javascript
+docker pull kylehoell/mydrive:latest
+```
+
+You must provide enviroment variables for the docker image to work. You can supply these during the docker run command instead of creating the env file. <br />
+
+> [backend/config](backend/config) -> Backend Enviroment Variables
+
+You must also provide a volume for the image if you are using a filesystem database or if you want to use the generate video thumbnails feature. Volumes should be mounted to /data/ and /temp/ For example:
+
+```javascript
+-v /path/example/mydrive/data/:/data/ -v /path/example/mydrive/temp/:/temp/
+```
+
+/data/: This is where the encrypted files will be stored.  
+/temp/: Where files will temporary be stored to generate video thumbnails as a fallback.
+
+The docker image will by default run on port 3000.
+
+Here is an example of the full docker command:
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
+  -e DB_TYPE=fs \
+  -e PASSWORD_ACCESS=secretaccesspassword \
+  -e PASSWORD_REFRESH=secretrefreshpassword \
+  -e PASSWORD_COOKIE=secretcookiepassword \
+  -e KEY=encryptionkey \
+  -e VIDEO_THUMBNAILS_ENABLED=true \
+  -e TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000 \
+  -v /path/example/mydrive/data/:/data/ \
+  -v /path/example/mydrive/temp/:/temp/ \
+  --name mydrive \
+  kylehoell/mydrive:latest
+```
+
+## 💻 Manual Installation
 
 Required:
 
@@ -136,72 +184,45 @@ You can read more about this issue [here](https://stackoverflow.com/questions/38
 
 <span id="docker"></span>
 
-## 🐳 Docker
-
-Setup:
-
-> Create Environment Variables:
-
-> You can find enviroment variable examples under: <br />  
-> [backend/config](backend/config) -> Backend Enviroment Variables  
-> [src/config](src/config) -> Frontend Enviroment Variables
-
-> Simply remove the .example from the end of the filename, and fill in the values.  
-> Note: In most cases you will only have to change FE enviroment variables for development purposes.
-
-<br />
-
-> Start the Docker image
-
-```javascript
-npm run docker:production
-```
-
-NOTE: I made an oversight in the docker command, since it requires npm to be installed in order to run the above command, I am working on a fix for this, but here is the command itself that npm runs for now.
-
-```javascript
-docker-compose -p mydrive-production -f docker-compose-production.yml --env-file ./backend/config/.env.production up
-```
-
 <span id="screenshots"></span>
 
 ## 📸 Screenshots
 
 Modern and colorful design
-![MyDrive Design](github_images/homepage.png)
+![MyDrive Design](https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true)
 
 Upload Files
-![MyDrive Upload](github_images/upload.png)
+![MyDrive Upload](https://github.com/subnub/myDrive/blob/master/github_images/upload.png?raw=true)
 
 Download Files
-![MyDrive Upload](github_images/download.png)
+![MyDrive Upload](https://github.com/subnub/myDrive/blob/master/github_images/download.png?raw=true)
 
 Image Viewer
-![Image Viewer](github_images/image-viewer.png)
+![Image Viewer](https://github.com/subnub/myDrive/blob/master/github_images/image-viewer.png?raw=true)
 
 Video Viewer
-![Video Viewer](github_images/video-viewer.png)
+![Video Viewer](https://github.com/subnub/myDrive/blob/master/github_images/video-viewer.png?raw=true)
 
 Media Gallery
-![Search](github_images/media-viewer.png)
+![Search](https://github.com/subnub/myDrive/blob/master/github_images/media-viewer.png?raw=true)
 
 Share Files
-![Share](github_images/share.png)
+![Share](https://github.com/subnub/myDrive/blob/master/github_images/share.png?raw=true)
 
 Search For Files/Folders
-![Search](github_images/search.png)
+![Search](https://github.com/subnub/myDrive/blob/master/github_images/search.png?raw=true)
 
 Move File/Folders
-![Move](github_images/move.png)
+![Move](https://github.com/subnub/myDrive/blob/master/github_images/move.png?raw=true)
 
 Multi-select
-![Multi-select](github_images/multiselect.png)
+![Multi-select](https://github.com/subnub/myDrive/blob/master/github_images/multiselect.png?raw=true)
 
 Custom context menu
-![Context menu](github_images/context.png)
+![Context menu](https://github.com/subnub/myDrive/blob/master/github_images/context.png?raw=true)
 
 Trash
-![Trash](github_images/trash.png)
+![Trash](https://github.com/subnub/myDrive/blob/master/github_images/trash.png?raw=true)
 
 <span id="video"></span>
 
@@ -210,7 +231,7 @@ Trash
 I created a short YouTube video, showing off myDrives design and features:
 
 [![myDrive 4 (open source Google Drive alternative) - UI and feature overview
-](github_images/youtube-video.jpeg)](https://www.youtube.com/watch?v=IqmTvAFBszg "myDrive 4 (open source Google Drive alternative) - UI and feature overview
+](https://github.com/subnub/myDrive/blob/master/github_images/youtube-video.jpeg?raw=true)](https://www.youtube.com/watch?v=IqmTvAFBszg "myDrive 4 (open source Google Drive alternative) - UI and feature overview
 ")
 
 <span id="live-demo"></span>
