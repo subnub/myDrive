@@ -68,7 +68,7 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 > - Docker
 > - MongoDB (optional, comes with `docker-compose.yml`)
 
-#### Docker Compose
+#### **Docker Compose**
 
 1. Make folder for docker-compose.yml and env file.
 2. Copy [`docker-compose.yml`](./docker-compose.yml) and [`.env.example`](./.env.example) to your directory.
@@ -81,7 +81,7 @@ docker compose up -d
 5. Access the app at `http://localhost:3000` 
    <br/>
 
-#### Docker Run
+#### **Docker Run**
 
 1. Pull the image
 
@@ -143,12 +143,12 @@ npm install
 
 2. Create Environment Variables
 
-You can find enviroment variable examples under: <br />  
-[`backend/config`](backend/config) -> Backend Enviroment Variables  
-[`src/config`](src/config) -> Frontend Enviroment Variables
+  You can find enviroment variable examples under: <br />  
+  [`backend/config`](backend/config) -> Backend Enviroment Variables  
+  [`src/config`](src/config) -> Frontend Enviroment Variables
 
-Simply remove the .example from the end of the filename, and fill in the values.  
-> Note: In most cases you will only have to change FE enviroment variables for development purposes.
+  Simply remove the .example from the end of the filename, and fill in the values.  
+  > Note: In most cases you will only have to change FE enviroment variables for development purposes.
 
 3. Run the build command
 
