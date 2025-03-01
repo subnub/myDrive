@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mydrive
+    volumes:
+      # Use the following volumes section if you want to use bind mounts:
+      # - /path/to/data:/data/
+      # - /path/to/temp:/temp/
+
+      # Use the following volumes section if you want to use named volumes:
+      - mydrive-data:/data/
+      - mydrive-temp:/temp/
+    ports:
+      - "${HTTP_PORT:-3000}:3000"
+      - "${HTTPS_PORT:-8080}:8080"
+    env_file:
+      - .env.test # Copy .env.example to .env.test or .env and fill in the values
+
+# Use the following volumes section if you want to use named volumes. Useful for development.
+volumes:
+  mydrive-data:
+  mydrive-temp:
