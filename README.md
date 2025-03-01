@@ -85,7 +85,7 @@
 3. Rename `env.example` to `.env` and fill in / change the values.
 4. Run the following command:
 
-```shell
+```sh
 docker compose up -d
 ```
 5. Access the app at `http://localhost:3000` 
@@ -96,7 +96,7 @@ docker compose up -d
 
 1. Pull the image
 
-```shell
+```sh
 docker pull kylehoell/mydrive:latest
 ```
 
@@ -104,7 +104,7 @@ docker pull kylehoell/mydrive:latest
 
 Using `.env` file. Copy the `.env.example` file and fill in the values.
 
-```shell
+```sh
 docker run -d \
   -p 3000:3000 \
   --env-file ./.env \
@@ -116,7 +116,7 @@ docker run -d \
 
 Or directly pass in the environment variables
 
-```shell
+```sh
 docker run -d \
   -p 3000:3000 \
   -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
@@ -148,7 +148,7 @@ docker run -d \
 
 1. Install dependencies
 
-```shell
+```sh
 npm install
 ```
 
@@ -163,13 +163,13 @@ Simply remove the .example from the end of the filename, and fill in the values.
 
 3. Run the build command
 
-```shell
+```sh
 npm run build
 ```
 
 4. Start the server
 
-```shell
+```sh
 npm run start
 ```
 
@@ -179,25 +179,25 @@ npm run start
 
 Make issue
 
-```shell
+```sh
 npm error gyp ERR! stack Error: not found: make
 ```
 
 This is because you do not have the build essentials installed which is required for Linux. You can install them by running the following command:
 
-```shell
+```sh
 sudo apt-get install build-essential
 ```
 
 Memory issue
 
-```shell
+```sh
 Aborted (core dumped)
 ```
 
 When running the `npm run build` command it may take more memory than node allows by default. You will get the above error in such a case. To fix this, you can run the following command instead when building:
 
-```shell
+```sh
 NODE_OPTIONS="--max-old-space-size=4096" npm run build
 ```
 
@@ -282,14 +282,14 @@ If you are upgrading from myDrive 3 there is some data migration and scripts you
 > Run the migration script <br />
 > Note: Make sure you have env variables set
 
-```javascript
+```sh
 npm run migrate-to-mydrive4
 ```
 
 Also, if you are updating from myDrive 3, or if you did not have video thumbnails enabled and would like to enable them now you can do so by running the following command:<br />
 Note: Make sure you have video thumbnails enabled in your env variables and FFMPEG installed.
 
-```javascript
+```sh
 npm run create-video-thumbnails
 ```
 
