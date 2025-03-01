@@ -56,57 +56,31 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 <span id="docker"></span>
 
-## 🐳 Docker image
+## Running
+
+### 🐳 Docker
 
 Required:
 
 - Docker
-- MongoDB (Unless using a service like Atlas)  
+- MongoDB (optional, comes with `docker-compose.yml`)
   <br/>
 
-Run the following command to download the latest docker image:
-
-```javascript
-docker pull kylehoell/mydrive:latest
-```
-
-You must provide enviroment variables for the docker image to work. You can supply these during the docker run command instead of creating the env file. <br />
-
-> [backend/config](backend/config) -> Backend Enviroment Variables
-
-You must also provide a volume for the image if you are using a filesystem database or if you want to use the generate video thumbnails feature. Volumes should be mounted to /data/ and /temp/ For example:
-
-```javascript
--v /path/example/mydrive/data/:/data/ -v /path/example/mydrive/temp/:/temp/
-```
-
-/data/: This is where the encrypted files will be stored.  
-/temp/: Where files will temporary be stored to generate video thumbnails as a fallback.
-
-The docker image will by default run on port 3000.
-
-Here is an example of the full docker command:
+1. Make folder for docker-compose.yml and env file.
+2. Copy [`docker-compose.yml`](./docker-compose.yml) and [`env.example`](./env.example) to your directory.
+3. Rename `env.example` to `.env` and fill in / change the values.
+4. Run the following command:
 
 ```bash
-docker run -d \
-  -p 3000:3000 \
-  -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
-  -e DB_TYPE=fs \
-  -e PASSWORD_ACCESS=secretaccesspassword \
-  -e PASSWORD_REFRESH=secretrefreshpassword \
-  -e PASSWORD_COOKIE=secretcookiepassword \
-  -e KEY=encryptionkey \
-  -e VIDEO_THUMBNAILS_ENABLED=true \
-  -e TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000 \
-  -v /path/example/mydrive/data/:/data/ \
-  -v /path/example/mydrive/temp/:/temp/ \
-  --name mydrive \
-  kylehoell/mydrive:latest
+docker-compose up -d
 ```
+
+5. Access the app at `http://localhost:3000` 
+   <br/>
 
 <span id="installation"></span>
 
-## 💻 Manual Installation
+### 💻 Non - Docker
 
 Required:
 
@@ -117,9 +91,7 @@ Required:
 
 <br/>
 
-Setup (Non Docker Method):
-
-> Install Node Modules
+> Install dependencies
 
 ```javascript
 npm install
@@ -280,7 +252,6 @@ npm run create-video-thumbnails
 
 #### Issues
 
-- The docker compose command is currently setup incorrectly since it requires npm to be installed, I am working on a fix for this. (Top priority)
 - Video streaming does not always work, especially on Safari.
 - PWA downloads does not work on iOS (This may be a current iOS limitation and not a myDrive issue).
 - Upload folder will sometimes fail on complex folder structures.
@@ -288,7 +259,6 @@ npm run create-video-thumbnails
 
 #### Future improvments
 
-- Docker image (Top priority)
 - OIDC Support (Top priority)
 - Option to disable encryption
 - File sync from a local device
