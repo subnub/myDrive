@@ -1,6 +1,6 @@
 {
   "name": "mydrive",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "main": "index.js",
   "license": "GNU General Public License v3.0",
   "engines": {
