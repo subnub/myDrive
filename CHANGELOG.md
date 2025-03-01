@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/subnub/myDrive/compare/v4.0.2...v4.1.0) (2025-03-01)
+
+
+### Features
+
+* Add block account creation ([#80](https://github.com/subnub/myDrive/issues/80)) ([fc48827](https://github.com/subnub/myDrive/commit/fc48827338c3eb5632249e34dcc1f5b8d1c61031))
+
 ## 4.0.2 (2025-03-01)
 
 
