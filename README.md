@@ -68,8 +68,6 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 > - Docker
 > - MongoDB (optional, comes with `docker-compose.yml`)
 
-<br/>
-
 #### Docker Compose
 
 1. Make folder for docker-compose.yml and env file.
@@ -137,37 +135,28 @@ docker run -d \
 > - FFMPEG (Optional, used for video thumbnails)
 > - build-essential package (If using linux)
 
-
-<br/>
-
-> Install dependencies
+1. Install dependencies
 
 ```shell
 npm install
 ```
 
-<br>
+2. Create Environment Variables
 
-> Create Environment Variables:
+You can find enviroment variable examples under: <br />  
+[`backend/config`](backend/config) -> Backend Enviroment Variables  
+[`src/config`](src/config) -> Frontend Enviroment Variables
 
-> You can find enviroment variable examples under: <br />  
-> [backend/config](backend/config) -> Backend Enviroment Variables  
-> [src/config](src/config) -> Frontend Enviroment Variables
-
-> Simply remove the .example from the end of the filename, and fill in the values.  
+Simply remove the .example from the end of the filename, and fill in the values.  
 > Note: In most cases you will only have to change FE enviroment variables for development purposes.
 
-<br />
-
-> Run the build command
+3. Run the build command
 
 ```shell
 npm run build
 ```
 
-<br />
-
-> Start the server
+4. Start the server
 
 ```shell
 npm run start
@@ -188,8 +177,6 @@ This is because you do not have the build essentials installed which is required
 ```shell
 sudo apt-get install build-essential
 ```
-
-<br/>
 
 Memory issue
 
