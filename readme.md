@@ -54,7 +54,7 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - Vite
 - Jest
 
-<span id="installation"></span>
+<span id="docker"></span>
 
 ## 🐳 Docker image
 
@@ -103,6 +103,8 @@ docker run -d \
   --name mydrive \
   kylehoell/mydrive:latest
 ```
+
+<span id="installation"></span>
 
 ## 💻 Manual Installation
 

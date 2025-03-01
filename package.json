@@ -18,15 +18,7 @@
     "create-video-thumbnails:dev": "NODE_ENV=development node serverUtils/createVideoThumbnails.js",
     "migrate-to-mydrive4": "NODE_ENV=production node serverUtils/migrateMyDrive4.js",
     "migrate-to-mydrive4:dev": "NODE_ENV=development node serverUtils/migrateMyDrive4.js",
-    "test": "NODE_ENV=test jest",
-    "docker:production": "NODE_ENV=production docker-compose -p mydrive-production -f docker-compose-production.yml --env-file ./backend/config/.env.production up",
-    "docker:dev": "NODE_ENV=development docker-compose -p mydrive-dev -f docker-compose-development.yml --env-file ./backend/config/.env.development up",
-    "docker-down:production": "docker-compose -f docker-compose-production.yml down",
-    "docker-down:dev": "docker-compose -p mydrive-dev -f doc -p mydrive-productionker-compose-development.yml down",
-    "docker-build:production": "docker-compose -p mydrive-production -f docker-compose-production.yml build",
-    "docker-build:dev": "docker-compose -p mydrive-dev -f docker-compose-development.yml build",
-    "docker-build-force:production": "docker-compose -p mydrive-production -f docker-compose-production.yml build --no-cache",
-    "docker-build-force:dev": "docker-compose -p mydrive-dev -f docker-compose-development.yml build --no-cache"
+    "test": "NODE_ENV=test jest"
   },
   "dependencies": {
     "@babel/core": "^7.8.4",
