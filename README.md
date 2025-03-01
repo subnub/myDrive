@@ -142,7 +142,7 @@ docker run -d \
 
 > Install dependencies
 
-```bash
+```shell
 npm install
 ```
 
@@ -161,7 +161,7 @@ npm install
 
 > Run the build command
 
-```bash
+```shell
 npm run build
 ```
 
@@ -169,7 +169,7 @@ npm run build
 
 > Start the server
 
-```javascript
+```shell
 npm run start
 ```
 
@@ -179,13 +179,13 @@ npm run start
 
 Make issue
 
-```bash
+```shell
 npm error gyp ERR! stack Error: not found: make
 ```
 
 This is because you do not have the build essentials installed which is required for Linux. You can install them by running the following command:
 
-```bash
+```shell
 sudo apt-get install build-essential
 ```
 
@@ -193,13 +193,13 @@ sudo apt-get install build-essential
 
 Memory issue
 
-```bash
+```shell
 Aborted (core dumped)
 ```
 
 When running the `npm run build` command it may take more memory than node allows by default. You will get the above error in such a case. To fix this, you can run the following command instead when building:
 
-```bash
+```shell
 NODE_OPTIONS="--max-old-space-size=4096" npm run build
 ```
 
