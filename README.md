@@ -72,7 +72,7 @@ Required:
 4. Run the following command:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 5. Access the app at `http://localhost:3000` 
