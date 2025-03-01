@@ -67,7 +67,7 @@ Required:
   <br/>
 
 1. Make folder for docker-compose.yml and env file.
-2. Copy [`docker-compose.yml`](./docker-compose.yml) and [`env.example`](./env.example) to your directory.
+2. Copy [`docker-compose.yml`](./docker-compose.yml) and [`.env.example`](./.env.example) to your directory.
 3. Rename `env.example` to `.env` and fill in / change the values.
 4. Run the following command:
 
