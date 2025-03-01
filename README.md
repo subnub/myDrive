@@ -63,7 +63,8 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 ### 🐳 Docker
 
-> [!IMPORTANT] Requirements
+> [!IMPORTANT]
+> Requirements
 > - Docker
 > - MongoDB (optional, comes with `docker-compose.yml`)
 
@@ -76,7 +77,7 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 3. Rename `env.example` to `.env` and fill in / change the values.
 4. Run the following command:
 
-```bash
+```shell
 docker compose up -d
 ```
 5. Access the app at `http://localhost:3000` 
@@ -86,7 +87,7 @@ docker compose up -d
 
 1. Pull the image
 
-```bash
+```shell
 docker pull kylehoell/mydrive:latest
 ```
 
@@ -94,7 +95,7 @@ docker pull kylehoell/mydrive:latest
 
 > Using `.env` file. Copy the `.env.example` file and fill in the values.
 
-```bash
+```shell
 docker run -d \
   -p 3000:3000 \
   --env-file ./.env \
@@ -106,7 +107,7 @@ docker run -d \
 
 > Directly passing in the environment variables
 
-```bash
+```shell
 docker run -d \
   -p 3000:3000 \
   -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
@@ -129,7 +130,8 @@ docker run -d \
 
 ### 💻 Non - Docker
 
-> [!IMPORTANT] Requirements
+> [!IMPORTANT]
+> Requirements
 > - Node.js (20 Recommended)
 > - MongoDB (Unless using a service like Atlas)
 > - FFMPEG (Optional, used for video thumbnails)
