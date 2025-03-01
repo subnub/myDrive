@@ -12,7 +12,8 @@ services:
             - mydrive-temp:/temp/
         ports:
             - "${HTTP_PORT:-3000}:3000"
-            - "${HTTPS_PORT:-8080}:8080"
+            # Optional: Uncomment the following line if you want to use HTTPS
+            #- "${HTTPS_PORT:-8080}:8080"
 
         # Use expose: if using a reverse proxy
         # expose:

@@ -66,6 +66,8 @@ Required:
 - MongoDB (optional, comes with `docker-compose.yml`)
   <br/>
 
+#### Docker Compose
+
 1. Make folder for docker-compose.yml and env file.
 2. Copy [`docker-compose.yml`](./docker-compose.yml) and [`.env.example`](./.env.example) to your directory.
 3. Rename `env.example` to `.env` and fill in / change the values.
@@ -74,9 +76,51 @@ Required:
 ```bash
 docker compose up -d
 ```
-
 5. Access the app at `http://localhost:3000` 
    <br/>
+
+#### Docker Run
+
+1. Pull the image
+
+```bash
+docker pull kylehoell/mydrive:latest
+```
+
+2. Run the image
+
+> Using `.env` file. Copy the `.env.example` file and fill in the values.
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  --env-file ./.env \
+  -v /path/example/mydrive/data/:/data/ \
+  -v /path/example/mydrive/temp/:/temp/ \
+  --name mydrive \
+  kylehoell/mydrive:latest
+```
+
+> Directly passing in the environment variables
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
+  -e DB_TYPE=fs \
+  -e PASSWORD_ACCESS=secretaccesspassword \
+  -e PASSWORD_REFRESH=secretrefreshpassword \
+  -e PASSWORD_COOKIE=secretcookiepassword \
+  -e KEY=encryptionkey \
+  -e VIDEO_THUMBNAILS_ENABLED=true \
+  -e TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000 \
+  -v /path/example/mydrive/data/:/data/ \
+  -v /path/example/mydrive/temp/:/temp/ \
+  --name mydrive \
+  kylehoell/mydrive:latest
+```
+
+3. Access the app at `http://localhost:3000`
 
 <span id="installation"></span>
 

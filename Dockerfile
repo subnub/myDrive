@@ -17,6 +17,9 @@ RUN npm prune --production
 
 FROM node:20-alpine
 
+ENV FS_DIRECTORY=/data/
+ENV TEMP_DIRECTORY=/temp/
+
 # Install runtime dependencies
 RUN apk add --no-cache ffmpeg
 
