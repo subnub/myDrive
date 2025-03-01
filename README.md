@@ -143,12 +143,12 @@ npm install
 
 2. Create Environment Variables
 
-  You can find enviroment variable examples under: <br />  
-  [`backend/config`](backend/config) -> Backend Enviroment Variables  
-  [`src/config`](src/config) -> Frontend Enviroment Variables
+You can find enviroment variable examples under: <br />  
+[`backend/config`](backend/config) -> Backend Enviroment Variables  
+[`src/config`](src/config) -> Frontend Enviroment Variables
 
-  Simply remove the .example from the end of the filename, and fill in the values.  
-  > Note: In most cases you will only have to change FE enviroment variables for development purposes.
+Simply remove the .example from the end of the filename, and fill in the values.  
+> Note: In most cases you will only have to change FE enviroment variables for development purposes.
 
 3. Run the build command
 
