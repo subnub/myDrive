@@ -1,12 +1,22 @@
 # ![MyDrive Homepage](https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true)
 
-# ☁️ MyDrive
 
-MyDrive is an Open Source cloud file storage server (Similar To Google Drive). Host myDrive on your own server or trusted platform and then access myDrive through your web browser. MyDrive uses mongoDB to store file/folder metadata, and supports multiple databases to store the file chunks, such as Amazon S3, or the Filesystem.
+<div align="center">
+  <a href="https://github.com/subnub/myDrive/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/subnub/myDrive?label=myDrive"></a>
+  <a href="https://github.com/subnub/myDrive/issues"><img alt="Issues" src="https://img.shields.io/github/issues/subnub/myDrive" /></a>
+  <a href="https://github.com/subnub/myDrive/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/subnub/myDrive"></a>
+  <a href="https://github.com/subnub/myDrive/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/subnub/myDrive" /></a>
+</div>
 
-[Main myDrive website](https://mydrive-storage.com/)
+<div align="center">
+  <h1>☁️ MyDrive</h1>
+  <strong>Open Source cloud file storage server (Similar To Google Drive)</strong>
+  <p>Host myDrive on your own server or trusted platform and then access myDrive through your web browser. MyDrive uses mongoDB to store file/folder metadata, and supports multiple databases to store the file chunks, such as Amazon S3, or the Filesystem.</p>
 
-[Live demo](http://143.244.181.219:3000/)
+  <a href="https://mydrive-storage.com/">Website</a>
+  <span> | </span>
+  <a href="http://143.244.181.219:3000/">Live demo</a>
+</div>
 
 ## 🔍 Index
 
