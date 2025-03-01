@@ -63,8 +63,7 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 ### 🐳 Docker
 
-> [!IMPORTANT]  
-> Required:
+> [!IMPORTANT] Requirements
 > - Docker
 > - MongoDB (optional, comes with `docker-compose.yml`)
 
@@ -130,8 +129,7 @@ docker run -d \
 
 ### 💻 Non - Docker
 
-> [!IMPORTANT]
-> Required:
+> [!IMPORTANT] Requirements
 > - Node.js (20 Recommended)
 > - MongoDB (Unless using a service like Atlas)
 > - FFMPEG (Optional, used for video thumbnails)
