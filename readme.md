@@ -136,31 +136,45 @@ You can read more about this issue [here](https://stackoverflow.com/questions/38
 
 <span id="docker"></span>
 
-## 🐳 Docker
+## 🐳 Docker image
 
-Setup:
+Note: This is a work in progress and may have issues, please report any issues you find.
 
-> Create Environment Variables:
-
-> You can find enviroment variable examples under: <br />  
-> [backend/config](backend/config) -> Backend Enviroment Variables  
-> [src/config](src/config) -> Frontend Enviroment Variables
-
-> Simply remove the .example from the end of the filename, and fill in the values.  
-> Note: In most cases you will only have to change FE enviroment variables for development purposes.
-
-<br />
-
-> Start the Docker image
+Run the following command to download the latest docker image:
 
 ```javascript
-npm run docker:production
+docker pull kylehoell/mydrive:latest
 ```
 
-NOTE: I made an oversight in the docker command, since it requires npm to be installed in order to run the above command, I am working on a fix for this, but here is the command itself that npm runs for now.
+You must provide enviroment variables for the docker image to work. You can supply these during the docker run command instead of creating the env file. <br />
+
+> [backend/config](backend/config) -> Backend Enviroment Variables
+
+You must also provide a volume for the image if you are using a filesystem database or if you want to use the generate video thumbnails feature. Volumes should be mounted to /data/ and /temp. For example:
 
 ```javascript
-docker-compose -p mydrive-production -f docker-compose-production.yml --env-file ./backend/config/.env.production up
+-v /path/example/mydrive/data/:/data/ -v /path/example/mydrive/temp/:/temp/
+```
+
+The docker image will by default run on port 3000.
+
+Here is an example of the full docker command:
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e MONGODB_URL=mongodb://127.0.0.1:27017/test \
+  -e DB_TYPE=fs \
+  -e PASSWORD_ACCESS=secretaccesspassword \
+  -e PASSWORD_REFRESH=secretrefreshpassword \
+  -e PASSWORD_COOKIE=secretcookiepassword \
+  -e KEY=encryptionkey \
+  -e VIDEO_THUMBNAILS_ENABLED=true \
+  -e TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000 \
+  -v /path/example/mydrive/data/:/data/ \
+  -v /path/example/mydrive/temp/:/temp/ \
+  --name mydrive \
+  kylehoell/mydrive:latest
 ```
 
 <span id="screenshots"></span>
