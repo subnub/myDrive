@@ -89,7 +89,8 @@
 docker compose up -d
 ```
 5. Access the app at `http://localhost:3000` 
-   <br/>
+
+---
 
 #### **Docker Run**
 
@@ -101,7 +102,7 @@ docker pull kylehoell/mydrive:latest
 
 2. Run the image
 
-> Using `.env` file. Copy the `.env.example` file and fill in the values.
+Using `.env` file. Copy the `.env.example` file and fill in the values.
 
 ```shell
 docker run -d \
@@ -113,7 +114,7 @@ docker run -d \
   kylehoell/mydrive:latest
 ```
 
-> Directly passing in the environment variables
+Or directly pass in the environment variables
 
 ```shell
 docker run -d \
