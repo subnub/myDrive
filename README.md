@@ -1,19 +1,30 @@
 # ![MyDrive Homepage](https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true)
 
-# ☁️ MyDrive
 
-MyDrive is an Open Source cloud file storage server (Similar To Google Drive). Host myDrive on your own server or trusted platform and then access myDrive through your web browser. MyDrive uses mongoDB to store file/folder metadata, and supports multiple databases to store the file chunks, such as Amazon S3, or the Filesystem.
+<div align="center">
+  <a href="https://github.com/subnub/myDrive/stargazers"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/subnub/myDrive?label=myDrive"></a>
+  <a href="https://github.com/subnub/myDrive/issues"><img alt="Issues" src="https://img.shields.io/github/issues/subnub/myDrive" /></a>
+  <a href="https://github.com/subnub/myDrive/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/subnub/myDrive"></a>
+  <a href="https://github.com/subnub/myDrive/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/subnub/myDrive" /></a>
+</div>
 
-[Main myDrive website](https://mydrive-storage.com/)
+<div align="center">
+  <h1>☁️ MyDrive</h1>
+  <strong>Open Source cloud file storage server (Similar To Google Drive)</strong>
+  <p>Host myDrive on your own server or trusted platform and then access myDrive through your web browser. MyDrive uses mongoDB to store file/folder metadata, and supports multiple databases to store the file chunks, such as Amazon S3, or the Filesystem.</p>
 
-[Live demo](http://143.244.181.219:3000/)
+  <a href="https://mydrive-storage.com/">Website</a>
+  <span> | </span>
+  <a href="http://143.244.181.219:3000/">Live demo</a>
+</div>
 
 ## 🔍 Index
 
 - [Features](#features)
 - [Tech stack](#tech-stack)
-- [Docker image](#docker)
-- [Manual installation](#installation)
+- [Running](#running)
+  - [Docker](#docker)
+  - [Non-Docker](#non-docker)
 - [Common installation issues](#common-installation-issues)
 - [Screenshots](#screenshots)
 - [Video](#video)
@@ -54,40 +65,58 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - Vite
 - Jest
 
+<span id="running"></span>
+
+## Running
+
 <span id="docker"></span>
 
-## 🐳 Docker image
+### 🐳 Docker
 
-Required:
+> [!IMPORTANT]
+> Requirements
+> - Docker
+> - MongoDB (optional, comes with `docker-compose.yml`)
 
-- Docker
-- MongoDB (Unless using a service like Atlas)  
-  <br/>
+#### **Docker Compose**
 
-Run the following command to download the latest docker image:
+1. Make folder for docker-compose.yml and env file.
+2. Copy [`docker-compose.yml`](./docker-compose.yml) and [`.env.example`](./.env.example) to your directory.
+3. Rename `.env.example` to `.env` and fill in / change the values.
+4. Run the following command:
 
-```javascript
+```sh
+docker compose up -d
+```
+5. Access the app at `http://localhost:3000` 
+
+---
+
+#### **Docker Run**
+
+1. Pull the image
+
+```sh
 docker pull kylehoell/mydrive:latest
 ```
 
-You must provide enviroment variables for the docker image to work. You can supply these during the docker run command instead of creating the env file. <br />
+2. Run the image
 
-> [backend/config](backend/config) -> Backend Enviroment Variables
+Using `.env` file. Copy the `.env.example` file and fill in the values.
 
-You must also provide a volume for the image if you are using a filesystem database or if you want to use the generate video thumbnails feature. Volumes should be mounted to /data/ and /temp/ For example:
-
-```javascript
--v /path/example/mydrive/data/:/data/ -v /path/example/mydrive/temp/:/temp/
+```sh
+docker run -d \
+  -p 3000:3000 \
+  --env-file ./.env \
+  -v /path/example/mydrive/data/:/data/ \
+  -v /path/example/mydrive/temp/:/temp/ \
+  --name mydrive \
+  kylehoell/mydrive:latest
 ```
 
-/data/: This is where the encrypted files will be stored.  
-/temp/: Where files will temporary be stored to generate video thumbnails as a fallback.
+Or directly pass in the environment variables
 
-The docker image will by default run on port 3000.
-
-Here is an example of the full docker command:
-
-```bash
+```sh
 docker run -d \
   -p 3000:3000 \
   -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
@@ -104,51 +133,43 @@ docker run -d \
   kylehoell/mydrive:latest
 ```
 
-<span id="installation"></span>
+3. Access the app at `http://localhost:3000`
 
-## 💻 Manual Installation
+<span id="non-docker"></span>
 
-Required:
+### 💻 Non - Docker
 
-- Node.js (20 Recommended)
-- MongoDB (Unless using a service like Atlas)
-- FFMPEG (Optional, used for video thumbnails)
-- build-essential package (If using linux)
+> [!IMPORTANT]
+> Requirements
+> - Node.js (20 Recommended)
+> - MongoDB (Unless using a service like Atlas)
+> - FFMPEG (Optional, used for video thumbnails)
+> - build-essential package (If using linux)
 
-<br/>
+1. Install dependencies
 
-Setup (Non Docker Method):
-
-> Install Node Modules
-
-```javascript
+```sh
 npm install
 ```
 
-<br>
+2. Create Environment Variables
 
-> Create Environment Variables:
+You can find enviroment variable examples under: <br />  
+[`backend/config`](backend/config) -> Backend Enviroment Variables  
+[`src/config`](src/config) -> Frontend Enviroment Variables
 
-> You can find enviroment variable examples under: <br />  
-> [backend/config](backend/config) -> Backend Enviroment Variables  
-> [src/config](src/config) -> Frontend Enviroment Variables
-
-> Simply remove the .example from the end of the filename, and fill in the values.  
+Simply remove the .example from the end of the filename, and fill in the values.  
 > Note: In most cases you will only have to change FE enviroment variables for development purposes.
 
-<br />
+3. Run the build command
 
-> Run the build command
-
-```javascript
+```sh
 npm run build
 ```
 
-<br />
+4. Start the server
 
-> Start the server
-
-```javascript
+```sh
 npm run start
 ```
 
@@ -158,27 +179,25 @@ npm run start
 
 Make issue
 
-```javascript
+```sh
 npm error gyp ERR! stack Error: not found: make
 ```
 
 This is because you do not have the build essentials installed which is required for Linux. You can install them by running the following command:
 
-```javascript
+```sh
 sudo apt-get install build-essential
 ```
 
-<br/>
-
 Memory issue
 
-```javascript
+```sh
 Aborted (core dumped)
 ```
 
 When running the `npm run build` command it may take more memory than node allows by default. You will get the above error in such a case. To fix this, you can run the following command instead when building:
 
-```javascript
+```sh
 NODE_OPTIONS="--max-old-space-size=4096" npm run build
 ```
 
@@ -263,14 +282,14 @@ If you are upgrading from myDrive 3 there is some data migration and scripts you
 > Run the migration script <br />
 > Note: Make sure you have env variables set
 
-```javascript
+```sh
 npm run migrate-to-mydrive4
 ```
 
 Also, if you are updating from myDrive 3, or if you did not have video thumbnails enabled and would like to enable them now you can do so by running the following command:<br />
 Note: Make sure you have video thumbnails enabled in your env variables and FFMPEG installed.
 
-```javascript
+```sh
 npm run create-video-thumbnails
 ```
 
@@ -280,7 +299,6 @@ npm run create-video-thumbnails
 
 #### Issues
 
-- The docker compose command is currently setup incorrectly since it requires npm to be installed, I am working on a fix for this. (Top priority)
 - Video streaming does not always work, especially on Safari.
 - PWA downloads does not work on iOS (This may be a current iOS limitation and not a myDrive issue).
 - Upload folder will sometimes fail on complex folder structures.
@@ -288,7 +306,6 @@ npm run create-video-thumbnails
 
 #### Future improvments
 
-- Docker image (Top priority)
 - OIDC Support (Top priority)
 - Option to disable encryption
 - File sync from a local device
