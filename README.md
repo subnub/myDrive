@@ -12,8 +12,9 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 - [Features](#features)
 - [Tech stack](#tech-stack)
-- [Docker image](#docker)
-- [Manual installation](#installation)
+- [Running](#running)
+  - [Docker](#docker)
+  - [Non-Docker](#non-docker)
 - [Common installation issues](#common-installation-issues)
 - [Screenshots](#screenshots)
 - [Video](#video)
@@ -54,17 +55,20 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 - Vite
 - Jest
 
-<span id="docker"></span>
+<span id="running"></span>
 
 ## Running
 
+<span id="docker"></span>
+
 ### 🐳 Docker
 
-Required:
+> [!IMPORTANT]  
+> Required:
+> - Docker
+> - MongoDB (optional, comes with `docker-compose.yml`)
 
-- Docker
-- MongoDB (optional, comes with `docker-compose.yml`)
-  <br/>
+<br/>
 
 #### Docker Compose
 
@@ -122,22 +126,23 @@ docker run -d \
 
 3. Access the app at `http://localhost:3000`
 
-<span id="installation"></span>
+<span id="non-docker"></span>
 
 ### 💻 Non - Docker
 
-Required:
+> [!IMPORTANT]
+> Required:
+> - Node.js (20 Recommended)
+> - MongoDB (Unless using a service like Atlas)
+> - FFMPEG (Optional, used for video thumbnails)
+> - build-essential package (If using linux)
 
-- Node.js (20 Recommended)
-- MongoDB (Unless using a service like Atlas)
-- FFMPEG (Optional, used for video thumbnails)
-- build-essential package (If using linux)
 
 <br/>
 
 > Install dependencies
 
-```javascript
+```bash
 npm install
 ```
 
@@ -156,7 +161,7 @@ npm install
 
 > Run the build command
 
-```javascript
+```bash
 npm run build
 ```
 
@@ -174,13 +179,13 @@ npm run start
 
 Make issue
 
-```javascript
+```bash
 npm error gyp ERR! stack Error: not found: make
 ```
 
 This is because you do not have the build essentials installed which is required for Linux. You can install them by running the following command:
 
-```javascript
+```bash
 sudo apt-get install build-essential
 ```
 
@@ -188,13 +193,13 @@ sudo apt-get install build-essential
 
 Memory issue
 
-```javascript
+```bash
 Aborted (core dumped)
 ```
 
 When running the `npm run build` command it may take more memory than node allows by default. You will get the above error in such a case. To fix this, you can run the following command instead when building:
 
-```javascript
+```bash
 NODE_OPTIONS="--max-old-space-size=4096" npm run build
 ```
 
