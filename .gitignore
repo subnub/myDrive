@@ -7,6 +7,7 @@ config/.env.development
 config/.env.test
 config/.env.production
 config/.env.test
+.env
 .env.development
 .env.test
 .env.production

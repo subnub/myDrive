@@ -1,39 +1,13 @@
 version: "3.8"
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
     container_name: mydrive
-    image: mydrive-image
+    image: kylehoell/mydrive:latest
     volumes:
-      - /user/example/:/data 
+      - /path/to/data:/data/
+      - /path/to/temp:/temp/
     ports:
       - "${HTTP_PORT:-3000}:3000"
       - "${HTTPS_PORT:-8080}:8080"
-    environment:
-      - DOCKER=true
-      - MONGODB_URL=
-      - DB_TYPE=
-      - FS_DIRECTORY=/data # Change this if you change the volume
-      - S3_ID=
-      - S3_KEY=
-      - S3_BUCKET=
-      - KEY=
-      - HTTP_PORT=
-      - HTTPS_PORT=
-      - URL=
-      - EMAIL_VERIFICATION=
-      - EMAIL_DOMAIN=
-      - EMAIL_ADDRESS=
-      - EMAIL_API_KEY=
-      - EMAIL_HOST=
-      - REMOTE_URL=
-      - PASSWORD_ACCESS=
-      - PASSWORD_REFRESH=
-      - PASSWORD_COOKIE=
-      - VIDEO_THUMBNAILS_ENABLED=
-      - TEMP_DIRECTORY=
-      - TEMP_VIDEO_THUMBNAIL_LIMIT=
-      - SECURE_COOKIES=
-      - SSL=
+    env_file:
+      - .env # Copy .env.example to .env and fill in the values
