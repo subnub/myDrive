@@ -209,65 +209,41 @@ You can read more about this issue [here](https://stackoverflow.com/questions/38
 
 ## 📸 Screenshots
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true" alt="MyDrive Design">
-  <figcaption align="center">Modern and colorful design</figcaption>
-</figure>
+Modern and colorful design
+![MyDrive Design](https://github.com/subnub/myDrive/blob/master/github_images/homepage.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/upload.png?raw=true" alt="MyDrive Upload">
-  <figcaption align="center">Upload Files</figcaption>
-</figure>
+Upload Files
+![MyDrive Upload](https://github.com/subnub/myDrive/blob/master/github_images/upload.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/download.png?raw=true" alt="MyDrive Download">
-  <figcaption align="center">Download Files</figcaption>
-</figure>
+Download Files
+![MyDrive Upload](https://github.com/subnub/myDrive/blob/master/github_images/download.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/image-viewer.png?raw=true" alt="Image Viewer">
-  <figcaption align="center">Image Viewer</figcaption>
-</figure>
+Image Viewer
+![Image Viewer](https://github.com/subnub/myDrive/blob/master/github_images/image-viewer.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/video-viewer.png?raw=true" alt="Video Viewer">
-  <figcaption align="center">Video Viewer</figcaption>
-</figure>
+Video Viewer
+![Video Viewer](https://github.com/subnub/myDrive/blob/master/github_images/video-viewer.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/media-viewer.png?raw=true" alt="Media Gallery">
-  <figcaption align="center">Media Gallery</figcaption>
-</figure>
+Media Gallery
+![Search](https://github.com/subnub/myDrive/blob/master/github_images/media-viewer.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/share.png?raw=true" alt="Share">
-  <figcaption align="center">Share Files</figcaption>
-</figure>
+Share Files
+![Share](https://github.com/subnub/myDrive/blob/master/github_images/share.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/search.png?raw=true" alt="Search">
-  <figcaption align="center">Search For Files/Folders</figcaption>
-</figure>
+Search For Files/Folders
+![Search](https://github.com/subnub/myDrive/blob/master/github_images/search.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/move.png?raw=true" alt="Move">
-  <figcaption align="center">Move File/Folders</figcaption>
-</figure>
+Move File/Folders
+![Move](https://github.com/subnub/myDrive/blob/master/github_images/move.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/multiselect.png?raw=true" alt="Multi-select">
-  <figcaption align="center">Multi-select</figcaption>
-</figure>
+Multi-select
+![Multi-select](https://github.com/subnub/myDrive/blob/master/github_images/multiselect.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/context.png?raw=true" alt="Context menu">
-  <figcaption align="center">Custom context menu</figcaption>
-</figure>
+Custom context menu
+![Context menu](https://github.com/subnub/myDrive/blob/master/github_images/context.png?raw=true)
 
-<figure>
-  <img src="https://github.com/subnub/myDrive/blob/master/github_images/trash.png?raw=true" alt="Trash">
-  <figcaption align="center">Trash</figcaption>
-</figure>
+Trash
+![Trash](https://github.com/subnub/myDrive/blob/master/github_images/trash.png?raw=true)
 
 <span id="video"></span>
 
