@@ -12,8 +12,8 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 - [Features](#features)
 - [Tech stack](#tech-stack)
-- [Installation (non docker)](#installation)
-- [Docker installation](#docker)
+- [Docker image](#docker)
+- [Manual installation](#installation)
 - [Common installation issues](#common-installation-issues)
 - [Screenshots](#screenshots)
 - [Video](#video)
@@ -56,7 +56,55 @@ MyDrive is an Open Source cloud file storage server (Similar To Google Drive). H
 
 <span id="installation"></span>
 
-## 💻 Installation
+## 🐳 Docker image
+
+Required:
+
+- Docker
+- MongoDB (Unless using a service like Atlas)  
+  <br/>
+
+Run the following command to download the latest docker image:
+
+```javascript
+docker pull kylehoell/mydrive:latest
+```
+
+You must provide enviroment variables for the docker image to work. You can supply these during the docker run command instead of creating the env file. <br />
+
+> [backend/config](backend/config) -> Backend Enviroment Variables
+
+You must also provide a volume for the image if you are using a filesystem database or if you want to use the generate video thumbnails feature. Volumes should be mounted to /data/ and /temp/ For example:
+
+```javascript
+-v /path/example/mydrive/data/:/data/ -v /path/example/mydrive/temp/:/temp/
+```
+
+/data/: This is where the encrypted files will be stored.  
+/temp/: Where files will temporary be stored to generate video thumbnails as a fallback.
+
+The docker image will by default run on port 3000.
+
+Here is an example of the full docker command:
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
+  -e DB_TYPE=fs \
+  -e PASSWORD_ACCESS=secretaccesspassword \
+  -e PASSWORD_REFRESH=secretrefreshpassword \
+  -e PASSWORD_COOKIE=secretcookiepassword \
+  -e KEY=encryptionkey \
+  -e VIDEO_THUMBNAILS_ENABLED=true \
+  -e TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000 \
+  -v /path/example/mydrive/data/:/data/ \
+  -v /path/example/mydrive/temp/:/temp/ \
+  --name mydrive \
+  kylehoell/mydrive:latest
+```
+
+## 💻 Manual Installation
 
 Required:
 
@@ -135,47 +183,6 @@ NODE_OPTIONS="--max-old-space-size=4096" npm run build
 You can read more about this issue [here](https://stackoverflow.com/questions/38558989/node-js-heap-out-of-memory).
 
 <span id="docker"></span>
-
-## 🐳 Docker image
-
-Note: This is a work in progress and may have issues, please report any issues you find.
-
-Run the following command to download the latest docker image:
-
-```javascript
-docker pull kylehoell/mydrive:latest
-```
-
-You must provide enviroment variables for the docker image to work. You can supply these during the docker run command instead of creating the env file. <br />
-
-> [backend/config](backend/config) -> Backend Enviroment Variables
-
-You must also provide a volume for the image if you are using a filesystem database or if you want to use the generate video thumbnails feature. Volumes should be mounted to /data/ and /temp. For example:
-
-```javascript
--v /path/example/mydrive/data/:/data/ -v /path/example/mydrive/temp/:/temp/
-```
-
-The docker image will by default run on port 3000.
-
-Here is an example of the full docker command:
-
-```bash
-docker run -d \
-  -p 3000:3000 \
-  -e MONGODB_URL=mongodb://127.0.0.1:27017/test \
-  -e DB_TYPE=fs \
-  -e PASSWORD_ACCESS=secretaccesspassword \
-  -e PASSWORD_REFRESH=secretrefreshpassword \
-  -e PASSWORD_COOKIE=secretcookiepassword \
-  -e KEY=encryptionkey \
-  -e VIDEO_THUMBNAILS_ENABLED=true \
-  -e TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000 \
-  -v /path/example/mydrive/data/:/data/ \
-  -v /path/example/mydrive/temp/:/temp/ \
-  --name mydrive \
-  kylehoell/mydrive:latest
-```
 
 <span id="screenshots"></span>
 
