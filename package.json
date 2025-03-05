@@ -21,6 +21,7 @@
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.3.0",
     "@reduxjs/toolkit": "^2.2.5",
     "archiver": "^7.0.1",
     "async": "^3.2.6",
