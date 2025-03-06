@@ -27,6 +27,7 @@ import { getStorageActions } from "./actions/helper-actions";
 import getThumbnailData from "./utils/getThumbnailData";
 import getFileData from "./utils/getFileData";
 import getPublicFileData from "./utils/getPublicFileData";
+import { getDecryptedRangeStream } from "../../utils/createRangeTransform";
 
 const fileDB = new FileDB();
 const folderDB = new FolderDB();
@@ -379,55 +380,98 @@ class StorageService {
 
     const range = headers.range;
     const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const chunksize = end - start + 1;
-    const IV = currentFile.metadata.IV;
+    const plaintextStart = parseInt(parts[0], 10);
+    const plaintextEnd = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunksize = plaintextEnd - plaintextStart + 1;
+    let IV = currentFile.metadata.IV;
 
     const head = {
-      "Content-Range": "bytes " + start + "-" + end + "/" + fileSize,
+      "Content-Range":
+        "bytes " + plaintextStart + "-" + plaintextEnd + "/" + fileSize,
       "Accept-Ranges": "bytes",
       "Content-Length": chunksize,
       "Content-Type": "video/mp4",
     };
 
-    let fixedStart = 0;
-    let fixedEnd = fixEndChunkLength(end) - 1;
+    const blockSize = 16; // AES block size (bytes)
+    const plaintextLength = plaintextEnd - plaintextStart + 1;
 
-    if (start === 0 && end === 1) {
-      fixedStart = 0;
-      fixedEnd = 15;
-    } else {
-      fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
-    }
+    // Determine which block the plaintext start falls in.
+    const startBlock = Math.floor(plaintextStart / blockSize);
+    // Number of extra bytes at the beginning of the first block before the actual plaintext.
+    const offsetInBlock = plaintextStart % blockSize;
 
-    if (+start === 0) {
-      fixedStart = 0;
-    }
+    // Total decrypted bytes needed from the first block onward.
+    const totalNeeded = offsetInBlock + plaintextLength;
+    // How many blocks (of ciphertext) are needed to cover the decrypted range.
+    const numBlocks = Math.ceil(totalNeeded / blockSize);
 
-    let currentIV = IV;
+    // Calculate the corresponding ciphertext range.
+    const encryptedStart = startBlock * blockSize;
+    const encryptedEnd = encryptedStart + numBlocks * blockSize - 1;
 
-    if (fixedStart !== 0 && start !== 0) {
+    if (encryptedStart !== 0 && plaintextStart !== 0) {
       const readStreamParams = createGenericParams({
         filePath: currentFile.metadata.filePath,
         Key: currentFile.metadata.s3ID,
       });
-      currentIV = (await storageActions.getPrevIV(
+      IV = (await storageActions.getPrevIV(
         readStreamParams,
-        fixedStart - 16
+        encryptedStart - 16
       )) as Buffer;
     }
 
     res.writeHead(206, head);
 
-    await getFileData(res, fileID, user, currentIV, {
-      start: start,
-      end,
-      chunksize,
-      fixedStart,
-      fixedEnd,
-      skip: start - fixedStart,
+    console.log(
+      {
+        offsetInBlock,
+        plaintextLength,
+        encryptedStart,
+        encryptedEnd,
+        plaintextStart,
+        plaintextEnd,
+        startBlock,
+      },
+      IV
+    );
+
+    await getFileData(res, fileID, user, IV, {
+      offsetInBlock,
+      plaintextLength,
+      encryptedStart,
+      encryptedEnd,
+      plaintextStart,
+      plaintextEnd,
+      startBlock,
     });
+
+    // let fixedStart = 0;
+    // let fixedEnd = fixEndChunkLength(end) - 1;
+
+    // if (start === 0 && end === 1) {
+    //   fixedStart = 0;
+    //   fixedEnd = 15;
+    // } else {
+    //   fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
+    // }
+
+    // if (+start === 0) {
+    //   fixedStart = 0;
+    // }
+
+    // let currentIV = IV;
+
+    // if (fixedStart !== 0 && start !== 0) {
+    //   const readStreamParams = createGenericParams({
+    //     filePath: currentFile.metadata.filePath,
+    //     Key: currentFile.metadata.s3ID,
+    //   });
+    //   currentIV = (await storageActions.getPrevIV(
+    //     readStreamParams,
+    //     fixedStart - 16
+    //   )) as Buffer;
+    // }
   };
 
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {

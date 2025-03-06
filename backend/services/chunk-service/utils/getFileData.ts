@@ -10,6 +10,7 @@ import FileDB from "../../../db/mongoDB/fileDB";
 import { FileInterface } from "../../../models/file-model";
 import NotAuthorizedError from "../../../utils/NotAuthorizedError";
 import sanitizeFilename from "../../../utils/sanitizeFilename";
+import { getDecryptedRangeStream } from "../../../utils/createRangeTransform";
 
 const fileDB = new FileDB();
 
@@ -23,6 +24,16 @@ const activeStreams = new Map<
     file: FileInterface;
   }
 >();
+
+interface Range {
+  offsetInBlock: number;
+  plaintextLength: number;
+  encryptedStart: number;
+  encryptedEnd: number;
+  plaintextStart: number;
+  plaintextEnd: number;
+  startBlock: number;
+}
 
 const getFileAndRemoveActiveStream = async (
   fileID: string,
@@ -59,14 +70,7 @@ const proccessData = (
   fileID: string,
   user: UserInterface,
   rangeIV?: Buffer,
-  range?: {
-    start: number;
-    end: number;
-    fixedStart: number;
-    fixedEnd: number;
-    skip: number;
-    chunksize: number;
-  }
+  range?: Range
 ) => {
   const eventEmitter = new EventEmitter();
 
@@ -93,17 +97,24 @@ const proccessData = (
 
       let readStream: NodeJS.ReadableStream;
 
+      const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
+
       if (range) {
-        readStream = storageActions.createReadStreamWithRange(
-          readStreamParams,
-          range.fixedStart,
-          range.fixedEnd
+        readStream = getDecryptedRangeStream(
+          storageActions.createReadStreamWithRange(
+            readStreamParams,
+            range.encryptedStart,
+            range.encryptedEnd
+          ),
+          CIPHER_KEY,
+          IV,
+          range.offsetInBlock,
+          range.plaintextEnd,
+          range.startBlock
         );
       } else {
         readStream = storageActions.createReadStream(readStreamParams);
       }
-
-      const CIPHER_KEY = crypto.createHash("sha256").update(password).digest();
 
       const decipher = crypto.createDecipheriv("aes256", CIPHER_KEY, IV);
 
@@ -143,32 +154,34 @@ const proccessData = (
       }
 
       if (range) {
-        let bytesSent = 0;
+        // let bytesSent = 0;
 
-        decipher.on("data", (data: Buffer) => {
-          if (bytesSent === 0 && range.skip > 0) {
-            const neededData = data.slice(range.skip, data.length);
-            res.write(neededData);
-            bytesSent += neededData.length;
-          } else if (bytesSent + data.length > range.chunksize) {
-            const currentDataLength = bytesSent + data.length;
-            const difference = currentDataLength - range.chunksize;
-            const neededData = data.slice(0, data.length - difference);
-            res.write(neededData);
-            bytesSent += neededData.length;
-          } else {
-            res.write(data);
-            bytesSent += data.length;
-          }
-        });
+        // decipher.on("data", (data: Buffer) => {
+        //   if (bytesSent === 0 && range.skip > 0) {
+        //     const neededData = data.slice(range.skip, data.length);
+        //     res.write(neededData);
+        //     bytesSent += neededData.length;
+        //   } else if (bytesSent + data.length > range.chunksize) {
+        //     const currentDataLength = bytesSent + data.length;
+        //     const difference = currentDataLength - range.chunksize;
+        //     const neededData = data.slice(0, data.length - difference);
+        //     res.write(neededData);
+        //     bytesSent += neededData.length;
+        //   } else {
+        //     res.write(data);
+        //     bytesSent += data.length;
+        //   }
+        // });
 
-        decipher.on("finish", () => {
-          res.end();
+        // decipher.on("finish", () => {
+        //   res.end();
 
+        //   eventEmitter.emit("finish");
+        // });
+
+        readStream.pipe(res).on("finish", () => {
           eventEmitter.emit("finish");
         });
-
-        readStream.pipe(decipher);
       } else {
         readStream
           .pipe(decipher)
@@ -192,14 +205,7 @@ const getFileData = (
   fileID: string,
   user: UserInterface,
   rangeIV?: Buffer,
-  range?: {
-    start: number;
-    end: number;
-    fixedStart: number;
-    fixedEnd: number;
-    skip: number;
-    chunksize: number;
-  }
+  range?: Range
 ) => {
   return new Promise((resolve, reject) => {
     const eventEmitter = proccessData(res, fileID, user, rangeIV, range);
