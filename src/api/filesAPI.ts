@@ -117,9 +117,6 @@ export const downloadPublicFileAPI = async (
   fileID: string,
   tempToken: string
 ) => {
-  await getUserToken();
-
-  // TODO: Change this
   const url = `${getBackendURL()}/file-service/public/download/${fileID}/${tempToken}`;
 
   const link = document.createElement("a");
