@@ -154,31 +154,6 @@ const proccessData = (
       }
 
       if (range) {
-        // let bytesSent = 0;
-
-        // decipher.on("data", (data: Buffer) => {
-        //   if (bytesSent === 0 && range.skip > 0) {
-        //     const neededData = data.slice(range.skip, data.length);
-        //     res.write(neededData);
-        //     bytesSent += neededData.length;
-        //   } else if (bytesSent + data.length > range.chunksize) {
-        //     const currentDataLength = bytesSent + data.length;
-        //     const difference = currentDataLength - range.chunksize;
-        //     const neededData = data.slice(0, data.length - difference);
-        //     res.write(neededData);
-        //     bytesSent += neededData.length;
-        //   } else {
-        //     res.write(data);
-        //     bytesSent += data.length;
-        //   }
-        // });
-
-        // decipher.on("finish", () => {
-        //   res.end();
-
-        //   eventEmitter.emit("finish");
-        // });
-
         readStream.pipe(res).on("finish", () => {
           eventEmitter.emit("finish");
         });

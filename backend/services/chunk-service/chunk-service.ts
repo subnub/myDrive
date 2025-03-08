@@ -393,20 +393,16 @@ class StorageService {
       "Content-Type": "video/mp4",
     };
 
-    const blockSize = 16; // AES block size (bytes)
+    const blockSize = 16;
     const plaintextLength = plaintextEnd - plaintextStart + 1;
 
-    // Determine which block the plaintext start falls in.
     const startBlock = Math.floor(plaintextStart / blockSize);
-    // Number of extra bytes at the beginning of the first block before the actual plaintext.
     const offsetInBlock = plaintextStart % blockSize;
 
-    // Total decrypted bytes needed from the first block onward.
     const totalNeeded = offsetInBlock + plaintextLength;
-    // How many blocks (of ciphertext) are needed to cover the decrypted range.
+
     const numBlocks = Math.ceil(totalNeeded / blockSize);
 
-    // Calculate the corresponding ciphertext range.
     const encryptedStart = startBlock * blockSize;
     const encryptedEnd = encryptedStart + numBlocks * blockSize - 1;
 
@@ -423,18 +419,13 @@ class StorageService {
 
     res.writeHead(206, head);
 
-    console.log(
-      {
-        offsetInBlock,
-        plaintextLength,
-        encryptedStart,
-        encryptedEnd,
-        plaintextStart,
-        plaintextEnd,
-        startBlock,
-      },
-      IV
-    );
+    // Safari hack (idk if there is a better way)
+    if (plaintextStart === 0 && plaintextEnd === 1) {
+      const twoBytes = Buffer.from([0x41, 0x42]);
+      res.write(twoBytes);
+      res.end();
+      return;
+    }
 
     await getFileData(res, fileID, user, IV, {
       offsetInBlock,
@@ -445,33 +436,6 @@ class StorageService {
       plaintextEnd,
       startBlock,
     });
-
-    // let fixedStart = 0;
-    // let fixedEnd = fixEndChunkLength(end) - 1;
-
-    // if (start === 0 && end === 1) {
-    //   fixedStart = 0;
-    //   fixedEnd = 15;
-    // } else {
-    //   fixedStart = start % 16 === 0 ? start : fixStartChunkLength(start);
-    // }
-
-    // if (+start === 0) {
-    //   fixedStart = 0;
-    // }
-
-    // let currentIV = IV;
-
-    // if (fixedStart !== 0 && start !== 0) {
-    //   const readStreamParams = createGenericParams({
-    //     filePath: currentFile.metadata.filePath,
-    //     Key: currentFile.metadata.s3ID,
-    //   });
-    //   currentIV = (await storageActions.getPrevIV(
-    //     readStreamParams,
-    //     fixedStart - 16
-    //   )) as Buffer;
-    // }
   };
 
   getPublicDownload = async (fileID: string, tempToken: any, res: Response) => {
