@@ -111,34 +111,40 @@ class StorageService {
     const sortedFolderPaths = Object.keys(folderPathsToCreate).sort();
 
     const foldersCreated: Record<string, FolderInterface> = {};
-
     for (const folderPath of sortedFolderPaths) {
-      const subFolders = folderPath.split("/");
-      const parentDirectory = subFolders
-        .slice(0, subFolders.length - 1)
-        .join("/");
-
       const tempParentList = [];
+      const subFolders = folderPath.split("/");
 
-      if (parentDirectory && foldersCreated[parentDirectory]) {
-        tempParentList.push(
-          ...foldersCreated[parentDirectory].parentList,
-          foldersCreated[parentDirectory]._id!.toString()
-        );
-      } else {
-        tempParentList.push(...parentList);
+      for (let i = 0; i < subFolders.length; i++) {
+        const parentDirectory = subFolders.slice(0, i).join("/");
+        if (tempParentList.length === 0) {
+          tempParentList.push(...parentList);
+        }
+
+        if (parentDirectory && foldersCreated[parentDirectory]) {
+          tempParentList.push(
+            foldersCreated[parentDirectory]._id!.toString()
+          );
+        }
+
+        const folderToCreate = subFolders[i];
+        const tmpPath = (parentDirectory)
+          ? [parentDirectory, folderToCreate].join("/")
+          : folderToCreate;
+
+        if (foldersCreated[tmpPath]) {
+          continue;
+        }
+
+        const folder = await folderDB.createFolder({
+          name: folderToCreate,
+          parent: tempParentList[tempParentList.length - 1],
+          owner: user._id.toString(),
+          parentList: tempParentList,
+        });
+
+        foldersCreated[tmpPath] = folder;
       }
-
-      const folderToCreate = subFolders[subFolders.length - 1];
-
-      const folder = await folderDB.createFolder({
-        name: folderToCreate,
-        parent: tempParentList[tempParentList.length - 1],
-        owner: user._id.toString(),
-        parentList: tempParentList,
-      });
-
-      foldersCreated[folderPath] = folder;
     }
 
     for (const key of keys) {
@@ -147,24 +153,16 @@ class StorageService {
       const parentDirectory = parentSplit
         .slice(1, parentSplit.length - 1)
         .join("/");
-      if (parentDirectory && foldersCreated[parentDirectory]) {
-        await fileDB.updateFolderUploadedFile(
-          currentFile.uploadedFileId,
-          user._id.toString(),
-          foldersCreated[parentDirectory]._id!.toString(),
-          [
-            ...foldersCreated[parentDirectory].parentList,
-            foldersCreated[parentDirectory]._id!.toString(),
-          ].toString()
-        );
-      } else {
-        await fileDB.updateFolderUploadedFile(
-          currentFile.uploadedFileId,
-          user._id.toString(),
-          rootFolder._id.toString(),
-          [...rootFolder.parentList, rootFolder._id.toString()].toString()
-        );
-      }
+
+      const currentParent = (parentDirectory && foldersCreated[parentDirectory])
+        ? foldersCreated[parentDirectory] : rootFolder;
+
+      await fileDB.updateFolderUploadedFile(
+        currentFile.uploadedFileId,
+        user._id.toString(),
+        currentParent._id!.toString(),
+        [...currentParent.parentList, currentParent._id!.toString()].toString()
+      );
     }
   };
 
