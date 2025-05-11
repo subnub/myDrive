@@ -1,14 +1,8 @@
-FROM node:20-alpine AS builder
-
-# Install build dependencies
-RUN apk add --no-cache python3 make g++ ffmpeg && \
-    ln -sf python3 /usr/bin/python
-
-WORKDIR /usr/app-production
-COPY package*.json ./
-
-RUN npm install
-
+FROM node:lts-alpine
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+RUN npm install --production --silent
 COPY . .
 RUN npm run build
 
@@ -28,5 +22,5 @@ COPY --from=builder /usr/app-production .
 
 EXPOSE 8080
 EXPOSE 3000
-
-CMD ["npm", "run", "start"]
+USER node
+CMD ["npm", "start"]

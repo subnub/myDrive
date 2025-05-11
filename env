@@ -1,0 +1,99 @@
+# If you are using Docker, set DOCKER=true
+DOCKER=true
+
+# MongoDB URL: Connection string for your MongoDB database
+# Note: if using the compose file provided, the connection string should be as follows:
+MONGODB_URL=mongodb://username:password@mongo:27017/mydrive?authSource=admin
+
+# Database Type: Choose between "fs" and "s3", this specifies where the files will be stored.
+# fs = Filesystem
+# s3 = Amazon S3
+DB_TYPE=fs
+
+# If using fs,
+# File Storage Directory: The directory where the files will be stored. Must be exact path.
+# PATH MUST END IN A SLASH
+# Example: /home/kyle/mydrive/ (must end in a slash)
+FS_DIRECTORY=/data/
+
+# If using s3,
+# S3 Data: The S3 bucket and key where the files will be stored.
+S3_ID=
+S3_KEY=
+S3_BUCKET=
+
+# Encryiption Key (optional): The encryption key used to encrypt the files.
+# DO NOT LOSE OR FORGET THIS KEY AS ALL DATA WILL BE LOST IF YOU LOSE IT.
+# If you do not supply a key, the app will instead prompt you to type one into the terminal when you start the server.
+KEY=encryptionkey
+
+# Access tokens, refresh, and cookie
+# These should be randomly generated in a secure manner.
+# If you lose these tokens, all users will be logged out.
+# You can also change these if you want to force all users to be logged out.
+# Each token should be a different string.
+# Example: sa4hQqJwGFLC1LJk59
+PASSWORD_ACCESS=secretaccesspassword
+PASSWORD_REFRESH=secretrefreshpassword
+PASSWORD_COOKIE=secretcookiepassword
+
+# Video thumbnails (optional): If you want to enable video thumbnails, configure as so.
+# Video thumbnail generation relies on ffmpeg, please ensure you have it installed.
+# VIDEO_THUMBNAILS_ENABLED=true
+VIDEO_THUMBNAILS_ENABLED=true
+
+# Video thumbnails continued (optional):
+# Sometimes generating a video thumbnail will fail with the default method.
+# If so you can choose to instead temporarily store the video in a directory, and generate a thumbnail from that.
+# WARNING: The file will be temporarily stored in this directory UNENCRYPTED.
+# Temp directory example: /Users/kyle/mydrive/temp/ (must end in a slash)
+# Temp video thumbnail limit: The maximum size of a video thumbnail in bytes.
+# Example: 5000000000
+TEMP_DIRECTORY=/temp/
+TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000
+
+# Block account creation (optional): If you want to block account creation, configure as so, but after you create an account.
+# BLOCK_CREATE_ACCOUNT=true
+
+# Ports (optional): The ports to run the server on.
+# HTTP_PORT: Default port is 3000
+# HTTPS_PORT: Default port is 8080
+HTTP_PORT=3000
+
+HTTPS_PORT=8080
+
+
+# URL (optional): The URL to run the server on.
+# Most likely not needed, this changes the ip address/url express listens on.
+URL=
+
+# Email verifcation (optional): If you want to enable email verification configure as so.
+# EMAIL_VERIFICATION=true
+# Remote URL: This refers to the URL sent in the verification email: Example https://mydrive-storage.com
+# Please navigate to the following link to verify your email address: {REMOTE_URL}/verify
+# Should NOT end with a slash
+EMAIL_VERIFICATION=
+EMAIL_DOMAIN=
+EMAIL_ADDRESS=
+EMAIL_API_KEY=
+EMAIL_HOST=
+REMOTE_URL=
+
+# Marks cookie generation as secure (Optional)
+# This is recommended and should be enabled if you are running the app on HTTPS.
+# SECURE_COOKIES=true
+SECURE_COOKIES=
+
+
+# SSL (Optional): If you want to enable SSL, configure as so.
+# SSL=true
+# Place your SSL certificate files in the root directory of the project
+# With the names: certificate.crt, certificate.key, and certificate.ca-bundle;
+SSL=
+
+# HTTPS cert paths (optional): If you need to change the paths of the https certs
+# You can do so with these env variables.
+# By default myDrive looks for certificate.crt, certificate.ca-bundle and certificate.key on the root of the project
+HTTPS_KEY_PATH=
+HTTPS_CA_PATH=
+HTTPS_CRT_PATH=
