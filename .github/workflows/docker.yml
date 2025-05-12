@@ -1,0 +1,13 @@
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build image
+        run: docker-compose build
+      - name: Booting up MongoDB
+        run: docker-compose up -d mongodb
+      - name: Running indexes creation
+        run: docker-compose run mydrive create-indexes-database

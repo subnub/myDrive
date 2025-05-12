@@ -1,14 +1,9 @@
-FROM node:20-alpine AS builder
-
-# Install build dependencies
-RUN apk add --no-cache python3 make g++ ffmpeg && \
-    ln -sf python3 /usr/bin/python
-
-WORKDIR /usr/app-production
-COPY package*.json ./
-
-RUN npm install
-
+<<<<<<< HEAD
+FROM node:lts-alpine
+ENV NODE_ENV=production
+WORKDIR /usr/src/app
+COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
+RUN npm install --production --silent
 COPY . .
 RUN npm run build
 
@@ -28,5 +23,27 @@ COPY --from=builder /usr/app-production .
 
 EXPOSE 8080
 EXPOSE 3000
-
-CMD ["npm", "run", "start"]
+USER node
+CMD ["npm", "start"]
+=======
+FROM node:slim
+RUN apt update && apt install -y build-essential python ffmpeg
+ARG PORT=3000
+ARG REMOTE_URL=http://localhost:3000
+ADD . /app
+WORKDIR /app
+RUN npm install && mkdir config && touch config/prod.env && touch config/.env.production
+ENV MONGODB_URL=mongodb://127.0.0.1:27017/personal-drive \
+    KEY=youshouldchangeit \
+    PASSWORD=youshouldchangeit \
+    HTTP_PORT=3000 \
+    URL=localhost \
+    FULL_URL=http://localhost:3000 \
+    ROOT=/ \
+    ENABLE_VIDEO_TRANSCODING=true \
+    DEBUG=*
+RUN npm run build:no-ssl
+ENTRYPOINT [ "npm", "run" ]
+CMD ["start:no-ssl"]
+EXPOSE 3000
+>>>>>>> origin/docker-testing

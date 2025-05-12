@@ -1,0 +1,14 @@
+docker run -d \
+  -p 3000:3000 \
+  -e MONGODB_URL=mongodb://127.0.0.1:27017/mydrive \
+  -e DB_TYPE=fs \
+  -e PASSWORD_ACCESS=uvtTFpwy0mPwnvo \
+  -e PASSWORD_REFRESH=fWJ3pzL8SVyo6pq \
+  -e PASSWORD_COOKIE=h81cfJmZzVNonUo \
+  -e KEY=encryptionkey \
+  -e VIDEO_THUMBNAILS_ENABLED=true \
+  -e TEMP_VIDEO_THUMBNAIL_LIMIT=5000000000 \
+  -v /mydrive/data/:/data/ \
+  -v /mydrive/temp/:/temp/ \
+  --name mydrive \
+  kylehoell/mydrive:latest

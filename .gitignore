@@ -21,9 +21,13 @@ certificate.key
 package-lock.json
 ._*
 .DS_Store
+<<<<<<< HEAD
 dist/
 rds-combined-ca-bundle.pem
 docker-variables.env
 dist-frontend/
 dist-backend/
 stats.html
+=======
+.idea
+>>>>>>> origin/docker-testing

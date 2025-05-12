@@ -1,0 +1,61 @@
+2025-05-11 13:42:05.049 [info] > git ls-files --stage -- server/server.js [161ms]
+2025-05-11 13:42:05.063 [info] > git ls-tree -l 0c21d454a5629aa88700e27417b396af971d9e41 -- server/server.js [168ms]
+2025-05-11 13:42:05.228 [info] > git cat-file -s c8696a27eb9b887c33044d5bee52afd8fde84d4f [173ms]
+2025-05-11 13:42:05.288 [info] > git show --textconv 0c21d454a5629aa88700e27417b396af971d9e41:server/server.js [214ms]
+2025-05-11 13:42:05.440 [info] > git show --textconv :1:server/server.js [201ms]
+2025-05-11 13:42:05.460 [info] > git fetch [1886ms]
+2025-05-11 13:42:05.615 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/master refs/remotes/master [145ms]
+2025-05-11 13:42:05.781 [info] > git status -z -uall [157ms]
+2025-05-11 13:42:05.795 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [166ms]
+2025-05-11 13:42:06.719 [info] > git ls-files --stage -- server/server.js [134ms]
+2025-05-11 13:42:06.728 [info] > git ls-tree -l 0c21d454a5629aa88700e27417b396af971d9e41 -- server/server.js [136ms]
+2025-05-11 13:42:06.932 [info] > git cat-file -s c8696a27eb9b887c33044d5bee52afd8fde84d4f [207ms]
+2025-05-11 13:42:07.033 [info] > git show --textconv 0c21d454a5629aa88700e27417b396af971d9e41:server/server.js [260ms]
+2025-05-11 13:42:07.168 [info] > git show --textconv :1:server/server.js [223ms]
+2025-05-11 13:42:13.503 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/master refs/remotes/master [655ms]
+2025-05-11 13:42:13.812 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [271ms]
+2025-05-11 13:42:13.830 [info] > git status -z -uall [311ms]
+2025-05-11 13:42:16.556 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - [179ms]
+2025-05-11 13:42:16.557 [info] error: Committing is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+2025-05-11 13:42:16.854 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/master refs/remotes/master [288ms]
+2025-05-11 13:42:17.130 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [232ms]
+2025-05-11 13:42:17.161 [info] > git status -z -uall [295ms]
+2025-05-11 13:42:18.501 [info] > git fetch [1423ms]
+2025-05-11 13:42:18.674 [info] > git config --get commit.template [163ms]
+2025-05-11 13:42:18.699 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [179ms]
+2025-05-11 13:42:18.708 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\UNWLCM\Documents\Github\integrate-mcp-with-copilot\.git\refs\remotes\origin\main'
+2025-05-11 13:42:18.862 [info] > git rev-parse refs/remotes/origin/main [154ms]
+2025-05-11 13:42:19.035 [info] > git status -z -uall [165ms]
+2025-05-11 13:42:19.052 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [175ms]
+2025-05-11 13:42:22.583 [info] > git fetch [2021ms]
+2025-05-11 13:42:22.584 [info] remote: Repository not found.
+fatal: repository 'https://github.com/4mT1-OG/Newpo.git/' not found
+2025-05-11 13:42:22.804 [info] > git -c user.useConfigOnly=true commit --quiet --allow-empty-message --file - [293ms]
+2025-05-11 13:42:22.804 [info] error: Committing is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+2025-05-11 13:42:23.088 [info] > git config --get commit.template [498ms]
+2025-05-11 13:42:23.169 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [569ms]
+2025-05-11 13:42:23.175 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\UNWLCM\Documents\Github\Newpo\.git\refs\remotes\origin\main'
+2025-05-11 13:42:23.264 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/master refs/remotes/master [443ms]
+2025-05-11 13:42:23.669 [info] > git rev-parse refs/remotes/origin/main [493ms]
+2025-05-11 13:42:23.934 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [639ms]
+2025-05-11 13:42:24.067 [info] > git status -z -uall [787ms]
+2025-05-11 13:42:24.349 [info] > git status -z -uall [667ms]
+2025-05-11 13:42:24.353 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [657ms]
+2025-05-11 13:42:53.002 [info] > git check-ignore -v -z --stdin [121ms]
+2025-05-11 13:43:03.017 [info] > git push origin main:main [2961ms]
+2025-05-11 13:43:03.018 [info] Everything up-to-date
+2025-05-11 13:43:03.308 [info] > git config --get commit.template [281ms]
+2025-05-11 13:43:03.337 [info] > git for-each-ref --format=%(refname)%00%(upstream:short)%00%(objectname)%00%(upstream:track)%00%(upstream:remotename)%00%(upstream:remoteref) --ignore-case refs/heads/main refs/remotes/main [302ms]
+2025-05-11 13:43:03.345 [warning] [Git][revParse] Unable to read file: ENOENT: no such file or directory, open 'c:\Users\UNWLCM\Documents\Github\integrate-mcp-with-copilot\.git\refs\remotes\origin\main'
+2025-05-11 13:43:03.537 [info] > git rev-parse refs/remotes/origin/main [192ms]
+2025-05-11 13:43:03.759 [info] > git for-each-ref --sort -committerdate --format %(refname)%00%(objectname)%00%(*objectname) [210ms]
+2025-05-11 13:43:03.778 [info] > git status -z -uall [236ms]
+2025-05-11 13:43:21.825 [info] > git show --textconv :.github/workflows/docker.yml [458ms]
+2025-05-11 13:43:21.843 [info] > git ls-files --stage -- .github/workflows/docker.yml [469ms]
+2025-05-11 13:43:22.009 [info] > git cat-file -s e559e97ac6d282a3d720223772bede76d04282ab [160ms]
