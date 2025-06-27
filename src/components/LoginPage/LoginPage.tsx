@@ -53,6 +53,7 @@ const LoginPage = () => {
       setLoadingLogin(true);
       const loginResponse = await loginAPI(email, password);
       window.localStorage.setItem("hasPreviouslyLoggedIn", "true");
+      window.localStorage.setItem("userId", loginResponse.user._id);
       dispatch(setUser(loginResponse));
       navigate("/home");
       setLoadingLogin(false);
@@ -75,7 +76,7 @@ const LoginPage = () => {
       setLoadingLogin(true);
       const createAccountResponse = await createAccountAPI(email, password);
       window.localStorage.setItem("hasPreviouslyLoggedIn", "true");
-
+       window.localStorage.setItem("userId", createAccountResponse.user._id);
       if (createAccountResponse.emailSent) {
         toast.success("Email Verification Sent");
       }

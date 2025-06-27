@@ -1,47 +1,75 @@
 services:
-    app:
-        container_name: mydrive
-        image: kylehoell/mydrive:latest
-        volumes:
-            # Use the following volumes section if you want to use bind mounts:
-            # - /path/to/data:/data/
-            # - /path/to/temp:/temp/
+  app:
+    container_name: mydrive
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mydrive:latest
+    volumes:
+      - mydrive-data:/data/
+      - mydrive-temp:/temp/
+    ports:
+      - "${HTTP_PORT:-3000}:3000"
+    env_file:
+      - .env
+    networks:
+      - mydrive-network
 
-            # Use the following volumes section if you want to use named volumes:
-            - mydrive-data:/data/
-            - mydrive-temp:/temp/
-        ports:
-            - "${HTTP_PORT:-3000}:3000"
-            # Optional: Uncomment the following line if you want to use HTTPS
-            #- "${HTTPS_PORT:-8080}:8080"
+  mongo:
+    image: mongo:8
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: abcd
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+      MONGO_INITDB_DATABASE: mydrive
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
+    volumes:
+      - db-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      timeout: 10s
+      interval: 10s
+      retries: 10
+      start_period: 10s
+    networks:
+      - mydrive-network
 
-        # Use expose: if using a reverse proxy
-        # expose:
-        #     - 3000
-        #     - 8080
-        env_file:
-            - .env # Copy .env.example to .env and fill in the values
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - mydrive-network     
 
-    mongo:
-        image: mongo:8
-        container_name: mongo
-        restart: always
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: username
-            MONGO_INITDB_ROOT_PASSWORD: password
-        expose:
-            - 27017
-        volumes:
-            - db-data:/data/db
-        healthcheck:
-            test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-            timeout: 10s
-            interval: 10s
-            retries: 10
-            start_period: 10s
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    networks:
+      - mydrive-network
 
-# Use the following volumes section if you want to use named volumes.
 volumes:
-    mydrive-data:
-    mydrive-temp:
-    db-data:
+  mydrive-data:
+  mydrive-temp:
+  db-data:
+  minio-data:
+  qdrant_data:
+
+networks:
+  mydrive-network:
+    driver: bridge

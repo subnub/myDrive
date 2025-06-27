@@ -3,8 +3,9 @@ import { NextFunction, Request, Response } from "express";
 import ChunkService from "../services/chunk-service/chunk-service";
 import { FolderListQueryType } from "../types/folder-types";
 import { UserInterface } from "../models/user-model";
-
+import { searchFiles } from "../utils/semanticSearch";
 const folderService = new FolderService();
+import mongoose from "mongoose"; // Add this import at the top if not present
 
 type userAccessType = {
   _id: string;
@@ -18,6 +19,14 @@ interface RequestType extends Request {
   encryptedToken?: string;
 }
 
+export const semanticSearch = async (req: Request, res: Response) => {
+  const { query, userId } = req.body;
+  if (typeof query !== "string" || !query || !userId) {
+    return res.status(400).json({ error: "Missing or invalid query or userId" });
+  }
+  const results = await searchFiles(query, userId);
+  res.json(results);
+};
 interface RequestTypeFullUser extends Request {
   user?: UserInterface;
   encryptedToken?: string;

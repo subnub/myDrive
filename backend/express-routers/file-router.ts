@@ -25,7 +25,7 @@ import {
   trashFileValidationRules,
   trashMultiValidationRules,
 } from "../middleware/files/files-middleware";
-
+import { semanticSearchHandler } from "../utils/semanticSearch";
 const fileController = new FileController();
 
 const router = Router();
@@ -210,5 +210,6 @@ router.delete(
 // POST
 
 router.post("/file-service/upload", authFullUser, fileController.uploadFile);
+router.post("/file-service/semantic-search", semanticSearchHandler);
 
 export default router;

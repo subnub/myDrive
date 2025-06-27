@@ -1,4 +1,4 @@
-import { S3Actions } from "../actions/S3-actions";
+import { S3Actions } from "./S3-actions";
 import { FilesystemActions } from "../actions/file-system-actions";
 import env from "../../../enviroment/env";
 

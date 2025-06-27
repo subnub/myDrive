@@ -10,11 +10,15 @@ const serverStart = async () => {
 
   console.log("ENV", process.env.NODE_ENV);
 
-  const httpPort = process.env.HTTP_PORT || process.env.PORT || 3000;
-  const httpsPort = process.env.HTTPS_PORT || 8080
+  // Azure App Service expects HTTP on port 80 by default
+  const httpPort = process.env.PORT || process.env.HTTP_PORT || 80;
+  const httpsPort = process.env.HTTPS_PORT || 8080;
+
+  // Use 0.0.0.0 for Azure compatibility (bind all interfaces)
+  const host = process.env.URL || "0.0.0.0";
 
   if (process.env.NODE_ENV === "production" && process.env.SSL === "true") {
-    server.listen(httpPort, process.env.URL, () => {
+    server.listen(httpPort, host, () => {
       console.log("Http Server Running On Port:", httpPort);
     });
 
@@ -22,11 +26,11 @@ const serverStart = async () => {
       console.log("Https Server Running On Port:", httpsPort);
     });
   } else if (process.env.NODE_ENV === "production") {
-    server.listen(httpPort, process.env.URL, () => {
+    server.listen(httpPort, host, () => {
       console.log("Http Server (No-SSL) Running On Port:", httpPort);
     });
   } else {
-    server.listen(httpPort, process.env.URL, () => {
+    server.listen(httpPort, host, () => {
       console.log("\nDevelopment Backend Server Running On :", httpPort);
     });
   }

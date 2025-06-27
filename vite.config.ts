@@ -10,7 +10,45 @@ export default defineConfig(({ mode }) => {
 
   console.log(`\nBackend Development Proxy URL: ${proxyURL}/api\n`);
 
-  return {
+  interface RuntimeCachingOption {
+    urlPattern: RegExp;
+    handler: string;
+    options: {
+      cacheName: string;
+      expiration: {
+        maxEntries: number;
+        maxAgeSeconds: number;
+      };
+      cacheableResponse: {
+        statuses: number[];
+      };
+    };
+  }
+
+  interface ServerProxyOption {
+    [key: string]: {
+      target: string;
+      changeOrigin: boolean;
+      rewrite?: (path: string) => string;
+    };
+  }
+
+  interface ViteConfig {
+    plugins: unknown[];
+    build: {
+      outDir: string;
+    };
+    resolve: {
+      extensions: string[];
+    };
+    envDir: string;
+    server: {
+      proxy?: ServerProxyOption;
+      host?: boolean;
+    };
+  }
+
+  return <ViteConfig>{
     plugins: [
       react(),
       visualizer(),
@@ -26,7 +64,7 @@ export default defineConfig(({ mode }) => {
             /^\/file-service\/download\/[^\/]+/, // Matches /file-service/download/:id
           ],
           runtimeCaching: [
-            {
+            <RuntimeCachingOption>{
               // Matches any URL that follows the pattern /file-service/thumbnail/{id}
               urlPattern: /\/file-service\/thumbnail\/[a-zA-Z0-9_-]+$/,
               handler: "CacheFirst",
@@ -54,11 +92,19 @@ export default defineConfig(({ mode }) => {
     envDir: "./src/config/",
     server: {
       proxy: proxyURL
-        ? {
+        ? <ServerProxyOption>{
             "/api": {
-              target: proxyURL, // The port where your backend is running
+              target: proxyURL,
               changeOrigin: true,
-              rewrite: (path) => path.replace(/^\/api/, ""),
+              rewrite: (path: string) => path.replace(/^\/api/, ""),
+            },
+            "/file-service": {
+              target: proxyURL,
+              changeOrigin: true,
+            },
+            "/folder-service": {
+              target: proxyURL,
+              changeOrigin: true,
             },
           }
         : undefined,

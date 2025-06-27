@@ -6,10 +6,11 @@ import {
   removeStreamVideoCookie,
 } from "../cookies/create-cookies";
 import ChunkService from "../services/chunk-service/chunk-service";
-import streamToBuffer from "../utils/streamToBuffer";
 import NotAuthorizedError from "../utils/NotAuthorizedError";
 import { FileListQueryType } from "../types/file-types";
 import fs from "fs";
+import { addFileToIndex } from "../utils/semanticSearch";// Correctly import addFileToIndex
+import path from "path";
 
 const fileService = new FileService();
 type userAccessType = {
@@ -36,6 +37,13 @@ class FileController {
   constructor() {
     this.chunkService = new ChunkService();
   }
+
+  // --- Semantic Search Re-indexing Endpoint ---
+  reIndexAllFiles = async (req: Request, res: Response) => {
+  console.log('Re-indexing request received.');
+  // You can implement a batch re-index here if you want, but for now just return a message.
+  res.status(202).json({ message: 'File re-indexing endpoint called, but not implemented.' });
+};
 
   getThumbnail = async (
     req: RequestTypeFullUser,
@@ -87,6 +95,12 @@ class FileController {
       const busboy = req.busboy;
 
       const file = await this.chunkService.uploadFile(user, busboy, req);
+
+      // --- New, Correct Semantic Indexing ---
+      // Asynchronously add the new file to the semantic index.
+      // This does not block the upload response.
+      addFileToIndex(file);
+      // --- End Semantic Indexing ---
 
       res.send(file);
     } catch (e: unknown) {
