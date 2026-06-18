@@ -31,7 +31,7 @@
 - [Live demo](#live-demo)
 - [Feature requests/bug reports](#bugs)
 - [Updating from a previous version of myDrive](#updating)
-- [Known issues and future improvments](#known-issues)
+- [Known issues and future improvements](#known-issues)
 
 <span id="features"></span>
 
@@ -154,12 +154,12 @@ npm install
 
 2. Create Environment Variables
 
-You can find enviroment variable examples under: <br />  
-[`backend/config`](backend/config) -> Backend Enviroment Variables  
-[`src/config`](src/config) -> Frontend Enviroment Variables
+You can find environment variable examples under: <br />  
+[`backend/config`](backend/config) -> Backend Environment Variables  
+[`src/config`](src/config) -> Frontend Environment Variables
 
 Simply remove the .example from the end of the filename, and fill in the values.  
-> Note: In most cases you will only have to change FE enviroment variables for development purposes.
+> Note: In most cases you will only have to change FE environment variables for development purposes.
 
 3. Run the build command
 
@@ -295,7 +295,7 @@ npm run create-video-thumbnails
 
 <span id="known-issues"></span>
 
-## 🔮 Known issues and future improvments
+## 🔮 Known issues and future improvements
 
 #### Issues
 
@@ -304,7 +304,7 @@ npm run create-video-thumbnails
 - Upload folder will sometimes fail on complex folder structures.
 - Generating video thumbnails with the default method will often fail, requiring the whole file to be downloaded to temporary storage and then the thumbnail generated from that.
 
-#### Future improvments
+#### Future improvements
 
 - OIDC Support (Top priority)
 - Option to disable encryption
