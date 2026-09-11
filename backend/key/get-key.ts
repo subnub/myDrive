@@ -1,24 +1,25 @@
 import env from "../enviroment/env";
-import crypto from "crypto";
 import getKeyFromTerminal from "../utils/getKeyFromTerminal";
+import { deriveMasterKey, getOrCreateKeySalt } from "./derive-master-key";
 
 const getKey = async () => {
+  let passphrase: string | undefined;
+
   if (
     process.env.KEY ||
     process.env.NODE_ENV === "development" ||
     process.env.NODE_ENV === "test"
   ) {
-    const password = process.env.KEY;
-    if (!password) {
+    passphrase = process.env.KEY;
+
+    if (!passphrase) {
       console.log(`Key is required for ${process.env.NODE_ENV} server`);
       throw new Error(`Key is required for ${process.env.NODE_ENV} server`);
     }
-
-    env.key = crypto.createHash("md5").update(password).digest("hex");
   } else if (process.env.NODE_ENV === "production" && !process.env.KEY) {
-    const terminalPassword = await getKeyFromTerminal();
+    passphrase = await getKeyFromTerminal();
 
-    if (!terminalPassword || !terminalPassword.length) {
+    if (!passphrase || !passphrase.length) {
       console.log(
         "Terminal key is required for production server, or create a .env file with KEY"
       );
@@ -26,14 +27,16 @@ const getKey = async () => {
         "Terminal key is required for production server, or create a .env file with KEY"
       );
     }
-
-    const password = crypto
-      .createHash("md5")
-      .update(terminalPassword)
-      .digest("hex");
-
-    env.key = password;
   }
+
+  if (!passphrase) return;
+
+  const salt = getOrCreateKeySalt();
+
+  // env.key is stored hex-encoded so it stays a string like the rest of
+  // the env config; user-model.ts turns it back into a Buffer directly
+  // (no further hashing needed - scrypt already outputs a strong 32-byte key).
+  env.key = deriveMasterKey(passphrase, salt).toString("hex");
 };
 
 export default getKey;

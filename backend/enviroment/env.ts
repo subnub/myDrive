@@ -1,5 +1,7 @@
 export default {
   key: process.env.KEY,
+  keySalt: process.env.KEY_SALT,
+  keySaltPath: process.env.KEY_SALT_PATH,
   newKey: process.env.NEW_KEY,
   passwordAccess: process.env.PASSWORD_ACCESS,
   passwordRefresh: process.env.PASSWORD_REFRESH,
@@ -38,6 +40,8 @@ export default {
 
 module.exports = {
   key: process.env.KEY,
+  keySalt: process.env.KEY_SALT,
+  keySaltPath: process.env.KEY_SALT_PATH,
   newKey: process.env.NEW_KEY,
   passwordAccess: process.env.PASSWORD_ACCESS,
   passwordRefresh: process.env.PASSWORD_REFRESH,

@@ -18,6 +18,8 @@
     "create-video-thumbnails:dev": "NODE_ENV=development node serverUtils/createVideoThumbnails.js",
     "migrate-to-mydrive4": "NODE_ENV=production node serverUtils/migrateMyDrive4.js",
     "migrate-to-mydrive4:dev": "NODE_ENV=development node serverUtils/migrateMyDrive4.js",
+    "rewrap-master-key": "NODE_ENV=production node dist-backend/scripts/rewrap-master-key.js",
+    "rewrap-master-key:dev": "NODE_ENV=development node dist-backend/scripts/rewrap-master-key.js",
     "test": "NODE_ENV=test jest"
   },
   "dependencies": {
@@ -83,6 +85,7 @@
     "@types/archiver": "^6.0.3",
     "@types/async": "^3.2.24",
     "@types/bytes": "^3.1.4",
+    "@types/cli-progress": "^3.11.6",
     "@types/compression": "^1.7.0",
     "@types/concat-stream": "^1.6.0",
     "@types/connect-busboy": "0.0.2",

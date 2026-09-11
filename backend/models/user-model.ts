@@ -84,6 +84,15 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     passwordLastModified: Number,
+    // Marks which master-key derivation scheme wrapped this user's
+    // privateKey. Only used by the one-time rewrap-master-key migration
+    // script to track progress/idempotency - current app code always
+    // derives env.key via scrypt (see backend/key/derive-master-key.ts)
+    // and assumes every user has already been migrated to version 2.
+    masterKeyVersion: {
+      type: Number,
+      default: 2,
+    },
   },
   {
     timestamps: true,
@@ -103,6 +112,7 @@ export interface UserInterface extends Document {
   emailToken?: string;
   passwordResetToken?: string;
   passwordLastModified?: number;
+  masterKeyVersion?: number;
 
   getEncryptionKey: () => Buffer | undefined;
   generateTempAuthToken: () => Promise<any>;
@@ -289,10 +299,10 @@ userSchema.methods.generateEncryptionKeys = async function () {
   let encryptedText = cipher.update(randomKey);
   encryptedText = Buffer.concat([encryptedText, cipher.final()]);
 
-  const MASTER_CIPHER_KEY = crypto
-    .createHash("sha256")
-    .update(masterPassword)
-    .digest();
+  // env.key is already a scrypt-derived 32-byte key (hex-encoded) - see
+  // backend/key/derive-master-key.ts - so it's used directly as the AES-256
+  // key rather than being hashed again.
+  const MASTER_CIPHER_KEY = Buffer.from(masterPassword, "hex");
   const masterCipher = crypto.createCipheriv(
     "aes-256-cbc",
     MASTER_CIPHER_KEY,
@@ -305,6 +315,7 @@ userSchema.methods.generateEncryptionKeys = async function () {
     masterCipher.final(),
   ]).toString("hex");
   user.publicKey = iv.toString("hex");
+  user.masterKeyVersion = 2;
 
   await user.save();
 };
@@ -321,10 +332,7 @@ userSchema.methods.getEncryptionKey = function () {
       .createHash("sha256")
       .update(userPassword)
       .digest();
-    const MASTER_CIPHER_KEY = crypto
-      .createHash("sha256")
-      .update(masterPassword)
-      .digest();
+    const MASTER_CIPHER_KEY = Buffer.from(masterPassword, "hex");
 
     const unhexMasterText = Buffer.from(masterEncryptedText, "hex");
     const masterDecipher = crypto.createDecipheriv(
@@ -360,10 +368,7 @@ userSchema.methods.changeEncryptionKey = async function (randomKey: Buffer) {
   let encryptedText = cipher.update(randomKey);
   encryptedText = Buffer.concat([encryptedText, cipher.final()]);
 
-  const MASTER_CIPHER_KEY = crypto
-    .createHash("sha256")
-    .update(masterPassword)
-    .digest();
+  const MASTER_CIPHER_KEY = Buffer.from(masterPassword, "hex");
   const masterCipher = crypto.createCipheriv(
     "aes-256-cbc",
     MASTER_CIPHER_KEY,
@@ -376,6 +381,7 @@ userSchema.methods.changeEncryptionKey = async function (randomKey: Buffer) {
     masterCipher.final(),
   ]).toString("hex");
   user.publicKey = iv.toString("hex");
+  user.masterKeyVersion = 2;
 
   await user.save();
 };
