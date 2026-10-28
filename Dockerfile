@@ -15,7 +15,7 @@ RUN npm run build
 # Remove dev dependencies
 RUN npm prune --production
 
-FROM node:20-alpine
+FROM node:24.22.1-alpine
 
 ENV FS_DIRECTORY=/data/
 ENV TEMP_DIRECTORY=/temp/
